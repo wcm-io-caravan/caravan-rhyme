@@ -1,0 +1,10 @@
+# The :launchpad feature defines Sling's launchpad version
+# Only a single artifact is allowed within this feature.
+
+[feature name=:launchpad]
+
+  # Old Jetty Version without Servlet 3.1 Support (for Tomcat 7)
+  # org.apache.sling/org.apache.sling.launchpad.base/4.6.1-2.5.8
+
+  # Latest Jetty 9 with Servlet 3.1
+  org.apache.sling/org.apache.sling.launchpad.base/5.6.1-2.6.16

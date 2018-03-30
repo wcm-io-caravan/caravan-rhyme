@@ -1,0 +1,48 @@
+  # Libraries for Integration Test
+
+[feature name=integration-test]
+
+[artifacts]
+  io.wcm.caravan/io.wcm.caravan.integration-test.minimal-launchpad//slingfeature
+
+[artifacts startLevel=15]
+  
+  com.damnhandy/handy-uri-templates
+  com.fasterxml.jackson.core/jackson-core
+  com.fasterxml.jackson.core/jackson-annotations
+  com.fasterxml.jackson.core/jackson-databind
+  commons-beanutils/commons-beanutils
+  org.apache.commons/commons-lang3/3.3.2
+  org.apache.httpcomponents/httpcore-osgi
+  org.apache.httpcomponents/httpclient-osgi
+  org.apache.httpcomponents/httpasyncclient-osgi
+  org.apache.httpcomponents/httpcore-nio
+  org.codehaus.jackson/jackson-core-asl/1.9.13
+  org.codehaus.jackson/jackson-mapper-asl/1.9.13
+  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.jersey
+  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.hibernate-validator
+  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava
+  io.wcm.caravan/io.wcm.caravan.commons.httpasyncclient
+  io.wcm.caravan/io.wcm.caravan.commons.httpclient
+  io.wcm.caravan/io.wcm.caravan.commons.jsonpath
+  io.wcm.caravan/io.wcm.caravan.commons.metrics
+  io.wcm.caravan/io.wcm.caravan.commons.performance
+  io.wcm.caravan/io.wcm.caravan.hal.resource
+  io.wcm.caravan/io.wcm.caravan.hal.api-annotations
+  io.wcm.caravan/io.wcm.caravan.hal.api-client
+  io.wcm.caravan/io.wcm.caravan.hal.integration-test.sample-service
+  io.wcm.caravan/io.wcm.caravan.io.http
+  io.wcm.caravan/io.wcm.caravan.jaxrs.publisher
+  io.wcm.caravan/io.wcm.caravan.pipeline.api
+
+  # Metrics
+  io.dropwizard.metrics/metrics-core
+  io.dropwizard.metrics/metrics-annotation
+  io.dropwizard.metrics/metrics-graphite
+  io.dropwizard.metrics/metrics-healthchecks
+  io.dropwizard.metrics/metrics-httpclient
+  io.dropwizard.metrics/metrics-json
+  io.dropwizard.metrics/metrics-jvm
+  io.dropwizard.metrics/metrics-servlet
+  io.dropwizard.metrics/metrics-servlets
+  io.dropwizard.metrics/metrics-logback

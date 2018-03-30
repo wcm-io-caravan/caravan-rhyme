@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  wcm.io
+  %%
+  Copyright (C) 2015 wcm.io
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.wcm.caravan</groupId>
+    <artifactId>io.wcm.caravan.hal.parent</artifactId>
+    <version>1.1.1-SNAPSHOT</version>
+    <relativePath>../../parent/pom.xml</relativePath>
+  </parent>
+
+  <groupId>io.wcm.caravan</groupId>
+  <artifactId>io.wcm.caravan.hal.integration-test.launchpad</artifactId>
+  <version>1-SNAPSHOT</version>
+  <packaging>slingstart</packaging>
+
+  <name>JAX-RS Integration Test Launchpad Test</name>
+  <description>
+    Builds a bundle with Sling server-side tests, and executes them via
+    a remote test proxy that runs in the integration-tests phase.
+  </description>
+
+  <properties>
+    <!-- hostname for integration tests -->
+    <test.host>localhost</test.host>
+    <http.port>8080</http.port>
+
+    <!--
+        Set this to true to stop mvn once the integration test Jetty instance is
+        started. Useful to manually test the integration testing webapp.
+    -->
+    <launchpad.keep.running>false</launchpad.keep.running>
+
+    <!--
+      If set to "true" this will start the launchpad with standard debug options,
+      or set to a string to provide custom debug settings
+    -->
+    <launchpad.debug>true</launchpad.debug>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.commons.httpclient</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.commons.httpasyncclient</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.commons.jsonpath</artifactId>
+      <version>0.5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.commons.metrics</artifactId>
+      <version>0.6.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.commons.performance</artifactId>
+      <version>0.5.0</version>
+    </dependency>    
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.jaxrs.publisher</artifactId>
+      <version>1.2.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.hal.api-annotations</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.hal.api-client</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.hal.resource</artifactId>
+      <version>1.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.hal.integration-test.sample-service</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.io.http</artifactId>
+      <version>0.10.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.pipeline.api</artifactId>
+      <version>0.7.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Apache HTTP Client -->
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.9.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <version>4.4.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient-osgi</artifactId>
+      <version>4.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore-osgi</artifactId>
+      <version>4.4.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpasyncclient-osgi</artifactId>
+      <version>4.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore-nio</artifactId>
+      <version>4.4.5</version>
+    </dependency>
+    
+    <!-- actual dependencies -->
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.integration-test.minimal-launchpad</artifactId>
+      <version>1.1.0</version>
+      <type>slingfeature</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.osgi.wrapper</groupId>
+      <artifactId>io.wcm.osgi.wrapper.jersey</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.osgi.wrapper</groupId>
+      <artifactId>io.wcm.osgi.wrapper.hibernate-validator</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+  
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.sling</groupId>
+        <artifactId>slingstart-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>start-container</id>
+            <goals>
+              <goal>start</goal>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <usePomDependencies>true</usePomDependencies>
+          <usePomVariables>true</usePomVariables>
+          <servers>
+            <server>
+              <port>${http.port}</port>
+              <controlPort>${sling.control.port}</controlPort>
+              <contextPath>${http.base.path}</contextPath>
+              <debug>${launchpad.debug}</debug>
+            </server>
+          </servers>
+        </configuration>
+      </plugin>
+
+      <!-- do not deploy this hierarchy pom into maven repository -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <!-- do not generate site for this project -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+      </plugin>
+      
+      <!-- do not generate javadocs -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      
+    </plugins>
+  </build>
+  
+  <profiles>
+
+    <!-- "Fast" profile for quick compile of the project without any unit tests etc. -->
+    <profile>
+      <id>fast</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <unittests.skip>true</unittests.skip>
+        <integrationtests.skip>true</integrationtests.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+      </properties>
+    </profile>
+
+    <!-- Start on port 8080 and keep running -->
+    <profile>
+      <id>run8080</id>
+      <properties>
+        <launchpad.keep.running>true</launchpad.keep.running>
+        <launchpad.debug>true</launchpad.debug>
+        <http.port>8080</http.port>
+      </properties>
+    </profile>
+  </profiles>
+
+</project>
