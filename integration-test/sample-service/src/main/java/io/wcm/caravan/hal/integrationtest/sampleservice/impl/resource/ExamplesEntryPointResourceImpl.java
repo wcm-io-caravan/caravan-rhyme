@@ -29,7 +29,6 @@ import io.wcm.caravan.hal.api.common.LinkableResource;
 import io.wcm.caravan.hal.api.server.jaxrs.AsyncHalResponseHandler;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceOsgiContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
 import io.wcm.caravan.hal.resource.Link;
@@ -40,11 +39,7 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
 
   private final ExampleServiceRequestContext context;
 
-  public ExamplesEntryPointResourceImpl(@Context ExampleServiceOsgiContext osgiContext) {
-    this.context = osgiContext.createRequestContext();
-  }
-
-  public ExamplesEntryPointResourceImpl(ExampleServiceRequestContext context) {
+  public ExamplesEntryPointResourceImpl(@Context ExampleServiceRequestContext context) {
     this.context = context;
   }
 

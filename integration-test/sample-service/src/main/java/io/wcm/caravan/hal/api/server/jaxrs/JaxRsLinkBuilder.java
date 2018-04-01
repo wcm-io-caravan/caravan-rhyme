@@ -62,28 +62,11 @@ public class JaxRsLinkBuilder {
     // create a URI template from this path
     UriTemplateBuilder uriTemplateBuilder = UriTemplate.buildFromTemplate(resourcePath);
 
-    // use reflection to find the names and values of all fields annotated with JAX-RS @PathParam and @QueryParam annotations
-    Map<String, Object> pathParams = JaxRsReflectionUtils.getPathParameterMap(resource);
-    Map<String, Object> queryParams = JaxRsReflectionUtils.getQueryParameterMap(resource);
-
-    // add all available query parameters to the URI template
-    String[] queryParamNames = queryParams.keySet().stream().toArray(String[]::new);
-    if (queryParamNames.length > 0) {
-      uriTemplateBuilder.query(queryParamNames);
-    }
+    // get parameter values from resource, and append query parameter names to the URI template
+    Map<String, Object> parametersThatAreSet = collectAndAppendParameters(uriTemplateBuilder);
 
     // finally build the URI template
     String uriTemplate = uriTemplateBuilder.build().getTemplate();
-
-    // now merge the template variables from the query and path parameters
-    Map<String, Object> parameters = new HashMap<>();
-    parameters.putAll(pathParams);
-    parameters.putAll(queryParams);
-
-    // and filter only the parameters that have a non-zero value
-    Map<String, Object> parametersThatAreSet = parameters.entrySet().stream()
-        .filter(entry -> entry.getValue() != null)
-        .collect(Collectors.toMap(entry -> entry.getKey(), e -> e.getValue()));
 
     // then expand the uri template partially (i.e. keep variables that are null in the resource implementation)
     String partiallyExpandedUriTemplate = UriTemplate.expandPartial(uriTemplate, parametersThatAreSet);
@@ -91,6 +74,7 @@ public class JaxRsLinkBuilder {
     // and finally construct and return the link
     return new Link(partiallyExpandedUriTemplate);
   }
+
 
   /**
    * build the resource path template (by concatenating the baseUrl of the service,
@@ -112,4 +96,29 @@ public class JaxRsLinkBuilder {
 
     return resourcePath;
   }
+
+  private Map<String, Object> collectAndAppendParameters(UriTemplateBuilder uriTemplateBuilder) {
+
+    // use reflection to find the names and values of all fields annotated with JAX-RS @PathParam and @QueryParam annotations
+    Map<String, Object> pathParams = JaxRsReflectionUtils.getPathParameterMap(resource);
+    Map<String, Object> queryParams = JaxRsReflectionUtils.getQueryParameterMap(resource);
+
+    // add all available query parameters to the URI template
+    String[] queryParamNames = queryParams.keySet().stream().toArray(String[]::new);
+    if (queryParamNames.length > 0) {
+      uriTemplateBuilder.query(queryParamNames);
+    }
+
+    // now merge the template variables from the query and path parameters
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.putAll(pathParams);
+    parameters.putAll(queryParams);
+
+    // and filter only the parameters that have a non-null value
+    Map<String, Object> parametersThatAreSet = parameters.entrySet().stream()
+        .filter(entry -> entry.getValue() != null)
+        .collect(Collectors.toMap(entry -> entry.getKey(), e -> e.getValue()));
+    return parametersThatAreSet;
+  }
+
 }

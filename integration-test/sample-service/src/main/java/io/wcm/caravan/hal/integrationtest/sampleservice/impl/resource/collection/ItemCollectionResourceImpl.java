@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -32,7 +33,6 @@ import io.wcm.caravan.hal.api.server.jaxrs.AsyncHalResponseHandler;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceOsgiContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.resource.Link;
@@ -41,7 +41,8 @@ import rx.Observable;
 @Path("/collections/items")
 public class ItemCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
-  private final ExampleServiceRequestContext context;
+  @Context
+  private ExampleServiceRequestContext context;
 
   @QueryParam("numItems")
   @DefaultValue(value = "0")
@@ -51,14 +52,21 @@ public class ItemCollectionResourceImpl implements ItemCollectionResource, Linka
   @DefaultValue(value = "false")
   private Boolean embedItems;
 
-  public ItemCollectionResourceImpl(@Context ExampleServiceOsgiContext osgiContext) {
-    this.context = osgiContext.createRequestContext();
+  public ItemCollectionResourceImpl() {
+
   }
 
-  public ItemCollectionResourceImpl(ExampleServiceRequestContext context, Integer numItems, Boolean embedItems) {
+  ItemCollectionResourceImpl(ExampleServiceRequestContext context, Integer numItems, Boolean embedItems) {
     this.context = context;
     this.numItems = numItems;
     this.embedItems = embedItems;
+
+    this.init();
+  }
+
+  @PostConstruct
+  void init() {
+    System.out.println("init was called for item collection");
   }
 
   @Override

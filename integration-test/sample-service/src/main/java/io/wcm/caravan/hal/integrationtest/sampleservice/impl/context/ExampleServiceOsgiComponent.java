@@ -39,7 +39,7 @@ import io.wcm.caravan.jaxrs.publisher.JaxRsComponent;
 
 @Component(service = JaxRsComponent.class, immediate = true)
 @Path("")
-public class ExampleServiceOsgiContext implements JaxRsComponent {
+public class ExampleServiceOsgiComponent implements JaxRsComponent {
 
   private String contextPath;
 
@@ -50,14 +50,11 @@ public class ExampleServiceOsgiContext implements JaxRsComponent {
 
   @Override
   public Collection<Class<?>> getChildComponentClasses() {
-    System.out.println(getClass().getSimpleName() + " was asked for child component classes");
-
-    return ImmutableList.of(ExamplesEntryPointResourceImpl.class, CollectionExamplesResourceImpl.class, ItemCollectionResourceImpl.class,
-        ItemResourceImpl.class);
+    return ImmutableList.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class, CollectionExamplesResourceImpl.class,
+        ItemCollectionResourceImpl.class, ItemResourceImpl.class);
   }
 
-  public ExampleServiceRequestContext createRequestContext() {
-    return new ExampleServiceRequestContext(contextPath);
+  public String getContextPath() {
+    return this.contextPath;
   }
-
 }

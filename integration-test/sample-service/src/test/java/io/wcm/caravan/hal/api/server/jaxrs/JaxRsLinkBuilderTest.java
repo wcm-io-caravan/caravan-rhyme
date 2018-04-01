@@ -71,17 +71,17 @@ public class JaxRsLinkBuilderTest {
   }
 
   @Path(RESOURCE_PATH)
-  class TestResourceWithTwoQueryParameters extends LinkableResourceAdapter {
+  public class TestResourceWithTwoQueryParameters extends LinkableResourceAdapter {
 
     @QueryParam(QUERY_PARAM_A)
-    private String a;
+    private final String queryA;
 
     @QueryParam(QUERY_PARAM_B)
-    private String b;
+    private final String queryB;
 
-    TestResourceWithTwoQueryParameters(String a, String b) {
-      this.a = a;
-      this.b = b;
+    public TestResourceWithTwoQueryParameters(String a, String b) {
+      this.queryA = a;
+      this.queryB = b;
     }
   }
 

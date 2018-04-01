@@ -31,7 +31,6 @@ import io.wcm.caravan.hal.api.common.LinkableResource;
 import io.wcm.caravan.hal.api.server.jaxrs.AsyncHalResponseHandler;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceOsgiContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.resource.Link;
 import rx.Observable;
@@ -39,15 +38,16 @@ import rx.Observable;
 @Path("/collections/items/{index}")
 public class ItemResourceImpl implements ItemResource, LinkableResource, EmbeddableResource {
 
-  private final ExampleServiceRequestContext context;
+  @Context
+  private ExampleServiceRequestContext context;
 
   @PathParam("index")
   private Integer index;
 
   private boolean embedded;
 
-  public ItemResourceImpl(@Context ExampleServiceOsgiContext osgiContext) {
-    this.context = osgiContext.createRequestContext();
+  public ItemResourceImpl() {
+
   }
 
   public ItemResourceImpl(ExampleServiceRequestContext context, Integer index) {

@@ -19,18 +19,20 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+
 import io.wcm.caravan.hal.api.common.LinkableResource;
 import io.wcm.caravan.hal.api.server.jaxrs.JaxRsLinkBuilder;
 import io.wcm.caravan.hal.resource.Link;
 
-
+@Path("") // this annotation is important so that instances of this class can be injected into other resources using @Context
 public class ExampleServiceRequestContext {
 
   private final String contextPath;
 
-  public ExampleServiceRequestContext(String contextPath) {
-    System.out.println(this + " was instantiated");
-    this.contextPath = contextPath;
+  public ExampleServiceRequestContext(@Context ExampleServiceOsgiComponent osgiContext) {
+    this.contextPath = osgiContext.getContextPath();
   }
 
   public Link buildLinkTo(LinkableResource targetResource) {
