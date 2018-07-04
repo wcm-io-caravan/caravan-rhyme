@@ -26,6 +26,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.wcm.caravan.hal.api.server.AsyncHalResourceRenderer;
 import io.wcm.caravan.hal.api.server.impl.AsyncHalResourceRendererImpl;
 import io.wcm.caravan.hal.resource.HalResource;
 import rx.Single;
@@ -35,9 +36,11 @@ public class AsyncHalResponseHandler {
 
   private static final Logger log = LoggerFactory.getLogger(AsyncHalResponseHandler.class);
 
+  private static final AsyncHalResourceRenderer renderer = new AsyncHalResourceRendererImpl();
+
   public static void respond(Object resourceImpl, AsyncResponse asyncResponse) {
 
-    Single<HalResource> rxHalResource = new AsyncHalResourceRendererImpl().renderResource(resourceImpl);
+    Single<HalResource> rxHalResource = renderer.renderResource(resourceImpl);
 
     rxHalResource.subscribe(new SingleSubscriber<HalResource>() {
 

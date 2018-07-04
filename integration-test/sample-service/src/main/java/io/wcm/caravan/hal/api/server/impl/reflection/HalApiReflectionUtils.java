@@ -1,6 +1,8 @@
 /* Copyright (c) pro!vision GmbH. All rights reserved. */
 package io.wcm.caravan.hal.api.server.impl.reflection;
 
+import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -9,6 +11,7 @@ import java.util.function.Consumer;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
+import io.wcm.caravan.hal.api.annotations.RelatedResource;
 import io.wcm.caravan.hal.api.annotations.ResourceState;
 import rx.Observable;
 import rx.Single;
@@ -21,6 +24,22 @@ public final class HalApiReflectionUtils {
   private HalApiReflectionUtils() {
     // static methods only
   }
+
+  static Comparator<Method> methodRelationComparator = (method1, method2) -> {
+    String curi1 = method1.getAnnotation(RelatedResource.class).relation();
+    String curi2 = method2.getAnnotation(RelatedResource.class).relation();
+
+    // make sure that all links with custom link relations are displayed first
+    if (curi1.contains(":") && !curi2.contains(":")) {
+      return -1;
+    }
+    // make sure that all links with standard relations are displayed last
+    if (curi2.contains(":") && !curi1.contains(":")) {
+      return 1;
+    }
+    // otherwise the links should be sorted alphabetically
+    return curi1.compareTo(curi2);
+  };
 
   static Set<Class<?>> collectInterfaces(Class clazz) {
 
@@ -72,5 +91,13 @@ public final class HalApiReflectionUtils {
         .filter(Objects::nonNull)
         .defaultIfEmpty(JsonNodeFactory.instance.objectNode())
         .toSingle();
+  }
+
+  public static Observable<Method> getSortedRelatedResourceMethods(Class<?> resourceInterface) {
+
+    return Observable.from(resourceInterface.getMethods())
+        .filter(method -> method.getAnnotation(RelatedResource.class) != null)
+        .toSortedList((m1, m2) -> HalApiReflectionUtils.methodRelationComparator.compare(m1, m2))
+        .flatMapIterable(l -> l);
   }
 }

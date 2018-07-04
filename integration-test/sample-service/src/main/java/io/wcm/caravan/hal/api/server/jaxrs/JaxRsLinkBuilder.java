@@ -118,6 +118,7 @@ public class JaxRsLinkBuilder {
     Map<String, Object> parametersThatAreSet = parameters.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
         .collect(Collectors.toMap(entry -> entry.getKey(), e -> e.getValue()));
+
     return parametersThatAreSet;
   }
 
