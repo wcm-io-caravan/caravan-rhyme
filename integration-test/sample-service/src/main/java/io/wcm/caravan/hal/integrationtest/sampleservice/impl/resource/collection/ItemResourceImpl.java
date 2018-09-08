@@ -35,22 +35,22 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServ
 import io.wcm.caravan.hal.resource.Link;
 import rx.Observable;
 
+
+/**
+ * An example for a class that uses constructor injection of the context and parameters.
+ * The advantage is that you only have a single constructor and final fields,
+ * the disadvantage is that the JaxRsLinkBuilder must assume that the fields have the exact same name as the parameters
+ */
 @Path("/collections/items/{index}")
 public class ItemResourceImpl implements ItemResource, LinkableResource, EmbeddableResource {
 
-  @Context
-  private ExampleServiceRequestContext context;
+  private final ExampleServiceRequestContext context;
 
-  @PathParam("index")
-  private Integer index;
+  private final Integer index;
 
   private boolean embedded;
 
-  public ItemResourceImpl() {
-
-  }
-
-  public ItemResourceImpl(ExampleServiceRequestContext context, Integer index) {
+  public ItemResourceImpl(@Context ExampleServiceRequestContext context, @PathParam("index") Integer index) {
     this.context = context;
     this.index = index;
   }

@@ -43,7 +43,7 @@ public class JaxRsLinkBuilderTestWithAnnotatedBeanParamTest extends JaxRsLinkBui
   }
 
   @Path(RESOURCE_PATH)
-  public class TestResourceWithTwoQueryParameters extends LinkableResourceAdapter {
+  private static class TestResourceWithTwoQueryParameters extends LinkableResourceAdapter {
 
     @BeanParam
     private TwoQueryParametersBean parameters;
@@ -75,7 +75,7 @@ public class JaxRsLinkBuilderTestWithAnnotatedBeanParamTest extends JaxRsLinkBui
   }
 
   @Path(RESOURCE_PATH_TEMPLATE)
-  public class TestResourceWithTwoPathParameters extends LinkableResourceAdapter {
+  private static class TestResourceWithTwoPathParameters extends LinkableResourceAdapter {
 
     @BeanParam
     private TwoPathParametersBean parameters;
@@ -87,7 +87,8 @@ public class JaxRsLinkBuilderTestWithAnnotatedBeanParamTest extends JaxRsLinkBui
 
   @Override
   LinkableResource createResourceWithTwoPathParameters(String valueOfA, String valueOfB) {
-    return new TestResourceWithTwoPathParameters(new TwoPathParametersBean(valueOfA, valueOfB));
+    TwoPathParametersBean parameters = new TwoPathParametersBean(valueOfA, valueOfB);
+    return new TestResourceWithTwoPathParameters(parameters);
   }
 
 }

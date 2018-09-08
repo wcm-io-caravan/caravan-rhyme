@@ -25,18 +25,17 @@ import javax.ws.rs.QueryParam;
 
 import io.wcm.caravan.hal.api.common.LinkableResource;
 
-public class JaxRsLinkBuilderTestWithAnnotatedIndividualFieldsTest extends JaxRsLinkBuilderTest {
+public class JaxRsLinkBuilderTestWithIndividualConstructorParamTest extends JaxRsLinkBuilderTest {
 
   @Path(RESOURCE_PATH)
-  private static class TestResourceWithTwoQueryParameters extends LinkableResourceAdapter {
+  public static class TestResourceWithTwoQueryParameters extends LinkableResourceAdapter {
 
-    @QueryParam(QUERY_PARAM_A)
-    private String queryA;
+    private final String queryA;
+    private final String queryB;
 
-    @QueryParam(QUERY_PARAM_B)
-    private String queryB;
-
-    public TestResourceWithTwoQueryParameters(String a, String b) {
+    public TestResourceWithTwoQueryParameters(
+        @QueryParam(QUERY_PARAM_A) String a,
+        @QueryParam(QUERY_PARAM_B) String b) {
       this.queryA = a;
       this.queryB = b;
     }
@@ -48,15 +47,12 @@ public class JaxRsLinkBuilderTestWithAnnotatedIndividualFieldsTest extends JaxRs
   }
 
   @Path(RESOURCE_PATH_TEMPLATE)
-  private static class TestResourceWithTwoPathParameters extends LinkableResourceAdapter {
+  public static class TestResourceWithTwoPathParameters extends LinkableResourceAdapter {
 
-    @PathParam(PATH_PARAM_A)
-    private String pathA;
+    private final String pathA;
+    private final String pathB;
 
-    @PathParam(PATH_PARAM_B)
-    private String pathB;
-
-    public TestResourceWithTwoPathParameters(String a, String b) {
+    public TestResourceWithTwoPathParameters(@PathParam(PATH_PARAM_A) String a, @PathParam(PATH_PARAM_B) String b) {
       this.pathA = a;
       this.pathB = b;
     }

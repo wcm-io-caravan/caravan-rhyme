@@ -19,51 +19,48 @@
  */
 package io.wcm.caravan.hal.api.server.jaxrs;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 
 import io.wcm.caravan.hal.api.common.LinkableResource;
+import io.wcm.caravan.hal.api.server.jaxrs.JaxRsLinkBuilderTestWithAnnotatedBeanParamTest.TwoPathParametersBean;
+import io.wcm.caravan.hal.api.server.jaxrs.JaxRsLinkBuilderTestWithAnnotatedBeanParamTest.TwoQueryParametersBean;
 
-public class JaxRsLinkBuilderTestWithAnnotatedIndividualFieldsTest extends JaxRsLinkBuilderTest {
+public class JaxRsLinkBuilderTestWithBeanConstructorParamTest extends JaxRsLinkBuilderTest {
+
 
   @Path(RESOURCE_PATH)
   private static class TestResourceWithTwoQueryParameters extends LinkableResourceAdapter {
 
-    @QueryParam(QUERY_PARAM_A)
-    private String queryA;
+    private final TwoQueryParametersBean parameters;
 
-    @QueryParam(QUERY_PARAM_B)
-    private String queryB;
-
-    public TestResourceWithTwoQueryParameters(String a, String b) {
-      this.queryA = a;
-      this.queryB = b;
+    public TestResourceWithTwoQueryParameters(@BeanParam TwoQueryParametersBean parameters) {
+      this.parameters = parameters;
     }
   }
 
   @Override
   LinkableResource createResourceWithTwoQueryParameters(String valueOfA, String valueOfB) {
-    return new TestResourceWithTwoQueryParameters(valueOfA, valueOfB);
+
+    TwoQueryParametersBean parameters = new TwoQueryParametersBean(valueOfA, valueOfB);
+    return (new TestResourceWithTwoQueryParameters(parameters));
   }
+
 
   @Path(RESOURCE_PATH_TEMPLATE)
   private static class TestResourceWithTwoPathParameters extends LinkableResourceAdapter {
 
-    @PathParam(PATH_PARAM_A)
-    private String pathA;
+    private final TwoPathParametersBean parameters;
 
-    @PathParam(PATH_PARAM_B)
-    private String pathB;
-
-    public TestResourceWithTwoPathParameters(String a, String b) {
-      this.pathA = a;
-      this.pathB = b;
+    public TestResourceWithTwoPathParameters(@BeanParam TwoPathParametersBean parameters) {
+      this.parameters = parameters;
     }
   }
 
   @Override
   LinkableResource createResourceWithTwoPathParameters(String valueOfA, String valueOfB) {
-    return new TestResourceWithTwoPathParameters(valueOfA, valueOfB);
+    TwoPathParametersBean parameters = new TwoPathParametersBean(valueOfA, valueOfB);
+    return new TestResourceWithTwoPathParameters(parameters);
   }
+
 }

@@ -38,6 +38,11 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEn
 import io.wcm.caravan.hal.resource.Link;
 import rx.Observable;
 
+/**
+ * An example for a class that uses constructor injection of the context and parameters.
+ * The advantage is that the JaxRsLinkBuilder can see which field belongs to which param by reflection
+ * the disadvantage is that you need multiple constructors, a common init method and cannot use final fields
+ */
 @Path("/collections/items")
 public class ItemCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
@@ -53,20 +58,23 @@ public class ItemCollectionResourceImpl implements ItemCollectionResource, Linka
   private Boolean embedItems;
 
   public ItemCollectionResourceImpl() {
-
+    // the parameterless constructor required for JAX-RS to instantiate this resource
   }
 
   ItemCollectionResourceImpl(ExampleServiceRequestContext context, Integer numItems, Boolean embedItems) {
+
+    // initialise only the variables that would otherwise be injected by Jax-RS
     this.context = context;
     this.numItems = numItems;
     this.embedItems = embedItems;
 
+    // then call the common init method for further initialisation
     this.init();
   }
 
   @PostConstruct
   void init() {
-    System.out.println("init was called for item collection");
+    // called by Jax-RS after the field injection has happened (or by the parameterized constructor)s
   }
 
   @Override

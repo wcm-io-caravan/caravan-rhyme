@@ -41,7 +41,7 @@ public class JaxRsLinkBuilder {
   private final LinkableResource resource;
 
   /**
-   * @param baseUrl the base path (or full URI) for which this bundle is registered
+   * @param baseUrl the base path (or full URI) for which the current service bundle is registered
    * @param targetResource the resource instance for which a link should be generated
    */
   public JaxRsLinkBuilder(String baseUrl, LinkableResource targetResource) {
