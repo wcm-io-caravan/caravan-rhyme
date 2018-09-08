@@ -33,7 +33,7 @@ public class RxJavaReflectionUtils {
 
   public static Observable<?> invokeMethodAndReturnObservable(Object resourceImplInstance, Method method) {
 
-    String fullMethodName = resourceImplInstance.getClass() + "#" + method.getName();
+    String fullMethodName = resourceImplInstance.getClass().getSimpleName() + "#" + method.getName();
 
     Object[] args = new Object[method.getParameterCount()];
 
@@ -55,7 +55,10 @@ public class RxJavaReflectionUtils {
       throw new RuntimeException("The method " + fullMethodName + " returned an objected type "
           + returnValue.getClass().getName());
     }
-    catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+    catch (InvocationTargetException ex) {
+      throw new RuntimeException("Failed to invoke method " + fullMethodName, ex.getTargetException());
+    }
+    catch (IllegalAccessException | IllegalArgumentException ex) {
       throw new RuntimeException("Failed to invoke method " + fullMethodName, ex);
     }
   }
