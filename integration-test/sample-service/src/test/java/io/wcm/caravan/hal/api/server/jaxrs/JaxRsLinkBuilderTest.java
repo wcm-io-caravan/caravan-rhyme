@@ -22,7 +22,6 @@ package io.wcm.caravan.hal.api.server.jaxrs;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Test;
@@ -31,24 +30,34 @@ import io.wcm.caravan.hal.api.common.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
 
-public class JaxRsLinkBuilderTest {
+public abstract class JaxRsLinkBuilderTest {
 
-  private static final String CONTEXT_PATH = "/context";
+  protected static final String CONTEXT_PATH = "/context";
 
-  private static final String RESOURCE_PATH = "/test";
+  protected static final String RESOURCE_PATH = "/test";
 
-  private static final String QUERY_PARAM_A = "queryA";
+  protected static final String ABSOLUTE_RESOURCE_PATH = CONTEXT_PATH + RESOURCE_PATH;
 
-  private static final String QUERY_PARAM_B = "queryB";
+  protected static final String QUERY_PARAM_A = "queryA";
 
-  private static Link buildLinkTo(LinkableResource targetResource) {
+  protected static final String QUERY_PARAM_B = "queryB";
+
+  protected static final String PATH_PARAM_A = "pathA";
+
+  protected static final String PATH_PARAM_B = "pathB";
+
+  protected static final String RESOURCE_PATH_TEMPLATE = RESOURCE_PATH + "/{" + PATH_PARAM_A + "}/{" + PATH_PARAM_B + "}";
+
+  protected static final String ABSOLUTE_RESOURCE_PATH_TEMPLATE = CONTEXT_PATH + RESOURCE_PATH_TEMPLATE;
+
+  protected static Link buildLinkTo(LinkableResource targetResource) {
 
     JaxRsLinkBuilder linkBuilder = new JaxRsLinkBuilder(CONTEXT_PATH, targetResource);
 
     return linkBuilder.build();
   }
 
-  class LinkableResourceAdapter implements LinkableResource {
+  static class LinkableResourceAdapter implements LinkableResource {
 
     @Override
     public Link createLink() {
@@ -58,55 +67,69 @@ public class JaxRsLinkBuilderTest {
   }
 
   @Path(RESOURCE_PATH)
-  class TestResourceWithoutParameters extends LinkableResourceAdapter {
+  static class TestResourceWithoutParameters extends LinkableResourceAdapter {
     // a class without any parameter properties
   }
 
+  abstract LinkableResource createResourceWithTwoQueryParameters(String valueOfA, String valueOfB);
+
+  abstract LinkableResource createResourceWithTwoPathParameters(String valueOfA, String valueOfB);
+
   @Test
-  public void link_should_concatenate_context_path_and_resource_path() {
+  public void should_concatenate_context_path_and_resource_path() {
 
     Link link = buildLinkTo(new TestResourceWithoutParameters());
 
-    assertThat(link.getHref().startsWith(CONTEXT_PATH + RESOURCE_PATH));
+    assertThat(link.getHref().equals(ABSOLUTE_RESOURCE_PATH));
   }
 
-  @Path(RESOURCE_PATH)
-  public class TestResourceWithTwoQueryParameters extends LinkableResourceAdapter {
-
-    @QueryParam(QUERY_PARAM_A)
-    private final String queryA;
-
-    @QueryParam(QUERY_PARAM_B)
-    private final String queryB;
-
-    public TestResourceWithTwoQueryParameters(String a, String b) {
-      this.queryA = a;
-      this.queryB = b;
-    }
-  }
 
   @Test
-  public void link_should_resolve_query_parameters_with_non_null_value() throws Exception {
+  public void should_resolve_query_parameters_with_non_null_value() throws Exception {
 
     String valueOfA = "testA";
     String valueOfB = "testB";
 
-    Link link = buildLinkTo(new TestResourceWithTwoQueryParameters(valueOfA, valueOfB));
+    Link link = buildLinkTo(createResourceWithTwoQueryParameters(valueOfA, valueOfB));
 
     assertThat(link.isTemplated()).isFalse();
     assertThat(link.getHref()).endsWith("?" + QUERY_PARAM_A + "=" + valueOfA + "&" + QUERY_PARAM_B + "=" + valueOfB);
   }
 
   @Test
-  public void link_should_insert_variables_for_query_parameters_with_null_value() throws Exception {
+  public void should_insert_variables_for_query_parameters_with_null_value() throws Exception {
 
     String valueOfA = null;
     String valueOfB = null;
 
-    Link link = buildLinkTo(new TestResourceWithTwoQueryParameters(valueOfA, valueOfB));
+    Link link = buildLinkTo(createResourceWithTwoQueryParameters(valueOfA, valueOfB));
 
     assertThat(link.isTemplated());
     assertThat(link.getHref()).endsWith("{?" + QUERY_PARAM_A + "," + QUERY_PARAM_B + "}");
   }
 
+  @Test
+  public void should_resolve_path_parameters_with_non_null_value() throws Exception {
+
+    String valueOfA = "testA";
+    String valueOfB = "testB";
+
+    Link link = buildLinkTo(createResourceWithTwoPathParameters(valueOfA, valueOfB));
+
+    assertThat(link.isTemplated()).isFalse();
+    assertThat(link.getHref().startsWith(ABSOLUTE_RESOURCE_PATH));
+    assertThat(link.getHref()).endsWith("/" + valueOfA + "/" + valueOfB);
+  }
+
+  @Test
+  public void should_insert_variables_for_path_parameters_with_null_value() throws Exception {
+
+    String valueOfA = null;
+    String valueOfB = null;
+
+    Link link = buildLinkTo(createResourceWithTwoPathParameters(valueOfA, valueOfB));
+
+    assertThat(link.isTemplated());
+    assertThat(link.getHref()).isEqualTo(ABSOLUTE_RESOURCE_PATH_TEMPLATE);
+  }
 }

@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
@@ -41,6 +42,12 @@ public class JaxRsReflectionUtils {
         .map(field -> Pair.of(field.getAnnotation(PathParam.class).value(), getFieldValue(field, resourceImpl)))
         .forEach(pair -> parameterMap.put(pair.getKey(), pair.getValue()));
 
+    findFieldsDefinedInResource(resourceImpl).stream()
+        .filter(field -> field.getAnnotation(BeanParam.class) != null)
+        .map(field -> getFieldValue(field, resourceImpl))
+        .map(beanParam -> getPathParameterMap(beanParam))
+        .forEach(beanParamMap -> parameterMap.putAll(beanParamMap));
+
     return parameterMap;
   }
 
@@ -52,6 +59,12 @@ public class JaxRsReflectionUtils {
         .filter(field -> field.getAnnotation(QueryParam.class) != null)
         .map(field -> Pair.of(field.getAnnotation(QueryParam.class).value(), getFieldValue(field, resourceImpl)))
         .forEach(pair -> parameterMap.put(pair.getKey(), pair.getValue()));
+
+    findFieldsDefinedInResource(resourceImpl).stream()
+        .filter(field -> field.getAnnotation(BeanParam.class) != null)
+        .map(field -> getFieldValue(field, resourceImpl))
+        .map(beanParam -> getQueryParameterMap(beanParam))
+        .forEach(beanParamMap -> parameterMap.putAll(beanParamMap));
 
     return parameterMap;
   }
