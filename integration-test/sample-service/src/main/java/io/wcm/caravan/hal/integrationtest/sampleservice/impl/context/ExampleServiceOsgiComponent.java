@@ -50,6 +50,7 @@ public class ExampleServiceOsgiComponent implements JaxRsComponent {
 
   @Override
   public Collection<Class<?>> getChildComponentClasses() {
+
     return ImmutableList.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class, CollectionExamplesResourceImpl.class,
         ItemCollectionResourceImpl.class, ItemResourceImpl.class);
   }

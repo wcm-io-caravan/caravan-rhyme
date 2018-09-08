@@ -30,6 +30,7 @@
   io.wcm.caravan/io.wcm.caravan.hal.resource
   io.wcm.caravan/io.wcm.caravan.hal.api-annotations
   io.wcm.caravan/io.wcm.caravan.hal.api-client
+  io.wcm.caravan/io.wcm.caravan.hal.jaxrs-server
   io.wcm.caravan/io.wcm.caravan.hal.integration-test.sample-service
   io.wcm.caravan/io.wcm.caravan.io.http
   io.wcm.caravan/io.wcm.caravan.jaxrs.publisher
