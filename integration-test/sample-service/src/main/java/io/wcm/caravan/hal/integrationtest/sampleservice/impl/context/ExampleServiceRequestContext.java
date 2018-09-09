@@ -24,32 +24,32 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
 
 import io.wcm.caravan.hal.api.server.LinkableResource;
-import io.wcm.caravan.hal.api.server.jaxrs.JaxRsLinkBuilder;
+import io.wcm.caravan.hal.api.server.jaxrs.JaxRsHalServerSupport;
 import io.wcm.caravan.hal.resource.Link;
 
 @Path("") // this annotation is important so that instances of this class can be injected into other resources using @Context
 public class ExampleServiceRequestContext {
 
-  private final String contextPath;
-  private final ExampleServiceOsgiComponent osgiContext;
+  private final JaxRsHalServerSupport halSupport;
 
   public ExampleServiceRequestContext(@Context ExampleServiceOsgiComponent osgiContext) {
-    this.contextPath = osgiContext.getContextPath();
-    this.osgiContext = osgiContext;
+    this.halSupport = osgiContext.getHalSupport();
+  }
+
+  private JaxRsHalServerSupport getHalSupport() {
+    return halSupport;
   }
 
   public Link buildLinkTo(LinkableResource targetResource) {
-
-    JaxRsLinkBuilder linkBuilder = new JaxRsLinkBuilder(contextPath);
-
-    return linkBuilder.buildLinkTo(targetResource);
+    return getHalSupport().getLinkBuilder().buildLinkTo(targetResource);
   }
 
   public void respondWith(LinkableResource resource, AsyncResponse response) {
-    osgiContext.getResponseHandler().respondWith(resource, response);
+    getHalSupport().getResponseHandler().respondWith(resource, response);
   }
 
   public String getContextPath() {
-    return contextPath;
+    return getHalSupport().getContextPath();
   }
+
 }

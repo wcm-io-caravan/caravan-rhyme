@@ -24,34 +24,24 @@ import java.util.Collection;
 
 import javax.ws.rs.Path;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.google.common.collect.ImmutableList;
 
-import io.wcm.caravan.hal.api.server.jaxrs.AsyncHalResponseHandler;
+import io.wcm.caravan.hal.api.server.jaxrs.JaxRsHalServerSupport;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ItemCollectionResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ItemResourceImpl;
-import io.wcm.caravan.jaxrs.publisher.ApplicationPath;
 import io.wcm.caravan.jaxrs.publisher.JaxRsComponent;
 
 @Component(service = JaxRsComponent.class, immediate = true)
 @Path("")
 public class ExampleServiceOsgiComponent implements JaxRsComponent {
 
-  private String contextPath;
-
   @Reference
-  private AsyncHalResponseHandler responseHandler;
-
-  @Activate
-  void activate(BundleContext bundleCtx) {
-    contextPath = ApplicationPath.get(bundleCtx);
-  }
+  private JaxRsHalServerSupport halSupport;
 
   @Override
   public Collection<Class<?>> getChildComponentClasses() {
@@ -60,11 +50,8 @@ public class ExampleServiceOsgiComponent implements JaxRsComponent {
         ItemCollectionResourceImpl.class, ItemResourceImpl.class);
   }
 
-  public String getContextPath() {
-    return this.contextPath;
+  public JaxRsHalServerSupport getHalSupport() {
+    return this.halSupport;
   }
 
-  public AsyncHalResponseHandler getResponseHandler() {
-    return this.responseHandler;
-  }
 }
