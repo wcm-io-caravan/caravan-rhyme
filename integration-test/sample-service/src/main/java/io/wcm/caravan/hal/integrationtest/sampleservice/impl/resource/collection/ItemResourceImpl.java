@@ -26,9 +26,8 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
-import io.wcm.caravan.hal.api.common.EmbeddableResource;
-import io.wcm.caravan.hal.api.common.LinkableResource;
-import io.wcm.caravan.hal.api.server.jaxrs.AsyncHalResponseHandler;
+import io.wcm.caravan.hal.api.server.EmbeddableResource;
+import io.wcm.caravan.hal.api.server.LinkableResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
@@ -68,8 +67,15 @@ public class ItemResourceImpl implements ItemResource, LinkableResource, Embedda
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo(this)
-        .setTitle("The item with index " + index);
+    String title;
+    if (index != null) {
+      title = "The item with index " + index;
+    }
+    else {
+      title = "A link template to load an item with a specific index";
+    }
+
+    return context.buildLinkTo(this).setTitle(title);
   }
 
   @Override
@@ -84,7 +90,7 @@ public class ItemResourceImpl implements ItemResource, LinkableResource, Embedda
 
   @GET
   public void get(@Suspended AsyncResponse response) {
-    AsyncHalResponseHandler.respond(this, response);
+    context.respondWith(this, response);
   }
 
 }

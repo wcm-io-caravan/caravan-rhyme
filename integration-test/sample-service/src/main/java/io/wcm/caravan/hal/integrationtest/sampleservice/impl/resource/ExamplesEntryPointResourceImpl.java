@@ -25,8 +25,7 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
-import io.wcm.caravan.hal.api.common.LinkableResource;
-import io.wcm.caravan.hal.api.server.jaxrs.AsyncHalResponseHandler;
+import io.wcm.caravan.hal.api.server.LinkableResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
@@ -57,7 +56,7 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
 
   @GET
   public void get(@Suspended AsyncResponse response) {
-    AsyncHalResponseHandler.respond(this, response);
+    context.respondWith(this, response);
   }
 
 }

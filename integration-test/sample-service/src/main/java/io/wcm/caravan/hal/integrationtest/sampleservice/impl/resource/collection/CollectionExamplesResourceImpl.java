@@ -25,11 +25,11 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
-import io.wcm.caravan.hal.api.common.LinkableResource;
-import io.wcm.caravan.hal.api.server.jaxrs.AsyncHalResponseHandler;
+import io.wcm.caravan.hal.api.server.LinkableResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
@@ -56,6 +56,11 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
   }
 
   @Override
+  public Observable<ItemResource> getItemWithIndex(Integer index) {
+    return Observable.just(new ItemResourceImpl(context, null));
+  }
+
+  @Override
   public Observable<ExamplesEntryPointResource> getEntryPoint() {
     return Observable.just(new ExamplesEntryPointResourceImpl(context));
   }
@@ -69,7 +74,7 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
 
   @GET
   public void get(@Suspended AsyncResponse response) {
-    AsyncHalResponseHandler.respond(this, response);
+    context.respondWith(this, response);
   }
 
 

@@ -20,9 +20,10 @@
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
 
-import io.wcm.caravan.hal.api.common.LinkableResource;
+import io.wcm.caravan.hal.api.server.LinkableResource;
 import io.wcm.caravan.hal.api.server.jaxrs.JaxRsLinkBuilder;
 import io.wcm.caravan.hal.resource.Link;
 
@@ -30,16 +31,22 @@ import io.wcm.caravan.hal.resource.Link;
 public class ExampleServiceRequestContext {
 
   private final String contextPath;
+  private final ExampleServiceOsgiComponent osgiContext;
 
   public ExampleServiceRequestContext(@Context ExampleServiceOsgiComponent osgiContext) {
     this.contextPath = osgiContext.getContextPath();
+    this.osgiContext = osgiContext;
   }
 
   public Link buildLinkTo(LinkableResource targetResource) {
 
-    JaxRsLinkBuilder linkBuilder = new JaxRsLinkBuilder(contextPath, targetResource);
+    JaxRsLinkBuilder linkBuilder = new JaxRsLinkBuilder(contextPath);
 
-    return linkBuilder.build();
+    return linkBuilder.buildLinkTo(targetResource);
+  }
+
+  public void respondWith(LinkableResource resource, AsyncResponse response) {
+    osgiContext.getResponseHandler().respondWith(resource, response);
   }
 
   public String getContextPath() {

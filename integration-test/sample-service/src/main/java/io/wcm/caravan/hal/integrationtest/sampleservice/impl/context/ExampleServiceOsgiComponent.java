@@ -27,9 +27,11 @@ import javax.ws.rs.Path;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import com.google.common.collect.ImmutableList;
 
+import io.wcm.caravan.hal.api.server.jaxrs.AsyncHalResponseHandler;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ItemCollectionResourceImpl;
@@ -42,6 +44,9 @@ import io.wcm.caravan.jaxrs.publisher.JaxRsComponent;
 public class ExampleServiceOsgiComponent implements JaxRsComponent {
 
   private String contextPath;
+
+  @Reference
+  private AsyncHalResponseHandler responseHandler;
 
   @Activate
   void activate(BundleContext bundleCtx) {
@@ -57,5 +62,9 @@ public class ExampleServiceOsgiComponent implements JaxRsComponent {
 
   public String getContextPath() {
     return this.contextPath;
+  }
+
+  public AsyncHalResponseHandler getResponseHandler() {
+    return this.responseHandler;
   }
 }

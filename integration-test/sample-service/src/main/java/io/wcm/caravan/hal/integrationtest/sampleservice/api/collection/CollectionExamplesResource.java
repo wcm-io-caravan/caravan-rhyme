@@ -35,6 +35,9 @@ public interface CollectionExamplesResource {
   @RelatedResource(relation = StandardRelations.COLLECTION)
   Observable<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems);
 
+  @RelatedResource(relation = StandardRelations.ITEM)
+  Observable<ItemResource> getItemWithIndex(Integer index);
+
   @RelatedResource(relation = StandardRelations.INDEX)
   Observable<ExamplesEntryPointResource> getEntryPoint();
 }
