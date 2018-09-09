@@ -34,7 +34,7 @@
   <version>1-SNAPSHOT</version>
   <packaging>slingstart</packaging>
 
-  <name>JAX-RS Integration Test Launchpad Test</name>
+  <name>HAL JAX-RS Server Integration Test Launchpad</name>
   <description>
     Builds a bundle with Sling server-side tests, and executes them via
     a remote test proxy that runs in the integration-tests phase.
@@ -93,13 +93,13 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.hal.api-annotations</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.hal.api-client</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -117,7 +117,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.hal.integration-test.sample-service</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
