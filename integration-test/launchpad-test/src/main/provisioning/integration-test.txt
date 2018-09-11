@@ -12,6 +12,8 @@
   com.fasterxml.jackson.core/jackson-annotations
   com.fasterxml.jackson.core/jackson-databind
   commons-beanutils/commons-beanutils
+  javax.ws.rs/javax.ws.rs-api
+  javax.annotation/javax.annotation-api
   org.apache.commons/commons-lang3/3.3.2
   org.apache.httpcomponents/httpcore-osgi
   org.apache.httpcomponents/httpclient-osgi

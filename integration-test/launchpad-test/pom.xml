@@ -177,15 +177,22 @@
       <type>slingfeature</type>
       <scope>provided</scope>
     </dependency>
-    <dependency>
+   <dependency>
       <groupId>io.wcm.osgi.wrapper</groupId>
       <artifactId>io.wcm.osgi.wrapper.jersey</artifactId>
+      <version>2.27-0000</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.osgi.wrapper</groupId>
       <artifactId>io.wcm.osgi.wrapper.hibernate-validator</artifactId>
+      <version>5.4.2-0000</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.1</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
