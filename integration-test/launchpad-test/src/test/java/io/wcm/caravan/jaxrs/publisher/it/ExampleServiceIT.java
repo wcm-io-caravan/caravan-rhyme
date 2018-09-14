@@ -32,6 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.damnhandy.uri.template.UriTemplate;
@@ -52,6 +53,12 @@ public class ExampleServiceIT {
   private static final String SERVICE_ID = "/caravan/hal/sample-service";
   private static final String ITEM_COLLECTION_PATH = SERVICE_ID + "/collections/items";
   private static final String COLLECTION_EXAMPLES_PATH = SERVICE_ID + "/collections";
+
+  @BeforeClass
+  public static void waitForStartupToComplete() throws InterruptedException {
+    System.out.println("Waiting until startup is completed");
+    Thread.sleep(15000);
+  }
 
   @Test
   public void testInvalidPathNotFound() throws IOException {
