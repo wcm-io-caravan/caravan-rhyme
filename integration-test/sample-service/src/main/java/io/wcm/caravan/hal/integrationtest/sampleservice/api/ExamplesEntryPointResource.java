@@ -21,12 +21,13 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.api;
 
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
+import io.wcm.caravan.hal.api.annotations.StandardRelations;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
 import rx.Observable;
 
 @HalApiInterface
 public interface ExamplesEntryPointResource {
 
-  @RelatedResource(relation = ExampleServiceRelations.COLLECTIONS)
+  @RelatedResource(relation = StandardRelations.COLLECTION)
   Observable<CollectionExamplesResource> getCollectionExamples();
 }
