@@ -19,15 +19,15 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.api;
 
+import io.reactivex.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
 import io.wcm.caravan.hal.api.annotations.StandardRelations;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
-import rx.Observable;
 
 @HalApiInterface
 public interface ExamplesEntryPointResource {
 
   @RelatedResource(relation = StandardRelations.COLLECTION)
-  Observable<CollectionExamplesResource> getCollectionExamples();
+  Single<CollectionExamplesResource> getCollectionExamples();
 }

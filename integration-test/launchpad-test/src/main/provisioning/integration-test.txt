@@ -23,7 +23,9 @@
   org.codehaus.jackson/jackson-mapper-asl/1.9.13
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.jersey
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.hibernate-validator
+  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.reactive-streams
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava
+  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava2
   io.wcm.caravan/io.wcm.caravan.commons.httpasyncclient
   io.wcm.caravan/io.wcm.caravan.commons.httpclient
   io.wcm.caravan/io.wcm.caravan.commons.jsonpath

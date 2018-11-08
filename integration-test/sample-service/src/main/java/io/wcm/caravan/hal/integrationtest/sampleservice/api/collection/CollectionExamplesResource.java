@@ -19,25 +19,25 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.api.collection;
 
+import io.reactivex.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
 import io.wcm.caravan.hal.api.annotations.ResourceState;
 import io.wcm.caravan.hal.api.annotations.StandardRelations;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
-import rx.Observable;
 
 @HalApiInterface
 public interface CollectionExamplesResource {
 
   @ResourceState
-  Observable<TitledState> getState();
+  Single<TitledState> getState();
 
   @RelatedResource(relation = StandardRelations.COLLECTION)
-  Observable<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems);
+  Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems);
 
   @RelatedResource(relation = StandardRelations.ITEM)
-  Observable<ItemResource> getItemWithIndex(Integer index);
+  Single<ItemResource> getItemWithIndex(Integer index);
 
   @RelatedResource(relation = StandardRelations.INDEX)
-  Observable<ExamplesEntryPointResource> getEntryPoint();
+  Single<ExamplesEntryPointResource> getEntryPoint();
 }

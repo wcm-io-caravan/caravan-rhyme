@@ -28,6 +28,8 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.wcm.caravan.hal.api.server.LinkableResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
@@ -35,7 +37,6 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResou
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.resource.Link;
-import rx.Observable;
 
 /**
  * An example for a class that uses constructor injection of the context and parameters.
@@ -84,9 +85,9 @@ public class ItemCollectionResourceImpl implements ItemCollectionResource, Linka
   }
 
   @Override
-  public Observable<ExamplesEntryPointResource> getEntryPoint() {
+  public Single<ExamplesEntryPointResource> getEntryPoint() {
 
-    return Observable.just(new ExamplesEntryPointResourceImpl(context));
+    return Single.just(new ExamplesEntryPointResourceImpl(context));
   }
 
   @Override

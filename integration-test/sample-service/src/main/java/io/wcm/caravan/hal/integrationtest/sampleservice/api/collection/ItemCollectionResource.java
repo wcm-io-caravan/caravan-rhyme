@@ -19,11 +19,12 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.api.collection;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
 import io.wcm.caravan.hal.api.annotations.StandardRelations;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
-import rx.Observable;
 
 @HalApiInterface
 public interface ItemCollectionResource {
@@ -32,5 +33,5 @@ public interface ItemCollectionResource {
   Observable<ItemResource> getItems();
 
   @RelatedResource(relation = StandardRelations.INDEX)
-  Observable<ExamplesEntryPointResource> getEntryPoint();
+  Single<ExamplesEntryPointResource> getEntryPoint();
 }

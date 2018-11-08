@@ -25,6 +25,7 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
+import io.reactivex.Single;
 import io.wcm.caravan.hal.api.server.LinkableResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
@@ -34,7 +35,6 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledSta
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.resource.Link;
-import rx.Observable;
 
 @Path("/collections")
 public class CollectionExamplesResourceImpl implements CollectionExamplesResource, LinkableResource {
@@ -46,23 +46,23 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
   }
 
   @Override
-  public Observable<TitledState> getState() {
-    return Observable.just(new TitledState().withTitle("Das ist doch nur ein Test"));
+  public Single<TitledState> getState() {
+    return Single.just(new TitledState().withTitle("Das ist doch nur ein Test"));
   }
 
   @Override
-  public Observable<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems) {
-    return Observable.just(new ItemCollectionResourceImpl(context, numItems, embedItems));
+  public Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems) {
+    return Single.just(new ItemCollectionResourceImpl(context, numItems, embedItems));
   }
 
   @Override
-  public Observable<ItemResource> getItemWithIndex(Integer index) {
-    return Observable.just(new ItemResourceImpl(context, null));
+  public Single<ItemResource> getItemWithIndex(Integer index) {
+    return Single.just(new ItemResourceImpl(context, null));
   }
 
   @Override
-  public Observable<ExamplesEntryPointResource> getEntryPoint() {
-    return Observable.just(new ExamplesEntryPointResourceImpl(context));
+  public Single<ExamplesEntryPointResource> getEntryPoint() {
+    return Single.just(new ExamplesEntryPointResourceImpl(context));
   }
 
   @Override

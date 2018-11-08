@@ -19,13 +19,13 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.api.collection;
 
+import io.reactivex.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.ResourceState;
-import rx.Observable;
 
 @HalApiInterface
 public interface ItemResource {
 
   @ResourceState
-  Observable<ItemState> getProperties();
+  Single<ItemState> getProperties();
 }
