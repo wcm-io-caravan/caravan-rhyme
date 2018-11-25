@@ -26,15 +26,16 @@
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.reactive-streams
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava2
+  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava2-interop
   io.wcm.caravan/io.wcm.caravan.commons.httpasyncclient
   io.wcm.caravan/io.wcm.caravan.commons.httpclient
   io.wcm.caravan/io.wcm.caravan.commons.jsonpath
   io.wcm.caravan/io.wcm.caravan.commons.metrics
   io.wcm.caravan/io.wcm.caravan.commons.performance
   io.wcm.caravan/io.wcm.caravan.hal.resource
-  io.wcm.caravan/io.wcm.caravan.hal.api-annotations
-  io.wcm.caravan/io.wcm.caravan.hal.api-client
-  io.wcm.caravan/io.wcm.caravan.hal.jaxrs-server
+  io.wcm.caravan/io.wcm.caravan.hal.microservices.api-annotations
+  io.wcm.caravan/io.wcm.caravan.hal.microservices.caravan-jaxrs
+  io.wcm.caravan/io.wcm.caravan.hal.microservices.framework
   io.wcm.caravan/io.wcm.caravan.hal.integration-test.sample-service
   io.wcm.caravan/io.wcm.caravan.io.http
   io.wcm.caravan/io.wcm.caravan.jaxrs.publisher

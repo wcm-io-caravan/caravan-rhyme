@@ -25,7 +25,7 @@
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.hal.parent</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.3-SNAPSHOT</version>
     <relativePath>../../parent/pom.xml</relativePath>
   </parent>
 
@@ -91,19 +91,19 @@
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.api-annotations</artifactId>
+      <artifactId>io.wcm.caravan.hal.microservices.api-annotations</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.api-client</artifactId>
+      <artifactId>io.wcm.caravan.hal.microservices.framework</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.jaxrs-server</artifactId>
+      <artifactId>io.wcm.caravan.hal.microservices.caravan-jaxrs</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>

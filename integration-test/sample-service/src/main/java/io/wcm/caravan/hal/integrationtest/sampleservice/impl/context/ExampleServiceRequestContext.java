@@ -23,8 +23,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
 
-import io.wcm.caravan.hal.api.server.LinkableResource;
 import io.wcm.caravan.hal.api.server.jaxrs.JaxRsHalServerSupport;
+import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
 @Path("") // this annotation is important so that instances of this class can be injected into other resources using @Context
