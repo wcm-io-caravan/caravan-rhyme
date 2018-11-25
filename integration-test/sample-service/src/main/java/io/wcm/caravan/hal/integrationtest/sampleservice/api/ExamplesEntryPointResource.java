@@ -30,4 +30,7 @@ public interface ExamplesEntryPointResource {
 
   @RelatedResource(relation = StandardRelations.COLLECTION)
   Single<CollectionExamplesResource> getCollectionExamples();
+
+  @RelatedResource(relation = "example:consumer")
+  Single<CollectionExamplesResource> getConsumerExamples();
 }

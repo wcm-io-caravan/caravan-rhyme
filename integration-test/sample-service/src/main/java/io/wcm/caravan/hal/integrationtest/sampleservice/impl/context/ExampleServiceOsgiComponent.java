@@ -33,6 +33,9 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEn
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ItemCollectionResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ItemResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer.ConsumerCollectionResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer.ConsumerExamplesResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer.ConsumerItemResourceImpl;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsHalServerSupport;
 import io.wcm.caravan.jaxrs.publisher.JaxRsComponent;
 
@@ -46,12 +49,15 @@ public class ExampleServiceOsgiComponent implements JaxRsComponent {
   @Override
   public Collection<Class<?>> getChildComponentClasses() {
 
-    return ImmutableList.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class, CollectionExamplesResourceImpl.class,
-        ItemCollectionResourceImpl.class, ItemResourceImpl.class);
+    return ImmutableList.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class,
+        // /collections
+        CollectionExamplesResourceImpl.class, ItemCollectionResourceImpl.class, ItemResourceImpl.class,
+        // consumer,
+        ConsumerExamplesResourceImpl.class, ConsumerCollectionResourceImpl.class,
+        ConsumerItemResourceImpl.class);
   }
 
   public JaxRsHalServerSupport getHalSupport() {
-    return this.halSupport;
+    return halSupport;
   }
-
 }

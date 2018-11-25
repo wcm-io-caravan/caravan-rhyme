@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource;
+package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,36 +28,48 @@ import javax.ws.rs.core.Context;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer.ConsumerExamplesResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("")
-public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResource, LinkableResource {
+@Path("/consumer")
+public class ConsumerExamplesResourceImpl implements CollectionExamplesResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
 
-  public ExamplesEntryPointResourceImpl(@Context ExampleServiceRequestContext context) {
+  public ConsumerExamplesResourceImpl(@Context ExampleServiceRequestContext context) {
     this.context = context;
   }
 
   @Override
-  public Single<CollectionExamplesResource> getCollectionExamples() {
-    return Single.just(new CollectionExamplesResourceImpl(context));
+  public Single<TitledState> getState() {
+    return Single.just(new TitledState().withTitle("Das ist doch nur ein Test"));
   }
 
   @Override
-  public Single<CollectionExamplesResource> getConsumerExamples() {
-    return Single.just(new ConsumerExamplesResourceImpl(context));
+  public Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems) {
+    return Single.just(new ConsumerCollectionResourceImpl(context, numItems, embedItems));
+  }
+
+  @Override
+  public Single<ItemResource> getItemWithIndex(Integer index) {
+    return Single.just(new ConsumerItemResourceImpl(context, null));
+  }
+
+  @Override
+  public Single<ExamplesEntryPointResource> getEntryPoint() {
+    return Single.just(new ExamplesEntryPointResourceImpl(context));
   }
 
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo(this)
-        .setTitle("The HAL API entry point of the " + context.getContextPath() + " service");
+    return context.buildLinkTo(this).setTitle(
+        "Examples for resources that fetch and modify linked or embedded resources with the HalApiClient");
   }
 
   @GET

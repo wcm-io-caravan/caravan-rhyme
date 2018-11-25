@@ -23,17 +23,29 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
 
+import io.reactivex.Single;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
+import io.wcm.caravan.hal.microservices.api.common.RequestMetricsCollector;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsHalServerSupport;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("") // this annotation is important so that instances of this class can be injected into other resources using @Context
+@Path("") // this annotation is important so that instances of this class can be
+// injected into other resources using @Context
 public class ExampleServiceRequestContext {
+
+  private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
   private final JaxRsHalServerSupport halSupport;
 
+  private final Single<ExamplesEntryPointResource> upstreamEntryPoint;
+
   public ExampleServiceRequestContext(@Context ExampleServiceOsgiComponent osgiContext) {
     this.halSupport = osgiContext.getHalSupport();
+
+    String serviceId = halSupport.getContextPath();
+    this.upstreamEntryPoint = halSupport.getHalApiClient()
+        .getEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class, metrics).cache();
   }
 
   private JaxRsHalServerSupport getHalSupport() {
@@ -45,11 +57,15 @@ public class ExampleServiceRequestContext {
   }
 
   public void respondWith(LinkableResource resource, AsyncResponse response) {
-    getHalSupport().getResponseHandler().respondWith(resource, response);
+    getHalSupport().getResponseHandler().respondWith(resource, response, metrics);
   }
 
   public String getContextPath() {
     return getHalSupport().getContextPath();
+  }
+
+  public Single<ExamplesEntryPointResource> getUpstreamEntryPoint() {
+    return upstreamEntryPoint;
   }
 
 }
