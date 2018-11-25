@@ -29,11 +29,11 @@ import org.osgi.service.component.annotations.Reference;
 
 import com.google.common.collect.ImmutableList;
 
-import io.wcm.caravan.hal.api.server.jaxrs.JaxRsHalServerSupport;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ItemCollectionResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ItemResourceImpl;
+import io.wcm.caravan.hal.microservices.jaxrs.JaxRsHalServerSupport;
 import io.wcm.caravan.jaxrs.publisher.JaxRsComponent;
 
 @Component(service = JaxRsComponent.class, immediate = true)

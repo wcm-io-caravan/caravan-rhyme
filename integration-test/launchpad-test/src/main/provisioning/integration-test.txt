@@ -40,6 +40,7 @@
   io.wcm.caravan/io.wcm.caravan.io.http
   io.wcm.caravan/io.wcm.caravan.jaxrs.publisher
   io.wcm.caravan/io.wcm.caravan.pipeline.api
+  io.wcm.caravan/io.wcm.caravan.pipeline.impl
 
   # Metrics
   io.dropwizard.metrics/metrics-core

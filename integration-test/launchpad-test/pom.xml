@@ -130,6 +130,12 @@
       <version>0.7.0</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.pipeline.impl</artifactId>
+      <version>0.6.4</version>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- Apache HTTP Client -->
     <dependency>
