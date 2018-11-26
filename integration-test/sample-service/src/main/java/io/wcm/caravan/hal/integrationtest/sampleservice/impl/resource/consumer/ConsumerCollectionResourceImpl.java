@@ -66,10 +66,7 @@ public class ConsumerCollectionResourceImpl implements ItemCollectionResource, L
         .getCollectionExamples()
         .flatMap(res -> res.getCollection(numItems, embedItems, delayMs))
         .flatMapObservable(ItemCollectionResource::getItems)
-        // .flatMapSingle(ItemResource::getProperties) would be more straight forward here
-        // however, that will *not* fetch the ItemResources in parallel, hence the trick to convert
-        // to observable so that we can use .concatMapEager
-        .concatMapEager(item -> item.getProperties().toObservable())
+        .flatMapSingle(ItemResource::getProperties)
         .map(EmbeddedItemResourceImpl::new);
   }
 
