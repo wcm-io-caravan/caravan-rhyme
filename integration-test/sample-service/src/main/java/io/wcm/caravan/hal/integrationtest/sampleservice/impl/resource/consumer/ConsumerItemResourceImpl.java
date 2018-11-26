@@ -28,7 +28,6 @@ import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
 import io.reactivex.Single;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
@@ -59,8 +58,10 @@ public class ConsumerItemResourceImpl implements ItemResource, LinkableResource 
   @Override
   public Single<ItemState> getProperties() {
 
-    return context.getUpstreamEntryPoint().flatMap(ExamplesEntryPointResource::getCollectionExamples)
-        .flatMap(examples -> examples.getItemWithIndex(index, delayMs)).flatMap(ItemResource::getProperties);
+    return context.getUpstreamEntryPoint()
+        .getCollectionExamples()
+        .flatMap(examples -> examples.getItemWithIndex(index, delayMs))
+        .flatMap(ItemResource::getProperties);
   }
 
   @Override

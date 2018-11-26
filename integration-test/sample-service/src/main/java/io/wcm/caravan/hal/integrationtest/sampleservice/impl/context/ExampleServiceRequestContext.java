@@ -23,7 +23,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
 
-import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.microservices.api.common.RequestMetricsCollector;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
@@ -38,14 +37,14 @@ public class ExampleServiceRequestContext {
 
   private final JaxRsHalServerSupport halSupport;
 
-  private final Single<ExamplesEntryPointResource> upstreamEntryPoint;
+  private final ExamplesEntryPointResource upstreamEntryPoint;
 
   public ExampleServiceRequestContext(@Context ExampleServiceOsgiComponent osgiContext) {
     this.halSupport = osgiContext.getHalSupport();
 
     String serviceId = halSupport.getContextPath();
     this.upstreamEntryPoint = halSupport.getHalApiClient()
-        .getEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class, metrics).cache();
+        .getEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class, metrics);
   }
 
   private JaxRsHalServerSupport getHalSupport() {
@@ -64,7 +63,7 @@ public class ExampleServiceRequestContext {
     return getHalSupport().getContextPath();
   }
 
-  public Single<ExamplesEntryPointResource> getUpstreamEntryPoint() {
+  public ExamplesEntryPointResource getUpstreamEntryPoint() {
     return upstreamEntryPoint;
   }
 
