@@ -51,13 +51,13 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
   }
 
   @Override
-  public Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems) {
-    return Single.just(new ItemCollectionResourceImpl(context, numItems, embedItems));
+  public Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems, Integer delayMs) {
+    return Single.just(new ItemCollectionResourceImpl(context, numItems, embedItems, delayMs));
   }
 
   @Override
-  public Single<ItemResource> getItemWithIndex(Integer index) {
-    return Single.just(new ItemResourceImpl(context, null));
+  public Single<ItemResource> getItemWithIndex(Integer index, Integer delayMs) {
+    return Single.just(new ItemResourceImpl(context, index, delayMs));
   }
 
   @Override

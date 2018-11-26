@@ -57,16 +57,21 @@ public class ItemCollectionResourceImpl implements ItemCollectionResource, Linka
   @DefaultValue(value = "false")
   private Boolean embedItems;
 
+  @QueryParam("delayMs")
+  @DefaultValue(value = "0")
+  private Integer delayMs;
+
   public ItemCollectionResourceImpl() {
     // the parameterless constructor required for JAX-RS to instantiate this resource
   }
 
-  ItemCollectionResourceImpl(ExampleServiceRequestContext context, Integer numItems, Boolean embedItems) {
+  ItemCollectionResourceImpl(ExampleServiceRequestContext context, Integer numItems, Boolean embedItems, Integer delayMs) {
 
     // initialise only the variables that would otherwise be injected by Jax-RS
     this.context = context;
     this.numItems = numItems;
     this.embedItems = embedItems;
+    this.delayMs = delayMs;
 
     // then call the common init method for further initialisation
     this.init();
@@ -81,7 +86,7 @@ public class ItemCollectionResourceImpl implements ItemCollectionResource, Linka
   public Observable<ItemResource> getItems() {
 
     return Observable.range(0, numItems)
-        .map(index -> new ItemResourceImpl(context, index).setEmbedded(embedItems));
+        .map(index -> new ItemResourceImpl(context, index, delayMs).setEmbedded(embedItems));
   }
 
   @Override

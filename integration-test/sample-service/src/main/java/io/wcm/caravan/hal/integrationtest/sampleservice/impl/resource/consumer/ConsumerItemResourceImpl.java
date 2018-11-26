@@ -22,6 +22,7 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
@@ -46,17 +47,20 @@ public class ConsumerItemResourceImpl implements ItemResource, LinkableResource 
   private final ExampleServiceRequestContext context;
 
   private final Integer index;
+  private final Integer delayMs;
 
-  public ConsumerItemResourceImpl(@Context ExampleServiceRequestContext context, @PathParam("index") Integer index) {
+  public ConsumerItemResourceImpl(@Context ExampleServiceRequestContext context, @PathParam("index") Integer index,
+      @QueryParam("delayMs") Integer delayMs) {
     this.context = context;
     this.index = index;
+    this.delayMs = delayMs;
   }
 
   @Override
   public Single<ItemState> getProperties() {
 
     return context.getUpstreamEntryPoint().flatMap(ExamplesEntryPointResource::getCollectionExamples)
-        .flatMap(examples -> examples.getItemWithIndex(index)).flatMap(ItemResource::getProperties);
+        .flatMap(examples -> examples.getItemWithIndex(index, delayMs)).flatMap(ItemResource::getProperties);
   }
 
   @Override

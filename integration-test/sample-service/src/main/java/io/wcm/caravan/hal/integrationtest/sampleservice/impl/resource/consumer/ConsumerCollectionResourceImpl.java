@@ -45,14 +45,17 @@ public class ConsumerCollectionResourceImpl implements ItemCollectionResource, L
   private final ExampleServiceRequestContext context;
 
   private final Integer numItems;
+  private final Integer delayMs;
   private final Boolean embedItems;
 
   ConsumerCollectionResourceImpl(@Context ExampleServiceRequestContext context,
       @QueryParam("numItems") @DefaultValue(value = "0") Integer numItems,
-      @QueryParam("embedItems") @DefaultValue(value = "false") Boolean embedItems) {
+      @QueryParam("embedItems") @DefaultValue(value = "false") Boolean embedItems,
+      @QueryParam("delayMs") @DefaultValue(value = "0") Integer delayMs) {
 
     this.context = context;
     this.numItems = numItems;
+    this.delayMs = delayMs;
     this.embedItems = embedItems;
   }
 
@@ -60,7 +63,7 @@ public class ConsumerCollectionResourceImpl implements ItemCollectionResource, L
   public Observable<ItemResource> getItems() {
 
     return context.getUpstreamEntryPoint().flatMap(ExamplesEntryPointResource::getCollectionExamples)
-        .flatMap(res -> res.getCollection(numItems, embedItems))
+        .flatMap(res -> res.getCollection(numItems, embedItems, delayMs))
         .flatMapObservable(ItemCollectionResource::getItems).concatMapSingle(ItemResource::getProperties)
         .map(EmbeddedItemResourceImpl::new);
   }

@@ -51,13 +51,13 @@ public class ConsumerExamplesResourceImpl implements CollectionExamplesResource,
   }
 
   @Override
-  public Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems) {
-    return Single.just(new ConsumerCollectionResourceImpl(context, numItems, embedItems));
+  public Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems, Integer delayMs) {
+    return Single.just(new ConsumerCollectionResourceImpl(context, numItems, embedItems, delayMs));
   }
 
   @Override
-  public Single<ItemResource> getItemWithIndex(Integer index) {
-    return Single.just(new ConsumerItemResourceImpl(context, null));
+  public Single<ItemResource> getItemWithIndex(Integer index, Integer delayMs) {
+    return Single.just(new ConsumerItemResourceImpl(context, index, delayMs));
   }
 
   @Override

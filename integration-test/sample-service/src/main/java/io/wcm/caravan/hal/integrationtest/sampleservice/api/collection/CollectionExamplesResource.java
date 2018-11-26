@@ -33,10 +33,10 @@ public interface CollectionExamplesResource {
   Single<TitledState> getState();
 
   @RelatedResource(relation = StandardRelations.COLLECTION)
-  Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems);
+  Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems, Integer delayMs);
 
   @RelatedResource(relation = StandardRelations.ITEM)
-  Single<ItemResource> getItemWithIndex(Integer index);
+  Single<ItemResource> getItemWithIndex(Integer index, Integer delayMs);
 
   @RelatedResource(relation = StandardRelations.INDEX)
   Single<ExamplesEntryPointResource> getEntryPoint();

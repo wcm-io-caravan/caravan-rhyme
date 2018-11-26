@@ -19,9 +19,12 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
@@ -46,12 +49,14 @@ public class ItemResourceImpl implements ItemResource, LinkableResource, Embedda
   private final ExampleServiceRequestContext context;
 
   private final Integer index;
+  private final Integer delayMs;
 
   private boolean embedded;
 
-  public ItemResourceImpl(@Context ExampleServiceRequestContext context, @PathParam("index") Integer index) {
+  public ItemResourceImpl(@Context ExampleServiceRequestContext context, @PathParam("index") Integer index, @QueryParam("delayMs") Integer delayMs) {
     this.context = context;
     this.index = index;
+    this.delayMs = delayMs;
   }
 
   @Override
@@ -61,7 +66,12 @@ public class ItemResourceImpl implements ItemResource, LinkableResource, Embedda
     item.index = index;
     item.uuid = null;
 
-    return Single.just(item);
+    Single<ItemState> properties = Single.just(item);
+    if (delayMs != null) {
+      properties = properties.delay(delayMs, TimeUnit.MILLISECONDS);
+    }
+
+    return properties;
   }
 
   @Override
@@ -70,6 +80,9 @@ public class ItemResourceImpl implements ItemResource, LinkableResource, Embedda
     String title;
     if (index != null) {
       title = "The item with index " + index;
+      if (delayMs != null) {
+        title += " delay by " + delayMs + "ms";
+      }
     }
     else {
       title = "A link template to load an item with a specific index";
