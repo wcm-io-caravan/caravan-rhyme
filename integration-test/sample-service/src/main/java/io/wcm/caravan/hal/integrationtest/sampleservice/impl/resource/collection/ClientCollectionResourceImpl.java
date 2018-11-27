@@ -30,6 +30,7 @@ import javax.ws.rs.core.Context;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
@@ -60,18 +61,25 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
   }
 
   @Override
-  public Single<ItemCollectionResource> getAlternate(Boolean embedItems) {
-    return Single.just(new ClientCollectionResourceImpl(context, numItems, null, delayMs));
+  public Single<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
+    return Single.just(new ClientCollectionResourceImpl(context, numItems, shouldEmbedItems, delayMs));
   }
 
   @Override
   public Observable<ItemResource> getItems() {
 
+    CollectionParameters params = new CollectionParameters();
+    params.numItems = numItems;
+    params.delayMs = delayMs;
+    params.embedItems = embedItems;
+
     return context.getUpstreamEntryPoint()
         .getCollectionExamples()
-        .flatMap(res -> res.getCollection(numItems, embedItems, delayMs))
+        .flatMap(res -> res.getCollection(params))
         .flatMapObservable(ItemCollectionResource::getItems)
-        .flatMapSingle(ItemResource::getProperties)
+        // using .concatMapSingle here would be more straight forward, but it would lead to the resources
+        // being loaded in parallel (while concatMapEager will subscribe to all of them asap)
+        .concatMapEager(item -> item.getProperties().toObservable())
         .map(EmbeddedItemResourceImpl::new);
   }
 

@@ -28,6 +28,7 @@ import javax.ws.rs.core.Context;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
@@ -51,8 +52,8 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
   }
 
   @Override
-  public Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems, Integer delayMs) {
-    return Single.just(new DelayableCollectionResourceImpl(context, numItems, embedItems, delayMs));
+  public Single<ItemCollectionResource> getCollection(CollectionParameters params) {
+    return Single.just(new DelayableCollectionResourceImpl(context, null, null, null));
   }
 
   @Override
@@ -61,12 +62,12 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
   }
 
   @Override
-  public Single<ItemCollectionResource> getCollectionThroughClient(Integer numItems, Boolean embedItems, Integer delayMs) {
-    return Single.just(new ClientCollectionResourceImpl(context, numItems, embedItems, delayMs));
+  public Single<ItemCollectionResource> getCollectionThroughClient(CollectionParameters params) {
+    return Single.just(new ClientCollectionResourceImpl(context, null, null, null));
   }
 
   @Override
-  public Single<ItemResource> getItemFThroughClient(Integer index, Integer delayMs) {
+  public Single<ItemResource> getItemThroughClient(Integer index, Integer delayMs) {
     return Single.just(new ClientItemResourceImpl(context, index, delayMs));
   }
 

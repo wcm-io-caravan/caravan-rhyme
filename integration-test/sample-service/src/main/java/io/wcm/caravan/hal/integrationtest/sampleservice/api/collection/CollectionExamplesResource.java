@@ -34,10 +34,7 @@ public interface CollectionExamplesResource {
   Single<TitledState> getState();
 
   @RelatedResource(relation = StandardRelations.COLLECTION)
-  Single<ItemCollectionResource> getCollection(
-      @TemplateVariable("numItems") Integer numItems,
-      @TemplateVariable("embedItems") Boolean embedItems,
-      @TemplateVariable("delayMs") Integer delayMs);
+  Single<ItemCollectionResource> getCollection(CollectionParameters options);
 
   @RelatedResource(relation = StandardRelations.ITEM)
   Single<ItemResource> getItem(
@@ -45,13 +42,10 @@ public interface CollectionExamplesResource {
       @TemplateVariable("delayMs") Integer delayMs);
 
   @RelatedResource(relation = "client:collection")
-  Single<ItemCollectionResource> getCollectionThroughClient(
-      @TemplateVariable("numItems") Integer numItems,
-      @TemplateVariable("embedItems") Boolean embedItems,
-      @TemplateVariable("delayMs") Integer delayMs);
+  Single<ItemCollectionResource> getCollectionThroughClient(CollectionParameters options);
 
   @RelatedResource(relation = "client:item")
-  Single<ItemResource> getItemFThroughClient(
+  Single<ItemResource> getItemThroughClient(
       @TemplateVariable("index") Integer index,
       @TemplateVariable("delayMs") Integer delayMs);
 
