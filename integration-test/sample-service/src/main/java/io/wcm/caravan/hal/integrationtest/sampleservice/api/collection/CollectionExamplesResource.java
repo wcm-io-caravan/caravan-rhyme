@@ -40,7 +40,18 @@ public interface CollectionExamplesResource {
       @TemplateVariable("delayMs") Integer delayMs);
 
   @RelatedResource(relation = StandardRelations.ITEM)
-  Single<ItemResource> getItemWithIndex(
+  Single<ItemResource> getItem(
+      @TemplateVariable("index") Integer index,
+      @TemplateVariable("delayMs") Integer delayMs);
+
+  @RelatedResource(relation = "client:collection")
+  Single<ItemCollectionResource> getCollectionThroughClient(
+      @TemplateVariable("numItems") Integer numItems,
+      @TemplateVariable("embedItems") Boolean embedItems,
+      @TemplateVariable("delayMs") Integer delayMs);
+
+  @RelatedResource(relation = "client:item")
+  Single<ItemResource> getItemFThroughClient(
       @TemplateVariable("index") Integer index,
       @TemplateVariable("delayMs") Integer delayMs);
 

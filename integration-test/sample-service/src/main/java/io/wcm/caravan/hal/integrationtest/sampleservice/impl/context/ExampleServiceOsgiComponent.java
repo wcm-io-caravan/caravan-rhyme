@@ -30,12 +30,11 @@ import org.osgi.service.component.annotations.Reference;
 import com.google.common.collect.ImmutableList;
 
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ClientItemResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ItemCollectionResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ItemResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer.ConsumerCollectionResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer.ConsumerExamplesResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer.ConsumerItemResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.DelayableCollectionResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.DelayableItemResourceImpl;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsHalServerSupport;
 import io.wcm.caravan.jaxrs.publisher.JaxRsComponent;
 
@@ -50,11 +49,9 @@ public class ExampleServiceOsgiComponent implements JaxRsComponent {
   public Collection<Class<?>> getChildComponentClasses() {
 
     return ImmutableList.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class,
-        // /collections
-        CollectionExamplesResourceImpl.class, ItemCollectionResourceImpl.class, ItemResourceImpl.class,
-        // consumer,
-        ConsumerExamplesResourceImpl.class, ConsumerCollectionResourceImpl.class,
-        ConsumerItemResourceImpl.class);
+        // collections
+        CollectionExamplesResourceImpl.class, DelayableCollectionResourceImpl.class, DelayableItemResourceImpl.class,
+        ClientCollectionResourceImpl.class, ClientItemResourceImpl.class);
   }
 
   public JaxRsHalServerSupport getHalSupport() {

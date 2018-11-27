@@ -22,6 +22,8 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.api.collection;
 
 public class ItemState {
 
+  public String title;
+
   public int index;
 
   public String uuid;

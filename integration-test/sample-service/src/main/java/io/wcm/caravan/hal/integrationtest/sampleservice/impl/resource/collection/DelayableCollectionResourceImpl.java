@@ -44,7 +44,7 @@ import io.wcm.caravan.hal.resource.Link;
  * the disadvantage is that you need multiple constructors, a common init method and cannot use final fields
  */
 @Path("/collections/items")
-public class ItemCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
+public class DelayableCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
   @Context
   private ExampleServiceRequestContext context;
@@ -61,11 +61,11 @@ public class ItemCollectionResourceImpl implements ItemCollectionResource, Linka
   @DefaultValue(value = "0")
   private Integer delayMs;
 
-  public ItemCollectionResourceImpl() {
+  public DelayableCollectionResourceImpl() {
     // the parameterless constructor required for JAX-RS to instantiate this resource
   }
 
-  ItemCollectionResourceImpl(ExampleServiceRequestContext context, Integer numItems, Boolean embedItems, Integer delayMs) {
+  DelayableCollectionResourceImpl(ExampleServiceRequestContext context, Integer numItems, Boolean embedItems, Integer delayMs) {
 
     // initialise only the variables that would otherwise be injected by Jax-RS
     this.context = context;
@@ -83,10 +83,15 @@ public class ItemCollectionResourceImpl implements ItemCollectionResource, Linka
   }
 
   @Override
+  public Single<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
+    return Single.just(new DelayableCollectionResourceImpl(context, numItems, shouldEmbedItems, delayMs));
+  }
+
+  @Override
   public Observable<ItemResource> getItems() {
 
     return Observable.range(0, numItems)
-        .map(index -> new ItemResourceImpl(context, index, delayMs).setEmbedded(embedItems));
+        .map(index -> new DelayableItemResourceImpl(context, index, delayMs).setEmbedded(embedItems));
   }
 
   @Override
@@ -102,8 +107,14 @@ public class ItemCollectionResourceImpl implements ItemCollectionResource, Linka
     if (numItems == null && embedItems == null) {
       title = "A link template that allows to specify the number of items in the collection, and whether you want the items to be embedded";
     }
+    else if (embedItems == null) {
+      title = "Choose whether the items should be embedded in the collection (or only linked)";
+    }
     else {
       title = "A collection of " + numItems + " " + (embedItems ? "embedded" : "linked") + " item resources";
+      if (delayMs > 0) {
+        title += " where each item is generated with a simulated delay of " + delayMs + "ms";
+      }
     }
 
     return context.buildLinkTo(this)
@@ -114,5 +125,6 @@ public class ItemCollectionResourceImpl implements ItemCollectionResource, Linka
   public void get(@Suspended AsyncResponse response) {
     context.respondWith(this, response);
   }
+
 
 }

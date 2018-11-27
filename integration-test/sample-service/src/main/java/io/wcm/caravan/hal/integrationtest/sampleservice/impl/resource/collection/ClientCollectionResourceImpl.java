@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.consumer;
+package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -39,8 +39,8 @@ import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/consumer/items")
-public class ConsumerCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
+@Path("/collection/client/items")
+public class ClientCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
 
@@ -48,7 +48,7 @@ public class ConsumerCollectionResourceImpl implements ItemCollectionResource, L
   private final Integer delayMs;
   private final Boolean embedItems;
 
-  ConsumerCollectionResourceImpl(@Context ExampleServiceRequestContext context,
+  public ClientCollectionResourceImpl(@Context ExampleServiceRequestContext context,
       @QueryParam("numItems") @DefaultValue(value = "0") Integer numItems,
       @QueryParam("embedItems") @DefaultValue(value = "false") Boolean embedItems,
       @QueryParam("delayMs") @DefaultValue(value = "0") Integer delayMs) {
@@ -57,6 +57,11 @@ public class ConsumerCollectionResourceImpl implements ItemCollectionResource, L
     this.numItems = numItems;
     this.delayMs = delayMs;
     this.embedItems = embedItems;
+  }
+
+  @Override
+  public Single<ItemCollectionResource> getAlternate(Boolean embedItems) {
+    return Single.just(new ClientCollectionResourceImpl(context, numItems, null, delayMs));
   }
 
   @Override
@@ -81,10 +86,18 @@ public class ConsumerCollectionResourceImpl implements ItemCollectionResource, L
 
     String title;
     if (numItems == null && embedItems == null) {
-      title = "A link template that allows to specify the number of items in the collection, and whether you want the items to be embedded";
+      title = "Load a collection through the HalApiClient, and simulate a delay for each item on the server-side";
+    }
+    else if (embedItems == null) {
+      title = "Choose whether the items should already be embedded on the server-side";
     }
     else {
-      title = "A collection of " + numItems + " " + (embedItems ? "embedded" : "linked") + " item resources";
+      title = "A collection of " + numItems + " " + " item resources that were fetched from "
+          + (embedItems ? "embedded" : "linked") + " resources";
+
+      if (delayMs > 0) {
+        title += " with a server-side delay of " + delayMs + "ms";
+      }
     }
 
     return context.buildLinkTo(this).setTitle(title);
@@ -113,4 +126,5 @@ public class ConsumerCollectionResourceImpl implements ItemCollectionResource, L
       return true;
     }
   }
+
 }

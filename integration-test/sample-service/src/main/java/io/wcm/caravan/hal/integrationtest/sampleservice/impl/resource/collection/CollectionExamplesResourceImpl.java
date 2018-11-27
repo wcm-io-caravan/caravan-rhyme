@@ -47,17 +47,27 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
 
   @Override
   public Single<TitledState> getState() {
-    return Single.just(new TitledState().withTitle("Das ist doch nur ein Test"));
+    return Single.just(new TitledState());
   }
 
   @Override
   public Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems, Integer delayMs) {
-    return Single.just(new ItemCollectionResourceImpl(context, numItems, embedItems, delayMs));
+    return Single.just(new DelayableCollectionResourceImpl(context, numItems, embedItems, delayMs));
   }
 
   @Override
-  public Single<ItemResource> getItemWithIndex(Integer index, Integer delayMs) {
-    return Single.just(new ItemResourceImpl(context, index, delayMs));
+  public Single<ItemResource> getItem(Integer index, Integer delayMs) {
+    return Single.just(new DelayableItemResourceImpl(context, index, delayMs));
+  }
+
+  @Override
+  public Single<ItemCollectionResource> getCollectionThroughClient(Integer numItems, Boolean embedItems, Integer delayMs) {
+    return Single.just(new ClientCollectionResourceImpl(context, numItems, embedItems, delayMs));
+  }
+
+  @Override
+  public Single<ItemResource> getItemFThroughClient(Integer index, Integer delayMs) {
+    return Single.just(new ClientItemResourceImpl(context, index, delayMs));
   }
 
   @Override

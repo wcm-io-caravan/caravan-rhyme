@@ -24,10 +24,14 @@ import io.reactivex.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
 import io.wcm.caravan.hal.api.annotations.StandardRelations;
+import io.wcm.caravan.hal.api.annotations.TemplateVariable;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 
 @HalApiInterface
 public interface ItemCollectionResource {
+
+  @RelatedResource(relation = StandardRelations.ALTERNATE)
+  Single<ItemCollectionResource> getAlternate(@TemplateVariable("embedItems") Boolean embedItems);
 
   @RelatedResource(relation = StandardRelations.ITEM)
   Observable<ItemResource> getItems();
