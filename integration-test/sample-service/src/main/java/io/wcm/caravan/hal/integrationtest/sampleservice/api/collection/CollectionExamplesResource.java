@@ -24,6 +24,7 @@ import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
 import io.wcm.caravan.hal.api.annotations.ResourceState;
 import io.wcm.caravan.hal.api.annotations.StandardRelations;
+import io.wcm.caravan.hal.api.annotations.TemplateVariable;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 
 @HalApiInterface
@@ -33,10 +34,15 @@ public interface CollectionExamplesResource {
   Single<TitledState> getState();
 
   @RelatedResource(relation = StandardRelations.COLLECTION)
-  Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems, Integer delayMs);
+  Single<ItemCollectionResource> getCollection(
+      @TemplateVariable("numItems") Integer numItems,
+      @TemplateVariable("embedItems") Boolean embedItems,
+      @TemplateVariable("delayMs") Integer delayMs);
 
   @RelatedResource(relation = StandardRelations.ITEM)
-  Single<ItemResource> getItemWithIndex(Integer index, Integer delayMs);
+  Single<ItemResource> getItemWithIndex(
+      @TemplateVariable("index") Integer index,
+      @TemplateVariable("delayMs") Integer delayMs);
 
   @RelatedResource(relation = StandardRelations.INDEX)
   Single<ExamplesEntryPointResource> getEntryPoint();

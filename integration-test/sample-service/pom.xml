@@ -51,12 +51,6 @@
   <dependencies>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.api-client</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.hal.microservices.api-annotations</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>compile</scope>
@@ -124,17 +118,6 @@
           <instructions>
             <Caravan-JaxRs-ApplicationPath>/caravan/hal/sample-service</Caravan-JaxRs-ApplicationPath>
           </instructions>
-        </configuration>
-      </plugin>
-
-      <!-- ensure that parameter names are not stripped out from the class files, so they are available via reflection -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <compilerArgs>
-            <arg>-parameters</arg>
-          </compilerArgs>
         </configuration>
       </plugin>
     </plugins>
