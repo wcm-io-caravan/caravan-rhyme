@@ -29,7 +29,6 @@ import javax.ws.rs.core.Context;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
@@ -44,10 +43,10 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
   private final ExampleServiceRequestContext context;
 
-  private final CollectionParameters params;
+  private final CollectionParametersImpl params;
 
   public ClientCollectionResourceImpl(@Context ExampleServiceRequestContext context,
-      @BeanParam CollectionParameters parameters) {
+      @BeanParam CollectionParametersImpl parameters) {
 
     this.context = context;
     this.params = parameters;
@@ -56,12 +55,7 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
   @Override
   public Single<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
 
-    CollectionParameters alternateParams = new CollectionParameters();
-    alternateParams.numItems = params.numItems;
-    alternateParams.embedItems = shouldEmbedItems;
-    alternateParams.delayMs = params.delayMs;
-
-    return Single.just(new ClientCollectionResourceImpl(context, alternateParams));
+    return Single.just(new ClientCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
   }
 
   @Override
@@ -90,15 +84,15 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
     if (params == null) {
       title = "Load a collection through the HalApiClient, and simulate a delay for each item on the server-side";
     }
-    else if (params.embedItems == null) {
+    else if (params.getEmbedItems() == null) {
       title = "Choose whether the items should already be embedded on the server-side";
     }
     else {
-      title = "A collection of " + params.numItems + " " + " item resources that were fetched from "
-          + (params.embedItems ? "embedded" : "linked") + " resources";
+      title = "A collection of " + params.getNumItems() + " " + " item resources that were fetched from "
+          + (params.getEmbedItems() ? "embedded" : "linked") + " resources";
 
-      if (params.delayMs > 0) {
-        title += " with a server-side delay of " + params.delayMs + "ms";
+      if (params.getDelayMs() > 0) {
+        title += " with a server-side delay of " + params.getDelayMs() + "ms";
       }
     }
 

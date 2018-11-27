@@ -30,7 +30,6 @@ import javax.ws.rs.core.Context;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
@@ -50,13 +49,13 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
   private ExampleServiceRequestContext context;
 
   @BeanParam
-  private CollectionParameters params;
+  private CollectionParametersImpl params;
 
   public DelayableCollectionResourceImpl() {
     // the parameterless constructor required for JAX-RS to instantiate this resource
   }
 
-  DelayableCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParameters parameters) {
+  DelayableCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
 
     // initialise only the variables that would otherwise be injected by Jax-RS
     this.context = context;
@@ -73,20 +72,14 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
 
   @Override
   public Single<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
-
-    CollectionParameters alternateParams = new CollectionParameters();
-    alternateParams.numItems = params.numItems;
-    alternateParams.embedItems = shouldEmbedItems;
-    alternateParams.delayMs = params.delayMs;
-
-    return Single.just(new DelayableCollectionResourceImpl(context, alternateParams));
+    return Single.just(new DelayableCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
   }
 
   @Override
   public Observable<ItemResource> getItems() {
 
-    return Observable.range(0, params.numItems)
-        .map(index -> new DelayableItemResourceImpl(context, index, params.delayMs).setEmbedded(params.embedItems));
+    return Observable.range(0, params.getNumItems())
+        .map(index -> new DelayableItemResourceImpl(context, index, params.getDelayMs()).setEmbedded(params.getEmbedItems()));
   }
 
   @Override
@@ -102,13 +95,13 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
     if (params == null) {
       title = "A link template that allows to specify the number of items in the collection, and whether you want the items to be embedded";
     }
-    else if (params.embedItems == null) {
+    else if (params.getEmbedItems() == null) {
       title = "Choose whether the items should be embedded in the collection (or only linked)";
     }
     else {
-      title = "A collection of " + params.numItems + " " + (params.embedItems ? "embedded" : "linked") + " item resources";
-      if (params.delayMs > 0) {
-        title += " where each item is generated with a simulated delay of " + params.delayMs + "ms";
+      title = "A collection of " + params.getNumItems() + " " + (params.getEmbedItems() ? "embedded" : "linked") + " item resources";
+      if (params.getDelayMs() > 0) {
+        title += " where each item is generated with a simulated delay of " + params.getDelayMs() + "ms";
       }
     }
 

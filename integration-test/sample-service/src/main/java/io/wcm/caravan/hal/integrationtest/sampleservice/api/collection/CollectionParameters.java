@@ -19,23 +19,14 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.api.collection;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
-
 import io.wcm.caravan.hal.api.annotations.TemplateVariables;
 
 @TemplateVariables
-public class CollectionParameters {
+public interface CollectionParameters {
 
-  @QueryParam("numItems")
-  @DefaultValue(value = "0")
-  public Integer numItems;
+  Integer getNumItems();
 
-  @QueryParam("embedItems")
-  @DefaultValue(value = "false")
-  public Boolean embedItems;
+  Boolean getEmbedItems();
 
-  @QueryParam("delayMs")
-  @DefaultValue(value = "0")
-  public Integer delayMs;
+  Integer getDelayMs();
 }
