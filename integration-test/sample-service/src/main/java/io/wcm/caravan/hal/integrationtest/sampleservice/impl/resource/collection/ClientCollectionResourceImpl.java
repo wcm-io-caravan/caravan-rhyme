@@ -65,9 +65,6 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
         .getCollectionExamples()
         .flatMap(res -> res.getCollection(params))
         .flatMapObservable(ItemCollectionResource::getItems)
-        // using .concatMapSingle here would be more straight forward, but it would lead to the resources
-        // being loaded in parallel (while concatMapEager will subscribe to all of them asap)
-        .concatMapEager(item -> item.getProperties().toObservable())
         .map(EmbeddedItemResourceImpl::new);
   }
 
@@ -106,15 +103,15 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
   private static class EmbeddedItemResourceImpl implements ItemResource, EmbeddableResource {
 
-    private final ItemState state;
+    private final ItemResource resource;
 
-    EmbeddedItemResourceImpl(ItemState state) {
-      this.state = state;
+    EmbeddedItemResourceImpl(ItemResource resource) {
+      this.resource = resource;
     }
 
     @Override
     public Single<ItemState> getProperties() {
-      return Single.just(state);
+      return resource.getProperties();
     }
 
     @Override
