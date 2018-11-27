@@ -53,7 +53,7 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
 
   @Override
   public Single<ItemCollectionResource> getCollection(CollectionParameters params) {
-    return Single.just(new DelayableCollectionResourceImpl(context, null, null, null));
+    return Single.just(new DelayableCollectionResourceImpl(context, params));
   }
 
   @Override
@@ -63,7 +63,7 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
 
   @Override
   public Single<ItemCollectionResource> getCollectionThroughClient(CollectionParameters params) {
-    return Single.just(new ClientCollectionResourceImpl(context, null, null, null));
+    return Single.just(new ClientCollectionResourceImpl(context, params));
   }
 
   @Override

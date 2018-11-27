@@ -20,10 +20,9 @@
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
 import javax.annotation.PostConstruct;
-import javax.ws.rs.DefaultValue;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
@@ -31,6 +30,7 @@ import javax.ws.rs.core.Context;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
@@ -49,29 +49,18 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
   @Context
   private ExampleServiceRequestContext context;
 
-  @QueryParam("numItems")
-  @DefaultValue(value = "0")
-  private Integer numItems;
-
-  @QueryParam("embedItems")
-  @DefaultValue(value = "false")
-  private Boolean embedItems;
-
-  @QueryParam("delayMs")
-  @DefaultValue(value = "0")
-  private Integer delayMs;
+  @BeanParam
+  private CollectionParameters params;
 
   public DelayableCollectionResourceImpl() {
     // the parameterless constructor required for JAX-RS to instantiate this resource
   }
 
-  DelayableCollectionResourceImpl(ExampleServiceRequestContext context, Integer numItems, Boolean embedItems, Integer delayMs) {
+  DelayableCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParameters parameters) {
 
     // initialise only the variables that would otherwise be injected by Jax-RS
     this.context = context;
-    this.numItems = numItems;
-    this.embedItems = embedItems;
-    this.delayMs = delayMs;
+    this.params = parameters;
 
     // then call the common init method for further initialisation
     this.init();
@@ -84,14 +73,20 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
 
   @Override
   public Single<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
-    return Single.just(new DelayableCollectionResourceImpl(context, numItems, shouldEmbedItems, delayMs));
+
+    CollectionParameters alternateParams = new CollectionParameters();
+    alternateParams.numItems = params.numItems;
+    alternateParams.embedItems = shouldEmbedItems;
+    alternateParams.delayMs = params.delayMs;
+
+    return Single.just(new DelayableCollectionResourceImpl(context, alternateParams));
   }
 
   @Override
   public Observable<ItemResource> getItems() {
 
-    return Observable.range(0, numItems)
-        .map(index -> new DelayableItemResourceImpl(context, index, delayMs).setEmbedded(embedItems));
+    return Observable.range(0, params.numItems)
+        .map(index -> new DelayableItemResourceImpl(context, index, params.delayMs).setEmbedded(params.embedItems));
   }
 
   @Override
@@ -104,16 +99,16 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
   public Link createLink() {
 
     String title;
-    if (numItems == null && embedItems == null) {
+    if (params == null) {
       title = "A link template that allows to specify the number of items in the collection, and whether you want the items to be embedded";
     }
-    else if (embedItems == null) {
+    else if (params.embedItems == null) {
       title = "Choose whether the items should be embedded in the collection (or only linked)";
     }
     else {
-      title = "A collection of " + numItems + " " + (embedItems ? "embedded" : "linked") + " item resources";
-      if (delayMs > 0) {
-        title += " where each item is generated with a simulated delay of " + delayMs + "ms";
+      title = "A collection of " + params.numItems + " " + (params.embedItems ? "embedded" : "linked") + " item resources";
+      if (params.delayMs > 0) {
+        title += " where each item is generated with a simulated delay of " + params.delayMs + "ms";
       }
     }
 

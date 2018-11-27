@@ -19,10 +19,9 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
-import javax.ws.rs.DefaultValue;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
@@ -45,33 +44,28 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
   private final ExampleServiceRequestContext context;
 
-  private final Integer numItems;
-  private final Integer delayMs;
-  private final Boolean embedItems;
+  private final CollectionParameters params;
 
   public ClientCollectionResourceImpl(@Context ExampleServiceRequestContext context,
-      @QueryParam("numItems") @DefaultValue(value = "0") Integer numItems,
-      @QueryParam("embedItems") @DefaultValue(value = "false") Boolean embedItems,
-      @QueryParam("delayMs") @DefaultValue(value = "0") Integer delayMs) {
+      @BeanParam CollectionParameters parameters) {
 
     this.context = context;
-    this.numItems = numItems;
-    this.delayMs = delayMs;
-    this.embedItems = embedItems;
+    this.params = parameters;
   }
 
   @Override
   public Single<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
-    return Single.just(new ClientCollectionResourceImpl(context, numItems, shouldEmbedItems, delayMs));
+
+    CollectionParameters alternateParams = new CollectionParameters();
+    alternateParams.numItems = params.numItems;
+    alternateParams.embedItems = shouldEmbedItems;
+    alternateParams.delayMs = params.delayMs;
+
+    return Single.just(new ClientCollectionResourceImpl(context, alternateParams));
   }
 
   @Override
   public Observable<ItemResource> getItems() {
-
-    CollectionParameters params = new CollectionParameters();
-    params.numItems = numItems;
-    params.delayMs = delayMs;
-    params.embedItems = embedItems;
 
     return context.getUpstreamEntryPoint()
         .getCollectionExamples()
@@ -93,18 +87,18 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
   public Link createLink() {
 
     String title;
-    if (numItems == null && embedItems == null) {
+    if (params == null) {
       title = "Load a collection through the HalApiClient, and simulate a delay for each item on the server-side";
     }
-    else if (embedItems == null) {
+    else if (params.embedItems == null) {
       title = "Choose whether the items should already be embedded on the server-side";
     }
     else {
-      title = "A collection of " + numItems + " " + " item resources that were fetched from "
-          + (embedItems ? "embedded" : "linked") + " resources";
+      title = "A collection of " + params.numItems + " " + " item resources that were fetched from "
+          + (params.embedItems ? "embedded" : "linked") + " resources";
 
-      if (delayMs > 0) {
-        title += " with a server-side delay of " + delayMs + "ms";
+      if (params.delayMs > 0) {
+        title += " with a server-side delay of " + params.delayMs + "ms";
       }
     }
 
