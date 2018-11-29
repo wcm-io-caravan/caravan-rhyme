@@ -26,5 +26,5 @@ public class ItemState {
 
   public int index;
 
-  public String uuid;
+  public String thread;
 }

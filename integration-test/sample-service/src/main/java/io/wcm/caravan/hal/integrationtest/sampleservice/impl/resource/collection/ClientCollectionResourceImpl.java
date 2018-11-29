@@ -111,7 +111,17 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
     @Override
     public Single<ItemState> getProperties() {
-      return resource.getProperties();
+
+      return resource.getProperties()
+          .map(clientState -> {
+
+            ItemState itemState = new ItemState();
+            itemState.title = clientState.title;
+            itemState.index = clientState.index;
+            itemState.thread = Thread.currentThread().getName();
+
+            return itemState;
+          });
     }
 
     @Override

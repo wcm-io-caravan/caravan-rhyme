@@ -68,11 +68,15 @@ public class DelayableItemResourceImpl implements ItemResource, LinkableResource
     ItemState item = new ItemState();
     item.title = getTitle();
     item.index = index;
-    item.uuid = null;
+    item.thread = Thread.currentThread().getName();
 
     Single<ItemState> properties = Single.just(item);
-    if (delayMs != null) {
-      properties = properties.delay(delayMs, TimeUnit.MILLISECONDS);
+    if (delayMs != null && delayMs > 0) {
+      properties = properties.delay(delayMs, TimeUnit.MILLISECONDS)
+          .map(state -> {
+            state.thread = Thread.currentThread().getName();
+            return state;
+          });
     }
 
     return properties;

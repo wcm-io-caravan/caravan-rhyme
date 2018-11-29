@@ -35,6 +35,7 @@ public class ExampleServiceRequestContext {
 
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
+
   private final JaxRsHalServerSupport halSupport;
 
   private final ExamplesEntryPointResource upstreamEntryPoint;
@@ -65,6 +66,10 @@ public class ExampleServiceRequestContext {
 
   public ExamplesEntryPointResource getUpstreamEntryPoint() {
     return upstreamEntryPoint;
+  }
+
+  public RequestMetricsCollector getMetrics() {
+    return this.metrics;
   }
 
 }
