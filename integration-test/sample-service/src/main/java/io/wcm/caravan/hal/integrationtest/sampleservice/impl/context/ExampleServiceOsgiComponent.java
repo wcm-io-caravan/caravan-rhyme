@@ -30,6 +30,8 @@ import org.osgi.service.component.annotations.Reference;
 import com.google.common.collect.ImmutableList;
 
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.EvenAndOddItemsResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ClientItemResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
@@ -51,7 +53,9 @@ public class ExampleServiceOsgiComponent implements JaxRsComponent {
     return ImmutableList.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class,
         // collections
         CollectionExamplesResourceImpl.class, DelayableCollectionResourceImpl.class, DelayableItemResourceImpl.class,
-        ClientCollectionResourceImpl.class, ClientItemResourceImpl.class);
+        ClientCollectionResourceImpl.class, ClientItemResourceImpl.class,
+        // parallelism
+        CachingExamplesResourceImpl.class, EvenAndOddItemsResourceImpl.class);
   }
 
   public JaxRsHalServerSupport getHalSupport() {

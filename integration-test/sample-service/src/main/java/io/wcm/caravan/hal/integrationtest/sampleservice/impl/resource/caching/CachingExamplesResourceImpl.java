@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource;
+package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,37 +28,36 @@ import javax.ws.rs.core.Context;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.EvenOddItemsResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("")
-public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResource, LinkableResource {
+@Path("/caching")
+public class CachingExamplesResourceImpl implements CachingExamplesResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
 
-  public ExamplesEntryPointResourceImpl(@Context ExampleServiceRequestContext context) {
+  public CachingExamplesResourceImpl(@Context ExampleServiceRequestContext context) {
     this.context = context;
   }
 
   @Override
-  public Single<CollectionExamplesResource> getCollectionExamples() {
-    return Single.just(new CollectionExamplesResourceImpl(context));
+  public Single<EvenOddItemsResource> getEvenAndOddItems() {
+    return Single.just(new EvenAndOddItemsResourceImpl(context, null));
   }
 
   @Override
-  public Single<CachingExamplesResource> getCachingExamples() {
-    return Single.just(new CachingExamplesResourceImpl(context));
+  public Single<ExamplesEntryPointResource> getEntryPoint() {
+    return Single.just(new ExamplesEntryPointResourceImpl(context));
   }
 
   @Override
   public Link createLink() {
 
     return context.buildLinkTo(this)
-        .setTitle("The HAL API entry point of the " + context.getContextPath() + " service");
+        .setTitle("Examples for resources that need local caching to avoid multiple identical requests to upstream server");
   }
 
   @GET

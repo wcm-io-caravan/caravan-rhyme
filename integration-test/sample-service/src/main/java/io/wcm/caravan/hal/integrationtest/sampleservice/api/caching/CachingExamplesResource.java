@@ -17,25 +17,20 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.hal.integrationtest.sampleservice.api.collection;
+package io.wcm.caravan.hal.integrationtest.sampleservice.api.caching;
 
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
-import io.wcm.caravan.hal.api.annotations.ResourceState;
 import io.wcm.caravan.hal.api.annotations.StandardRelations;
-import io.wcm.caravan.hal.api.annotations.TemplateVariable;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 
 @HalApiInterface
-public interface ItemCollectionResource {
+public interface CachingExamplesResource {
 
-  @ResourceState
-  Maybe<TitledState> getState();
+  @RelatedResource(relation = "examples:evenAndOdd")
+  Single<EvenOddItemsResource> getEvenAndOddItems();
 
-  @RelatedResource(relation = StandardRelations.ALTERNATE)
-  Maybe<ItemCollectionResource> getAlternate(@TemplateVariable("embedItems") Boolean embedItems);
-
-  @RelatedResource(relation = StandardRelations.ITEM)
-  Observable<ItemResource> getItems();
+  @RelatedResource(relation = StandardRelations.INDEX)
+  Single<ExamplesEntryPointResource> getEntryPoint();
 }

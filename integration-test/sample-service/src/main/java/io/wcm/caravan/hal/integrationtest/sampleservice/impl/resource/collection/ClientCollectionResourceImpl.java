@@ -26,14 +26,14 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -53,9 +53,9 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
   }
 
   @Override
-  public Single<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
+  public Maybe<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
 
-    return Single.just(new ClientCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
+    return Maybe.just(new ClientCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
   }
 
   @Override
@@ -69,9 +69,8 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
   }
 
   @Override
-  public Single<ExamplesEntryPointResource> getEntryPoint() {
-
-    return Single.just(new ExamplesEntryPointResourceImpl(context));
+  public Maybe<TitledState> getState() {
+    return Maybe.empty();
   }
 
   @Override
@@ -101,11 +100,11 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
     context.respondWith(this, response);
   }
 
-  private static class EmbeddedItemResourceImpl implements ItemResource, EmbeddableResource {
+  public static class EmbeddedItemResourceImpl implements ItemResource, EmbeddableResource {
 
     private final ItemResource resource;
 
-    EmbeddedItemResourceImpl(ItemResource resource) {
+    public EmbeddedItemResourceImpl(ItemResource resource) {
       this.resource = resource;
     }
 

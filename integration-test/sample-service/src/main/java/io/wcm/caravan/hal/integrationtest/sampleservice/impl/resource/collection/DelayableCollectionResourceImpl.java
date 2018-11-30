@@ -27,13 +27,12 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
@@ -71,8 +70,8 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
   }
 
   @Override
-  public Single<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
-    return Single.just(new DelayableCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
+  public Maybe<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
+    return Maybe.just(new DelayableCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
   }
 
   @Override
@@ -83,9 +82,8 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
   }
 
   @Override
-  public Single<ExamplesEntryPointResource> getEntryPoint() {
-
-    return Single.just(new ExamplesEntryPointResourceImpl(context));
+  public Maybe<TitledState> getState() {
+    return Maybe.empty();
   }
 
   @Override
