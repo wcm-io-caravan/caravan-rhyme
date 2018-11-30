@@ -29,6 +29,8 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
+import com.damnhandy.uri.template.UriTemplate;
+
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
@@ -85,9 +87,23 @@ public class DelayableItemResourceImpl implements ItemResource, LinkableResource
   @Override
   public Link createLink() {
 
-    String title = getTitle();
+    return buildLinkManually();
 
-    return context.buildLinkTo(this).setTitle(title);
+    //return context.buildLinkTo(this).setTitle(getTitle());
+  }
+
+  private Link buildLinkManually() {
+
+    UriTemplate template = UriTemplate.buildFromTemplate(context.getContextPath() + "/collections/items/{index}{?delayMs}")
+        .build();
+
+    if (index != null) {
+      template.set("index", index);
+      template.set("delayMs", delayMs);
+    }
+
+    String uri = template.expandPartial();
+    return new Link(uri).setTitle(getTitle());
   }
 
   private String getTitle() {
