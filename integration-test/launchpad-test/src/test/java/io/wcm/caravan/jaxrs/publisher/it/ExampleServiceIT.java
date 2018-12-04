@@ -69,7 +69,7 @@ public class ExampleServiceIT {
   public void loadEntryPointResource() throws IOException {
     HalResource hal = assertHalResourceFoundAt(SERVICE_ID);
 
-    Link link = hal.getLink(StandardRelations.COLLECTION);
+    Link link = hal.getLink("examples:collections");
     assertThat(link).as("collection link").isNotNull();
     assertThat(link.getHref()).as("collection href").startsWith(COLLECTION_EXAMPLES_PATH);
   }
