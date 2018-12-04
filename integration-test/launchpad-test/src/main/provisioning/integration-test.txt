@@ -23,10 +23,13 @@
   org.codehaus.jackson/jackson-mapper-asl/1.9.13
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.jersey
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.hibernate-validator
-  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.reactive-streams
+
+  # RxJava
+  com.github.akarnokd/rxjava2-interop
+  org.reactivestreams/reactive-streams
+  io.reactivex.rxjava2/rxjava
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava
-  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava2
-  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava2-interop
+
   io.wcm.caravan/io.wcm.caravan.commons.httpasyncclient
   io.wcm.caravan/io.wcm.caravan.commons.httpclient
   io.wcm.caravan/io.wcm.caravan.commons.jsonpath
