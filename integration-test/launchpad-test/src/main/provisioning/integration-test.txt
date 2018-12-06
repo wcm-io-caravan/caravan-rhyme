@@ -44,6 +44,7 @@
   io.wcm.caravan/io.wcm.caravan.jaxrs.publisher
   io.wcm.caravan/io.wcm.caravan.pipeline.api
   io.wcm.caravan/io.wcm.caravan.pipeline.impl
+  io.wcm.caravan/io.wcm.caravan.pipeline.cache.guava
 
   # Metrics
   io.dropwizard.metrics/metrics-core
