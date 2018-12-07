@@ -57,3 +57,14 @@
   io.dropwizard.metrics/metrics-servlet
   io.dropwizard.metrics/metrics-servlets
   io.dropwizard.metrics/metrics-logback
+
+[configurations]
+  io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig-localhost
+    serviceId="/caravan/hal/sample-service"
+    ribbonHosts=["localhost:8080"]
+
+[configurations]
+  io.wcm.caravan.commons.httpclient.impl.HttpClientConfigImpl-localhost
+    hostPatterns=["localhost"]
+    maxConnectionsPerHost="5000"
+    maxTotalConnections="5000"
