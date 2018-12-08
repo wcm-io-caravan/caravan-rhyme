@@ -46,7 +46,7 @@ import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/parallelism/evenAndOdd")
+@Path("/caching/evenAndOdd")
 public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
