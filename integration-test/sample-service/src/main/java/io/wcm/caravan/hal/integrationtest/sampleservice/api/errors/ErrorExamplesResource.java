@@ -32,4 +32,11 @@ public interface ErrorExamplesResource {
       @TemplateVariable("statusCode") Integer statusCode,
       @TemplateVariable("message") String message,
       @TemplateVariable("withCause") Boolean withCause);
+
+
+  @RelatedResource(relation = "errors:httpError")
+  Single<ErrorResource> provokeHttpClientError(
+      @TemplateVariable("statusCode") Integer statusCode,
+      @TemplateVariable("message") String message,
+      @TemplateVariable("withCause") Boolean withCause);
 }

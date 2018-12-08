@@ -38,6 +38,7 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.DelayableCollectionResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.DelayableItemResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ErrorsExamplesResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.HalApiClientErrorResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsHalServerSupport;
 import io.wcm.caravan.jaxrs.publisher.JaxRsComponent;
@@ -59,7 +60,7 @@ public class ExampleServiceOsgiComponent implements JaxRsComponent {
         // caching
         CachingExamplesResourceImpl.class, EvenAndOddItemsResourceImpl.class,
         // errors
-        ErrorsExamplesResourceImpl.class, ServerSideErrorResourceImpl.class);
+        ErrorsExamplesResourceImpl.class, HalApiClientErrorResourceImpl.class, ServerSideErrorResourceImpl.class);
   }
 
   public JaxRsHalServerSupport getHalSupport() {

@@ -19,47 +19,60 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 
-import io.reactivex.Single;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
+import io.reactivex.Maybe;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/errors")
-public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, LinkableResource {
+@Path("/errors/halApiClient")
+public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
 
-  public ErrorsExamplesResourceImpl(@Context ExampleServiceRequestContext context) {
+  private final Integer statusCode;
+  private final String message;
+  private final Boolean withCause;
+
+  public HalApiClientErrorResourceImpl(@Context ExampleServiceRequestContext context,
+      @QueryParam("statusCode") @DefaultValue("404") Integer statusCode,
+      @QueryParam("message") @DefaultValue("error message") String message,
+      @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
     this.context = context;
+
+    this.statusCode = statusCode;
+    this.message = message;
+    this.withCause = withCause;
   }
 
   @Override
-  public Single<ErrorResource> provokeError(Integer statusCode, String message, Boolean withCause) {
-    return Single.just(new ServerSideErrorResourceImpl(context, statusCode, message, withCause));
-  }
+  public Maybe<TitledState> getState() {
 
-  @Override
-  public Single<ErrorResource> provokeHttpClientError(Integer statusCode, String message, Boolean withCause) {
-    return Single.just(new HalApiClientErrorResourceImpl(context, statusCode, message, withCause));
+    return context.getUpstreamEntryPoint()
+        .getErrorExamples()
+        .flatMap(examples -> examples.provokeError(statusCode, message, withCause))
+        .flatMapMaybe(ErrorResource::getState);
   }
 
   @Override
   public Link createLink() {
 
     return context.buildLinkTo(this)
-        .setTitle("Examples for error handling");
+        .setTitle("Trigger an error when executing a HTTP request to an upstream server");
   }
 
   @GET
   public void get(@Suspended AsyncResponse response) {
     context.respondWith(this, response);
   }
+
 }
