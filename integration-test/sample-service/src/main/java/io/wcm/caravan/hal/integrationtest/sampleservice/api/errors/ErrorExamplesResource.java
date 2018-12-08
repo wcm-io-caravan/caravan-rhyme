@@ -17,24 +17,19 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.hal.integrationtest.sampleservice.api;
+package io.wcm.caravan.hal.integrationtest.sampleservice.api.errors;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
+import io.wcm.caravan.hal.api.annotations.TemplateVariable;
 
 @HalApiInterface
-public interface ExamplesEntryPointResource {
+public interface ErrorExamplesResource {
 
-  @RelatedResource(relation = "examples:collections")
-  Single<CollectionExamplesResource> getCollectionExamples();
-
-  @RelatedResource(relation = "examples:caching")
-  Single<CachingExamplesResource> getCachingExamples();
-
-  @RelatedResource(relation = "examples:errors")
-  Single<ErrorExamplesResource> getErrorExamples();
+  @RelatedResource(relation = "errors:serverSide")
+  Single<ErrorResource> provokeError(
+      @TemplateVariable("statusCode") Integer statusCode,
+      @TemplateVariable("message") String message,
+      @TemplateVariable("withCause") Boolean withCause);
 }

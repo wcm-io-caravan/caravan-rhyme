@@ -29,9 +29,11 @@ import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ErrorsExamplesResourceImpl;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
@@ -52,6 +54,11 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
   @Override
   public Single<CachingExamplesResource> getCachingExamples() {
     return Single.just(new CachingExamplesResourceImpl(context));
+  }
+
+  @Override
+  public Single<ErrorExamplesResource> getErrorExamples() {
+    return Single.just(new ErrorsExamplesResourceImpl(context));
   }
 
   @Override
