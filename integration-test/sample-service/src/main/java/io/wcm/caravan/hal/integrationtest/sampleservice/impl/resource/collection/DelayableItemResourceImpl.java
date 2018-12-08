@@ -94,13 +94,15 @@ public class DelayableItemResourceImpl implements ItemResource, LinkableResource
 
   private Link buildLinkManually() {
 
-    UriTemplate template = UriTemplate.buildFromTemplate(context.getContextPath() + "/collections/items/{index}{?delayMs}")
+    UriTemplate template = UriTemplate.buildFromTemplate(context.getContextPath() + "/collections/items/{index}{?delayMs,bundleVersion}")
         .build();
 
     if (index != null) {
       template.set("index", index);
       template.set("delayMs", delayMs);
     }
+
+    template.set("bundleVersion", context.getBundleVersion());
 
     String uri = template.expandPartial();
     return new Link(uri).setTitle(getTitle());

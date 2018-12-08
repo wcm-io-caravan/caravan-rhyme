@@ -19,9 +19,14 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
+
+import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.microservices.api.common.RequestMetricsCollector;
@@ -35,12 +40,14 @@ public class ExampleServiceRequestContext {
 
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
-
   private final JaxRsHalServerSupport halSupport;
 
   private final ExamplesEntryPointResource upstreamEntryPoint;
 
   public ExampleServiceRequestContext(@Context ExampleServiceOsgiComponent osgiContext) {
+
+    this.metrics.setOutputMaxAge((int)TimeUnit.DAYS.toSeconds(365));
+
     this.halSupport = osgiContext.getHalSupport();
 
     String serviceId = halSupport.getContextPath();
@@ -53,7 +60,16 @@ public class ExampleServiceRequestContext {
   }
 
   public Link buildLinkTo(LinkableResource targetResource) {
-    return getHalSupport().getLinkBuilder().buildLinkTo(targetResource);
+
+    Map<String, Object> fingerPrintingParams = ImmutableMap.of("bundleVersion", halSupport.getBundleVersion());
+
+    return getHalSupport().getLinkBuilder()
+        .withAdditionalParameters(fingerPrintingParams)
+        .buildLinkTo(targetResource);
+  }
+
+  public void limitMaxAge(int seconds) {
+    metrics.setOutputMaxAge(seconds);
   }
 
   public void respondWith(LinkableResource resource, AsyncResponse response) {
@@ -62,6 +78,10 @@ public class ExampleServiceRequestContext {
 
   public String getContextPath() {
     return getHalSupport().getContextPath();
+  }
+
+  public String getBundleVersion() {
+    return getHalSupport().getBundleVersion();
   }
 
   public ExamplesEntryPointResource getUpstreamEntryPoint() {

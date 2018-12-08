@@ -63,6 +63,9 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
 
   @GET
   public void get(@Suspended AsyncResponse response) {
+
+    context.limitMaxAge(60);
+
     context.respondWith(this, response);
   }
 
