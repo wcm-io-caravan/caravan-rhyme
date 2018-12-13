@@ -19,9 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.api.collection;
 
-import io.wcm.caravan.hal.api.annotations.TemplateVariables;
-
-@TemplateVariables
 public interface CollectionParameters {
 
   Integer getNumItems();

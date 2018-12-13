@@ -25,6 +25,7 @@ import io.wcm.caravan.hal.api.annotations.RelatedResource;
 import io.wcm.caravan.hal.api.annotations.ResourceState;
 import io.wcm.caravan.hal.api.annotations.StandardRelations;
 import io.wcm.caravan.hal.api.annotations.TemplateVariable;
+import io.wcm.caravan.hal.api.annotations.TemplateVariables;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 
 @HalApiInterface
@@ -34,7 +35,8 @@ public interface CollectionExamplesResource {
   Single<TitledState> getState();
 
   @RelatedResource(relation = StandardRelations.COLLECTION)
-  Single<ItemCollectionResource> getCollection(CollectionParameters options);
+  Single<ItemCollectionResource> getCollection(
+      @TemplateVariables CollectionParameters options);
 
   @RelatedResource(relation = StandardRelations.ITEM)
   Single<ItemResource> getItem(
@@ -42,7 +44,8 @@ public interface CollectionExamplesResource {
       @TemplateVariable("delayMs") Integer delayMs);
 
   @RelatedResource(relation = "client:collection")
-  Single<ItemCollectionResource> getCollectionThroughClient(CollectionParameters options);
+  Single<ItemCollectionResource> getCollectionThroughClient(
+      @TemplateVariables CollectionParameters options);
 
   @RelatedResource(relation = "client:item")
   Single<ItemResource> getItemThroughClient(
