@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -72,8 +73,8 @@ public class ExampleServiceRequestContext {
     metrics.setOutputMaxAge(seconds);
   }
 
-  public void respondWith(LinkableResource resource, AsyncResponse response) {
-    getHalSupport().getResponseHandler().respondWith(resource, response, metrics);
+  public void respondWith(LinkableResource resource, UriInfo uriInfo, AsyncResponse response) {
+    getHalSupport().getResponseHandler().respondWith(resource, uriInfo, response, metrics);
   }
 
   public String getContextPath() {

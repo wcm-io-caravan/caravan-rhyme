@@ -24,6 +24,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
@@ -69,11 +70,11 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
   }
 
   @GET
-  public void get(@Suspended AsyncResponse response) {
+  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
 
     context.limitMaxAge(60);
 
-    context.respondWith(this, response);
+    context.respondWith(this, uriInfo, response);
   }
 
 
