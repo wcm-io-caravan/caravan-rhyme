@@ -22,7 +22,7 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.api.caching;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
-import io.wcm.caravan.hal.api.annotations.StandardRelations;
+import io.wcm.caravan.hal.api.relations.StandardRelations;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 

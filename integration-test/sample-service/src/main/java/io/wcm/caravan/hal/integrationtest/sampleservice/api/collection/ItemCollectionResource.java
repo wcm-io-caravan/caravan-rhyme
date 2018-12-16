@@ -24,8 +24,8 @@ import io.reactivex.Observable;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
 import io.wcm.caravan.hal.api.annotations.ResourceState;
-import io.wcm.caravan.hal.api.annotations.StandardRelations;
 import io.wcm.caravan.hal.api.annotations.TemplateVariable;
+import io.wcm.caravan.hal.api.relations.StandardRelations;
 
 @HalApiInterface
 public interface ItemCollectionResource {

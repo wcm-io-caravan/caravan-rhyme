@@ -40,7 +40,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.wcm.caravan.hal.api.annotations.StandardRelations;
+import io.wcm.caravan.hal.api.relations.StandardRelations;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 
