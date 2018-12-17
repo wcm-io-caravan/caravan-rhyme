@@ -47,7 +47,7 @@ public class ExampleServiceRequestContext {
 
   public ExampleServiceRequestContext(@Context ExampleServiceOsgiComponent osgiContext) {
 
-    this.metrics.setOutputMaxAge((int)TimeUnit.DAYS.toSeconds(365));
+    this.metrics.limitOutputMaxAge((int)TimeUnit.DAYS.toSeconds(365));
 
     this.halSupport = osgiContext.getHalSupport();
 
@@ -70,7 +70,7 @@ public class ExampleServiceRequestContext {
   }
 
   public void limitMaxAge(int seconds) {
-    metrics.setOutputMaxAge(seconds);
+    metrics.limitOutputMaxAge(seconds);
   }
 
   public void respondWith(LinkableResource resource, UriInfo uriInfo, AsyncResponse response) {
