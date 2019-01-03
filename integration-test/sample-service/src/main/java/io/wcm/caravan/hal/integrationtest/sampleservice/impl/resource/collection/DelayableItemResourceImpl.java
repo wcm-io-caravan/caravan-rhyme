@@ -88,9 +88,9 @@ public class DelayableItemResourceImpl implements ItemResource, LinkableResource
   @Override
   public Link createLink() {
 
-    return buildLinkManually();
+    //return buildLinkManually();
 
-    //return context.buildLinkTo(this).setTitle(getTitle());
+    return context.buildLinkTo(this).setTitle(getTitle());
   }
 
   private Link buildLinkManually() {
