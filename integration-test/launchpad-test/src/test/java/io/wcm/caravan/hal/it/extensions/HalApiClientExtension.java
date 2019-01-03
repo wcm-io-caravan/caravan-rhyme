@@ -5,10 +5,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -79,22 +77,24 @@ public class HalApiClientExtension implements ParameterResolver {
         @Override
         public void completed(HttpResponse result) {
 
+
           JsonNode json = parseJson(result);
           HalResource hal = new HalResource(json);
 
+          int statusCode = result.getStatusLine().getStatusCode();
           String contentType = result.getEntity().getContentType().getValue();
 
-          if (!StringUtils.equals(contentType, HalResource.CONTENT_TYPE)) {
-            responseSubject.onError(new RuntimeException("Unexpected content type " + contentType));
-            return;
+          HalResponse response = new HalResponse().withStatus(statusCode).withContentType(contentType).withBody(hal);
+
+          if (statusCode == 200) {
+            if (!StringUtils.equals(contentType, HalResource.CONTENT_TYPE)) {
+              responseSubject.onError(new RuntimeException("Unexpected content type " + contentType));
+              return;
+            }
+            responseSubject.onSuccess(response);
           }
-
-          HalResponse response = new HalResponse().withStatus(200).withContentType(contentType).withBody(hal);
-
-          responseSubject.onSuccess(response);
-
-          if (result instanceof CloseableHttpResponse) {
-            IOUtils.closeQuietly((CloseableHttpResponse)result);
+          else {
+            responseSubject.onError(new HalApiClientException(response, uri, null));
           }
         }
 

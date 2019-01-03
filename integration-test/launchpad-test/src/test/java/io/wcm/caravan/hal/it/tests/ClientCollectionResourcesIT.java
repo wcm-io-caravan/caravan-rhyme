@@ -1,5 +1,6 @@
 package io.wcm.caravan.hal.it.tests;
 
+import static io.wcm.caravan.hal.it.TestEnvironmentConstants.SERVICE_ID;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +18,6 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemColle
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionParametersImpl;
-import io.wcm.caravan.hal.it.TestEnvironmentConstants;
 import io.wcm.caravan.hal.it.extensions.HalApiClientExtension;
 import io.wcm.caravan.hal.it.extensions.WaitForServerStartupExtension;
 import io.wcm.caravan.hal.microservices.api.client.HalApiClient;
@@ -28,8 +28,7 @@ public class ClientCollectionResourcesIT {
   private final ExamplesEntryPointResource entryPoint;
 
   public ClientCollectionResourcesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getEntryPoint(TestEnvironmentConstants.SERVICE_ID,
-        ExamplesEntryPointResource.class);
+    this.entryPoint = halApiClient.getEntryPoint(SERVICE_ID, ExamplesEntryPointResource.class);
   }
 
   private Single<ItemCollectionResource> getCollectionThroughClient(Integer numItems, Boolean embedItems, Integer delayMs) {
