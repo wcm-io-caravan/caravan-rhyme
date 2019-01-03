@@ -68,9 +68,21 @@ public class CollectionParametersImpl implements CollectionParameters {
     return cloned;
   }
 
-  CollectionParametersImpl withEmbedItems(Boolean value) {
+  public CollectionParametersImpl withNumItems(Integer numItems) {
+    CollectionParametersImpl cloned = clone(this);
+    cloned.numItems = numItems;
+    return cloned;
+  }
+
+  public CollectionParametersImpl withEmbedItems(Boolean value) {
     CollectionParametersImpl cloned = clone(this);
     cloned.embedItems = value;
+    return cloned;
+  }
+
+  public CollectionParametersImpl withDelayMs(Integer delayMs) {
+    CollectionParametersImpl cloned = clone(this);
+    cloned.delayMs = delayMs;
     return cloned;
   }
 }
