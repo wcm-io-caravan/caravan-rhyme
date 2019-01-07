@@ -83,7 +83,7 @@ public class ClientCollectionResourcesIT {
 
     Integer numItems = 1;
     Boolean embedItems = false;
-    Integer delayMs = 1000;
+    Integer delayMs = 2000;
 
     Stopwatch stopwatch = Stopwatch.createStarted();
     getCollectionItemsThroughClient(numItems, embedItems, delayMs);
@@ -98,7 +98,7 @@ public class ClientCollectionResourcesIT {
 
     Integer numItems = 50;
     Boolean embedItems = false;
-    Integer delayMs = 1000;
+    Integer delayMs = 2000;
 
     Stopwatch stopwatch = Stopwatch.createStarted();
     getCollectionItemsThroughClient(numItems, embedItems, delayMs);
@@ -139,7 +139,7 @@ public class ClientCollectionResourcesIT {
 
     Integer numItems = 50;
     Boolean embedItems = true;
-    Integer delayMs = 1000;
+    Integer delayMs = 2000;
 
     Stopwatch stopwatch = Stopwatch.createStarted();
     getCollectionItemsThroughClient(numItems, embedItems, delayMs);
