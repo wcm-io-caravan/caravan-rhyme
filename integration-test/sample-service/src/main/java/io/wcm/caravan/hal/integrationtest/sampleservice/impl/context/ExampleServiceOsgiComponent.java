@@ -51,7 +51,7 @@ public class ExampleServiceOsgiComponent implements JaxRsComponent {
   private JaxRsHalServerSupport halSupport;
 
   @Override
-  public Collection<Class<?>> getChildComponentClasses() {
+  public Collection<Class<?>> getAdditionalJaxRsClassesToRegister() {
 
     return ImmutableList.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class,
         // collections
