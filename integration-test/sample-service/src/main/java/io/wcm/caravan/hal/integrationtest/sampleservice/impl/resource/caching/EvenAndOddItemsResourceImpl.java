@@ -116,7 +116,7 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
 
   @GET
   public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(this, uriInfo, response);
+    context.respondWith(this);
   }
 
   static class EmbeddedCollectionResourceImpl implements ItemCollectionResource, EmbeddableResource {

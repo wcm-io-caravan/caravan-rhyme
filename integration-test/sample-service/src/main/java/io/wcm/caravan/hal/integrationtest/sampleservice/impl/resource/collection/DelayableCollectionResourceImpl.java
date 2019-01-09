@@ -110,7 +110,7 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
 
   @GET
   public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(this, uriInfo, response);
+    context.respondWith(this);
   }
 
 

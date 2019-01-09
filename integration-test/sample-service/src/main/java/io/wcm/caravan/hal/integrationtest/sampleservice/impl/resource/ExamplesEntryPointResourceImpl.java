@@ -74,7 +74,7 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
 
     context.limitMaxAge(60);
 
-    context.respondWith(this, uriInfo, response);
+    context.respondWith(this);
   }
 
 

@@ -99,7 +99,7 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
   @GET
   public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(this, uriInfo, response);
+    context.respondWith(this);
   }
 
   public static class EmbeddedItemResourceImpl implements ItemResource, EmbeddableResource {

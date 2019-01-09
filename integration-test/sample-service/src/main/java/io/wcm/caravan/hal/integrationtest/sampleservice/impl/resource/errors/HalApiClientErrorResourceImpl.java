@@ -74,7 +74,7 @@ public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableRes
 
   @GET
   public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(this, uriInfo, response);
+    context.respondWith(this);
   }
 
 }
