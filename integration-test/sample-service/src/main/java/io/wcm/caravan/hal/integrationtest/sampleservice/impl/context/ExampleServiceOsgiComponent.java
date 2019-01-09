@@ -20,14 +20,14 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 
-import java.util.Collection;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
@@ -41,19 +41,26 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.Err
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.HalApiClientErrorResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsHalServerSupport;
+import io.wcm.caravan.jaxrs.publisher.JaxRsClassesProvider;
 import io.wcm.caravan.jaxrs.publisher.JaxRsComponent;
 
-@Component(service = JaxRsComponent.class, immediate = true)
+/**
+ * An OSGI service that register all classes that should be managed by JAX-RS (with request-scope).
+ * Until there is a better mechanism for dependency injection of OSGI services into these classes,
+ * it is essential that this services also implements JaxRsComponent and has a @Path annotation.
+ * (Otherwise the injection into {@link ExampleServiceRequestContext} won't work)
+ */
+@Component(service = { JaxRsClassesProvider.class, JaxRsComponent.class }, immediate = true)
 @Path("")
-public class ExampleServiceOsgiComponent implements JaxRsComponent {
+public class ExampleServiceOsgiComponent implements JaxRsClassesProvider, JaxRsComponent {
 
   @Reference
   private JaxRsHalServerSupport halSupport;
 
   @Override
-  public Collection<Class<?>> getAdditionalJaxRsClassesToRegister() {
+  public Set<Class<?>> getClasses() {
 
-    return ImmutableList.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class,
+    return ImmutableSet.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class,
         // collections
         CollectionExamplesResourceImpl.class, DelayableCollectionResourceImpl.class, DelayableItemResourceImpl.class,
         ClientCollectionResourceImpl.class, ClientItemResourceImpl.class,

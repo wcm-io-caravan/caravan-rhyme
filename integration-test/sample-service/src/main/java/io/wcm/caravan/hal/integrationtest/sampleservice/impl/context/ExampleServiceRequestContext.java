@@ -22,7 +22,6 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -35,8 +34,6 @@ import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsHalServerSupport;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("") // this annotation is important so that instances of this class can be
-// injected into other resources using @Context
 public class ExampleServiceRequestContext {
 
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
