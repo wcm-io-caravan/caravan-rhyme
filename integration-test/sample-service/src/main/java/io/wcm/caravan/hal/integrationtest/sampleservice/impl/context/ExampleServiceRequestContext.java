@@ -22,6 +22,7 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -36,6 +37,7 @@ import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.jaxrs.publisher.OsgiReference;
 
+@Path("")
 public class ExampleServiceRequestContext {
 
   private final HalOrchestrator orchestrator;

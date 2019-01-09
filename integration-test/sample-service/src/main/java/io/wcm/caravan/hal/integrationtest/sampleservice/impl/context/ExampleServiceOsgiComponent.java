@@ -27,7 +27,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ServiceScope;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -52,7 +51,7 @@ import io.wcm.caravan.jaxrs.publisher.JaxRsClassesProvider;
 /**
  * An OSGI service that register all classes that should be managed by JAX-RS (with request-scope).
  */
-@Component(service = { JaxRsClassesProvider.class, UpstreamServiceRegistry.class }, immediate = true, scope = ServiceScope.BUNDLE)
+@Component(service = { JaxRsClassesProvider.class, UpstreamServiceRegistry.class }, immediate = true)
 public class ExampleServiceOsgiComponent implements JaxRsClassesProvider, UpstreamServiceRegistry {
 
   @Reference
