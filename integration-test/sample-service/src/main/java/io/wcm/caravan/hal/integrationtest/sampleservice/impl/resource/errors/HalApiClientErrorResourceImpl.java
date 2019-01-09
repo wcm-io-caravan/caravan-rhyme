@@ -29,6 +29,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import io.reactivex.Maybe;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
@@ -59,7 +60,7 @@ public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableRes
   public Maybe<TitledState> getState() {
 
     return context.getUpstreamEntryPoint()
-        .getErrorExamples()
+        .flatMap(ExamplesEntryPointResource::getErrorExamples)
         .flatMap(examples -> examples.provokeError(statusCode, message, withCause))
         .flatMapMaybe(ErrorResource::getState);
   }

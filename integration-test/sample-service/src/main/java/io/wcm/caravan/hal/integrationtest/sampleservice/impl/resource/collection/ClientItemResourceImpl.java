@@ -29,6 +29,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import io.reactivex.Single;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
@@ -61,7 +62,7 @@ public class ClientItemResourceImpl implements ItemResource, LinkableResource {
   public Single<ItemState> getProperties() {
 
     return context.getUpstreamEntryPoint()
-        .getCollectionExamples()
+        .flatMap(ExamplesEntryPointResource::getCollectionExamples)
         .flatMap(examples -> examples.getItem(index, delayMs))
         .flatMap(ItemResource::getProperties);
   }

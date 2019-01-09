@@ -28,66 +28,59 @@ import javax.ws.rs.core.UriInfo;
 
 import com.google.common.collect.ImmutableMap;
 
+import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
-import io.wcm.caravan.hal.microservices.api.common.RequestMetricsCollector;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
-import io.wcm.caravan.hal.microservices.jaxrs.JaxRsHalServerSupport;
+import io.wcm.caravan.hal.microservices.jaxrs.HalOrchestrator;
+import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.jaxrs.publisher.OsgiReference;
 
 public class ExampleServiceRequestContext {
 
-  private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
+  private final HalOrchestrator orchestrator;
 
-  private final JaxRsHalServerSupport halSupport;
+  private final JaxRsBundleInfo bundleInfo;
 
-  private final ExamplesEntryPointResource upstreamEntryPoint;
+  private final Single<ExamplesEntryPointResource> upstreamEntryPoint;
 
-  public ExampleServiceRequestContext(@Context ExampleServiceOsgiComponent osgiContext) {
+  public ExampleServiceRequestContext(@Context HalOrchestrator orchestrator, @OsgiReference JaxRsBundleInfo bundleInfo) {
 
-    this.metrics.limitOutputMaxAge((int)TimeUnit.DAYS.toSeconds(365));
+    this.orchestrator = orchestrator;
+    this.bundleInfo = bundleInfo;
 
-    this.halSupport = osgiContext.getHalSupport();
+    this.upstreamEntryPoint = orchestrator.getEntryPoint(ExamplesEntryPointResource.class);
 
-    String serviceId = halSupport.getContextPath();
-    this.upstreamEntryPoint = halSupport.getHalApiClient()
-        .getEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class, metrics);
+    limitMaxAge((int)TimeUnit.DAYS.toSeconds(365));
   }
 
-  private JaxRsHalServerSupport getHalSupport() {
-    return halSupport;
-  }
 
   public Link buildLinkTo(LinkableResource targetResource) {
 
-    Map<String, Object> fingerPrintingParams = ImmutableMap.of("bundleVersion", halSupport.getBundleVersion());
+    Map<String, Object> fingerPrintingParams = ImmutableMap.of("bundleVersion", bundleInfo.getBundleVersion());
 
-    return getHalSupport().getLinkBuilder()
+    return orchestrator.createLinkBuilder()
         .withAdditionalParameters(fingerPrintingParams)
         .buildLinkTo(targetResource);
   }
 
   public void limitMaxAge(int seconds) {
-    metrics.limitOutputMaxAge(seconds);
+    orchestrator.limitOutputMaxAge(seconds);
   }
 
   public void respondWith(LinkableResource resource, UriInfo uriInfo, AsyncResponse response) {
-    getHalSupport().getResponseHandler().respondWith(resource, uriInfo, response, metrics);
+    orchestrator.respondWith(resource);
   }
 
-  public String getContextPath() {
-    return getHalSupport().getContextPath();
-  }
-
-  public String getBundleVersion() {
-    return getHalSupport().getBundleVersion();
-  }
-
-  public ExamplesEntryPointResource getUpstreamEntryPoint() {
+  public Single<ExamplesEntryPointResource> getUpstreamEntryPoint() {
     return upstreamEntryPoint;
   }
 
-  public RequestMetricsCollector getMetrics() {
-    return this.metrics;
+  public String getServiceId() {
+    return bundleInfo.getApplicationPath();
   }
 
+  public String getBundleVersion() {
+    return bundleInfo.getBundleVersion();
+  }
 }

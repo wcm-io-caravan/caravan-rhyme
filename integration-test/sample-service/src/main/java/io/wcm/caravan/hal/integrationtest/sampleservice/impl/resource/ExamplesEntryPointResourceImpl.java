@@ -66,7 +66,7 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
   public Link createLink() {
 
     return context.buildLinkTo(this)
-        .setTitle("The HAL API entry point of the " + context.getContextPath() + " service");
+        .setTitle("The HAL API entry point of the " + context.getServiceId() + " service");
   }
 
   @GET

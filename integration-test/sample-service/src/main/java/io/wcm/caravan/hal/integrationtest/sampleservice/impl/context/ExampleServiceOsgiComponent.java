@@ -20,15 +20,20 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 
+import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.Path;
+import javax.ws.rs.core.UriInfo;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import io.reactivex.Single;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.EvenAndOddItemsResourceImpl;
@@ -40,22 +45,18 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ErrorsExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.HalApiClientErrorResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
-import io.wcm.caravan.hal.microservices.jaxrs.JaxRsHalServerSupport;
+import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
+import io.wcm.caravan.hal.microservices.jaxrs.UpstreamServiceRegistry;
 import io.wcm.caravan.jaxrs.publisher.JaxRsClassesProvider;
-import io.wcm.caravan.jaxrs.publisher.JaxRsComponent;
 
 /**
  * An OSGI service that register all classes that should be managed by JAX-RS (with request-scope).
- * Until there is a better mechanism for dependency injection of OSGI services into these classes,
- * it is essential that this services also implements JaxRsComponent and has a @Path annotation.
- * (Otherwise the injection into {@link ExampleServiceRequestContext} won't work)
  */
-@Component(service = { JaxRsClassesProvider.class, JaxRsComponent.class }, immediate = true)
-@Path("")
-public class ExampleServiceOsgiComponent implements JaxRsClassesProvider, JaxRsComponent {
+@Component(service = { JaxRsClassesProvider.class, UpstreamServiceRegistry.class }, immediate = true, scope = ServiceScope.BUNDLE)
+public class ExampleServiceOsgiComponent implements JaxRsClassesProvider, UpstreamServiceRegistry {
 
   @Reference
-  private JaxRsHalServerSupport halSupport;
+  private JaxRsBundleInfo bundleInfo;
 
   @Override
   public Set<Class<?>> getClasses() {
@@ -70,7 +71,15 @@ public class ExampleServiceOsgiComponent implements JaxRsClassesProvider, JaxRsC
         ErrorsExamplesResourceImpl.class, HalApiClientErrorResourceImpl.class, ServerSideErrorResourceImpl.class);
   }
 
-  public JaxRsHalServerSupport getHalSupport() {
-    return halSupport;
+  @Override
+  public Single<Map<Class, String>> getUpstreamServiceIds(UriInfo infomingRequestUri) {
+
+    return Single.just(ImmutableMap.of(ExamplesEntryPointResource.class, bundleInfo.getApplicationPath()));
+  }
+
+  @Override
+  public Single<String> getEntryPointUri(String serviceId, UriInfo incomingRequestUri) {
+
+    return Single.just(serviceId);
   }
 }
