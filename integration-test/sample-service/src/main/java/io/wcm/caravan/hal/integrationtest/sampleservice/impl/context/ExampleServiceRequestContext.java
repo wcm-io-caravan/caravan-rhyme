@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
 
 import com.google.common.collect.ImmutableMap;
@@ -68,8 +69,8 @@ public class ExampleServiceRequestContext {
     orchestrator.limitOutputMaxAge(seconds);
   }
 
-  public void respondWith(LinkableResource resource) {
-    orchestrator.respondWith(resource);
+  public void respondWith(LinkableResource resource, AsyncResponse response) {
+    orchestrator.respondWith(resource, response);
   }
 
   public Single<ExamplesEntryPointResource> getUpstreamEntryPoint() {

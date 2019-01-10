@@ -61,6 +61,6 @@ public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, Linkab
 
   @GET
   public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(this);
+    context.respondWith(this, response);
   }
 }

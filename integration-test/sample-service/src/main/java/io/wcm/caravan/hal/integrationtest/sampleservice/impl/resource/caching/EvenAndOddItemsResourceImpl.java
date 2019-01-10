@@ -29,7 +29,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -115,8 +114,8 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
   }
 
   @GET
-  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(this);
+  public void get(@Suspended AsyncResponse response) {
+    context.respondWith(this, response);
   }
 
   static class EmbeddedCollectionResourceImpl implements ItemCollectionResource, EmbeddableResource {

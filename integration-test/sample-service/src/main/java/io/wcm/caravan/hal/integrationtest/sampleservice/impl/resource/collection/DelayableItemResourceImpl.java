@@ -28,7 +28,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 
 import com.damnhandy.uri.template.UriTemplate;
 
@@ -134,8 +133,8 @@ public class DelayableItemResourceImpl implements ItemResource, LinkableResource
   }
 
   @GET
-  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(this);
+  public void get(@Suspended AsyncResponse response) {
+    context.respondWith(this, response);
   }
 
 }
