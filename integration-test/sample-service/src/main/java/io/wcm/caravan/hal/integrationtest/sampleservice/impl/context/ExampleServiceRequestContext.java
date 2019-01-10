@@ -30,21 +30,21 @@ import com.google.common.collect.ImmutableMap;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
-import io.wcm.caravan.hal.microservices.jaxrs.HalOrchestrator;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
+import io.wcm.caravan.hal.microservices.orchestrator.CaravanJaxRsHalOrchestrator;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.jaxrs.publisher.OsgiReference;
 
 @Path("")
 public class ExampleServiceRequestContext {
 
-  private final HalOrchestrator orchestrator;
+  private final CaravanJaxRsHalOrchestrator orchestrator;
 
   private final JaxRsBundleInfo bundleInfo;
 
   private final Single<ExamplesEntryPointResource> upstreamEntryPoint;
 
-  public ExampleServiceRequestContext(@Context HalOrchestrator orchestrator, @OsgiReference JaxRsBundleInfo bundleInfo) {
+  public ExampleServiceRequestContext(@Context CaravanJaxRsHalOrchestrator orchestrator, @OsgiReference JaxRsBundleInfo bundleInfo) {
 
     this.orchestrator = orchestrator;
     this.bundleInfo = bundleInfo;

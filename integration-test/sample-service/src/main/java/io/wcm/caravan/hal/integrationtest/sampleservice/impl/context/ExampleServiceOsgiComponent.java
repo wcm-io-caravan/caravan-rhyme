@@ -45,7 +45,7 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.Err
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.HalApiClientErrorResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
-import io.wcm.caravan.hal.microservices.jaxrs.UpstreamServiceRegistry;
+import io.wcm.caravan.hal.microservices.orchestrator.UpstreamServiceRegistry;
 import io.wcm.caravan.jaxrs.publisher.JaxRsClassesProvider;
 
 /**
