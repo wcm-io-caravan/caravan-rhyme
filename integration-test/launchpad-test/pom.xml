@@ -183,7 +183,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.integration-test.minimal-launchpad</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.0-SNAPSHOT</version>
       <type>slingfeature</type>
       <scope>provided</scope>
     </dependency>
