@@ -19,12 +19,19 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 
+import static org.osgi.service.component.annotations.ReferenceScope.PROTOTYPE_REQUIRED;
+
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -34,24 +41,30 @@ import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
 import io.wcm.caravan.hal.microservices.orchestrator.CaravanJaxRsHalOrchestrator;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.jaxrs.publisher.OsgiReference;
 
-@Path("")
+@Component(service = ExampleServiceRequestContext.class, scope = ServiceScope.PROTOTYPE)
 public class ExampleServiceRequestContext {
 
-  private final CaravanJaxRsHalOrchestrator orchestrator;
+  @Reference(scope = PROTOTYPE_REQUIRED)
+  private CaravanJaxRsHalOrchestrator orchestrator;
 
-  private final JaxRsBundleInfo bundleInfo;
+  @Reference
+  private JaxRsBundleInfo bundleInfo;
 
-  private final Single<ExamplesEntryPointResource> upstreamEntryPoint;
+  private Single<ExamplesEntryPointResource> upstreamEntryPoint;
 
-  public ExampleServiceRequestContext(@Context CaravanJaxRsHalOrchestrator orchestrator, @OsgiReference JaxRsBundleInfo bundleInfo) {
+  public ExampleServiceRequestContext() {}
+
+  public ExampleServiceRequestContext(@Context CaravanJaxRsHalOrchestrator orchestrator, JaxRsBundleInfo bundleInfo) {
 
     this.orchestrator = orchestrator;
     this.bundleInfo = bundleInfo;
 
-    this.upstreamEntryPoint = orchestrator.getEntryPoint(ExamplesEntryPointResource.class);
+    init();
+  }
 
+  @Activate
+  public void init() {
     limitMaxAge((int)TimeUnit.DAYS.toSeconds(365));
   }
 
@@ -69,11 +82,15 @@ public class ExampleServiceRequestContext {
     orchestrator.limitOutputMaxAge(seconds);
   }
 
-  public void respondWith(LinkableResource resource, AsyncResponse response) {
-    orchestrator.respondWith(resource, response);
+  public void respondWith(UriInfo uriInfo, LinkableResource resource, AsyncResponse response) {
+
+    orchestrator.respondWith(uriInfo, resource, response);
   }
 
   public Single<ExamplesEntryPointResource> getUpstreamEntryPoint() {
+    if (upstreamEntryPoint == null) {
+      upstreamEntryPoint = orchestrator.getEntryPoint(ExamplesEntryPointResource.class);
+    }
     return upstreamEntryPoint;
   }
 
@@ -84,4 +101,5 @@ public class ExampleServiceRequestContext {
   public String getBundleVersion() {
     return bundleInfo.getBundleVersion();
   }
+
 }

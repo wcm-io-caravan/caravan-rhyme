@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
+import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
@@ -28,6 +30,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceScope;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import com.damnhandy.uri.template.UriTemplate;
 
@@ -45,19 +54,27 @@ import io.wcm.caravan.hal.resource.Link;
  * The advantage is that you only have a single constructor and final fields,
  * the disadvantage is that the JaxRsLinkBuilder must assume that the fields have the exact same name as the parameters
  */
-@Path("/collections/items/{index}")
+@Component(service = DelayableItemResourceImpl.class, scope = ServiceScope.PROTOTYPE)
+@JaxrsResource
+@Path(SERVICE_PATH + "/collections/items/{index}")
 public class DelayableItemResourceImpl implements ItemResource, LinkableResource, EmbeddableResource {
 
-  private final ExampleServiceRequestContext context;
+  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+  private ExampleServiceRequestContext context;
 
-  private final Integer index;
-  private final Integer delayMs;
+  @PathParam("index")
+  private Integer index;
+
+  @QueryParam("delayMs")
+  private Integer delayMs;
 
   private boolean embedded;
 
-  public DelayableItemResourceImpl(@Context ExampleServiceRequestContext context,
-      @PathParam("index") Integer index,
-      @QueryParam("delayMs") Integer delayMs) {
+  public DelayableItemResourceImpl() {
+    // the parameterless constructor required for JAX-RS to instantiate this resource
+  }
+
+  public DelayableItemResourceImpl(ExampleServiceRequestContext context, Integer index, Integer delayMs) {
 
     this.context = context;
     this.index = index;
@@ -133,8 +150,8 @@ public class DelayableItemResourceImpl implements ItemResource, LinkableResource
   }
 
   @GET
-  public void get(@Suspended AsyncResponse response) {
-    context.respondWith(this, response);
+  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
+    context.respondWith(uriInfo, this, response);
   }
 
 }

@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors;
 
+import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,6 +30,12 @@ import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceScope;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
+
 import io.reactivex.Maybe;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
@@ -36,19 +44,31 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServ
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/errors/halApiClient")
+@Component(service = HalApiClientErrorResourceImpl.class, scope = ServiceScope.PROTOTYPE)
+@JaxrsResource
+@Path(SERVICE_PATH + "/errors/halApiClient")
 public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableResource {
 
-  private final ExampleServiceRequestContext context;
+  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+  private ExampleServiceRequestContext context;
 
-  private final Integer statusCode;
-  private final String message;
-  private final Boolean withCause;
+  @QueryParam("statusCode")
+  @DefaultValue("404")
+  private Integer statusCode;
 
-  public HalApiClientErrorResourceImpl(@Context ExampleServiceRequestContext context,
-      @QueryParam("statusCode") @DefaultValue("404") Integer statusCode,
-      @QueryParam("message") @DefaultValue("error message") String message,
-      @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
+  @QueryParam("message")
+  @DefaultValue("error message")
+  private String message;
+
+  @QueryParam("withCause")
+  @DefaultValue("false")
+  private Boolean withCause;
+
+  public HalApiClientErrorResourceImpl() {
+
+  }
+
+  public HalApiClientErrorResourceImpl(ExampleServiceRequestContext context, Integer statusCode, String message, Boolean withCause) {
     this.context = context;
 
     this.statusCode = statusCode;
@@ -74,7 +94,7 @@ public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableRes
 
   @GET
   public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(this, response);
+    context.respondWith(uriInfo, this, response);
   }
 
 }

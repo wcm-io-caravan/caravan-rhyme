@@ -21,7 +21,6 @@
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 
 import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.core.UriInfo;
 
@@ -29,51 +28,26 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.EvenAndOddItemsResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ClientItemResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.DelayableCollectionResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.DelayableItemResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ErrorsExamplesResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.HalApiClientErrorResourceImpl;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
 import io.wcm.caravan.hal.microservices.orchestrator.UpstreamServiceRegistry;
-import io.wcm.caravan.jaxrs.publisher.JaxRsClassesProvider;
 
 /**
  * An OSGI service that register all classes that should be managed by JAX-RS (with request-scope).
  */
-@Component(service = { JaxRsClassesProvider.class, UpstreamServiceRegistry.class }, immediate = true)
-public class ExampleServiceOsgiComponent implements JaxRsClassesProvider, UpstreamServiceRegistry {
+@Component(service = { UpstreamServiceRegistry.class }, immediate = true)
+public class ExampleServiceOsgiComponent implements UpstreamServiceRegistry {
 
   @Reference
   private JaxRsBundleInfo bundleInfo;
 
   @Override
-  public Set<Class<?>> getClasses() {
-
-    return ImmutableSet.of(ExampleServiceRequestContext.class, ExamplesEntryPointResourceImpl.class,
-        // collections
-        CollectionExamplesResourceImpl.class, DelayableCollectionResourceImpl.class, DelayableItemResourceImpl.class,
-        ClientCollectionResourceImpl.class, ClientItemResourceImpl.class,
-        // caching
-        CachingExamplesResourceImpl.class, EvenAndOddItemsResourceImpl.class,
-        // errors
-        ErrorsExamplesResourceImpl.class, HalApiClientErrorResourceImpl.class, ServerSideErrorResourceImpl.class);
-  }
-
-  @Override
   public Single<Map<Class, String>> getUpstreamServiceIds(UriInfo infomingRequestUri) {
 
-    return Single.just(ImmutableMap.of(ExamplesEntryPointResource.class, bundleInfo.getApplicationPath()));
+    return Single.just(ImmutableMap.of(ExamplesEntryPointResource.class, ExamplesEntryPointResourceImpl.SERVICE_PATH));
   }
 
   @Override

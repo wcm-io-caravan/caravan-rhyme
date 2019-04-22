@@ -19,12 +19,21 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
+import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
+
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceScope;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -39,16 +48,22 @@ import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/collection/client/items")
+@Component(service = ClientCollectionResourceImpl.class, scope = ServiceScope.PROTOTYPE)
+@JaxrsResource
+@Path(SERVICE_PATH + "/collection/client/items")
 public class ClientCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
-  private final ExampleServiceRequestContext context;
+  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+  private ExampleServiceRequestContext context;
 
-  private final CollectionParametersImpl params;
+  @BeanParam
+  private CollectionParametersImpl params;
 
-  public ClientCollectionResourceImpl(@Context ExampleServiceRequestContext context,
-      @BeanParam CollectionParametersImpl parameters) {
+  public ClientCollectionResourceImpl() {
 
+  }
+
+  public ClientCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
     this.context = context;
     this.params = parameters;
   }
@@ -97,8 +112,8 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
   }
 
   @GET
-  public void get(@Suspended AsyncResponse response) {
-    context.respondWith(this, response);
+  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
+    context.respondWith(uriInfo, this, response);
   }
 
   public static class EmbeddedItemResourceImpl implements ItemResource, EmbeddableResource {

@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching;
 
+import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
 import static io.wcm.caravan.hal.microservices.util.RxJavaTransformers.filterWith;
 
 import java.util.function.Function;
@@ -29,6 +30,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceScope;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -46,15 +54,22 @@ import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/caching/evenAndOdd")
+@Component(service = EvenAndOddItemsResourceImpl.class, scope = ServiceScope.PROTOTYPE)
+@JaxrsResource
+@Path(SERVICE_PATH + "/caching/evenAndOdd")
 public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, LinkableResource {
 
-  private final ExampleServiceRequestContext context;
+  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+  private ExampleServiceRequestContext context;
 
-  private final CollectionParametersImpl params;
+  @BeanParam
+  private CollectionParametersImpl params;
 
-  public EvenAndOddItemsResourceImpl(@Context ExampleServiceRequestContext context,
-      @BeanParam CollectionParametersImpl parameters) {
+  public EvenAndOddItemsResourceImpl() {
+
+  }
+
+  public EvenAndOddItemsResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
 
     this.context = context;
     this.params = parameters;
@@ -114,8 +129,8 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
   }
 
   @GET
-  public void get(@Suspended AsyncResponse response) {
-    context.respondWith(this, response);
+  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
+    context.respondWith(uriInfo, this, response);
   }
 
   static class EmbeddedCollectionResourceImpl implements ItemCollectionResource, EmbeddableResource {

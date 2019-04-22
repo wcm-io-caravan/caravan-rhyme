@@ -24,6 +24,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceScope;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
@@ -37,12 +44,21 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.Err
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("")
+@Component(service = ExamplesEntryPointResourceImpl.class, scope = ServiceScope.PROTOTYPE)
+@JaxrsResource
+@Path(ExamplesEntryPointResourceImpl.SERVICE_PATH)
 public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResource, LinkableResource {
 
-  private final ExampleServiceRequestContext context;
+  public static final String SERVICE_PATH = "/caravan/hal/sample-service";
 
-  public ExamplesEntryPointResourceImpl(@Context ExampleServiceRequestContext context) {
+  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+  private ExampleServiceRequestContext context;
+
+  public ExamplesEntryPointResourceImpl() {
+
+  }
+
+  public ExamplesEntryPointResourceImpl(ExampleServiceRequestContext context) {
     this.context = context;
   }
 
@@ -70,11 +86,16 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
 
 
   @GET
-  public void get(@Suspended AsyncResponse response) {
+  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
+
+    if (context == null) {
+      response.resume("ExampleServiceRequestContext is null!");
+      return;
+    }
 
     context.limitMaxAge(60);
 
-    context.respondWith(this, response);
+    context.respondWith(uriInfo, this, response);
   }
 
 

@@ -19,11 +19,20 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching;
 
+import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceScope;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
@@ -34,12 +43,19 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEn
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/caching")
+@Component(service = CachingExamplesResourceImpl.class, scope = ServiceScope.PROTOTYPE)
+@JaxrsResource
+@Path(SERVICE_PATH + "/caching")
 public class CachingExamplesResourceImpl implements CachingExamplesResource, LinkableResource {
 
-  private final ExampleServiceRequestContext context;
+  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+  private ExampleServiceRequestContext context;
 
-  public CachingExamplesResourceImpl(@Context ExampleServiceRequestContext context) {
+  public CachingExamplesResourceImpl() {
+
+  }
+
+  public CachingExamplesResourceImpl(ExampleServiceRequestContext context) {
     this.context = context;
   }
 
@@ -61,8 +77,8 @@ public class CachingExamplesResourceImpl implements CachingExamplesResource, Lin
   }
 
   @GET
-  public void get(@Suspended AsyncResponse response) {
-    context.respondWith(this, response);
+  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
+    context.respondWith(uriInfo, this, response);
   }
 
 

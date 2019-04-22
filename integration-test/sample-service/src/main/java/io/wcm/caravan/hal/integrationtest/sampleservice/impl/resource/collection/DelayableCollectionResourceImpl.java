@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
+import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
+
 import javax.annotation.PostConstruct;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
@@ -26,6 +28,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceScope;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -41,10 +50,12 @@ import io.wcm.caravan.hal.resource.Link;
  * The advantage is that the JaxRsLinkBuilder can see which field belongs to which param by reflection
  * the disadvantage is that you need multiple constructors, a common init method and cannot use final fields
  */
-@Path("/collections/items")
+@Component(service = DelayableCollectionResourceImpl.class, scope = ServiceScope.PROTOTYPE)
+@JaxrsResource
+@Path(SERVICE_PATH + "/collections/items")
 public class DelayableCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
-  @Context
+  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
   private ExampleServiceRequestContext context;
 
   @BeanParam
@@ -108,8 +119,8 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
   }
 
   @GET
-  public void get(@Suspended AsyncResponse response) {
-    context.respondWith(this, response);
+  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
+    context.respondWith(uriInfo, this, response);
   }
 
 
