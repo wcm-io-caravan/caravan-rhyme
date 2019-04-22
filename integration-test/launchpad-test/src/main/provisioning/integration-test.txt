@@ -12,7 +12,6 @@
   com.fasterxml.jackson.core/jackson-annotations
   com.fasterxml.jackson.core/jackson-databind
   commons-beanutils/commons-beanutils
-  javax.ws.rs/javax.ws.rs-api
   javax.annotation/javax.annotation-api
   org.apache.commons/commons-lang3/3.3.2
   org.apache.httpcomponents/httpcore-osgi
@@ -21,7 +20,6 @@
   org.apache.httpcomponents/httpcore-nio
   org.codehaus.jackson/jackson-core-asl/1.9.13
   org.codehaus.jackson/jackson-mapper-asl/1.9.13
-  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.jersey
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.hibernate-validator
 
   # RxJava
@@ -41,7 +39,6 @@
   io.wcm.caravan/io.wcm.caravan.hal.microservices.framework
   io.wcm.caravan/io.wcm.caravan.hal.integration-test.sample-service
   io.wcm.caravan/io.wcm.caravan.io.http
-  io.wcm.caravan/io.wcm.caravan.jaxrs.publisher
   io.wcm.caravan/io.wcm.caravan.pipeline.api
   io.wcm.caravan/io.wcm.caravan.pipeline.impl
   io.wcm.caravan/io.wcm.caravan.pipeline.cache.guava
@@ -57,6 +54,18 @@
   io.dropwizard.metrics/metrics-servlet
   io.dropwizard.metrics/metrics-servlets
   io.dropwizard.metrics/metrics-logback
+
+  # JAX RS Whiteboard (and additional required bundles)
+  org.apache.aries.jax.rs/org.apache.aries.jax.rs.whiteboard/1.0.4
+  org.apache.aries.spec/org.apache.aries.javax.jax.rs-api/1.0.0
+  org.osgi/org.osgi.util.promise/1.1.0
+  org.osgi/org.osgi.util.function/1.1.0
+  org.osgi/org.osgi.service.cm/1.6.0
+  org.osgi/org.osgi.service.http/1.2.1
+  org.osgi/org.osgi.service.http.whiteboard/1.1.0
+  org.osgi/org.osgi.service.jaxrs/1.0.0
+  org.apache.servicemix.specs/org.apache.servicemix.specs.annotation-api-1.3/1.3_1
+  org.apache.felix/org.apache.felix.http.whiteboard/4.0.0
 
 [configurations]
   io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig-localhost
