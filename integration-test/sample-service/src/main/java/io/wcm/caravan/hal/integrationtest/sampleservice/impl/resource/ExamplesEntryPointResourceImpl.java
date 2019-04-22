@@ -30,6 +30,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceScope;
 import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Single;
@@ -37,6 +38,7 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointRe
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
@@ -46,10 +48,9 @@ import io.wcm.caravan.hal.resource.Link;
 
 @Component(service = ExamplesEntryPointResourceImpl.class, scope = ServiceScope.PROTOTYPE)
 @JaxrsResource
-@Path(ExamplesEntryPointResourceImpl.SERVICE_PATH)
+@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
+@Path("")
 public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResource, LinkableResource {
-
-  public static final String SERVICE_PATH = "/caravan/hal/sample-service";
 
   @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
   private ExampleServiceRequestContext context;

@@ -19,7 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching;
 
-import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
 import static io.wcm.caravan.hal.microservices.util.RxJavaTransformers.filterWith;
 
 import java.util.function.Function;
@@ -36,6 +35,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceScope;
 import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Maybe;
@@ -46,6 +46,7 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.EvenOddItems
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
@@ -56,7 +57,8 @@ import io.wcm.caravan.hal.resource.Link;
 
 @Component(service = EvenAndOddItemsResourceImpl.class, scope = ServiceScope.PROTOTYPE)
 @JaxrsResource
-@Path(SERVICE_PATH + "/caching/evenAndOdd")
+@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
+@Path("/caching/evenAndOdd")
 public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, LinkableResource {
 
   @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)

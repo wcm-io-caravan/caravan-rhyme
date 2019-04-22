@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors;
 
-import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
@@ -32,18 +30,21 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceScope;
 import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
 @Component(service = ErrorsExamplesResourceImpl.class, scope = ServiceScope.PROTOTYPE)
 @JaxrsResource
-@Path(SERVICE_PATH + "/errors")
+@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
+@Path("/errors")
 public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, LinkableResource {
 
   @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)

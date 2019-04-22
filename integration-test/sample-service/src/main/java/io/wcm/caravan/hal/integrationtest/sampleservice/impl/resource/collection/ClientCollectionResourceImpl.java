@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
-import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
-
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,6 +31,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceScope;
 import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Maybe;
@@ -43,6 +42,7 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemColle
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
@@ -50,7 +50,8 @@ import io.wcm.caravan.hal.resource.Link;
 
 @Component(service = ClientCollectionResourceImpl.class, scope = ServiceScope.PROTOTYPE)
 @JaxrsResource
-@Path(SERVICE_PATH + "/collection/client/items")
+@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
+@Path("/collection/client/items")
 public class ClientCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
   @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)

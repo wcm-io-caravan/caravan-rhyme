@@ -31,7 +31,6 @@ import com.google.common.collect.ImmutableMap;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
 import io.wcm.caravan.hal.microservices.orchestrator.UpstreamServiceRegistry;
 
@@ -47,7 +46,7 @@ public class ExampleServiceOsgiComponent implements UpstreamServiceRegistry {
   @Override
   public Single<Map<Class, String>> getUpstreamServiceIds(UriInfo infomingRequestUri) {
 
-    return Single.just(ImmutableMap.of(ExamplesEntryPointResource.class, ExamplesEntryPointResourceImpl.SERVICE_PATH));
+    return Single.just(ImmutableMap.of(ExamplesEntryPointResource.class, ExampleServiceApplication.BASE_PATH));
   }
 
   @Override

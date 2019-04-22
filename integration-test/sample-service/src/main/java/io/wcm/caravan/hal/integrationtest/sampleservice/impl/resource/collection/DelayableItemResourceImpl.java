@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
-import static io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl.SERVICE_PATH;
-
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
@@ -36,6 +34,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceScope;
 import org.osgi.service.component.annotations.ServiceScope;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import com.damnhandy.uri.template.UriTemplate;
@@ -43,6 +42,7 @@ import com.damnhandy.uri.template.UriTemplate;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
+import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
@@ -56,7 +56,8 @@ import io.wcm.caravan.hal.resource.Link;
  */
 @Component(service = DelayableItemResourceImpl.class, scope = ServiceScope.PROTOTYPE)
 @JaxrsResource
-@Path(SERVICE_PATH + "/collections/items/{index}")
+@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
+@Path("/collections/items/{index}")
 public class DelayableItemResourceImpl implements ItemResource, LinkableResource, EmbeddableResource {
 
   @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
