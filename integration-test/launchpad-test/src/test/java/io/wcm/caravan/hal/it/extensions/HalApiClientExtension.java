@@ -1,7 +1,6 @@
 package io.wcm.caravan.hal.it.extensions;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -23,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.Single;
 import io.reactivex.subjects.SingleSubject;
 import io.wcm.caravan.hal.it.TestEnvironmentConstants;
-import io.wcm.caravan.hal.microservices.api.client.BinaryResourceLoader;
 import io.wcm.caravan.hal.microservices.api.client.HalApiClient;
 import io.wcm.caravan.hal.microservices.api.client.HalApiClientException;
 import io.wcm.caravan.hal.microservices.api.client.JsonResourceLoader;
@@ -47,10 +45,10 @@ public class HalApiClientExtension implements ParameterResolver {
 
     RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
-    return HalApiClient.create(loader, loader, metrics);
+    return HalApiClient.create(loader, metrics);
   }
 
-  private static class ApacheAsyncJsonResourceLoader implements JsonResourceLoader, BinaryResourceLoader {
+  private static class ApacheAsyncJsonResourceLoader implements JsonResourceLoader {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final JsonFactory JSON_FACTORY = new JsonFactory(OBJECT_MAPPER);
@@ -126,11 +124,6 @@ public class HalApiClientExtension implements ParameterResolver {
         e.printStackTrace();
       }
       return null;
-    }
-
-    @Override
-    public Single<InputStream> loadBinaryResource(String uri) {
-      throw new UnsupportedOperationException("not implemented");
     }
   }
 }
