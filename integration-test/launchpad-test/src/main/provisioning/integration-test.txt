@@ -56,8 +56,8 @@
   io.dropwizard.metrics/metrics-logback
 
   # JAX RS Whiteboard (and additional required bundles)
-  org.apache.aries.jax.rs/org.apache.aries.jax.rs.whiteboard/1.0.4
-  org.apache.aries.spec/org.apache.aries.javax.jax.rs-api/1.0.0
+  org.apache.aries.jax.rs/org.apache.aries.jax.rs.whiteboard/1.0.6
+  org.apache.aries.spec/org.apache.aries.javax.jax.rs-api/1.0.4
   org.osgi/org.osgi.util.promise/1.1.0
   org.osgi/org.osgi.util.function/1.1.0
   org.osgi/org.osgi.service.cm/1.6.0
