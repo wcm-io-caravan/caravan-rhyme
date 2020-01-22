@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.hal.it.tests;
 
+import static io.wcm.caravan.hal.api.relations.StandardRelations.VIA;
 import static io.wcm.caravan.hal.it.TestEnvironmentConstants.SERVER_URL;
 import static io.wcm.caravan.hal.it.TestEnvironmentConstants.SERVICE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -117,7 +118,13 @@ public class HttpErrorResourcesIT {
 
     HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
 
-    HalResource cause = ex.getErrorResponse().getBody().getEmbeddedResource(VndErrorRelations.ERRORS);
+    HalResource vndBody = ex.getErrorResponse().getBody();
+
+    HalResource cause = vndBody.getEmbeddedResource(VndErrorRelations.ERRORS);
     assertThat(cause).isNotNull();
+
+    Link viaLink = vndBody.getLink(VIA);
+    assertThat(viaLink).isNotNull();
+    assertThat(viaLink.getHref()).startsWith("/caravan/hal/sample-service/errors/serverSide?");
   }
 }
