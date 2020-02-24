@@ -33,7 +33,7 @@
   <version>1-SNAPSHOT</version>
   <packaging>slingstart</packaging>
 
-  <name>HAL JAX-RS Server Integration Test Launchpad</name>
+  <name>Reactive HAL Microservices Integration Test Launchpad</name>
   <description>
     Builds a bundle with Sling server-side tests, and executes them via
     a remote test proxy that runs in the integration-tests phase.
