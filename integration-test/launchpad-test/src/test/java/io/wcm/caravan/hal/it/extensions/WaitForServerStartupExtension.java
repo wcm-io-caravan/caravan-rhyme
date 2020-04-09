@@ -41,9 +41,9 @@ public class WaitForServerStartupExtension implements BeforeAllCallback {
         assertHalResourceFoundAt(SERVICE_ID);
         return;
       }
-      catch (Exception e) {
+      catch (Exception | AssertionError e) {
         System.err.println("Caught " + e.getClass().getSimpleName()
-            + " waiting for server to start up before starting tests, will try again...");
+            + " while waiting for server to start up before running tests, will try again...");
         try {
           Thread.sleep(1000);
         }
