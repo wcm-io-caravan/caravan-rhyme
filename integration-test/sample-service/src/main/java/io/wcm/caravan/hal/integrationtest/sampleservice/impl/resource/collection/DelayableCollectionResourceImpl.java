@@ -19,28 +19,13 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceScope;
-import org.osgi.service.component.annotations.ServiceScope;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -50,39 +35,21 @@ import io.wcm.caravan.hal.resource.Link;
  * The advantage is that the JaxRsLinkBuilder can see which field belongs to which param by reflection
  * the disadvantage is that you need multiple constructors, a common init method and cannot use final fields
  */
-@Component(service = DelayableCollectionResourceImpl.class, scope = ServiceScope.PROTOTYPE)
-@JaxrsResource
-@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
 @Path("/collections/items")
 public class DelayableCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
-  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-  private ExampleServiceRequestContext context;
+  private final ExampleServiceRequestContext context;
 
-  @BeanParam
-  private CollectionParametersImpl params;
+  private final CollectionParametersImpl params;
 
-  public DelayableCollectionResourceImpl() {
-    // the parameterless constructor required for JAX-RS to instantiate this resource
-  }
-
-  DelayableCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
-
-    // initialise only the variables that would otherwise be injected by Jax-RS
+  public DelayableCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
     this.context = context;
     this.params = parameters;
-
-    // then call the common init method for further initialisation
-    this.init();
-  }
-
-  @PostConstruct
-  void init() {
-    // called by Jax-RS after the field injection has happened (or by the parameterized constructor)s
   }
 
   @Override
   public Maybe<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
+
     return Maybe.just(new DelayableCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
   }
 
@@ -95,6 +62,7 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
 
   @Override
   public Maybe<TitledState> getState() {
+
     return Maybe.empty();
   }
 
@@ -118,11 +86,4 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
     return context.buildLinkTo(this)
         .setTitle(title);
   }
-
-  @GET
-  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(uriInfo, this, response);
-  }
-
-
 }

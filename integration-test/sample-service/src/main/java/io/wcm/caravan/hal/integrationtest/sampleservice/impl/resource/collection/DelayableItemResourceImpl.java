@@ -21,28 +21,15 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collectio
 
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceScope;
-import org.osgi.service.component.annotations.ServiceScope;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import com.damnhandy.uri.template.UriTemplate;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
@@ -54,29 +41,20 @@ import io.wcm.caravan.hal.resource.Link;
  * The advantage is that you only have a single constructor and final fields,
  * the disadvantage is that the JaxRsLinkBuilder must assume that the fields have the exact same name as the parameters
  */
-@Component(service = DelayableItemResourceImpl.class, scope = ServiceScope.PROTOTYPE)
-@JaxrsResource
-@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
 @Path("/collections/items/{index}")
 public class DelayableItemResourceImpl implements ItemResource, LinkableResource, EmbeddableResource {
 
-  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-  private ExampleServiceRequestContext context;
+  private final ExampleServiceRequestContext context;
 
   @PathParam("index")
-  private Integer index;
+  private final Integer index;
 
   @QueryParam("delayMs")
-  private Integer delayMs;
+  private final Integer delayMs;
 
   private boolean embedded;
 
-  public DelayableItemResourceImpl() {
-    // the parameterless constructor required for JAX-RS to instantiate this resource
-  }
-
   public DelayableItemResourceImpl(ExampleServiceRequestContext context, Integer index, Integer delayMs) {
-
     this.context = context;
     this.index = index;
     this.delayMs = delayMs;
@@ -149,10 +127,4 @@ public class DelayableItemResourceImpl implements ItemResource, LinkableResource
     this.embedded = value;
     return this;
   }
-
-  @GET
-  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(uriInfo, this, response);
-  }
-
 }

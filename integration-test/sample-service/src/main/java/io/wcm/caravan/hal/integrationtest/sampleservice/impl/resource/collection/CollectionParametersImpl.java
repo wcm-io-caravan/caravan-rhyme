@@ -68,9 +68,9 @@ public class CollectionParametersImpl implements CollectionParameters {
     return cloned;
   }
 
-  public CollectionParametersImpl withNumItems(Integer numItems) {
+  public CollectionParametersImpl withNumItems(Integer value) {
     CollectionParametersImpl cloned = clone(this);
-    cloned.numItems = numItems;
+    cloned.numItems = value;
     return cloned;
   }
 
@@ -80,9 +80,9 @@ public class CollectionParametersImpl implements CollectionParameters {
     return cloned;
   }
 
-  public CollectionParametersImpl withDelayMs(Integer delayMs) {
+  public CollectionParametersImpl withDelayMs(Integer value) {
     CollectionParametersImpl cloned = clone(this);
-    cloned.delayMs = delayMs;
+    cloned.delayMs = value;
     return cloned;
   }
 }

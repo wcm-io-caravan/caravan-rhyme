@@ -20,19 +20,7 @@
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
 import javax.ws.rs.BeanParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceScope;
-import org.osgi.service.component.annotations.ServiceScope;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -42,27 +30,18 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemColle
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Component(service = ClientCollectionResourceImpl.class, scope = ServiceScope.PROTOTYPE)
-@JaxrsResource
-@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
 @Path("/collection/client/items")
 public class ClientCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
-  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-  private ExampleServiceRequestContext context;
+  private final ExampleServiceRequestContext context;
 
   @BeanParam
-  private CollectionParametersImpl params;
-
-  public ClientCollectionResourceImpl() {
-
-  }
+  private final CollectionParametersImpl params;
 
   public ClientCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
     this.context = context;
@@ -87,6 +66,7 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
   @Override
   public Maybe<TitledState> getState() {
+
     return Maybe.empty();
   }
 
@@ -110,11 +90,6 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
     }
 
     return context.buildLinkTo(this).setTitle(title);
-  }
-
-  @GET
-  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(uriInfo, this, response);
   }
 
   public static class EmbeddedItemResourceImpl implements ItemResource, EmbeddableResource {

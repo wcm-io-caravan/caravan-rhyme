@@ -19,40 +19,19 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceScope;
-import org.osgi.service.component.annotations.ServiceScope;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Component(service = ErrorsExamplesResourceImpl.class, scope = ServiceScope.PROTOTYPE)
-@JaxrsResource
-@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
 @Path("/errors")
 public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, LinkableResource {
 
-  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-  private ExampleServiceRequestContext context;
-
-  public ErrorsExamplesResourceImpl() {
-
-  }
+  private final ExampleServiceRequestContext context;
 
   public ErrorsExamplesResourceImpl(ExampleServiceRequestContext context) {
     this.context = context;
@@ -60,11 +39,13 @@ public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, Linkab
 
   @Override
   public Single<ErrorResource> provokeError(Integer statusCode, String message, Boolean withCause) {
+
     return Single.just(new ServerSideErrorResourceImpl(context, statusCode, message, withCause));
   }
 
   @Override
   public Single<ErrorResource> provokeHttpClientError(Integer statusCode, String message, Boolean withCause) {
+
     return Single.just(new HalApiClientErrorResourceImpl(context, statusCode, message, withCause));
   }
 
@@ -73,10 +54,5 @@ public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, Linkab
 
     return context.buildLinkTo(this)
         .setTitle("Examples for error handling");
-  }
-
-  @GET
-  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(uriInfo, this, response);
   }
 }

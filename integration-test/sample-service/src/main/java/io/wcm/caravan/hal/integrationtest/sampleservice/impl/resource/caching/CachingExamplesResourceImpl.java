@@ -19,42 +19,21 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceScope;
-import org.osgi.service.component.annotations.ServiceScope;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.EvenOddItemsResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Component(service = CachingExamplesResourceImpl.class, scope = ServiceScope.PROTOTYPE)
-@JaxrsResource
-@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
 @Path("/caching")
 public class CachingExamplesResourceImpl implements CachingExamplesResource, LinkableResource {
 
-  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-  private ExampleServiceRequestContext context;
-
-  public CachingExamplesResourceImpl() {
-
-  }
+  private final ExampleServiceRequestContext context;
 
   public CachingExamplesResourceImpl(ExampleServiceRequestContext context) {
     this.context = context;
@@ -62,11 +41,13 @@ public class CachingExamplesResourceImpl implements CachingExamplesResource, Lin
 
   @Override
   public Single<EvenOddItemsResource> getEvenAndOddItems() {
+
     return Single.just(new EvenAndOddItemsResourceImpl(context, null));
   }
 
   @Override
   public Single<ExamplesEntryPointResource> getEntryPoint() {
+
     return Single.just(new ExamplesEntryPointResourceImpl(context));
   }
 
@@ -76,11 +57,4 @@ public class CachingExamplesResourceImpl implements CachingExamplesResource, Lin
     return context.buildLinkTo(this)
         .setTitle("Examples for resources that need local caching to avoid multiple identical requests to upstream server");
   }
-
-  @GET
-  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-    context.respondWith(uriInfo, this, response);
-  }
-
-
 }

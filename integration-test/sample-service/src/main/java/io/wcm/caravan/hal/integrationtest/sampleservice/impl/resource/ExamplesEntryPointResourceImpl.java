@@ -19,26 +19,13 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceScope;
-import org.osgi.service.component.annotations.ServiceScope;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
-import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceApplication;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
@@ -46,18 +33,10 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.Err
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Component(service = ExamplesEntryPointResourceImpl.class, scope = ServiceScope.PROTOTYPE)
-@JaxrsResource
-@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
 @Path("")
 public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResource, LinkableResource {
 
-  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-  private ExampleServiceRequestContext context;
-
-  public ExamplesEntryPointResourceImpl() {
-
-  }
+  private final ExampleServiceRequestContext context;
 
   public ExamplesEntryPointResourceImpl(ExampleServiceRequestContext context) {
     this.context = context;
@@ -65,16 +44,19 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
 
   @Override
   public Single<CollectionExamplesResource> getCollectionExamples() {
+
     return Single.just(new CollectionExamplesResourceImpl(context));
   }
 
   @Override
   public Single<CachingExamplesResource> getCachingExamples() {
+
     return Single.just(new CachingExamplesResourceImpl(context));
   }
 
   @Override
   public Single<ErrorExamplesResource> getErrorExamples() {
+
     return Single.just(new ErrorsExamplesResourceImpl(context));
   }
 
@@ -84,20 +66,4 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
     return context.buildLinkTo(this)
         .setTitle("The HAL API entry point of the " + context.getServiceId() + " service");
   }
-
-
-  @GET
-  public void get(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
-
-    if (context == null) {
-      response.resume("ExampleServiceRequestContext is null!");
-      return;
-    }
-
-    context.limitMaxAge(60);
-
-    context.respondWith(uriInfo, this, response);
-  }
-
-
 }
