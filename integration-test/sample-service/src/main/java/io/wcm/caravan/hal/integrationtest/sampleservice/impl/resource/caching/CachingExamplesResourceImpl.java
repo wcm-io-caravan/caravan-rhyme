@@ -25,6 +25,7 @@ import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.EvenOddItemsResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
@@ -40,7 +41,7 @@ public class CachingExamplesResourceImpl implements CachingExamplesResource, Lin
   }
 
   @Override
-  public Single<EvenOddItemsResource> getEvenAndOddItems() {
+  public Single<EvenOddItemsResource> getEvenAndOddItems(CollectionParameters parameters) {
 
     return Single.just(new EvenAndOddItemsResourceImpl(context, null));
   }

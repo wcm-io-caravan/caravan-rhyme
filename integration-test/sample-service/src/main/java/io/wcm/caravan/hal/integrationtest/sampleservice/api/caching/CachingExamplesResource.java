@@ -22,14 +22,16 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.api.caching;
 import io.reactivex.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
+import io.wcm.caravan.hal.api.annotations.TemplateVariables;
 import io.wcm.caravan.hal.api.relations.StandardRelations;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
+import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionParameters;
 
 @HalApiInterface
 public interface CachingExamplesResource {
 
   @RelatedResource(relation = "examples:evenAndOdd")
-  Single<EvenOddItemsResource> getEvenAndOddItems();
+  Single<EvenOddItemsResource> getEvenAndOddItems(@TemplateVariables CollectionParameters parameters);
 
   @RelatedResource(relation = StandardRelations.INDEX)
   Single<ExamplesEntryPointResource> getEntryPoint();
