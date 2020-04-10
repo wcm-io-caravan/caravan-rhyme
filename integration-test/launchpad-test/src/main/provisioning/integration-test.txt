@@ -28,6 +28,9 @@
   io.reactivex.rxjava2/rxjava
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava
 
+  # ByteBuddy
+  net.bytebuddy/byte-buddy
+
   io.wcm.caravan/io.wcm.caravan.commons.httpasyncclient
   io.wcm.caravan/io.wcm.caravan.commons.httpclient
   io.wcm.caravan/io.wcm.caravan.commons.jsonpath
