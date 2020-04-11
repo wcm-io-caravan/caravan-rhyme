@@ -19,9 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-
 import io.reactivex.Maybe;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
@@ -30,18 +27,12 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServ
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/errors/halApiClient")
 public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
 
-  @QueryParam("statusCode")
   private final Integer statusCode;
-
-  @QueryParam("message")
   private final String message;
-
-  @QueryParam("withCause")
   private final Boolean withCause;
 
   public HalApiClientErrorResourceImpl(ExampleServiceRequestContext context, Integer statusCode, String message, Boolean withCause) {
@@ -63,7 +54,7 @@ public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableRes
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo(this)
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getHalApiClientError(uriInfo, response, statusCode, message, withCause))
         .setTitle("Trigger an error when executing a HTTP request to an upstream server");
   }
 }

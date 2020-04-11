@@ -21,12 +21,6 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collectio
 
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
-import com.damnhandy.uri.template.UriTemplate;
-
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
@@ -41,17 +35,12 @@ import io.wcm.caravan.hal.resource.Link;
  * The advantage is that you only have a single constructor and final fields,
  * the disadvantage is that the JaxRsLinkBuilder must assume that the fields have the exact same name as the parameters
  */
-@Path("/collections/items/{index}")
 public class DelayableItemResourceImpl implements ItemResource, LinkableResource, EmbeddableResource {
 
   private final ExampleServiceRequestContext context;
 
-  @PathParam("index")
   private final Integer index;
-
-  @QueryParam("delayMs")
   private final Integer delayMs;
-
   private boolean embedded;
 
   public DelayableItemResourceImpl(ExampleServiceRequestContext context, Integer index, Integer delayMs) {
@@ -83,25 +72,9 @@ public class DelayableItemResourceImpl implements ItemResource, LinkableResource
   @Override
   public Link createLink() {
 
-    //return buildLinkManually();
-
-    return context.buildLinkTo(this).setTitle(getTitle());
-  }
-
-  private Link buildLinkManually() {
-
-    UriTemplate template = UriTemplate.buildFromTemplate(context.getServiceId() + "/collections/items/{index}{?delayMs,bundleVersion}")
-        .build();
-
-    if (index != null) {
-      template.set("index", index);
-      template.set("delayMs", delayMs);
-    }
-
-    template.set("bundleVersion", context.getBundleVersion());
-
-    String uri = template.expandPartial();
-    return new Link(uri).setTitle(getTitle());
+    return context
+        .buildLinkTo((resource, uriInfo, response) -> resource.getDelayableItem(uriInfo, response, index, delayMs))
+        .setTitle(getTitle());
   }
 
   private String getTitle() {

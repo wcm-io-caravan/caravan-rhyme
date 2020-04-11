@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource;
 
-import javax.ws.rs.Path;
-
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
@@ -33,7 +31,6 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.Err
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("")
 public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
@@ -63,7 +60,7 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo(this)
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getEntryPoint(uriInfo, response))
         .setTitle("The HAL API entry point of the " + context.getServiceId() + " service");
   }
 }

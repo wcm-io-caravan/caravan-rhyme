@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
-import javax.ws.rs.Path;
-
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
@@ -35,7 +33,6 @@ import io.wcm.caravan.hal.resource.Link;
  * The advantage is that the JaxRsLinkBuilder can see which field belongs to which param by reflection
  * the disadvantage is that you need multiple constructors, a common init method and cannot use final fields
  */
-@Path("/collections/items")
 public class DelayableCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
@@ -83,7 +80,7 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
       }
     }
 
-    return context.buildLinkTo(this)
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getDelayableCollection(uriInfo, response, params))
         .setTitle(title);
   }
 }

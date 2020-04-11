@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors;
 
-import javax.ws.rs.Path;
-
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorResource;
@@ -28,7 +26,6 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServ
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/errors")
 public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
@@ -52,7 +49,7 @@ public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, Linkab
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo(this)
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getErrorsExamples(uriInfo, response))
         .setTitle("Examples for error handling");
   }
 }

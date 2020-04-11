@@ -27,7 +27,6 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.Collectio
 public class CollectionParametersImpl implements CollectionParameters {
 
   @QueryParam("numItems")
-  @DefaultValue(value = "0")
   private Integer numItems;
 
   @QueryParam("embedItems")

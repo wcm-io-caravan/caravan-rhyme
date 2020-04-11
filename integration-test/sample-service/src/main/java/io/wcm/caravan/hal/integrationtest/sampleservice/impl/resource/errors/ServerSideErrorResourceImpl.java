@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 
 import io.reactivex.Maybe;
@@ -30,18 +28,12 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServ
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/errors/serverSide")
 public class ServerSideErrorResourceImpl implements ErrorResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
 
-  @QueryParam("statusCode")
   private final Integer statusCode;
-
-  @QueryParam("message")
   private final String message;
-
-  @QueryParam("withCause")
   private final Boolean withCause;
 
   public ServerSideErrorResourceImpl(ExampleServiceRequestContext context, Integer statusCode, String message, Boolean withCause) {
@@ -68,7 +60,7 @@ public class ServerSideErrorResourceImpl implements ErrorResource, LinkableResou
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo(this)
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getServerSideError(uriInfo, response, statusCode, message, withCause))
         .setTitle("Simulate a server-side error with the given status code and message");
   }
 }

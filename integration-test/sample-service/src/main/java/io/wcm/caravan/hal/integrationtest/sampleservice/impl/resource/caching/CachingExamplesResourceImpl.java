@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching;
 
-import javax.ws.rs.Path;
-
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
@@ -31,7 +29,6 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEn
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/caching")
 public class CachingExamplesResourceImpl implements CachingExamplesResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
@@ -55,7 +52,7 @@ public class CachingExamplesResourceImpl implements CachingExamplesResource, Lin
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo(this)
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getCachingExamples(uriInfo, response))
         .setTitle("Examples for resources that need local caching to avoid multiple identical requests to upstream server");
   }
 }

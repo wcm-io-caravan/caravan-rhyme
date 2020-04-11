@@ -23,9 +23,6 @@ import static io.wcm.caravan.hal.microservices.util.RxJavaTransformers.filterWit
 
 import java.util.function.Function;
 
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.Path;
-
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -42,12 +39,10 @@ import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/caching/evenAndOdd")
 public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
 
-  @BeanParam
   private final CollectionParametersImpl params;
 
   public EvenAndOddItemsResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
@@ -106,7 +101,8 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
 
     String title = "An example that loads a collection from upstream service, and separates it into even and odd items";
 
-    return context.buildLinkTo(this).setTitle(title);
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getEvenAndOdd(uriInfo, response, params))
+        .setTitle(title);
   }
 
   static class EmbeddedCollectionResourceImpl implements ItemCollectionResource, EmbeddableResource {

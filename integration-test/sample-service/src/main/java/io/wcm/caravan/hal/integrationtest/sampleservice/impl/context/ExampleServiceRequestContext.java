@@ -39,6 +39,7 @@ import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
+import io.wcm.caravan.hal.microservices.jaxrs.JaxRsLinkBuilder;
 import io.wcm.caravan.hal.microservices.orchestrator.CaravanJaxRsHalOrchestrator;
 import io.wcm.caravan.hal.resource.Link;
 
@@ -53,7 +54,10 @@ public class ExampleServiceRequestContext {
 
   private Single<ExamplesEntryPointResource> upstreamEntryPoint;
 
-  public ExampleServiceRequestContext() {}
+  private JaxRsLinkBuilder<ExampleServiceJaxRsComponent> linkBuilder;
+
+  public ExampleServiceRequestContext() {
+  }
 
   public ExampleServiceRequestContext(@Context CaravanJaxRsHalOrchestrator orchestrator, JaxRsBundleInfo bundleInfo) {
 
@@ -63,19 +67,27 @@ public class ExampleServiceRequestContext {
     init();
   }
 
+  public interface ControllerCall {
+
+    void call(ExampleServiceJaxRsComponent resource, UriInfo uriInfo, AsyncResponse response);
+  }
+
   @Activate
   public void init() {
     limitMaxAge((int)TimeUnit.DAYS.toSeconds(365));
-  }
-
-
-  public Link buildLinkTo(LinkableResource targetResource) {
 
     Map<String, Object> fingerPrintingParams = ImmutableMap.of("bundleVersion", bundleInfo.getBundleVersion());
 
-    return orchestrator.createLinkBuilder()
-        .withAdditionalParameters(fingerPrintingParams)
-        .buildLinkTo(targetResource);
+    linkBuilder = JaxRsLinkBuilder.create(ExampleServiceApplication.BASE_PATH, ExampleServiceJaxRsComponent.class)
+        .withAdditionalQueryParameters(fingerPrintingParams);
+
+  }
+
+  public Link buildLinkTo(ControllerCall callToResource) {
+
+    return linkBuilder.buildLinkTo(resource -> {
+      callToResource.call(resource, null, null);
+    });
   }
 
   public void limitMaxAge(int seconds) {

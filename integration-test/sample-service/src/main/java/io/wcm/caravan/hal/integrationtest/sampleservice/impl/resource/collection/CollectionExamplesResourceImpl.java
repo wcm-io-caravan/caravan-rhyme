@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
-import javax.ws.rs.Path;
-
 import io.reactivex.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
@@ -33,7 +31,6 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEn
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/collections")
 public class CollectionExamplesResourceImpl implements CollectionExamplesResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
@@ -81,7 +78,7 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo(this)
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getCollectionExamples(uriInfo, response))
         .setTitle("Examples for handling collections of linked or embedded resources");
   }
 }

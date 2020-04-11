@@ -19,9 +19,6 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection;
 
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.Path;
-
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -35,12 +32,10 @@ import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
 import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
 
-@Path("/collection/client/items")
 public class ClientCollectionResourceImpl implements ItemCollectionResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
 
-  @BeanParam
   private final CollectionParametersImpl params;
 
   public ClientCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
@@ -89,7 +84,8 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
       }
     }
 
-    return context.buildLinkTo(this).setTitle(title);
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getClientCollection(uriInfo, response, params))
+        .setTitle(title);
   }
 
   public static class EmbeddedItemResourceImpl implements ItemResource, EmbeddableResource {

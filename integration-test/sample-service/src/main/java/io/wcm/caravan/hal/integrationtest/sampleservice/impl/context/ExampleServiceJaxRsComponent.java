@@ -134,7 +134,7 @@ public class ExampleServiceJaxRsComponent {
   @GET
   @Path("/errors/halApiClient")
   public void getHalApiClientError(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @QueryParam("statusCode") @DefaultValue("404") Integer statusCode,
+      @QueryParam("statusCode") Integer statusCode,
       @QueryParam("message") @DefaultValue("default error message") String message,
       @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
 
@@ -144,7 +144,7 @@ public class ExampleServiceJaxRsComponent {
   @GET
   @Path("/errors/serverSide")
   public void getServerSideError(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @QueryParam("statusCode") @DefaultValue("404") Integer statusCode,
+      @QueryParam("statusCode") Integer statusCode,
       @QueryParam("message") @DefaultValue("default error message") String message,
       @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
 
