@@ -23,7 +23,6 @@
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.hibernate-validator
 
   # RxJava
-  com.github.akarnokd/rxjava3-interop
   org.reactivestreams/reactive-streams
   io.reactivex.rxjava3/rxjava
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava
