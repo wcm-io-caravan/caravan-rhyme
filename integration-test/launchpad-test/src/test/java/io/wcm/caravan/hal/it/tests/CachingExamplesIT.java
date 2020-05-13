@@ -30,8 +30,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.google.common.base.Stopwatch;
 
-import io.reactivex.SingleSource;
-import io.reactivex.functions.Function;
+import io.reactivex.rxjava3.core.SingleSource;
+import io.reactivex.rxjava3.functions.Function;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.EvenOddItemsResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;

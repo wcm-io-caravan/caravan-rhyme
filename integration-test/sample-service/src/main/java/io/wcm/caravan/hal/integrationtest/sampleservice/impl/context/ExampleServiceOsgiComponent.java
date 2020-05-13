@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Reference;
 
 import com.google.common.collect.ImmutableMap;
 
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
 import io.wcm.caravan.hal.microservices.orchestrator.UpstreamServiceRegistry;

@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching;
 
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.EvenOddItemsResource;

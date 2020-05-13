@@ -19,8 +19,8 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.reactivex.Single;
-import io.reactivex.subjects.SingleSubject;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.subjects.SingleSubject;
 import io.wcm.caravan.hal.it.TestEnvironmentConstants;
 import io.wcm.caravan.hal.microservices.api.client.HalApiClient;
 import io.wcm.caravan.hal.microservices.api.client.HalApiClientException;

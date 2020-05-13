@@ -21,7 +21,7 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collectio
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;

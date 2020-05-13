@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors;
 
-import io.reactivex.Maybe;
+import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorResource;

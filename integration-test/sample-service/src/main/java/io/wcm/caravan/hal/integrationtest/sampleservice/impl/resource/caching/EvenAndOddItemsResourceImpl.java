@@ -23,9 +23,9 @@ import static io.wcm.caravan.hal.microservices.util.RxJavaTransformers.filterWit
 
 import java.util.function.Function;
 
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.EvenOddItemsResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;

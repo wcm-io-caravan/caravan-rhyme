@@ -19,8 +19,8 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.api.collection;
 
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
 import io.wcm.caravan.hal.api.annotations.ResourceState;

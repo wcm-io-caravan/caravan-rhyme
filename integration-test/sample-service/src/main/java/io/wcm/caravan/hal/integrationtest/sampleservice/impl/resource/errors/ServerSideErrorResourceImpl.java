@@ -21,7 +21,7 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors;
 
 import javax.ws.rs.WebApplicationException;
 
-import io.reactivex.Maybe;
+import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
