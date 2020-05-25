@@ -19,15 +19,22 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.api;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.api.annotations.HalApiInterface;
 import io.wcm.caravan.hal.api.annotations.RelatedResource;
+import io.wcm.caravan.hal.api.annotations.ResourceState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
 
 @HalApiInterface
 public interface ExamplesEntryPointResource {
+
+  @ResourceState
+  Maybe<ObjectNode> getState();
 
   @RelatedResource(relation = "examples:collections")
   Single<CollectionExamplesResource> getCollectionExamples();

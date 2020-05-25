@@ -19,68 +19,49 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 
-import static org.osgi.service.component.annotations.ReferenceScope.PROTOTYPE_REQUIRED;
-
+import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ServiceScope;
 
 import com.google.common.collect.ImmutableMap;
 
-import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
-import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
+import io.wcm.caravan.hal.microservices.caravan.CaravanReha;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsLinkBuilder;
-import io.wcm.caravan.hal.microservices.orchestrator.CaravanJaxRsHalOrchestrator;
 import io.wcm.caravan.hal.resource.Link;
 
-@Component(service = ExampleServiceRequestContext.class, scope = ServiceScope.PROTOTYPE)
 public class ExampleServiceRequestContext {
 
-  @Reference(scope = PROTOTYPE_REQUIRED)
-  private CaravanJaxRsHalOrchestrator orchestrator;
-
-  @Reference
+  private CaravanReha reha;
   private JaxRsBundleInfo bundleInfo;
 
-  private Single<ExamplesEntryPointResource> upstreamEntryPoint;
+  private ExamplesEntryPointResource upstreamEntryPoint;
 
   private JaxRsLinkBuilder<ExampleServiceJaxRsComponent> linkBuilder;
 
-  public ExampleServiceRequestContext() {
-  }
-
-  public ExampleServiceRequestContext(@Context CaravanJaxRsHalOrchestrator orchestrator, JaxRsBundleInfo bundleInfo) {
-
-    this.orchestrator = orchestrator;
+  public ExampleServiceRequestContext(CaravanReha reha, JaxRsBundleInfo bundleInfo) {
+    this.reha = reha;
     this.bundleInfo = bundleInfo;
 
-    init();
+    this.linkBuilder = createLinkBuilder(bundleInfo);
+
+    limitMaxAge(Duration.ofDays(365));
+  }
+
+  private static JaxRsLinkBuilder<ExampleServiceJaxRsComponent> createLinkBuilder(JaxRsBundleInfo bundleInfo) {
+
+    Map<String, Object> fingerPrintingParams = ImmutableMap.of("bundleVersion", bundleInfo.getBundleVersion());
+
+    return JaxRsLinkBuilder.create(bundleInfo.getApplicationPath(), ExampleServiceJaxRsComponent.class)
+        .withAdditionalQueryParameters(fingerPrintingParams);
   }
 
   public interface ControllerCall {
 
     void call(ExampleServiceJaxRsComponent resource, UriInfo uriInfo, AsyncResponse response);
-  }
-
-  @Activate
-  public void init() {
-    limitMaxAge((int)TimeUnit.DAYS.toSeconds(365));
-
-    Map<String, Object> fingerPrintingParams = ImmutableMap.of("bundleVersion", bundleInfo.getBundleVersion());
-
-    linkBuilder = JaxRsLinkBuilder.create(ExampleServiceApplication.BASE_PATH, ExampleServiceJaxRsComponent.class)
-        .withAdditionalQueryParameters(fingerPrintingParams);
-
   }
 
   public Link buildLinkTo(ControllerCall callToResource) {
@@ -90,18 +71,14 @@ public class ExampleServiceRequestContext {
     });
   }
 
-  public void limitMaxAge(int seconds) {
-    orchestrator.limitOutputMaxAge(seconds);
+  public void limitMaxAge(Duration duration) {
+    reha.setResponseMaxAge(duration);
   }
 
-  public void respondWith(UriInfo uriInfo, LinkableResource resource, AsyncResponse response) {
-
-    orchestrator.respondWith(uriInfo, resource, response);
-  }
-
-  public Single<ExamplesEntryPointResource> getUpstreamEntryPoint() {
+  public ExamplesEntryPointResource getUpstreamEntryPoint() {
     if (upstreamEntryPoint == null) {
-      upstreamEntryPoint = orchestrator.getEntryPoint(ExamplesEntryPointResource.class);
+      String serviceId = getServiceId();
+      upstreamEntryPoint = reha.getEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class);
     }
     return upstreamEntryPoint;
   }
@@ -109,9 +86,4 @@ public class ExampleServiceRequestContext {
   public String getServiceId() {
     return bundleInfo.getApplicationPath();
   }
-
-  public String getBundleVersion() {
-    return bundleInfo.getBundleVersion();
-  }
-
 }

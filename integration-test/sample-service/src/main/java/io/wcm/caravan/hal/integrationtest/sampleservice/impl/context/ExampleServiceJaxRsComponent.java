@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.context;
 
+import java.util.function.Function;
+
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -32,7 +34,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceScope;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
@@ -49,29 +50,46 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ErrorsExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.HalApiClientErrorResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
+import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
+import io.wcm.caravan.hal.microservices.caravan.CaravanReha;
+import io.wcm.caravan.hal.microservices.caravan.CaravanRehaBuilder;
+import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
 
 @Component(service = ExampleServiceJaxRsComponent.class, scope = ServiceScope.PROTOTYPE)
 @JaxrsResource
 @JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
 public class ExampleServiceJaxRsComponent {
 
-  @Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-  private ExampleServiceRequestContext context;
+  @Reference
+  private CaravanRehaBuilder rehaBuilder;
+
+  @Reference
+  private JaxRsBundleInfo bundleInfo;
+
+  private ExampleServiceRequestContext createRequestContext(CaravanReha reha) {
+    return new ExampleServiceRequestContext(reha, bundleInfo);
+  }
+
+  private void renderResource(UriInfo uriInfo, AsyncResponse response, Function<ExampleServiceRequestContext, LinkableResource> resourceImplConstructor) {
+
+    rehaBuilder.buildForRequestTo(uriInfo, response)
+        .processRequest(this::createRequestContext, resourceImplConstructor);
+  }
 
   @GET
   @Path("")
   public void getEntryPoint(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
 
-    context.limitMaxAge(60);
-
-    context.respondWith(uriInfo, new ExamplesEntryPointResourceImpl(context), response);
+    renderResource(uriInfo, response,
+        request -> new ExamplesEntryPointResourceImpl(request));
   }
 
   @GET
   @Path("/caching")
   public void getCachingExamples(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
 
-    context.respondWith(uriInfo, new CachingExamplesResourceImpl(context), response);
+    renderResource(uriInfo, response,
+        request -> new CachingExamplesResourceImpl(request));
   }
 
   @GET
@@ -79,14 +97,16 @@ public class ExampleServiceJaxRsComponent {
   public void getEvenAndOdd(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
       @BeanParam CollectionParametersImpl parameters) {
 
-    context.respondWith(uriInfo, new EvenAndOddItemsResourceImpl(context, parameters), response);
+    renderResource(uriInfo, response,
+        request -> new EvenAndOddItemsResourceImpl(request, parameters));
   }
 
   @GET
   @Path("/collections")
   public void getCollectionExamples(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
 
-    context.respondWith(uriInfo, new CollectionExamplesResourceImpl(context), response);
+    renderResource(uriInfo, response,
+        request -> new CollectionExamplesResourceImpl(request));
   }
 
   @GET
@@ -94,7 +114,8 @@ public class ExampleServiceJaxRsComponent {
   public void getDelayableCollection(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
       @BeanParam CollectionParametersImpl parameters) {
 
-    context.respondWith(uriInfo, new DelayableCollectionResourceImpl(context, parameters), response);
+    renderResource(uriInfo, response,
+        request -> new DelayableCollectionResourceImpl(request, parameters));
   }
 
   @GET
@@ -103,7 +124,8 @@ public class ExampleServiceJaxRsComponent {
       @PathParam("index") Integer index,
       @QueryParam("delayMs") Integer delayMs) {
 
-    context.respondWith(uriInfo, new DelayableItemResourceImpl(context, index, delayMs), response);
+    renderResource(uriInfo, response,
+        request -> new DelayableItemResourceImpl(request, index, delayMs));
   }
 
   @GET
@@ -111,7 +133,8 @@ public class ExampleServiceJaxRsComponent {
   public void getClientCollection(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
       @BeanParam CollectionParametersImpl parameters) {
 
-    context.respondWith(uriInfo, new ClientCollectionResourceImpl(context, parameters), response);
+    renderResource(uriInfo, response,
+        request -> new ClientCollectionResourceImpl(request, parameters));
   }
 
   @GET
@@ -120,7 +143,8 @@ public class ExampleServiceJaxRsComponent {
       @PathParam("index") Integer index,
       @QueryParam("delayMs") Integer delayMs) {
 
-    context.respondWith(uriInfo, new ClientItemResourceImpl(context, index, delayMs), response);
+    renderResource(uriInfo, response,
+        request -> new ClientItemResourceImpl(request, index, delayMs));
   }
 
 
@@ -128,7 +152,8 @@ public class ExampleServiceJaxRsComponent {
   @Path("/errors")
   public void getErrorsExamples(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
 
-    context.respondWith(uriInfo, new ErrorsExamplesResourceImpl(context), response);
+    renderResource(uriInfo, response,
+        request -> new ErrorsExamplesResourceImpl(request));
   }
 
   @GET
@@ -138,7 +163,8 @@ public class ExampleServiceJaxRsComponent {
       @QueryParam("message") @DefaultValue("default error message") String message,
       @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
 
-    context.respondWith(uriInfo, new HalApiClientErrorResourceImpl(context, statusCode, message, withCause), response);
+    renderResource(uriInfo, response,
+        request -> new HalApiClientErrorResourceImpl(request, statusCode, message, withCause));
   }
 
   @GET
@@ -148,6 +174,7 @@ public class ExampleServiceJaxRsComponent {
       @QueryParam("message") @DefaultValue("default error message") String message,
       @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
 
-    context.respondWith(uriInfo, new ServerSideErrorResourceImpl(context, statusCode, message, withCause), response);
+    renderResource(uriInfo, response,
+        request -> new ServerSideErrorResourceImpl(request, statusCode, message, withCause));
   }
 }

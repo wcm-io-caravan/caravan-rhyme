@@ -79,7 +79,7 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
   private Observable<ItemResource> fetchAllItems() {
 
     return context.getUpstreamEntryPoint()
-        .flatMap(ExamplesEntryPointResource::getCollectionExamples)
+        .getCollectionExamples()
         .flatMap(r -> r.getCollection(params))
         .flatMapObservable(ItemCollectionResource::getItems);
   }

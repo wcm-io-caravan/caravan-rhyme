@@ -22,7 +22,6 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collectio
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
@@ -53,7 +52,7 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
   public Observable<ItemResource> getItems() {
 
     return context.getUpstreamEntryPoint()
-        .flatMap(ExamplesEntryPointResource::getCollectionExamples)
+        .getCollectionExamples()
         .flatMap(res -> res.getCollection(params))
         .flatMapObservable(ItemCollectionResource::getItems)
         .map(EmbeddedItemResourceImpl::new);

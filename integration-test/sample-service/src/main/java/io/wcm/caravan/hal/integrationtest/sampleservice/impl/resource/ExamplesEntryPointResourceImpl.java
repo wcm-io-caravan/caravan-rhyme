@@ -19,6 +19,11 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource;
 
+import java.time.Duration;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamplesResource;
@@ -37,6 +42,12 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
 
   public ExamplesEntryPointResourceImpl(ExampleServiceRequestContext context) {
     this.context = context;
+  }
+
+  @Override
+  public Maybe<ObjectNode> getState() {
+    context.limitMaxAge(Duration.ofSeconds(60));
+    return Maybe.empty();
   }
 
   @Override
@@ -63,4 +74,5 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
     return context.buildLinkTo((resource, uriInfo, response) -> resource.getEntryPoint(uriInfo, response))
         .setTitle("The HAL API entry point of the " + context.getServiceId() + " service");
   }
+
 }

@@ -36,9 +36,4 @@ public class ExampleServiceApplication extends Application {
 
   public static final String SELECTOR = "(osgi.jaxrs.name=" + JAXRS_NAME + ")";
 
-
-  void tada() {
-
-  }
-
 }
