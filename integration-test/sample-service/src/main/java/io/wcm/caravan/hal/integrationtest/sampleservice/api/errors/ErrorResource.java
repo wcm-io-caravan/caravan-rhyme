@@ -20,9 +20,9 @@
 package io.wcm.caravan.hal.integrationtest.sampleservice.api.errors;
 
 import io.reactivex.rxjava3.core.Maybe;
-import io.wcm.caravan.hal.api.annotations.HalApiInterface;
-import io.wcm.caravan.hal.api.annotations.ResourceState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.TitledState;
+import io.wcm.caravan.reha.api.annotations.HalApiInterface;
+import io.wcm.caravan.reha.api.annotations.ResourceState;
 
 @HalApiInterface
 public interface ErrorResource {

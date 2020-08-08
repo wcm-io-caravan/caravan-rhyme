@@ -25,9 +25,9 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServiceRequestContext;
-import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
-import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.reha.api.resources.EmbeddableResource;
+import io.wcm.caravan.reha.api.resources.LinkableResource;
 
 
 /**

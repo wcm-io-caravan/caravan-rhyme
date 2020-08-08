@@ -50,10 +50,10 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ErrorsExamplesResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.HalApiClientErrorResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
-import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.microservices.caravan.CaravanReha;
 import io.wcm.caravan.hal.microservices.caravan.CaravanRehaBuilder;
 import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
+import io.wcm.caravan.reha.api.resources.LinkableResource;
 
 @Component(service = ExampleServiceJaxRsComponent.class, scope = ServiceScope.PROTOTYPE)
 @JaxrsResource

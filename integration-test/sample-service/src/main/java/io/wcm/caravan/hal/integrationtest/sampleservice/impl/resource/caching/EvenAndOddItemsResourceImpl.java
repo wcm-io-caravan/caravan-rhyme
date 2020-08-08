@@ -35,9 +35,9 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.context.ExampleServ
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionParametersImpl;
-import io.wcm.caravan.hal.microservices.api.server.EmbeddableResource;
-import io.wcm.caravan.hal.microservices.api.server.LinkableResource;
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.reha.api.resources.EmbeddableResource;
+import io.wcm.caravan.reha.api.resources.LinkableResource;
 
 public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, LinkableResource {
 

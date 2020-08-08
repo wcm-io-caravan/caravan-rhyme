@@ -20,9 +20,9 @@
 package io.wcm.caravan.hal.integrationtest.sampleservice.api.errors;
 
 import io.reactivex.rxjava3.core.Single;
-import io.wcm.caravan.hal.api.annotations.HalApiInterface;
-import io.wcm.caravan.hal.api.annotations.RelatedResource;
-import io.wcm.caravan.hal.api.annotations.TemplateVariable;
+import io.wcm.caravan.reha.api.annotations.HalApiInterface;
+import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.TemplateVariable;
 
 @HalApiInterface
 public interface ErrorExamplesResource {

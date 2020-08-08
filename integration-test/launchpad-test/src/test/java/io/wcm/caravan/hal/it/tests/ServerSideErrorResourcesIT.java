@@ -33,9 +33,9 @@ import io.wcm.caravan.hal.it.extensions.HalApiClientExtension;
 import io.wcm.caravan.hal.it.extensions.WaitForServerStartupExtension;
 import io.wcm.caravan.hal.microservices.api.client.HalApiClient;
 import io.wcm.caravan.hal.microservices.api.client.HalApiClientException;
-import io.wcm.caravan.hal.microservices.api.common.VndErrorRelations;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.reha.api.relations.VndErrorRelations;
 
 
 @ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
