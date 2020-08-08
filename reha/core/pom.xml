@@ -30,12 +30,12 @@
   </parent>
 
   <groupId>io.wcm.caravan</groupId>
-  <artifactId>io.wcm.caravan.hal.integration-test.sample-service</artifactId>
+  <artifactId>io.wcm.caravan.hal.reha.core</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Caravan Reha - Test and Example Service</name>
-  <description>A reactive HAL web service based on the OSGi JAX-RS Whiteboard and wcm.io.Caravan Pipeline integration. Used for the integration test launchpad.</description>
+  <name>Caravan Reha - Core Framework</name>
+  <description>A platform-agnostic framework to build reactive HAL web services based on annotated HAL API interfaces</description>
 
   <scm>
     <connection>scm:git:https://github.com/wcm-io-caravan/caravan-hal.git</connection>
@@ -45,10 +45,11 @@
   </scm>
 
   <properties>
-    <site.url.module.prefix>hal/integration-test/sample-service</site.url.module.prefix>
+    <site.url.module.prefix>hal/reha/core</site.url.module.prefix>
   </properties>
   
   <dependencies>
+    <!-- wcm.io -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.hal.reha.api-interfaces</artifactId>
@@ -57,28 +58,69 @@
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.caravan-jaxrs</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.core</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <artifactId>io.wcm.caravan.hal.resource</artifactId>
+      <version>1.1.0</version>
       <scope>compile</scope>
     </dependency>
 
+    <!-- Commons -->
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.service.component.annotations</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.3.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
       <scope>provided</scope>
     </dependency>
 
+    <!-- Jackson -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- RxJava -->
+    <dependency>
+      <groupId>io.reactivex.rxjava3</groupId>
+      <artifactId>rxjava</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    
+    <!-- URI Templates -->
+    <dependency>
+      <groupId>com.damnhandy</groupId>
+      <artifactId>handy-uri-templates</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- AssertJ for fluent assertions -->
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.8.0</version>
+      <version>3.16.1</version>
       <scope>test</scope>
     </dependency>
     <!-- JSONAssert for semantic comparison of JSON strings -->

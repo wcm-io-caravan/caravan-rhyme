@@ -30,12 +30,12 @@
   </parent>
 
   <groupId>io.wcm.caravan</groupId>
-  <artifactId>io.wcm.caravan.hal.integration-test.sample-service</artifactId>
+  <artifactId>io.wcm.caravan.hal.reha.api-interfaces</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Caravan Reha - Test and Example Service</name>
-  <description>A reactive HAL web service based on the OSGi JAX-RS Whiteboard and wcm.io.Caravan Pipeline integration. Used for the integration test launchpad.</description>
+  <name>Caravan Reha - API Interfaces and Annotations</name>
+  <description>The single dependency required to define annotated HAL API interfaces</description>
 
   <scm>
     <connection>scm:git:https://github.com/wcm-io-caravan/caravan-hal.git</connection>
@@ -45,53 +45,25 @@
   </scm>
 
   <properties>
-    <site.url.module.prefix>hal/integration-test/sample-service</site.url.module.prefix>
+    <site.url.module.prefix>hal/reha/api-interfaces</site.url.module.prefix>
   </properties>
-  
+
   <dependencies>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.api-interfaces</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <artifactId>io.wcm.caravan.hal.resource</artifactId>
+      <version>1.1.0</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.caravan-jaxrs</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.core</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.service.component.annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- AssertJ for fluent assertions -->
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>3.8.0</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- JSONAssert for semantic comparison of JSON strings -->
-    <dependency>
-      <groupId>org.skyscreamer</groupId>
-      <artifactId>jsonassert</artifactId>
-      <scope>test</scope>
-    </dependency>
-    
   </dependencies>
-  
+
   <build>
     <plugins>
+
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+      </plugin>
 
     </plugins>
   </build>

@@ -31,16 +31,17 @@
   </parent>
 
   <groupId>io.wcm.caravan</groupId>
-  <artifactId>io.wcm.caravan.hal.integration-test</artifactId>
+  <artifactId>io.wcm.caravan.hal.reha</artifactId>
   <version>1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Caravan Reha - Integration Test</name>
-  <description>An example service based on the OSGi JAX-RS Whiteboard that is started in a Sling Launchpad for integration tests</description>
+  <name>Caravan Reha</name>
+  <description>A framework to build reactive HAL web services</description>
 
   <modules>
-    <module>sample-service</module>
-    <module>launchpad-test</module>
+    <module>api-interfaces</module>
+    <module>caravan-jaxrs</module>
+    <module>core</module>
   </modules>
 
   <build>

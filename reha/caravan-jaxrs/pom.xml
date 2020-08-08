@@ -30,12 +30,12 @@
   </parent>
 
   <groupId>io.wcm.caravan</groupId>
-  <artifactId>io.wcm.caravan.hal.integration-test.sample-service</artifactId>
+  <artifactId>io.wcm.caravan.hal.reha.caravan-jaxrs</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Caravan Reha - Test and Example Service</name>
-  <description>A reactive HAL web service based on the OSGi JAX-RS Whiteboard and wcm.io.Caravan Pipeline integration. Used for the integration test launchpad.</description>
+  <name>Caravan Reha - wcm.io.Caravan and JAX-RS implementations</name>
+  <description>Implementation support classes to build reactive HAL web services based on the OSGi JAX-RS Whiteboard and wcm.io.Caravan Pipeline projects</description>
 
   <scm>
     <connection>scm:git:https://github.com/wcm-io-caravan/caravan-hal.git</connection>
@@ -45,19 +45,14 @@
   </scm>
 
   <properties>
-    <site.url.module.prefix>hal/integration-test/sample-service</site.url.module.prefix>
+    <site.url.module.prefix>hal/reha/caravan-jaxrs</site.url.module.prefix>
   </properties>
   
   <dependencies>
+    <!-- wcm.io -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.hal.reha.api-interfaces</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.caravan-jaxrs</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
@@ -67,10 +62,79 @@
       <version>1.0.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.io.http</artifactId>
+      <version>0.10.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.pipeline.api</artifactId>
+      <version>0.7.0</version>
+      <scope>compile</scope>
+    </dependency>
 
+    <!-- OSGI/JAX-RS Integration  -->
+    <dependency>
+      <groupId>org.apache.aries.spec</groupId>
+      <artifactId>org.apache.aries.javax.jax.rs-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.jaxrs</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.service.component.annotations</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Commons -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.3.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Jackson -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- RxJava -->
+    <dependency>
+      <groupId>io.reactivex.rxjava3</groupId>
+      <artifactId>rxjava</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.akarnokd</groupId>
+      <artifactId>rxjava3-interop</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- URI Templates -->
+    <dependency>
+      <groupId>com.damnhandy</groupId>
+      <artifactId>handy-uri-templates</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Byte Buddy for creating dynamic proxies of classes -->
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
       <scope>provided</scope>
     </dependency>
 
