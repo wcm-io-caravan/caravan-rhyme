@@ -22,12 +22,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.subjects.SingleSubject;
 import io.wcm.caravan.hal.it.TestEnvironmentConstants;
-import io.wcm.caravan.hal.microservices.api.client.HalApiClient;
-import io.wcm.caravan.hal.microservices.api.client.HalApiClientException;
-import io.wcm.caravan.hal.microservices.api.client.JsonResourceLoader;
-import io.wcm.caravan.hal.microservices.api.common.HalResponse;
-import io.wcm.caravan.hal.microservices.api.common.RequestMetricsCollector;
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.reha.api.client.HalApiClient;
+import io.wcm.caravan.reha.api.client.HalApiClientException;
+import io.wcm.caravan.reha.api.client.JsonResourceLoader;
+import io.wcm.caravan.reha.api.common.HalResponse;
+import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 
 public class HalApiClientExtension implements ParameterResolver {
 

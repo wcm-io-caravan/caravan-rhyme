@@ -28,10 +28,10 @@ import javax.ws.rs.core.UriInfo;
 import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
-import io.wcm.caravan.hal.microservices.caravan.CaravanReha;
-import io.wcm.caravan.hal.microservices.jaxrs.JaxRsBundleInfo;
-import io.wcm.caravan.hal.microservices.jaxrs.JaxRsLinkBuilder;
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.reha.caravan.api.CaravanReha;
+import io.wcm.caravan.reha.jaxrs.api.JaxRsBundleInfo;
+import io.wcm.caravan.reha.jaxrs.api.JaxRsLinkBuilder;
 
 public class ExampleServiceRequestContext {
 

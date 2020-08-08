@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.caching;
 
-import static io.wcm.caravan.hal.microservices.util.RxJavaTransformers.filterWith;
+import static io.wcm.caravan.reha.util.RxJavaTransformers.filterWith;
 
 import java.util.function.Function;
 

@@ -40,7 +40,7 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemState
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.collection.CollectionParametersImpl;
 import io.wcm.caravan.hal.it.extensions.HalApiClientExtension;
 import io.wcm.caravan.hal.it.extensions.WaitForServerStartupExtension;
-import io.wcm.caravan.hal.microservices.api.client.HalApiClient;
+import io.wcm.caravan.reha.api.client.HalApiClient;
 
 @ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
 public class CachingExamplesIT {
