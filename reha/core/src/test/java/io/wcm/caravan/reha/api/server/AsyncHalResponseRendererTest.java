@@ -30,6 +30,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
+import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.reha.testing.LinkableTestResource;
 
 

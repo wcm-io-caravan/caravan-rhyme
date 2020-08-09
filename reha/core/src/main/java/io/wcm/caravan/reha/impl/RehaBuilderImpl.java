@@ -24,13 +24,13 @@ import java.util.List;
 
 import io.wcm.caravan.reha.api.Reha;
 import io.wcm.caravan.reha.api.RehaBuilder;
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
-import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
-import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
-import io.wcm.caravan.reha.api.server.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.impl.reflection.CompositeHalApiTypeSupport;
 import io.wcm.caravan.reha.impl.reflection.DefaultHalApiTypeSupport;
+import io.wcm.caravan.reha.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.reha.impl.reflection.HalApiTypeSupportAdapter;
 import io.wcm.caravan.reha.impl.renderer.CompositeExceptionStatusAndLoggingStrategy;
 

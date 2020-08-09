@@ -24,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.testing.LinkableTestResource;
 
 

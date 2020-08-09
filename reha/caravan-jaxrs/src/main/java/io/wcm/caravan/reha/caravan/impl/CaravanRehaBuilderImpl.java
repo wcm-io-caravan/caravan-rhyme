@@ -31,9 +31,9 @@ import org.osgi.service.component.annotations.Reference;
 
 import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.reha.api.client.HalApiClient;
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.caravan.api.CaravanReha;
 import io.wcm.caravan.reha.caravan.api.CaravanRehaBuilder;
 import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;

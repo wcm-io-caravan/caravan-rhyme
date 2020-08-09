@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.reha.api.common;
+package io.wcm.caravan.reha.api.spi;
 
 import java.util.function.Function;
 

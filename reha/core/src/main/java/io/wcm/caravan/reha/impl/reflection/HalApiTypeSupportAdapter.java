@@ -23,9 +23,8 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 
 import io.reactivex.rxjava3.core.Observable;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
-import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
-import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 
 public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
 

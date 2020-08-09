@@ -34,12 +34,11 @@ import com.google.common.base.Stopwatch;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
-import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.exceptions.HalApiServerException;
 import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
+import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.reha.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.reha.util.RxJavaTransformers;
 

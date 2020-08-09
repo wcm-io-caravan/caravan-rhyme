@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.wcm.caravan.reha.api.server.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
 
 public class CompositeExceptionStatusAndLoggingStrategy implements ExceptionStatusAndLoggingStrategy {
 

@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 
 import io.wcm.caravan.reha.api.exceptions.HalApiClientException;
 import io.wcm.caravan.reha.api.exceptions.HalApiServerException;
-import io.wcm.caravan.reha.api.server.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
 
 final class DefaultExceptionStatusAndLoggingStrategy implements ExceptionStatusAndLoggingStrategy {
 

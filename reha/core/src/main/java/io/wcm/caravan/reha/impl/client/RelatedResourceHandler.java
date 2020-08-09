@@ -38,8 +38,8 @@ import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
 
 class RelatedResourceHandler {
 

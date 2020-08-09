@@ -28,9 +28,9 @@ import com.google.common.collect.ImmutableMap;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.exceptions.HalApiClientException;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 
 public class TestResourceTree implements JsonResourceLoader {
 

@@ -17,9 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.reha.api.server;
+package io.wcm.caravan.reha.api.spi;
 
 import org.osgi.annotation.versioning.ConsumerType;
+
+import io.wcm.caravan.reha.api.server.VndErrorResponseRenderer;
 
 /**
  * Allows users of this framework to specify how {@link VndErrorResponseRenderer} handles specific exceptions that the

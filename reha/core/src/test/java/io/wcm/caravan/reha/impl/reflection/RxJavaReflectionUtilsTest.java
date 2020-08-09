@@ -31,7 +31,6 @@ import org.junit.platform.commons.util.ReflectionUtils;
 
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
-import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.exceptions.HalApiServerException;

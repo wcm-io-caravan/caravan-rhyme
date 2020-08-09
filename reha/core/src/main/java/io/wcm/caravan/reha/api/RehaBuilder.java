@@ -19,10 +19,10 @@
  */
 package io.wcm.caravan.reha.api;
 
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
-import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
-import io.wcm.caravan.reha.api.server.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.impl.RehaBuilderImpl;
 
 public interface RehaBuilder {

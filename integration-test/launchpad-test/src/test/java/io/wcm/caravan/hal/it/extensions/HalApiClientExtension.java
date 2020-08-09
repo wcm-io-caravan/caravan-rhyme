@@ -24,10 +24,10 @@ import io.reactivex.rxjava3.subjects.SingleSubject;
 import io.wcm.caravan.hal.it.TestEnvironmentConstants;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.client.HalApiClient;
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiClientException;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 
 public class HalApiClientExtension implements ParameterResolver {
 

@@ -42,8 +42,8 @@ import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiClientException;
 import io.wcm.caravan.reha.api.relations.StandardRelations;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
-import io.wcm.caravan.reha.api.server.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.reha.api.server.VndErrorResponseRenderer;
+import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.reha.impl.metadata.ResponseMetadataRelations;
 
 /**

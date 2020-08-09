@@ -24,9 +24,10 @@ import org.osgi.annotation.versioning.ProviderType;
 
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
-import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.impl.client.HalApiClientImpl;
 import io.wcm.caravan.reha.impl.reflection.DefaultHalApiTypeSupport;
 

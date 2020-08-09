@@ -36,8 +36,8 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.client.HalApiClient;
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.testing.ConversionFunctions;
 import io.wcm.caravan.reha.testing.resources.TestResourceState;
 

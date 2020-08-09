@@ -37,14 +37,13 @@ import com.google.common.collect.ImmutableList;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.reha.api.client.HalApiClient;
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
-import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
-import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.api.server.AsyncHalResponseRenderer;
-import io.wcm.caravan.reha.api.server.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.impl.client.HalApiClientImpl;
 import io.wcm.caravan.reha.impl.renderer.AsyncHalResourceRendererImpl;
 import io.wcm.caravan.reha.impl.renderer.AsyncHalResponseRendererImpl;

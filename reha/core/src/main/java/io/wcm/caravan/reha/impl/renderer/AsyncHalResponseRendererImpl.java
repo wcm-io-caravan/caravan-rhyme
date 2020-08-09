@@ -23,14 +23,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.api.server.AsyncHalResponseRenderer;
-import io.wcm.caravan.reha.api.server.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.reha.api.server.VndErrorResponseRenderer;
+import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.impl.metadata.ResponseMetadataRelations;
 import io.wcm.caravan.reha.impl.reflection.HalApiReflectionUtils;
 

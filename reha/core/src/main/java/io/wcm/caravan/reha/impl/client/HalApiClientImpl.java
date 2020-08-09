@@ -22,9 +22,9 @@ package io.wcm.caravan.reha.impl.client;
 import com.google.common.base.Preconditions;
 
 import io.wcm.caravan.reha.api.client.HalApiClient;
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
-import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
+import io.wcm.caravan.reha.impl.reflection.HalApiTypeSupport;
 
 /**
  * A full implementation of {@link HalApiClientImpl} that delegates the actual loading of resources via the

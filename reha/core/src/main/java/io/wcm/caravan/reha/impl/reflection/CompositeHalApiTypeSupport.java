@@ -28,7 +28,6 @@ import java.util.function.Predicate;
 import com.google.common.collect.ImmutableList;
 
 import io.reactivex.rxjava3.core.Observable;
-import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
 
 
 public class CompositeHalApiTypeSupport implements HalApiTypeSupport {

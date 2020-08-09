@@ -24,10 +24,10 @@ import org.osgi.annotation.versioning.ProviderType;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
-import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.reha.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.reha.impl.renderer.AsyncHalResourceRendererImpl;
 

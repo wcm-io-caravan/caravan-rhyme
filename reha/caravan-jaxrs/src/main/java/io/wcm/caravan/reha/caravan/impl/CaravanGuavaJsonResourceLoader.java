@@ -35,9 +35,9 @@ import io.wcm.caravan.io.http.IllegalResponseRuntimeException;
 import io.wcm.caravan.io.http.request.CaravanHttpRequest;
 import io.wcm.caravan.io.http.request.CaravanHttpRequestBuilder;
 import io.wcm.caravan.io.http.response.CaravanHttpResponse;
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.exceptions.HalApiClientException;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 
 
 class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {

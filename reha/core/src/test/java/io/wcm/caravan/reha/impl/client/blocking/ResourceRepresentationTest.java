@@ -29,9 +29,9 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.reha.api.client.HalApiClient;
-import io.wcm.caravan.reha.api.client.JsonResourceLoader;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.relations.StandardRelations;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.testing.resources.TestResource;
 import io.wcm.caravan.reha.testing.resources.TestResourceTree;
 

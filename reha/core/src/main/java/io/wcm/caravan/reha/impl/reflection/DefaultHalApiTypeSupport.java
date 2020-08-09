@@ -37,9 +37,8 @@ import io.wcm.caravan.reha.api.annotations.RelatedResource;
 import io.wcm.caravan.reha.api.annotations.ResourceLink;
 import io.wcm.caravan.reha.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
-import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
-import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 
 
 public class DefaultHalApiTypeSupport implements HalApiTypeSupport {

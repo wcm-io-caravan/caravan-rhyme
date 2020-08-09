@@ -36,8 +36,8 @@ import io.wcm.caravan.reha.api.annotations.LinkName;
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
 import io.wcm.caravan.reha.api.annotations.TemplateVariable;
 import io.wcm.caravan.reha.api.annotations.TemplateVariables;
-import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.impl.reflection.RxJavaReflectionUtils;
 
 

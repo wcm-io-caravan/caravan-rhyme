@@ -37,7 +37,7 @@ import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.api.server.AsyncHalResponseRenderer;
-import io.wcm.caravan.reha.api.server.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
 
 @Component(service = { JaxRsAsyncHalResponseHandler.class })
