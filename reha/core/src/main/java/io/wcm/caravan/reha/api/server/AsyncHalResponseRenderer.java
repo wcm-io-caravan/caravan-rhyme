@@ -30,6 +30,7 @@ import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.reha.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.reha.impl.reflection.HalApiTypeSupport;
+import io.wcm.caravan.reha.impl.renderer.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.impl.renderer.AsyncHalResourceRendererImpl;
 import io.wcm.caravan.reha.impl.renderer.AsyncHalResponseRendererImpl;
 
@@ -57,9 +58,11 @@ public interface AsyncHalResponseRenderer {
    */
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy) {
 
-    AsyncHalResourceRenderer resourceRenderer = AsyncHalResourceRenderer.create(metrics);
+    HalApiTypeSupport typeSupport = new DefaultHalApiTypeSupport();
 
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, new DefaultHalApiTypeSupport());
+    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
+
+    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport);
   }
 
   /**

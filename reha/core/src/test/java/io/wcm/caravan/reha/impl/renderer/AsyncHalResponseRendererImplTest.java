@@ -45,7 +45,6 @@ import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiClientException;
-import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.reha.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;

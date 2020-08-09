@@ -38,7 +38,6 @@ import com.google.common.collect.ImmutableList;
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.reha.api.client.HalApiClient;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
-import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
@@ -112,17 +111,21 @@ public class CompositeHalApiTypeSupportTest {
   @Test
   public void resource_renderer_should_use_custom_return_types() throws Exception {
 
-    AsyncHalResourceRenderer renderer = AsyncHalResourceRenderer.create(metrics, null, mockReturnTypeSupport);
+    HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(null, mockReturnTypeSupport);
 
-    assertThatMockReturnTypeSupportIsEffective(((AsyncHalResourceRendererImpl)renderer).getTypeSupport());
+    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
+
+    assertThatMockReturnTypeSupportIsEffective(renderer.getTypeSupport());
   }
 
   @Test
   public void resource_renderer_should_use_custom_annotations() throws Exception {
 
-    AsyncHalResourceRenderer renderer = AsyncHalResourceRenderer.create(metrics, mockAnnotationSupport, null);
+    HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(mockAnnotationSupport, null);
 
-    assertThatMockAnnotationSupportIsEffective(((AsyncHalResourceRendererImpl)renderer).getTypeSupport());
+    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
+
+    assertThatMockAnnotationSupportIsEffective(renderer.getTypeSupport());
   }
 
   @Test

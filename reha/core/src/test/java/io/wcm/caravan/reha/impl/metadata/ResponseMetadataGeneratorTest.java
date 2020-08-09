@@ -41,8 +41,8 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.client.HalApiClient;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
-import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.impl.metadata.ResponseMetadataGenerator.TimeMeasurement;
+import io.wcm.caravan.reha.impl.renderer.AsyncHalResourceRenderer;
 
 @ExtendWith(MockitoExtension.class)
 public class ResponseMetadataGeneratorTest {

@@ -31,13 +31,13 @@ import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
-import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.reha.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.impl.client.HalApiClientImpl;
 import io.wcm.caravan.reha.impl.reflection.HalApiTypeSupport;
+import io.wcm.caravan.reha.impl.renderer.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.impl.renderer.AsyncHalResourceRendererImpl;
 import io.wcm.caravan.reha.impl.renderer.AsyncHalResponseRendererImpl;
 

@@ -53,7 +53,7 @@ import io.wcm.caravan.reha.api.client.HalApiClient;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.relations.StandardRelations;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
-import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
+import io.wcm.caravan.reha.impl.renderer.AsyncHalResourceRenderer;
 
 /**
  * Full implementation of {@link RequestMetricsCollector} that keeps track of all upstream resources that have been

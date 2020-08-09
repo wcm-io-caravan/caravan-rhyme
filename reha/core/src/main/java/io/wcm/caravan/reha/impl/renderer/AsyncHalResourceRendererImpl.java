@@ -39,7 +39,6 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
-import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.reha.impl.reflection.HalApiReflectionUtils;
 import io.wcm.caravan.reha.impl.reflection.HalApiTypeSupport;

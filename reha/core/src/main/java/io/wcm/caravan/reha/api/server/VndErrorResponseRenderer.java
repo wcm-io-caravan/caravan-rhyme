@@ -19,7 +19,6 @@
  */
 package io.wcm.caravan.reha.api.server;
 
-import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
@@ -29,7 +28,7 @@ import io.wcm.caravan.reha.impl.renderer.VndErrorResponseRendererImpl;
 
 /**
  * Creates an error response according to the "application/vnd.error+json" media type for any
- * exception thrown when rendering resources with {@link AsyncHalResourceRenderer#renderResource(LinkableResource)}
+ * exception thrown when rendering HAL
  */
 public interface VndErrorResponseRenderer {
 
@@ -38,8 +37,8 @@ public interface VndErrorResponseRenderer {
 
   /**
    * @param requestUri the URI of the incoming request
-   * @param resourceImpl a server-side implementation instance of an interface annotated with {@link HalApiInterface}
-   * @param error the exception that was emitted by {@link AsyncHalResourceRenderer#renderResource(LinkableResource)}
+   * @param resourceImpl the server-side resource implementation that was being rendered when the error occurred
+   * @param error the error that was thrown
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance and caching information for
    *          the current incoming request
    * @return a HalResponse with status code and a HAL body with detailed error information
