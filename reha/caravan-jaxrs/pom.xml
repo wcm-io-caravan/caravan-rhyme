@@ -178,7 +178,20 @@
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-jdk-http</artifactId>
       <version>2.22.1</version>
-     </dependency>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.testing.osgi-mock.junit5</artifactId>
+      <version>2.4.16</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.pipeline.impl</artifactId>
+      <scope>test</scope>
+      <version>0.6.4</version>
+    </dependency>
   </dependencies>
   
   <build>

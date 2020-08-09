@@ -44,7 +44,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
 
   private static final JsonFactory JSON_FACTORY = new JsonFactory(new ObjectMapper());
 
-  private static final Cache<String, CacheEntry> SHARED_CACHE = CacheBuilder.newBuilder().build();
+  private final Cache<String, CacheEntry> SHARED_CACHE = CacheBuilder.newBuilder().build();
 
   private final String serviceId;
 
@@ -182,7 +182,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
       return Single.error(new HalApiClientException(jsonResponse, uri, ex));
     }
 
-    String message = "HTTP request for " + uri + " failed because of timeout, configuration or networking issues";
+    String message = "HTTP request for " + uri + " failed without a status code (e.g. because of timeout, configuration or networking issues)";
     return Single.error(new HalApiClientException(message, null, uri, ex));
   }
 

@@ -90,7 +90,8 @@ class CaravanJsonPipelineResourceLoader implements JsonResourceLoader {
 
   private SingleSource<HalResponse> rethrowAsHalApiClientException(Throwable ex, String uri) {
     if (!(ex instanceof JsonPipelineInputException)) {
-      return Single.error(new HalApiClientException("An unexpected exception occured trying to load " + uri, null, uri, ex));
+      String message = "HTTP request for " + uri + " failed without a status code (e.g. because of timeout, configuration or networking issues)";
+      return Single.error(new HalApiClientException(message, null, uri, ex));
     }
 
     JsonPipelineInputException jpie = (JsonPipelineInputException)ex;

@@ -19,39 +19,89 @@
  */
 package io.wcm.caravan.reha.caravan.impl;
 
+import java.util.concurrent.ExecutionException;
+
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.pipeline.JsonPipelineFactory;
 import io.wcm.caravan.reha.api.client.HalApiClient;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
+import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.caravan.api.CaravanHalApiClient;
 
 @Component
 public class CaravanHalApiClientImpl implements CaravanHalApiClient {
 
+  private LoadingCache<String, JsonResourceLoader> resourceLoaderCache;
+
   @Reference
   private CaravanHttpClient httpClient;
 
-  @Reference
+  @Reference(cardinality = ReferenceCardinality.OPTIONAL)
   private JsonPipelineFactory pipelineFactory;
+
+  @Activate
+  void setUp() {
+
+    CacheLoader<String, JsonResourceLoader> cacheLoader = createCacheLoaderWithBestAvailableCache();
+
+    resourceLoaderCache = CacheBuilder.newBuilder().build(cacheLoader);
+  }
+
+  private CacheLoader<String, JsonResourceLoader> createCacheLoaderWithBestAvailableCache() {
+
+    if (pipelineFactory != null) {
+      // an implementation based on Caravan JsonPipeline caching, use it if it's available in the runtime
+      return new JsonPipelineCacheLoader();
+    }
+
+    // an alternative implementation with less performance overhead (that doesn't use JsonPipeline,
+    // and only has a simple guava based cache that does not evict any item)
+    return new GuavaCacheLoader();
+  }
 
   @Override
   public <T> T getEntryPoint(String serviceId, String uri, Class<T> halApiInterface, RequestMetricsCollector metrics) {
 
-    // an implementation based on Caravan JsonPipeline caching
-    // JsonResourceLoader jsonLoader = new CaravanJsonPipelineResourceLoader(pipelineFactory, serviceId);
-
-    // an alternative implementation with less performance overhead (that doesn't use JsonPipeline,
-    // and only has a simple guava based cache that does not evict any item)
-    // only use this for now if you want to investigate performance issues with the HalApiClient
-    JsonResourceLoader jsonLoader = new CaravanGuavaJsonResourceLoader(httpClient, serviceId);
+    JsonResourceLoader jsonLoader = getOrCreateJsonResourceLoader(serviceId);
 
     HalApiClient client = HalApiClient.create(jsonLoader, metrics);
 
     return client.getEntryPoint(uri, halApiInterface);
   }
 
+  JsonResourceLoader getOrCreateJsonResourceLoader(String serviceId) {
+    try {
+      return resourceLoaderCache.get(serviceId);
+    }
+    catch (ExecutionException | UncheckedExecutionException ex) {
+      throw new HalApiDeveloperException("Failed to find guava cache", ex.getCause());
+    }
+  }
+
+  private final class GuavaCacheLoader extends CacheLoader<String, JsonResourceLoader> {
+
+    @Override
+    public JsonResourceLoader load(String serviceId) throws Exception {
+      return new CaravanGuavaJsonResourceLoader(httpClient, serviceId);
+    }
+  }
+
+  private final class JsonPipelineCacheLoader extends CacheLoader<String, JsonResourceLoader> {
+
+    @Override
+    public JsonResourceLoader load(String serviceId) throws Exception {
+      return new CaravanJsonPipelineResourceLoader(pipelineFactory, serviceId);
+    }
+  }
 }
