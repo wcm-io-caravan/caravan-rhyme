@@ -35,7 +35,7 @@ import io.wcm.caravan.reha.api.annotations.LinkName;
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
 import io.wcm.caravan.reha.api.annotations.ResourceLink;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
-import io.wcm.caravan.reha.api.client.HalApiDeveloperException;
+import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
 import io.wcm.caravan.reha.impl.client.ResourceStateTest.ResourceWithSingleState;
 import io.wcm.caravan.reha.testing.resources.TestResource;

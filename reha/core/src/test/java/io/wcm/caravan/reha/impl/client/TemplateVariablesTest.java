@@ -42,7 +42,7 @@ import io.wcm.caravan.reha.api.annotations.RelatedResource;
 import io.wcm.caravan.reha.api.annotations.ResourceLink;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.annotations.TemplateVariables;
-import io.wcm.caravan.reha.api.client.HalApiDeveloperException;
+import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.reha.testing.resources.TestResourceState;
 

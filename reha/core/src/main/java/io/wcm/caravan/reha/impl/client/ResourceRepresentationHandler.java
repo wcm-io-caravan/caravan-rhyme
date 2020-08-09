@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.annotations.ResourceRepresentation;
-import io.wcm.caravan.reha.api.client.HalApiDeveloperException;
+import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 
 class ResourceRepresentationHandler {
 

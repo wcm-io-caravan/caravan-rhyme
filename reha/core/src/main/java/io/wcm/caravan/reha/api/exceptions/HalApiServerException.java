@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.reha.api.server;
+package io.wcm.caravan.reha.api.exceptions;
 
 
 public class HalApiServerException extends RuntimeException {

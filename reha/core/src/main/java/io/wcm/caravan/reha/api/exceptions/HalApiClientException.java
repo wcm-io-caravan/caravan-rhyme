@@ -17,8 +17,9 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.reha.api.client;
+package io.wcm.caravan.reha.api.exceptions;
 
+import io.wcm.caravan.reha.api.client.HalApiClient;
 import io.wcm.caravan.reha.api.common.HalResponse;
 
 /**

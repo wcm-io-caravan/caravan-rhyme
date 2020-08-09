@@ -37,9 +37,9 @@ import io.wcm.caravan.pipeline.JsonPipelineFactory;
 import io.wcm.caravan.pipeline.JsonPipelineInputException;
 import io.wcm.caravan.pipeline.JsonPipelineOutput;
 import io.wcm.caravan.pipeline.cache.CacheStrategies;
-import io.wcm.caravan.reha.api.client.HalApiClientException;
 import io.wcm.caravan.reha.api.client.JsonResourceLoader;
 import io.wcm.caravan.reha.api.common.HalResponse;
+import io.wcm.caravan.reha.api.exceptions.HalApiClientException;
 
 
 class CaravanJsonPipelineResourceLoader implements JsonResourceLoader {

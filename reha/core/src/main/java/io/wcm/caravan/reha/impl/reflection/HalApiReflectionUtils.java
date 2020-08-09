@@ -45,8 +45,8 @@ import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.annotations.TemplateVariables;
-import io.wcm.caravan.reha.api.client.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.common.HalApiAnnotationSupport;
+import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 
 /**
  * Utility methods to inspect method signatures

@@ -34,7 +34,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.ResourceRepresentation;
-import io.wcm.caravan.reha.api.client.HalApiDeveloperException;
+import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.relations.StandardRelations;
 import io.wcm.caravan.reha.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
 import io.wcm.caravan.reha.testing.resources.TestResource;

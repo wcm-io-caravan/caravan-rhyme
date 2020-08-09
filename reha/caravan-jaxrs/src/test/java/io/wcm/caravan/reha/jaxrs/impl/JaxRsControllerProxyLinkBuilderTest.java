@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.reha.api.client.HalApiDeveloperException;
+import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.jaxrs.api.JaxRsLinkBuilder;
 
 

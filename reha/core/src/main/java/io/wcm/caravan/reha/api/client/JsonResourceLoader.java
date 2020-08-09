@@ -24,6 +24,7 @@ import org.osgi.annotation.versioning.ConsumerType;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.reha.api.common.HalResponse;
+import io.wcm.caravan.reha.api.exceptions.HalApiClientException;
 
 /**
  * An interface to delegate the actual loading and caching of a JSON+HAL resource via HTTP to any other HTTP client

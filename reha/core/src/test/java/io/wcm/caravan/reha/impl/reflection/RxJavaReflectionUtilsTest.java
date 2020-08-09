@@ -31,11 +31,11 @@ import org.junit.platform.commons.util.ReflectionUtils;
 
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
-import io.wcm.caravan.reha.api.client.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
+import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.reha.api.exceptions.HalApiServerException;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
-import io.wcm.caravan.reha.api.server.HalApiServerException;
 
 /**
  * contains only some tests for edge case exception handling that is hard to reproduce with realistic client / renderer

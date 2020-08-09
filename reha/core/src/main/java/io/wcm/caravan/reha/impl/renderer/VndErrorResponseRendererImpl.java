@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.reha.api.client.HalApiClientException;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
+import io.wcm.caravan.reha.api.exceptions.HalApiClientException;
 import io.wcm.caravan.reha.api.relations.StandardRelations;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.api.server.ExceptionStatusAndLoggingStrategy;
