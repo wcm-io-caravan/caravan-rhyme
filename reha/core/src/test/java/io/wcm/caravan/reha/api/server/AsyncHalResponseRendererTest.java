@@ -22,10 +22,8 @@ package io.wcm.caravan.reha.api.server;
 import static io.wcm.caravan.reha.impl.metadata.ResponseMetadataRelations.CARAVAN_METADATA_RELATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.wcm.caravan.hal.resource.HalResource;
@@ -41,16 +39,6 @@ public class AsyncHalResponseRendererTest {
   private static final String BASE_URI = "http://localhost";
   private static final String REQUEST_URI = "/";
 
-  @Mock
-  private LinkBuilderSupport linkBuilderSupport;
-
-  private LinkBuilder linkBuilder;
-
-  @BeforeEach
-  public void setUp() {
-    linkBuilder = LinkBuilder.create(BASE_URI, linkBuilderSupport);
-  }
-
   private AsyncHalResponseRenderer createRenderer() {
     RequestMetricsCollector metrics = RequestMetricsCollector.create();
     ExceptionStatusAndLoggingStrategy strategy = new ExceptionStatusAndLoggingStrategy() {
@@ -64,7 +52,7 @@ public class AsyncHalResponseRendererTest {
   // and verify basic interaction for a succesfull and one error response
 
   @Test
-  public void valid_resource_should_be_rendered_with_link_builder() throws Exception {
+  public void valid_resource_should_be_rendered() throws Exception {
 
     AsyncHalResponseRenderer renderer = createRenderer();
 
@@ -72,7 +60,7 @@ public class AsyncHalResponseRendererTest {
 
       @Override
       public Link createLink() {
-        return linkBuilder.buildLinkTo(this);
+        return new Link(REQUEST_URI);
       }
     }).blockingGet();
 
