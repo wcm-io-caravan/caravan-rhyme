@@ -175,7 +175,7 @@ public class RenderResourceStateTest {
     Throwable ex = catchThrowable(
         () -> render(resourceImpl));
 
-    assertThat(ex).isInstanceOf(UnsupportedOperationException.class)
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageStartingWith("None of the interfaces implemented by the given class").hasMessageEndingWith("has a @HalApiInterface annotation");
 
   }
@@ -221,7 +221,7 @@ public class RenderResourceStateTest {
         () -> render(resourceImpl));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("#getState must not return null");
+        .hasMessageStartingWith("#getState of anonymous TestResourceWithMaybeState (defined in RenderResourceStateTest) must not return null");
   }
 
   @Test

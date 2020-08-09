@@ -21,6 +21,7 @@ package io.wcm.caravan.reha.impl.renderer;
 
 import static io.wcm.caravan.reha.impl.reflection.HalApiReflectionUtils.findHalApiInterface;
 import static io.wcm.caravan.reha.impl.reflection.HalApiReflectionUtils.getClassAndMethodName;
+import static io.wcm.caravan.reha.impl.reflection.HalApiReflectionUtils.getSimpleClassName;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -90,15 +91,16 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
     // render links and embedded resources for each method annotated with @RelatedResource
     Single<List<RelationRenderResult>> rxRelated = relatedRenderer.renderRelated(apiInterface, resourceImplInstance);
 
+    String simpleClassName = getSimpleClassName(resourceImplInstance, typeSupport);
     // wait until all this is available...
     Single<HalResource> rxHalResource = Single.zip(rxState, rxRelated,
         // ...and then create the HalResource instance
         (stateNode, listOfRelated) -> createHalResource(resourceImplInstance, stateNode, listOfRelated))
         // and measure the time of the emissions
-        .compose(EmissionStopwatch.collectMetrics("rendering " + resourceImplInstance.getClass().getSimpleName() + " instances", metrics));
+        .compose(EmissionStopwatch.collectMetrics("rendering " + simpleClassName + " instances", metrics));
 
     metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class,
-        "calling renderLinkedOrEmbeddedResource(" + resourceImplInstance.getClass().getSimpleName() + ")",
+        "calling #renderLinkedOrEmbeddedResource with " + simpleClassName,
         assemblyTime.elapsed(TimeUnit.MICROSECONDS));
 
     return rxHalResource;
@@ -122,7 +124,8 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
         .singleElement()
         .switchIfEmpty(emptyObject)
         // and measure the total time of the emissions
-        .compose(EmissionStopwatch.collectMetrics("rendering state emited by " + getClassAndMethodName(resourceImplInstance, method.get()), metrics));
+        .compose(
+            EmissionStopwatch.collectMetrics("rendering state emited by " + getClassAndMethodName(resourceImplInstance, method.get(), typeSupport), metrics));
   }
 
   HalResource createHalResource(Object resourceImplInstance, ObjectNode stateNode, List<RelationRenderResult> listOfRelated) {
@@ -134,7 +137,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
       Link selfLink = ((LinkableResource)resourceImplInstance).createLink();
 
       metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class,
-          "calling " + resourceImplInstance.getClass().getSimpleName() + "#createLink",
+          "calling #createLink of " + getSimpleClassName(resourceImplInstance, typeSupport),
           sw.elapsed(TimeUnit.MICROSECONDS));
 
       hal.setLink(selfLink);

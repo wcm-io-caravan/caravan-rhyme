@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ import static io.wcm.caravan.reha.impl.reflection.HalApiReflectionUtils.getTempl
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,7 +59,7 @@ class HalApiMethodInvocation {
     this.emissionType = hasTemplatedReturnType() ? RxJavaReflectionUtils.getObservableEmissionType(method) : method.getReturnType();
     this.annotationSupport = annotationSupport;
 
-    this.templateVariables = new HashMap<>();
+    this.templateVariables = new LinkedHashMap<>();
 
     boolean nonNullParameterFound = false;
     String foundLinkName = null;
@@ -167,7 +167,7 @@ class HalApiMethodInvocation {
   @Override
   public String toString() {
 
-    return interfaze.getSimpleName() + "#" + method.getName() + "(" + getVariablesString() + ")";
+    return interfaze.getSimpleName() + "#" + method.getName() + "(" + getVariableNamesString() + ")";
   }
 
   String getCacheKey() {
@@ -177,6 +177,12 @@ class HalApiMethodInvocation {
         .collect(Collectors.joining(","));
 
     return interfaze.getName() + "#" + method.getName() + "/" + parameterTypeNames + "?" + getVariablesString();
+  }
+
+  private String getVariableNamesString() {
+
+    return templateVariables.keySet().stream()
+        .collect(Collectors.joining(","));
   }
 
   private String getVariablesString() {

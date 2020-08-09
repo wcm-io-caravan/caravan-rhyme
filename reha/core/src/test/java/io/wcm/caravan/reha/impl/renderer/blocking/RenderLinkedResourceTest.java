@@ -259,6 +259,7 @@ public class RenderLinkedResourceTest {
         () -> render(resourceImpl));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("The method #getExternal returns String");
+        .hasMessageStartingWith(
+            "The method #getExternal of anonymous TestResourceWithInvalidReturnType (defined in RenderLinkedResourceTest) returns String");
   }
 }

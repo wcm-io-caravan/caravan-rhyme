@@ -88,7 +88,6 @@ public final class HalApiReflectionUtils {
     }
   }
 
-
   /**
    * Checks which of the interfaces implemented by the given implementation instance is the one which is annotated with
    * {@link HalApiInterface}
@@ -102,7 +101,7 @@ public final class HalApiReflectionUtils {
         .filter(annotationSupport::isHalApiInterface)
         .findFirst()
         .orElseThrow(
-            () -> new UnsupportedOperationException(
+            () -> new HalApiDeveloperException(
                 "None of the interfaces implemented by the given class " + resourceImplInstance.getClass().getName() + " has a @"
                     + HalApiInterface.class.getSimpleName() + " annotation"));
 
@@ -212,13 +211,36 @@ public final class HalApiReflectionUtils {
     }
   }
 
+  public static String getSimpleClassName(Object resourceImplInstance, HalApiAnnotationSupport annotationSupport) {
+
+    Class<?> implClass = resourceImplInstance.getClass();
+
+    if (!implClass.isAnonymousClass()) {
+      return implClass.getSimpleName();
+    }
+
+    try {
+      Class<?> apiInterface = findHalApiInterface(resourceImplInstance, annotationSupport);
+
+      return "anonymous " + apiInterface.getSimpleName() + " (defined in " + implClass.getEnclosingClass().getSimpleName() + ")";
+    }
+    catch (HalApiDeveloperException ex) {
+      return implClass.getName();
+    }
+  }
+
   /**
    * @param instance of any object
    * @param method a method of this class
+   * @param annotationSupport the strategy to detect HAL API annotations
    * @return a string with the simple class name and method name
    */
-  public static String getClassAndMethodName(Object instance, Method method) {
-    return instance.getClass().getSimpleName() + "#" + method.getName();
+  public static String getClassAndMethodName(Object instance, Method method, HalApiAnnotationSupport annotationSupport) {
+
+    String simpleClassName = getSimpleClassName(instance, annotationSupport);
+    String methodName = method.getName();
+
+    return "#" + methodName + " of " + simpleClassName;
   }
 
   private static class MethodRelationComparator implements Comparator<Method> {

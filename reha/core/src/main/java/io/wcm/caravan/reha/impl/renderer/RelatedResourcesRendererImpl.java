@@ -98,9 +98,13 @@ final class RelatedResourcesRendererImpl {
       return new RelationRenderResult(relation, links, embeddedResources);
     });
 
+    Class<?> emissionType = RxJavaReflectionUtils.getObservableEmissionType(method);
+
     // and measure the time of the emissions
     return renderResult
-        .compose(EmissionStopwatch.collectMetrics("rendering links and embedded from " + getClassAndMethodName(resourceImplInstance, method), metrics));
+        .compose(EmissionStopwatch
+            .collectMetrics("emission of all linked and embedded " + emissionType.getSimpleName() + " instances returned by "
+                + getClassAndMethodName(resourceImplInstance, method, typeSupport), metrics));
   }
 
   private void verifyReturnType(Object resourceImplInstance, Method method) {
@@ -116,7 +120,7 @@ final class RelatedResourcesRendererImpl {
         returnTypeDesc = returnType.getSimpleName() + "<" + returnTypeDesc + ">";
       }
 
-      String fullMethodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method);
+      String fullMethodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method, typeSupport);
       throw new HalApiDeveloperException("The method " + fullMethodName + " returns " + returnTypeDesc + ", "
           + "but it must return an interface annotated with the @" + HalApiInterface.class.getSimpleName()
           + " annotation (or a supported generic type that provides such instances, e.g. Observable)");
@@ -136,14 +140,16 @@ final class RelatedResourcesRendererImpl {
     Observable<Link> rxLinks = rxLinkedResourceImpls
         .map(linkedResource -> {
 
+          String methodName = "#createLink of " + HalApiReflectionUtils.getSimpleClassName(linkedResource, typeSupport);
+
           Stopwatch sw = Stopwatch.createStarted();
           Link link = linkedResource.createLink();
           metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class,
-              "calling " + linkedResource.getClass().getSimpleName() + "#createLink",
+              "calling " + methodName,
               sw.elapsed(TimeUnit.MICROSECONDS));
 
           if (link == null) {
-            throw new HalApiDeveloperException(linkedResource.getClass().getName() + "#createLink" + " returned a null value");
+            throw new HalApiDeveloperException(methodName + " returned a null value");
           }
           return link;
         });

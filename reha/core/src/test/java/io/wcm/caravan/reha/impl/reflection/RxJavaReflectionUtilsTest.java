@@ -32,7 +32,7 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
 import io.wcm.caravan.reha.api.client.HalApiDeveloperException;
-import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
+import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.api.server.HalApiServerException;
@@ -44,7 +44,7 @@ import io.wcm.caravan.reha.api.server.HalApiServerException;
 public class RxJavaReflectionUtilsTest {
 
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
-  private final HalApiReturnTypeSupport typeSupport = new DefaultHalApiTypeSupport();
+  private final HalApiTypeSupport typeSupport = new DefaultHalApiTypeSupport();
 
   @HalApiInterface
   public interface TestResourceWithCheckedException {
@@ -62,7 +62,7 @@ public class RxJavaReflectionUtilsTest {
         () -> RxJavaReflectionUtils.invokeMethodAndReturnObservable(resourceImpl, resourceImpl.getRelatedResourceMethod(), metrics, typeSupport));
 
     assertThat(ex).isInstanceOf(HalApiServerException.class)
-        .hasMessageStartingWith("A checked exception was thrown when calling TestResourceWithCheckedExceptionImpl#getExternal")
+        .hasMessageStartingWith("A checked exception was thrown when calling #getExternal of TestResourceWithCheckedExceptionImpl")
         .hasCauseInstanceOf(IOException.class);
   }
 
@@ -76,7 +76,7 @@ public class RxJavaReflectionUtilsTest {
         () -> RxJavaReflectionUtils.invokeMethodAndReturnObservable(resourceImpl, resourceImpl.getPrivateMethod(), metrics, typeSupport));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("Failed to invoke method TestResourceWithCheckedExceptionImpl#test")
+        .hasMessageStartingWith("Failed to invoke method #test of TestResourceWithCheckedExceptionImpl")
         .hasCauseInstanceOf(IllegalAccessException.class);
   }
 

@@ -115,7 +115,7 @@ public class RenderResourceStateTest {
         () -> render(resourceImpl));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("#getState must not return null");
+        .hasMessageStartingWith("#getState of anonymous TestResourceWithOptionalState (defined in RenderResourceStateTest) must not return null");
   }
 
   @Test

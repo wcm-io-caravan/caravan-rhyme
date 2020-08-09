@@ -36,6 +36,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.reha.api.client.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.common.HalApiReturnTypeSupport;
+import io.wcm.caravan.reha.api.common.HalApiTypeSupport;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.server.AsyncHalResourceRenderer;
 import io.wcm.caravan.reha.api.server.HalApiServerException;
@@ -60,11 +61,11 @@ public final class RxJavaReflectionUtils {
    * @return an {@link Observable} that emits the items from the reactive stream returned by the method
    */
   public static Observable<?> invokeMethodAndReturnObservable(Object resourceImplInstance, Method method, RequestMetricsCollector metrics,
-      HalApiReturnTypeSupport typeSupport) {
+      HalApiTypeSupport typeSupport) {
 
     Stopwatch stopwatch = Stopwatch.createStarted();
 
-    String fullMethodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method);
+    String fullMethodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method, typeSupport);
 
     Object[] args = new Object[method.getParameterCount()];
 
