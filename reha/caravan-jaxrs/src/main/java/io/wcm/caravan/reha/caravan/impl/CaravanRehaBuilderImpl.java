@@ -25,15 +25,13 @@ import java.util.function.Function;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.UriInfo;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import io.wcm.caravan.io.http.CaravanHttpClient;
-import io.wcm.caravan.reha.api.client.HalApiClient;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
-import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
+import io.wcm.caravan.reha.caravan.api.CaravanHalApiClient;
 import io.wcm.caravan.reha.caravan.api.CaravanReha;
 import io.wcm.caravan.reha.caravan.api.CaravanRehaBuilder;
 import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
@@ -47,16 +45,8 @@ public class CaravanRehaBuilderImpl implements CaravanRehaBuilder {
   @Reference
   private JaxRsAsyncHalResponseHandler responseHandler;
 
-  private Function<String, JsonResourceLoader> resourceLoaderProvider;
-
-  @Activate
-  void activate() {
-    resourceLoaderProvider = this::createDefaultResourceLoader;
-  }
-
-  private JsonResourceLoader createDefaultResourceLoader(String serviceId) {
-    return new CaravanGuavaJsonResourceLoader(httpClient, serviceId);
-  }
+  @Reference
+  private CaravanHalApiClient halApiClient;
 
   @Override
   public CaravanReha buildForRequestTo(UriInfo requestUri, AsyncResponse response) {
@@ -89,11 +79,7 @@ public class CaravanRehaBuilderImpl implements CaravanRehaBuilder {
     @Override
     public <T> T getEntryPoint(String serviceId, String uri, Class<T> halApiInterface) {
 
-      JsonResourceLoader jsonLoader = resourceLoaderProvider.apply(serviceId);
-
-      HalApiClient client = HalApiClient.create(jsonLoader, metrics);
-
-      return client.getEntryPoint(uri, halApiInterface);
+      return halApiClient.getEntryPoint(serviceId, uri, halApiInterface, metrics);
     }
 
     @Override

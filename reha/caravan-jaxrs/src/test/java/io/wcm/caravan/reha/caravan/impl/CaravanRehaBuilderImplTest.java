@@ -80,6 +80,9 @@ public class CaravanRehaBuilderImplTest {
 
     context.registerService(CaravanHttpClient.class, httpClient);
     context.registerInjectActivateService(new JaxRsAsyncHalResponseHandlerImpl());
+
+    context.registerInjectActivateService(new CaravanHalApiClientImpl());
+
     rehaBuilder = context.registerInjectActivateService(new CaravanRehaBuilderImpl());
   }
 
