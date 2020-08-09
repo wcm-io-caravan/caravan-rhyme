@@ -20,11 +20,6 @@
 package io.wcm.caravan.reha.jaxrs.impl;
 
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.stream.Stream;
-
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -32,32 +27,6 @@ final class JaxRsReflectionUtils {
 
   private JaxRsReflectionUtils() {
     // static methods only
-  }
-
-  static Stream<Field> findFieldsThatContainOtherParamsIn(Class clazz) {
-
-    return findFieldsDefinedInClass(clazz).stream()
-        .filter(field -> {
-          return findFieldsDefinedInClass(field.getType()).stream()
-              .anyMatch(nestedField -> nestedField.getAnnotation(QueryParam.class) != null || nestedField.getAnnotation(PathParam.class) != null);
-        });
-  }
-
-  static List<Field> findFieldsDefinedInClass(Class clazz) {
-    return FieldUtils.getAllFieldsList(clazz);
-  }
-
-  static Field getField(Class clazz, String name) {
-    return FieldUtils.getField(clazz, name, true);
-  }
-
-  static Object getFieldValue(String name, Object instance) {
-    if (instance == null) {
-      return null;
-    }
-    Class clazz = instance.getClass();
-    Field field = getField(clazz, name);
-    return getFieldValue(field, instance);
   }
 
   static Object getFieldValue(Field field, Object instance) {

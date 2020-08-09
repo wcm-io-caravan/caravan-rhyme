@@ -65,7 +65,7 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseHa
           // or fall back to the regular JAX-RS error handling if an exception was not caught
           fatalException -> resumeWithError(uriInfo, suspended, fatalException));
     }
-    catch (Exception ex) {
+    catch (Throwable ex) {
       resumeWithError(uriInfo, suspended, ex);
     }
   }

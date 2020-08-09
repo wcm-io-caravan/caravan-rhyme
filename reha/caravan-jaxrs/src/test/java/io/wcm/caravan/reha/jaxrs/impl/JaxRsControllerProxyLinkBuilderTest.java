@@ -35,7 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -119,7 +119,7 @@ public class JaxRsControllerProxyLinkBuilderTest {
   }
 
   private Link buildLinkTo(Consumer<JaxRsComponent> methodCall) {
-    JaxRsControllerProxyLinkBuilder<JaxRsComponent> linkBuilder = new JaxRsControllerProxyLinkBuilder<JaxRsComponent>("", JaxRsComponent.class);
+    JaxRsLinkBuilder<JaxRsComponent> linkBuilder = JaxRsLinkBuilder.create("", JaxRsComponent.class);
     return linkBuilder.buildLinkTo(methodCall);
   }
 
