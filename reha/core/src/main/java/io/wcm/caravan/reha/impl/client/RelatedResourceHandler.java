@@ -21,7 +21,6 @@ package io.wcm.caravan.reha.impl.client;
 
 import static io.wcm.caravan.reha.impl.reflection.HalApiReflectionUtils.isHalApiInterface;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -103,7 +102,7 @@ class RelatedResourceHandler {
       // in the method invocation
       relevantLinks = relevantLinks.stream()
           .filter(Link::isTemplated)
-          .filter(link -> linkTemplateHasAllVariables(link, variables.keySet()))
+          .filter(link -> linkTemplateHasAllVariables(link, variables))
           .collect(Collectors.toList());
 
       if (relevantLinks.isEmpty()) {
@@ -124,7 +123,13 @@ class RelatedResourceHandler {
     return createProxiesForLinkedHalResources(relatedResourceType, relevantLinks, variables);
   }
 
-  private static boolean linkTemplateHasAllVariables(Link link, Collection<String> variablesInInvocation) {
+  private static boolean linkTemplateHasAllVariables(Link link, Map<String, Object> variables) {
+
+    List<String> variablesInInvocation = variables.entrySet().stream()
+        .filter(e -> e.getValue() != null)
+        .map(e -> e.getKey())
+        .collect(Collectors.toList());
+
     UriTemplate template = UriTemplate.fromTemplate(link.getHref());
     ImmutableList<String> variablesInTemplate = ImmutableList.copyOf(template.getVariables());
     return variablesInTemplate.containsAll(variablesInInvocation);

@@ -281,4 +281,46 @@ public class TemplateVariablesTest {
         .hasMessageStartingWith("Failed to extract template variables")
         .hasCauseInstanceOf(InvocationTargetException.class);
   }
+
+  @Test
+  public void should_fail_if_non_null_variable_is_not_present_in_template() throws Exception {
+
+    String template = new String("/item/{id}");
+    entryPoint.addLinks(ITEM, new Link(template));
+
+    VariablesDto dto = new VariablesDto();
+    dto.id = 123;
+    dto.text = "text";
+
+    mockHalResponseForTemplateExpandedWithDto(template, dto);
+
+    Throwable ex = catchThrowable(
+        () -> client.createProxy(ResourceWithTemplateVariablesDto.class)
+            .getItem(dto)
+            .flatMap(LinkedResourceWithSingleState::getProperties)
+            .blockingGet());
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("No matching link template found with relation item which contains the variables [id, text]");
+  }
+
+  @Test
+  public void should_not_fail_if_null_variable_is_not_present_in_template() throws Exception {
+
+    String template = new String("/item/{id}");
+    entryPoint.addLinks(ITEM, new Link(template));
+
+    VariablesDto dto = new VariablesDto();
+    dto.id = 123;
+    dto.text = null;
+
+    mockHalResponseForTemplateExpandedWithDto(template, dto);
+
+    TestResourceState linkedState = client.createProxy(ResourceWithTemplateVariablesDto.class)
+        .getItem(dto)
+        .flatMap(LinkedResourceWithSingleState::getProperties)
+        .blockingGet();
+
+    assertThat(linkedState).isNotNull();
+  }
 }
