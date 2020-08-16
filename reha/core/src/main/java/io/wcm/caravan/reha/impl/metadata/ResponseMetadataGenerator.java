@@ -31,10 +31,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -61,6 +64,8 @@ import io.wcm.caravan.reha.impl.renderer.AsyncHalResourceRenderer;
  */
 public class ResponseMetadataGenerator implements RequestMetricsCollector {
 
+  private static final Logger log = LoggerFactory.getLogger(ResponseMetadataGenerator.class);
+
   private static final Map<TimeUnit, String> TIME_UNIT_ABBRS = ImmutableMap.of(
       TimeUnit.MINUTES, "m",
       TimeUnit.SECONDS, "s",
@@ -78,8 +83,14 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
 
   private Integer maxAgeLimit;
 
+  private final AtomicBoolean metadataWasRendered = new AtomicBoolean();
+
   @Override
   public void onResponseRetrieved(String resourceUri, String resourceTitle, Integer maxAgeSeconds, long responseTimeMicros) {
+
+    if (metadataWasRendered.get()) {
+      log.warn("Response from {} was retrieved after embedded metadata resource was rendered", resourceUri);
+    }
 
     if (maxAgeSeconds != null) {
       inputMaxAgeSeconds.add(new TimeMeasurement(resourceUri, maxAgeSeconds / 1.f, TimeUnit.SECONDS));
@@ -193,6 +204,9 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
    */
   @Override
   public HalResource createMetadataResource(LinkableResource resourceImpl) {
+
+    metadataWasRendered.set(true);
+
     Stopwatch stopwatch = Stopwatch.createStarted();
 
     HalResource metadataResource = new HalResource();
