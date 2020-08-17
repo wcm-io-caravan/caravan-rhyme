@@ -87,6 +87,12 @@ public final class StandardRelations {
   public static final String LAST = "last";
 
   /**
+   * The Target IRI points to a Memento, a fixed resource that will not change state anymore
+   * @see <a href="https://www.iana.org/go/rfc7089">RFC7089</a>
+   */
+  public static final String MEMENTO = "memento";
+
+  /**
    * Indicates that the link's context is a part of a series, and that the next in the series is the link target.
    * @see <a href="http://www.w3.org/TR/html5/links.html#link-type-next">HTML5 Recommendation</a>
    */
