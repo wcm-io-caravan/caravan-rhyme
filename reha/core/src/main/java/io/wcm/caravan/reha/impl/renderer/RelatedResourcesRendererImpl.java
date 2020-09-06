@@ -92,10 +92,21 @@ final class RelatedResourcesRendererImpl {
     // and (asynchronously) render those resources that should be embedded
     Single<List<HalResource>> rxEmbeddedHalResources = renderEmbeddedResources(method, rxRelatedResources);
 
+    // collect all resource impl classes taht cannot be rendered (because they don't extend either of EmbeddableResource and LinkableResource)
+    Single<List<String>> rxUnsupportedClassNames = findUnsupportedClassNames(rxRelatedResources);
+
     // wait for all this to be complete before creating a RelatedResourceInfo for this method
-    Single<RelationRenderResult> renderResult = Single.zip(rxLinks, rxEmbeddedHalResources, (links, embeddedResources) -> {
-      return new RelationRenderResult(relation, links, embeddedResources);
-    });
+    Single<RelationRenderResult> renderResult = Single.zip(rxLinks, rxEmbeddedHalResources, rxUnsupportedClassNames,
+        (links, embeddedResources, unsupportedClassNames) -> {
+
+          if (!unsupportedClassNames.isEmpty()) {
+            throw new HalApiDeveloperException("Your server side resource implementation classes must implement either "
+                + EmbeddableResource.class.getSimpleName() + " or " + LinkableResource.class.getSimpleName() + ". "
+                + " This is not the case for " + unsupportedClassNames);
+          }
+
+          return new RelationRenderResult(relation, links, embeddedResources);
+        });
 
     Class<?> emissionType = RxJavaReflectionUtils.getObservableEmissionType(method);
 
@@ -104,6 +115,16 @@ final class RelatedResourcesRendererImpl {
         .compose(EmissionStopwatch
             .collectMetrics("emission of all linked and embedded " + emissionType.getSimpleName() + " instances returned by "
                 + getClassAndMethodName(resourceImplInstance, method, typeSupport), metrics));
+  }
+
+  private Single<List<String>> findUnsupportedClassNames(Observable<?> rxRelatedResources) {
+
+    return rxRelatedResources
+        .filter(res -> !(res instanceof LinkableResource))
+        .filter(res -> !(res instanceof EmbeddableResource))
+        .map(res -> HalApiReflectionUtils.getSimpleClassName(res, typeSupport))
+        .distinct()
+        .toList();
   }
 
   private void verifyReturnType(Object resourceImplInstance, Method method) {

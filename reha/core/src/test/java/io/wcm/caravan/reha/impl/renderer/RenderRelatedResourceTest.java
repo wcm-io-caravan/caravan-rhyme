@@ -223,4 +223,29 @@ public class RenderRelatedResourceTest {
                 + "(or a supported generic type that provides such instances, e.g. Observable)");
   }
 
+  @Test
+  public void should_throw_exception_if_server_impls_are_neither_linkable_or_embeddable() {
+
+    TestResourceWithObservableLinks resourceImpl = new TestResourceWithObservableLinks() {
+
+      @Override
+      public Observable<TestResource> getLinked() {
+        return Observable.just(new TestResource() {
+
+          @Override
+          public Maybe<TestState> getState() {
+            return Maybe.just(new TestState("foo"));
+          }
+
+        });
+      }
+    };
+
+    Throwable ex = catchThrowable(
+        () -> render(resourceImpl));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("Your server side resource implementation classes must implement either EmbeddableResource or LinkableResource.");
+  }
+
 }
