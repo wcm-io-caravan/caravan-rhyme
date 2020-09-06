@@ -60,11 +60,6 @@ public class RenderEmbeddedResourceTest {
     public Maybe<TestState> getState() {
       return Maybe.just(state);
     }
-
-    @Override
-    public boolean isEmbedded() {
-      return true;
-    }
   }
 
   @Test
@@ -100,11 +95,6 @@ public class RenderEmbeddedResourceTest {
 
     LinkedEmbeddableTestResource(TestState state) {
       super(state);
-    }
-
-    @Override
-    public boolean isEmbedded() {
-      return true;
     }
 
     @Override

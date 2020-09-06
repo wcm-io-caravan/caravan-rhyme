@@ -87,11 +87,6 @@ public class RenderEmbeddedResourceTest {
     public Optional<TestState> getState() {
       return Optional.of(state);
     }
-
-    @Override
-    public boolean isEmbedded() {
-      return true;
-    }
   }
 
   @Test
