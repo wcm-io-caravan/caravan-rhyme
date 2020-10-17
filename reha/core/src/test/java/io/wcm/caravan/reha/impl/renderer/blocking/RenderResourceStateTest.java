@@ -30,6 +30,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
@@ -41,6 +42,7 @@ import io.wcm.caravan.reha.testing.TestState;
  * Variation of the tests in {@link io.wcm.caravan.reha.impl.renderer.RenderResourceStateTest}
  * for blocking HAL API interfaces (i.e. that are not using reactive return types for their methods)
  */
+@SuppressFBWarnings("NP_OPTIONAL_RETURN_NULL")
 public class RenderResourceStateTest {
 
   @HalApiInterface

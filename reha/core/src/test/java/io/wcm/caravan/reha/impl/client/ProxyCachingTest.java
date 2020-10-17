@@ -32,6 +32,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
@@ -51,6 +52,7 @@ import io.wcm.caravan.reha.impl.client.ClientTestSupport.MockClientTestSupport.S
 import io.wcm.caravan.reha.testing.LinkableTestResource;
 import io.wcm.caravan.reha.testing.TestState;
 
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class ProxyCachingTest {
 
   private static final String ITEM_1_URL = "/item/1";

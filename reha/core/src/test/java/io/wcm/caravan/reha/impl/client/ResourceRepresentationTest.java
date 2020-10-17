@@ -30,6 +30,7 @@ import org.w3c.dom.Document;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
@@ -39,6 +40,7 @@ import io.wcm.caravan.reha.api.relations.StandardRelations;
 import io.wcm.caravan.reha.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
 import io.wcm.caravan.reha.testing.resources.TestResource;
 
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class ResourceRepresentationTest {
 
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();

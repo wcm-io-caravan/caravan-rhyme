@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
@@ -48,6 +49,7 @@ import io.wcm.caravan.reha.testing.resources.TestResourceTree;
  * Variation of the tests in {@link io.wcm.caravan.reha.impl.client.RelatedResourceTest}
  * for blocking HAL API interfaces (i.e. that are not using reactive return types for their methods)
  */
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class RelatedResourceTest {
 
   private RequestMetricsCollector metrics;

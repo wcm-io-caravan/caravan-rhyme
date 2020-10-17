@@ -34,6 +34,7 @@ import org.mockito.Mockito;
 
 import com.damnhandy.uri.template.UriTemplate;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -185,6 +186,7 @@ public class TemplateVariablesTest {
   }
 
   @SuppressWarnings("unused")
+  @SuppressFBWarnings("UUF_UNUSED_FIELD")
   public static class VariablesDtoWithPrivateFields {
 
     private Integer id;

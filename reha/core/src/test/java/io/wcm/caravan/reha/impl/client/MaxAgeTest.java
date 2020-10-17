@@ -26,6 +26,7 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
@@ -35,6 +36,8 @@ import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
 import io.wcm.caravan.reha.testing.TestState;
 import io.wcm.caravan.reha.testing.resources.TestResource;
+
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 
 public class MaxAgeTest {
 

@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
@@ -43,6 +44,7 @@ import io.wcm.caravan.reha.impl.client.ClientTestSupport.ResourceTreeClientTestS
 import io.wcm.caravan.reha.testing.TestState;
 import io.wcm.caravan.reha.testing.resources.TestResource;
 
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class ResourceLinkTest {
 
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();

@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.ResourceRepresentation;
@@ -39,6 +40,7 @@ import io.wcm.caravan.reha.testing.resources.TestResourceTree;
  * Variation of the tests in {@link io.wcm.caravan.reha.impl.client.ResourceRepresentationTest}
  * for blocking HAL API interfaces (i.e. that are not using reactive return types for their methods)
  */
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class ResourceRepresentationTest {
 
   private RequestMetricsCollector metrics;
@@ -57,7 +59,6 @@ public class ResourceRepresentationTest {
     entryPoint.setFlag(true);
     entryPoint.createLinked(ITEM);
     entryPoint.createEmbedded(StandardRelations.COLLECTION).createEmbedded(ITEM);
-
   }
 
   private <T> T createClientProxy(Class<T> halApiInterface) {

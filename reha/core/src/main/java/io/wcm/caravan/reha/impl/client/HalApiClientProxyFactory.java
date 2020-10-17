@@ -112,8 +112,9 @@ final class HalApiClientProxyFactory {
   @SuppressWarnings("unchecked")
   private <T> T getProxy(Class<T> relatedResourceType, Single<HalResource> rxHal, Link linkToResource) {
 
+    // do not try to cache proxies for resources for which no link is available
     if (linkToResource == null) {
-      return createProxy(relatedResourceType, rxHal, linkToResource);
+      return createProxy(relatedResourceType, rxHal, null);
     }
 
     String cacheKey = linkToResource.getModel().toString() + relatedResourceType.getName();

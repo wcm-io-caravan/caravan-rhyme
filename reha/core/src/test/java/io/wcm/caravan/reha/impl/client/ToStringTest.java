@@ -23,12 +23,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.wcm.caravan.reha.api.relations.StandardRelations;
 import io.wcm.caravan.reha.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
 import io.wcm.caravan.reha.impl.client.RelatedResourceTest.ResourceWithSingleRelated;
 import io.wcm.caravan.reha.impl.client.ResourceStateTest.ResourceWithSingleState;
 import io.wcm.caravan.reha.testing.resources.TestResource;
 
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class ToStringTest {
 
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();

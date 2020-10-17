@@ -31,6 +31,7 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
@@ -44,7 +45,7 @@ import io.wcm.caravan.reha.testing.TestState;
 import io.wcm.caravan.reha.testing.resources.TestResource;
 import io.wcm.caravan.reha.testing.resources.TestResourceState;
 
-
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class RelatedResourceTest {
 
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();

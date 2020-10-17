@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import com.damnhandy.uri.template.UriTemplate;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
@@ -43,6 +44,7 @@ import io.wcm.caravan.reha.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.reha.impl.client.ResourceStateTest.ResourceWithSingleState;
 import io.wcm.caravan.reha.testing.resources.TestResourceState;
 
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class TemplateVariableTest {
 
   private final MockClientTestSupport client = ClientTestSupport.withMocking();
