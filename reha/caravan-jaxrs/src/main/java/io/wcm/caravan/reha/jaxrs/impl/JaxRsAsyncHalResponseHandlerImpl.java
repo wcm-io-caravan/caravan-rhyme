@@ -32,6 +32,7 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
@@ -41,6 +42,7 @@ import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
 
 @Component(service = { JaxRsAsyncHalResponseHandler.class })
+@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseHandler {
 
   private static final Logger log = LoggerFactory.getLogger(JaxRsAsyncHalResponseHandlerImpl.class);
@@ -65,7 +67,9 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseHa
           // or fall back to the regular JAX-RS error handling if an exception was not caught
           fatalException -> resumeWithError(uriInfo, suspended, fatalException));
     }
-    catch (Throwable ex) {
+    // CHECKSTYLE:OFF - we really want to catch any exceptions here
+    catch (RuntimeException ex) {
+      // CHECKSTYLE:ON
       resumeWithError(uriInfo, suspended, ex);
     }
   }
@@ -90,6 +94,7 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseHa
     suspended.resume(jaxRsResponse.build());
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   private void resumeWithError(UriInfo uriInfo, AsyncResponse suspended, Throwable fatalError) {
     URI uri = uriInfo != null ? uriInfo.getRequestUri() : null;
     log.error("A fatal exception occured when handling request for " + uri, fatalError);

@@ -80,6 +80,7 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
     return client.getEntryPoint(uri, halApiInterface);
   }
 
+  @SuppressWarnings("PMD.PreserveStackTrace")
   JsonResourceLoader getOrCreateJsonResourceLoader(String serviceId) {
     try {
       return resourceLoaderCache.get(serviceId);

@@ -111,8 +111,8 @@ public final class StandardRelations {
   public static final String RELATED = "related";
 
   /**
-   * Refers to a resource that can be used to search through the link's context and related resources. @see
-   * <a href="http://www.opensearch.org/Specifications/OpenSearch/1.1">OpenSearch</a>
+   * Refers to a resource that can be used to search through the link's context and related resources.
+   * @see <a href="http://www.opensearch.org/Specifications/OpenSearch/1.1">OpenSearch</a>
    */
   public static final String SEARCH = "search";
 

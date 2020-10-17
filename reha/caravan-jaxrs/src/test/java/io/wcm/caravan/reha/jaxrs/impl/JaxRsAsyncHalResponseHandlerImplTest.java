@@ -40,6 +40,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
@@ -49,8 +50,8 @@ import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressFBWarnings("UWF_NULL_FIELD")
 public class JaxRsAsyncHalResponseHandlerImplTest {
-
 
   private static final String REQUEST_URL = "/request/url";
 
@@ -95,7 +96,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
 
   @HalApiInterface
   public interface LinkableTestResource extends LinkableResource {
-
+    // no additional methods required for test
   }
 
   @Test

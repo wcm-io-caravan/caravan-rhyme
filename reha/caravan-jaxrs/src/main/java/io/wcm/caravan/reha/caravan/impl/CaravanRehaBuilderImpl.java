@@ -28,7 +28,6 @@ import javax.ws.rs.core.UriInfo;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.caravan.api.CaravanHalApiClient;
@@ -38,9 +37,6 @@ import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
 
 @Component(service = CaravanRehaBuilder.class)
 public class CaravanRehaBuilderImpl implements CaravanRehaBuilder {
-
-  @Reference
-  private CaravanHttpClient httpClient;
 
   @Reference
   private JaxRsAsyncHalResponseHandler responseHandler;
@@ -60,7 +56,7 @@ public class CaravanRehaBuilderImpl implements CaravanRehaBuilder {
     private final UriInfo requestUri;
     private final AsyncResponse response;
 
-    public CaravanRehaImpl(UriInfo requestUri, AsyncResponse response) {
+    CaravanRehaImpl(UriInfo requestUri, AsyncResponse response) {
       this.requestUri = requestUri;
       this.response = response;
     }

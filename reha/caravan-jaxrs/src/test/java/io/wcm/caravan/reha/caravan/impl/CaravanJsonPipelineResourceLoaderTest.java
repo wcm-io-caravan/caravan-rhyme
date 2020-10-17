@@ -28,6 +28,7 @@ import com.codahale.metrics.MetricRegistry;
 
 import io.wcm.caravan.pipeline.JsonPipelineFactory;
 import io.wcm.caravan.pipeline.impl.JsonPipelineFactoryImpl;
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 
 @ExtendWith(MockitoExtension.class)
 public class CaravanJsonPipelineResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
@@ -36,6 +37,13 @@ public class CaravanJsonPipelineResourceLoaderTest extends AbstractCaravanJsonRe
 
   @Mock
   private MetricRegistry metricRegistry;
+
+  private JsonResourceLoader resourceLoader;
+
+  @Override
+  protected JsonResourceLoader getResourceLoader() {
+    return resourceLoader;
+  }
 
   @BeforeEach
   void setUp() {

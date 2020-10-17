@@ -164,11 +164,10 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
     private Function<Object[], Object> valueProvider;
 
     String getVarName() {
-      String varName = name;
-      if (iterable) {
-        varName += "*";
+      if (!iterable) {
+        return name;
       }
-      return varName;
+      return name + "*";
     }
 
     ImmutablePair<String, Object> resolve(Object[] args) {
@@ -185,7 +184,7 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
     private final String methodName;
     private final Method method;
 
-    private final List<TemplateParameter> parameters = new ArrayList<>();;
+    private final List<TemplateParameter> parameters = new ArrayList<>();
 
     private final String templatePath;
 
@@ -248,18 +247,26 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
     }
 
     private String createQueryParamsTemplate(Map<String, Object> parameterMap) {
-      String queries = "";
+
+      StringBuilder queries = new StringBuilder();
 
       String[] sortedVarNames = getQueryParameterVarNames(tp -> parameterMap.containsKey(tp.name));
+
       for (String varName : sortedVarNames) {
-        queries += queries.isEmpty() ? "{?" : ",";
-        queries += varName;
-      }
-      if (!queries.isEmpty()) {
-        queries += "}";
+        if (queries.length() == 0) {
+          queries.append("{?");
+        }
+        else {
+          queries.append(",");
+        }
+        queries.append(varName);
       }
 
-      return queries;
+      if (queries.length() > 0) {
+        queries.append("}");
+      }
+
+      return queries.toString();
     }
 
     private String[] getQueryParameterVarNames(Predicate<TemplateParameter> valueAvailableCheck) {

@@ -67,11 +67,11 @@ public class JaxRsBundleInfoImpl implements JaxRsBundleInfo {
 
     String version = bundle.getVersion().toString();
 
-    if (version.endsWith("SNAPSHOT")) {
-      version += "-" + bundle.getHeaders().get("Bnd-LastModified");
+    if (!version.endsWith("SNAPSHOT")) {
+      return version;
     }
 
-    return version;
+    return version + "-" + bundle.getHeaders().get("Bnd-LastModified");
   }
 
   @Override

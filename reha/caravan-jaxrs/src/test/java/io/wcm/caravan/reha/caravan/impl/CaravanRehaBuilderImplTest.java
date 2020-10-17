@@ -175,7 +175,9 @@ public class CaravanRehaBuilderImplTest {
 
     @Override
     public ObjectNode getState() {
-      return JsonNodeFactory.instance.objectNode();
+
+      return JsonNodeFactory.instance.objectNode()
+          .put("foo", context.reha.toString());
     }
 
     @Override

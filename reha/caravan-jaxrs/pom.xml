@@ -29,7 +29,6 @@
     <relativePath>../../parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>io.wcm.caravan</groupId>
   <artifactId>io.wcm.caravan.hal.reha.caravan-jaxrs</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
@@ -135,6 +134,12 @@
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
       <scope>provided</scope>
     </dependency>
 

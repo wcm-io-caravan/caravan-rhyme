@@ -51,9 +51,8 @@ import io.wcm.caravan.hal.resource.HalResource;
 @Produces({ HalResource.CONTENT_TYPE, MediaType.WILDCARD })
 public class HalResourceMessageBodyWriter implements MessageBodyWriter<HalResource> {
 
-  private ObjectMapper objectMapper = new ObjectMapper();
-  private JsonFactory jsonFactory = new JsonFactory(objectMapper);
-
+  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final JsonFactory jsonFactory = new JsonFactory(objectMapper);
 
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {

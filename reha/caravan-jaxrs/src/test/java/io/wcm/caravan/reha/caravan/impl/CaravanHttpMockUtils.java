@@ -33,7 +33,11 @@ import io.wcm.caravan.io.http.response.CaravanHttpResponse;
 import io.wcm.caravan.io.http.response.CaravanHttpResponseBuilder;
 import rx.Observable;
 
-public class CaravanHttpMockUtils {
+public final class CaravanHttpMockUtils {
+
+  private CaravanHttpMockUtils() {
+    // static methods only
+  }
 
   static void mockHttpResponse(CaravanHttpClient clientMock, int status, ObjectNode body, Duration maxAge) {
 

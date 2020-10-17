@@ -40,11 +40,12 @@ import org.junit.jupiter.api.Test;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.jaxrs.api.JaxRsLinkBuilder;
 
-
+@SuppressFBWarnings("URF_UNREAD_FIELD")
 public class JaxRsControllerProxyLinkBuilderTest {
 
   public static class ParamBean {
@@ -68,49 +69,49 @@ public class JaxRsControllerProxyLinkBuilderTest {
     @GET
     @Path("/test")
     public Response withStringQueryParam(@QueryParam("foo") String foo) {
-      return Response.ok().build();
+      return Response.ok(foo).build();
     }
 
     @GET
     @Path("/test")
     public Response withTwoStringQueryParams(@QueryParam("foo") String foo, @QueryParam("bar") String bar) {
-      return Response.ok().build();
+      return Response.ok(foo + bar).build();
     }
 
     @GET
     @Path("/test")
     public Response withRequiredFooAndOptionalBarStringQueryParams(@QueryParam("foo") String foo, @QueryParam("bar") @DefaultValue("defaultBar") String bar) {
-      return Response.ok().build();
+      return Response.ok(foo + bar).build();
     }
 
     @GET
     @Path("/test")
     public Response withListQueryParam(@QueryParam("foo") List<String> foo) {
-      return Response.ok().build();
+      return Response.ok(foo).build();
     }
 
     @GET
     @Path("/test")
     public Response withListAndStringQueryParam(@QueryParam("foo") List<String> foo, @QueryParam("bar") String bar) {
-      return Response.ok().build();
+      return Response.ok(foo + bar).build();
     }
 
     @GET
     @Path("/test/{foo}")
     public Response withStringPathParam(@PathParam("foo") String foo) {
-      return Response.ok().build();
+      return Response.ok(foo).build();
     }
 
     @GET
     @Path("/test/{foo}/{bar}")
     public Response withTwoStringPathParams(@PathParam("foo") String foo, @PathParam("bar") String bar) {
-      return Response.ok().build();
+      return Response.ok(foo + bar).build();
     }
 
     @GET
     @Path("/test/{foo}")
     public Response withBeanParam(@BeanParam ParamBean params) {
-      return Response.ok().build();
+      return Response.ok(params).build();
     }
 
     public String withoutAnnotation() {

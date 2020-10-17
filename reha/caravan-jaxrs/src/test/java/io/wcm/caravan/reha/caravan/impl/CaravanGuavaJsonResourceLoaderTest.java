@@ -23,8 +23,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
+
 @ExtendWith(MockitoExtension.class)
 public class CaravanGuavaJsonResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
+
+  private JsonResourceLoader resourceLoader;
+
+  @Override
+  protected JsonResourceLoader getResourceLoader() {
+    return resourceLoader;
+  }
 
   @BeforeEach
   void setUp() {

@@ -48,11 +48,8 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
 
   @Mock
   protected CaravanHttpClient httpClient;
-  protected JsonResourceLoader resourceLoader;
 
-  public AbstractCaravanJsonResourceLoaderTest() {
-    super();
-  }
+  protected abstract JsonResourceLoader getResourceLoader();
 
   private void mockHttpResponse(int status, ObjectNode body, Duration maxAge) {
 
@@ -70,7 +67,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   private HalResponse getHalResponse() {
-    return resourceLoader.loadJsonResource(REQUEST_URL).blockingGet();
+    return getResourceLoader().loadJsonResource(REQUEST_URL).blockingGet();
   }
 
   @Test
@@ -157,5 +154,6 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
     assertThat(ex).isInstanceOf(HalApiClientException.class)
         .hasMessage("HTTP request for /foo/bar failed without a status code (e.g. because of timeout, configuration or networking issues)");
   }
+
 
 }

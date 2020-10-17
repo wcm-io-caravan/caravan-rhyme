@@ -44,7 +44,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
 
   private static final JsonFactory JSON_FACTORY = new JsonFactory(new ObjectMapper());
 
-  private final Cache<String, CacheEntry> SHARED_CACHE = CacheBuilder.newBuilder().build();
+  private final Cache<String, CacheEntry> cache = CacheBuilder.newBuilder().build();
 
   private final String serviceId;
 
@@ -58,7 +58,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
   @Override
   public Single<HalResponse> loadJsonResource(String uri) {
 
-    CacheEntry cached = SHARED_CACHE.getIfPresent(uri);
+    CacheEntry cached = cache.getIfPresent(uri);
 
     if (cached != null && !cached.isStale()) {
       return Single.just(cached.getResponseWithAdjustedMaxAge());
@@ -85,6 +85,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
     return RxJavaInterop.toV3Single(client.execute(request).toSingle());
   }
 
+  @SuppressWarnings("PMD.AvoidRethrowingException")
   private HalResponse parseAndCacheResponse(String uri, CaravanHttpRequest request, CaravanHttpResponse response) {
     try {
 
@@ -114,7 +115,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
         throw new HalApiClientException(halResponse, uri, cause);
       }
 
-      SHARED_CACHE.put(uri, new CacheEntry(halResponse));
+      cache.put(uri, new CacheEntry(halResponse));
 
       return halResponse;
 
