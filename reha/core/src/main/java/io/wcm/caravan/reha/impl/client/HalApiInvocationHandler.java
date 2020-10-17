@@ -153,8 +153,8 @@ final class HalApiInvocationHandler implements InvocationHandler {
     }
     catch (NoSuchElementException e) {
       // these exceptions should be re-thrown with a better error message
-      throw new NoSuchElementException("The invocation of " + invocation + " has failed, "
-          + "most likely because no link or embedded resource with appropriate relation was found in the HAL resource");
+      throw new HalApiDeveloperException("The invocation of " + invocation + " has failed, "
+          + "most likely because no link or embedded resource with appropriate relation was found in the HAL resource", e);
     }
     // CHECKSTYLE:OFF - we really want to catch any other possible runtime exceptions here to add additional information on the method being called
     catch (RuntimeException e) {

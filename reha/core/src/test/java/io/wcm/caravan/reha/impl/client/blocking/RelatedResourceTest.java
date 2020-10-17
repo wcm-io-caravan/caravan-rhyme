@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,6 +36,7 @@ import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
 import io.wcm.caravan.reha.api.client.HalApiClient;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
+import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 import io.wcm.caravan.reha.impl.client.ErrorHandlingTest;
 import io.wcm.caravan.reha.impl.client.blocking.ResourceStateTest.ResourceWithRequiredState;
@@ -99,7 +99,7 @@ public class RelatedResourceTest {
     Throwable ex = catchThrowable(
         () -> createClientProxy(ResourceWithSingleRelated.class).getItem());
 
-    assertThat(ex).isInstanceOf(NoSuchElementException.class).hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed");
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class).hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed");
 
   }
 
@@ -133,7 +133,7 @@ public class RelatedResourceTest {
     Throwable ex = catchThrowable(
         () -> createClientProxy(ResourceWithSingleRelated.class).getItem().getProperties());
 
-    assertThat(ex).isInstanceOf(NoSuchElementException.class).hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed");
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class).hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed");
   }
 
 
