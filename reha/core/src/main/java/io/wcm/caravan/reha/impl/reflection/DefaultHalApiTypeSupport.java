@@ -141,8 +141,8 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
         return optional.isPresent() ? Observable.just(optional.get()) : Observable.empty();
       };
     }
-    if (Iterable.class.isAssignableFrom(sourceType)) {
-      return o -> Observable.fromIterable((Iterable<?>)o);
+    if (List.class.isAssignableFrom(sourceType)) {
+      return o -> Observable.fromIterable((List<?>)o);
     }
     if (sourceType.getTypeParameters().length == 0) {
       return o -> Observable.just(o);

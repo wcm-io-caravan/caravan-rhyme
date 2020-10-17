@@ -38,7 +38,6 @@ import io.wcm.caravan.reha.testing.TestState;
 import io.wcm.caravan.reha.testing.resources.TestResource;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-
 public class MaxAgeTest {
 
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();

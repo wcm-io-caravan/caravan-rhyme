@@ -20,21 +20,39 @@
 package io.wcm.caravan.reha.caravan.api;
 
 import java.time.Duration;
-import java.util.function.Function;
 
 import javax.ws.rs.core.UriInfo;
 
-import io.wcm.caravan.reha.api.resources.LinkableResource;
+import io.wcm.caravan.reha.api.Reha;
+import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 
+/**
+ * An alternative to the generic {@link Reha} interface that should be used for OSGi / JAX-RS projects.
+ * Use the {@link CaravanRehaRequestCycle} OSGi service to create one instance for each incoming request.
+ */
 public interface CaravanReha {
 
+  /**
+   * @return information on the URI of the incoming request
+   */
   UriInfo getRequestUri();
 
+  /**
+   * Create a dynamic proxy for the entry point of an upstream service
+   * @param <T> an interface annotated with {@link HalApiInterface}
+   * @param serviceId the ribbon ID for the upstream service
+   * @param uri the absolute path of the entry point
+   * @param halApiInterface an interface annotated with {@link HalApiInterface}
+   * @return a dynamic proxy instance of the provided {@link HalApiInterface}
+   */
   <T> T getEntryPoint(String serviceId, String uri, Class<T> halApiInterface);
 
+  /**
+   * Limit the maximum time for which the response should be cached by clients and downstream services. Note that
+   * calling this method only sets the upper limit, if other upstream resource fetched during the current request
+   * indicate a lower max-age value in their header, the lower value takes is being used
+   * @param duration the max cache time
+   */
   void setResponseMaxAge(Duration duration);
-
-  <RequestContextType> void processRequest(Function<CaravanReha, RequestContextType> requestContextConstructor,
-      Function<RequestContextType, ? extends LinkableResource> resourceImplConstructor);
 
 }

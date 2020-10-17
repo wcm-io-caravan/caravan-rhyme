@@ -52,7 +52,7 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.Hal
 import io.wcm.caravan.hal.integrationtest.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.caravan.api.CaravanReha;
-import io.wcm.caravan.reha.caravan.api.CaravanRehaBuilder;
+import io.wcm.caravan.reha.caravan.api.CaravanRehaRequestCycle;
 import io.wcm.caravan.reha.jaxrs.api.JaxRsBundleInfo;
 
 @Component(service = ExampleServiceJaxRsComponent.class, scope = ServiceScope.PROTOTYPE)
@@ -61,7 +61,7 @@ import io.wcm.caravan.reha.jaxrs.api.JaxRsBundleInfo;
 public class ExampleServiceJaxRsComponent {
 
   @Reference
-  private CaravanRehaBuilder rehaBuilder;
+  private CaravanRehaRequestCycle requestCycle;
 
   @Reference
   private JaxRsBundleInfo bundleInfo;
@@ -72,8 +72,7 @@ public class ExampleServiceJaxRsComponent {
 
   private void renderResource(UriInfo uriInfo, AsyncResponse response, Function<ExampleServiceRequestContext, LinkableResource> resourceImplConstructor) {
 
-    rehaBuilder.buildForRequestTo(uriInfo, response)
-        .processRequest(this::createRequestContext, resourceImplConstructor);
+    requestCycle.processRequest(uriInfo, response, this::createRequestContext, resourceImplConstructor);
   }
 
   @GET

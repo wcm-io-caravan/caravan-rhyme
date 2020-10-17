@@ -51,12 +51,11 @@ import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.caravan.api.CaravanReha;
-import io.wcm.caravan.reha.caravan.api.CaravanRehaBuilder;
 import io.wcm.caravan.reha.jaxrs.impl.JaxRsAsyncHalResponseHandlerImpl;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class CaravanRehaBuilderImplTest {
+public class CaravanRehaRequestCycleImplTest {
 
   private static final String REQUEST_URI = "/";
 
@@ -71,7 +70,7 @@ public class CaravanRehaBuilderImplTest {
   @Mock
   private AsyncResponse asyncResponse;
 
-  private CaravanRehaBuilder rehaBuilder;
+  private CaravanRehaRequestCycleImpl requestCycle;
 
   @BeforeEach
   void setUp() {
@@ -83,7 +82,7 @@ public class CaravanRehaBuilderImplTest {
 
     context.registerInjectActivateService(new CaravanHalApiClientImpl());
 
-    rehaBuilder = context.registerInjectActivateService(new CaravanRehaBuilderImpl());
+    requestCycle = context.registerInjectActivateService(new CaravanRehaRequestCycleImpl());
   }
 
   private ObjectNode mockOkHalResponse() {
@@ -95,17 +94,12 @@ public class CaravanRehaBuilderImplTest {
     return body;
   }
 
-  private CaravanReha createRehaInstance() {
-
-    return rehaBuilder.buildForRequestTo(uriInfo, asyncResponse);
-  }
-
   @Test
   public void getEntryPoint_should_fetch_entrypoint_through_http_client() throws Exception {
 
     mockOkHalResponse();
 
-    CaravanReha reha = createRehaInstance();
+    CaravanReha reha = requestCycle.createRhymeInstance(uriInfo);
 
     LinkableTestResource resource = reha.getEntryPoint("/serviceId", REQUEST_URI, LinkableTestResource.class);
 
@@ -118,7 +112,7 @@ public class CaravanRehaBuilderImplTest {
   @Test
   public void getUriInfo_should_return_uri_info() throws Exception {
 
-    CaravanReha reha = createRehaInstance();
+    CaravanReha reha = requestCycle.createRhymeInstance(uriInfo);
 
     assertThat(reha.getRequestUri()).isSameAs(uriInfo);
   }
@@ -132,9 +126,7 @@ public class CaravanRehaBuilderImplTest {
   @Test
   public void processRequest_should_create_context_resource_and_call_resume() throws Exception {
 
-    CaravanReha reha = createRehaInstance();
-
-    reha.processRequest(RequestContext::new, ResourceImpl::new);
+    requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImpl::new);
 
     Response response = verifyResumeHasBeenCalled();
 
@@ -144,11 +136,10 @@ public class CaravanRehaBuilderImplTest {
   @Test
   public void setResponseMaxAge_should_limit_max_age() throws Exception {
 
-    CaravanReha reha = createRehaInstance();
-
-    reha.setResponseMaxAge(Duration.ofSeconds(123));
-
-    reha.processRequest(RequestContext::new, ResourceImpl::new);
+    requestCycle.processRequest(uriInfo, asyncResponse, reha -> {
+      reha.setResponseMaxAge(Duration.ofSeconds(123));
+      return new RequestContext(reha);
+    }, ResourceImpl::new);
 
     Response response = verifyResumeHasBeenCalled();
 
