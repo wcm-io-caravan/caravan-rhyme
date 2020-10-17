@@ -77,7 +77,7 @@ class RelatedResourceHandler {
   private Observable<Object> getEmbedded(HalApiMethodInvocation invocation, String relation, Class<?> relatedResourceType, List<HalResource> embeddedResources,
       List<Link> links) {
 
-    log.trace(embeddedResources.size() + " embedded resources with relation " + relation + " were found in the context resource");
+    log.trace("{} embedded resources with relation {} were found in the context resource", embeddedResources.size(), relation);
 
     return createProxiesFromEmbeddedResources(relatedResourceType, embeddedResources, links, invocation);
   }
@@ -85,14 +85,14 @@ class RelatedResourceHandler {
   private Observable<Object> getLinked(HalApiMethodInvocation invocation, String relation, Class<?> relatedResourceType, List<HalResource> embeddedResources,
       List<Link> links) {
 
-    log.trace(links.size() + " links with relation " + relation + " were found in the context resource");
+    log.trace("{} links with relation {} were found in the context resource", links.size(), relation);
 
     List<Link> relevantLinks = filterLinksToResourcesThatAreAlreadyEmbedded(links, embeddedResources);
 
     long numTemplatedLinks = relevantLinks.stream().filter(Link::isTemplated).count();
     Map<String, Object> variables = invocation.getTemplateVariables();
 
-    if (variables.size() > 0) {
+    if (!variables.isEmpty()) {
       // if null values were specified for all method parameters, we assume that the caller is only interested in the link templates
       if (invocation.isCalledWithOnlyNullParameters()) {
         return createProxiesFromLinkTemplates(relatedResourceType, relevantLinks);

@@ -148,16 +148,20 @@ class HalApiMethodInvocation {
   }
 
   String getDescription() {
-    String desc = "emitting {}" + getEmissionType().getSimpleName();
+
+    StringBuilder desc = new StringBuilder("emitting {}")
+        .append(getEmissionType().getSimpleName());
+
     if (isForMethodAnnotatedWithRelatedResource()) {
-      desc += " client proxies";
+      desc.append(" client proxies");
     }
     else {
-      desc += " client state";
+      desc.append(" client state");
     }
 
-    desc += " via " + toString();
-    return desc;
+    desc.append(" via ").append(toString());
+
+    return desc.toString();
   }
 
   public String getResourceInterfaceName() {

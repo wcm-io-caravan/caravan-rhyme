@@ -86,7 +86,7 @@ public class ClientTestSupport {
 
   static class ResourceTreeClientTestSupport extends ClientTestSupport {
 
-    public ResourceTreeClientTestSupport() {
+    ResourceTreeClientTestSupport() {
       super(new TestResourceTree());
     }
 
@@ -159,7 +159,7 @@ public class ClientTestSupport {
     }
 
 
-    static class SubscriberCounter {
+    static final class SubscriberCounter {
 
       private final AtomicInteger counter = new AtomicInteger();
 

@@ -167,7 +167,7 @@ public class RehaBuilderImplTest {
     Stream<LinkableTestResource> getLinks();
   }
 
-  private final class ResourcewithStreamOfLinksImpl implements ResourceWithStreamOfLinks {
+  private static final class ResourcewithStreamOfLinksImpl implements ResourceWithStreamOfLinks {
 
     @Override
     public Stream<LinkableTestResource> getLinks() {
@@ -338,7 +338,7 @@ public class RehaBuilderImplTest {
 
   @Retention(RetentionPolicy.RUNTIME)
   public static @interface MyApiInterface {
-
+    // no additional properties required
   }
 
   @Retention(RetentionPolicy.RUNTIME)

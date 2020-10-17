@@ -243,7 +243,7 @@ public final class HalApiReflectionUtils {
     return "#" + methodName + " of " + simpleClassName;
   }
 
-  private static class MethodRelationComparator implements Comparator<Method> {
+  private static final class MethodRelationComparator implements Comparator<Method> {
 
     private final HalApiAnnotationSupport annotationSupport;
 

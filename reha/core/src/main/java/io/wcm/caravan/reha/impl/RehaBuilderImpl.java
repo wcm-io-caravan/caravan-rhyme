@@ -39,7 +39,7 @@ public class RehaBuilderImpl implements RehaBuilder {
   private final JsonResourceLoader jsonLoader;
   private final List<HalApiTypeSupport> registeredTypeSupports = new ArrayList<>();
 
-  private List<ExceptionStatusAndLoggingStrategy> exceptionStrategies = new ArrayList<>();
+  private final List<ExceptionStatusAndLoggingStrategy> exceptionStrategies = new ArrayList<>();
 
   public RehaBuilderImpl(JsonResourceLoader jsonLoader) {
 
@@ -80,7 +80,7 @@ public class RehaBuilderImpl implements RehaBuilder {
 
   private ExceptionStatusAndLoggingStrategy getEffectiveExceptionStrategy() {
 
-    if (exceptionStrategies.size() == 0) {
+    if (exceptionStrategies.isEmpty()) {
       return null;
     }
     if (exceptionStrategies.size() == 1) {

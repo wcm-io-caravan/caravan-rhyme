@@ -28,8 +28,8 @@ import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 
 public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
 
-  private final static HalApiAnnotationSupport NO_ADDITIONAL_ANNOTATION_SUPPORT = new NoAdditionalAnnotationSupport();
-  private final static HalApiReturnTypeSupport NO_ADDITIONAL_RETURN_TYPE_SUPPORT = new NoAdditionalReturnTypeSupport();
+  private static final HalApiAnnotationSupport NO_ADDITIONAL_ANNOTATION_SUPPORT = new NoAdditionalAnnotationSupport();
+  private static final HalApiReturnTypeSupport NO_ADDITIONAL_RETURN_TYPE_SUPPORT = new NoAdditionalReturnTypeSupport();
 
   private final HalApiAnnotationSupport annotationSupport;
   private final HalApiReturnTypeSupport returnTypeSupport;

@@ -19,18 +19,10 @@
  */
 package io.wcm.caravan.reha.testing.resources;
 
-import java.util.List;
-
 public class TestResourceState {
 
-  public boolean flag;
   public String text;
   public Integer number;
-  public List<String> array;
-
-  public TestResourceState() {
-
-  }
 
   public TestResourceState withText(String value) {
     this.text = value;

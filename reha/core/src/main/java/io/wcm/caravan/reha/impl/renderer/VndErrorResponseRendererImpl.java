@@ -96,7 +96,7 @@ public class VndErrorResponseRendererImpl implements VndErrorResponseRenderer {
           .map(t -> t.getClass().getSimpleName() + ": " + getShortErrorMessage(t))
           .collect(Collectors.joining("\n"));
 
-      log.warn("Responding with " + status + " for " + uri + ":\n" + messages);
+      log.warn("Responding with {} for {}:\n{}", status, uri, messages);
     }
     else {
       log.error("Responding with " + status + " for " + uri, error);

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -90,6 +90,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
     return Single.error(ex);
   }
 
+  @SuppressWarnings("PMD.AvoidRethrowingException")
   private Object callAnnotationSpecificHandler(HalApiMethodInvocation invocation) {
 
     // we want to measure how much time is spent for reflection magic in this proxy
@@ -155,7 +156,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
       throw new NoSuchElementException("The invocation of " + invocation + " has failed, "
           + "most likely because no link or embedded resource with appropriate relation was found in the HAL resource");
     }
-    // CHECKSTYLE:OFF- we really want to catch any other possible runtime exceptions here to add additional information on the method being called
+    // CHECKSTYLE:OFF - we really want to catch any other possible runtime exceptions here to add additional information on the method being called
     catch (RuntimeException e) {
       // CHECKSTYLE:ON
       throw new RuntimeException("The invocation of " + invocation + " has failed with an unexpected exception", e);

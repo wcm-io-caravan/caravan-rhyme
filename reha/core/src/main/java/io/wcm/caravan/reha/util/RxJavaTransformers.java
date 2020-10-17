@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -100,7 +100,7 @@ public final class RxJavaTransformers {
 
   private static final class CacheOnlyCompletedTransformer<T> implements ObservableTransformer<T, T>, SingleTransformer<T, T> {
 
-    private Observable<T> cachedOrInProgress = null;
+    private Observable<T> cachedOrInProgress;
 
     @Override
     public ObservableSource<T> apply(Observable<T> upstream) {
@@ -120,7 +120,7 @@ public final class RxJavaTransformers {
 
       if (source == null) {
         source = upstream
-            .doOnError(this::onError)
+            .doOnError(t -> onError())
             .replay()
             .autoConnect();
 
@@ -130,7 +130,7 @@ public final class RxJavaTransformers {
       return source;
     }
 
-    private void onError(Throwable t) {
+    private synchronized void onError() {
       cachedOrInProgress = null;
     }
   }

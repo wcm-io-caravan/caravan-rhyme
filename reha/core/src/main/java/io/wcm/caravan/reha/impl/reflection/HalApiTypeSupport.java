@@ -23,5 +23,5 @@ import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 
 public interface HalApiTypeSupport extends HalApiReturnTypeSupport, HalApiAnnotationSupport {
-
+  // no additional methods are added
 }

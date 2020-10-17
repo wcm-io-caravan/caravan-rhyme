@@ -53,9 +53,9 @@ import io.wcm.caravan.reha.testing.TestState;
 
 public class ProxyCachingTest {
 
-  private final static String ITEM_1_URL = "/item/1";
-  private final static String ITEM_2_URL = "/item/2";
-  private final static String ALT_1_URL = "/alt/1";
+  private static final String ITEM_1_URL = "/item/1";
+  private static final String ITEM_2_URL = "/item/2";
+  private static final String ALT_1_URL = "/alt/1";
 
   private final MockClientTestSupport client = ClientTestSupport.withMocking();
   private final HalResource entryPointHal = new HalResource(ENTRY_POINT_URI);

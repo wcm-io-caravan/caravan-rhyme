@@ -113,7 +113,7 @@ public class TemplateVariablesTest {
   @Test
   public void should_expand_template_with_variables_from_dto() throws Exception {
 
-    String template = new String("/item/{id}{?text*}");
+    String template = "/item/{id}{?text*}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     VariablesDto dto = new VariablesDto();
@@ -133,7 +133,7 @@ public class TemplateVariablesTest {
   @Test
   public void should_expand_template_with_null_field_in_dto() throws Exception {
 
-    String template = new String("/item/{id}{?text}");
+    String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     VariablesDto dto = new VariablesDto();
@@ -153,7 +153,7 @@ public class TemplateVariablesTest {
   @Test
   public void should_expand_template_with_only_null_fields_in_dto() throws Exception {
 
-    String template = new String("/item/{id}{?text}");
+    String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     VariablesDto dto = new VariablesDto();
@@ -173,7 +173,7 @@ public class TemplateVariablesTest {
   @Test
   public void should_not_expand_template_if_null_dto_is_used() throws Exception {
 
-    String template = new String("/item/{id}{?text}");
+    String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     Link link = client.createProxy(ResourceWithTemplateVariablesDto.class)
@@ -184,6 +184,7 @@ public class TemplateVariablesTest {
     assertThat(link.getHref()).isEqualTo(template);
   }
 
+  @SuppressWarnings("unused")
   public static class VariablesDtoWithPrivateFields {
 
     private Integer id;
@@ -227,7 +228,7 @@ public class TemplateVariablesTest {
   @Test
   public void should_expand_template_with_variables_interface() throws Exception {
 
-    String template = new String("/item/{id}{?text*}");
+    String template = "/item/{id}{?text*}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     VariablesInterface variables = new VariablesInterface() {
@@ -257,7 +258,7 @@ public class TemplateVariablesTest {
   @Test
   public void should_not_expand_template_if_null_interface_is_used() throws Exception {
 
-    String template = new String("/item/{id}{?text}");
+    String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     Link link = client.createProxy(ResourceWithTemplateVariablesInterface.class)
@@ -285,7 +286,7 @@ public class TemplateVariablesTest {
   @Test
   public void should_fail_if_non_null_variable_is_not_present_in_template() throws Exception {
 
-    String template = new String("/item/{id}");
+    String template = "/item/{id}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     VariablesDto dto = new VariablesDto();
@@ -307,7 +308,7 @@ public class TemplateVariablesTest {
   @Test
   public void should_not_fail_if_null_variable_is_not_present_in_template() throws Exception {
 
-    String template = new String("/item/{id}");
+    String template = "/item/{id}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     VariablesDto dto = new VariablesDto();

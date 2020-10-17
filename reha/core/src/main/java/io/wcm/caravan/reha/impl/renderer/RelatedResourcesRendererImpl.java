@@ -134,17 +134,22 @@ final class RelatedResourcesRendererImpl {
 
     if (!HalApiReflectionUtils.isHalApiInterface(relatedResourceInterface, typeSupport) && !LinkableResource.class.equals(relatedResourceInterface)) {
 
-      Class<?> returnType = method.getReturnType();
-      String returnTypeDesc = relatedResourceInterface.getSimpleName();
-      if (!returnType.equals(relatedResourceInterface)) {
-        returnTypeDesc = returnType.getSimpleName() + "<" + returnTypeDesc + ">";
-      }
+      String returnTypeDesc = getReturnTypeDescription(method, relatedResourceInterface);
 
-      String fullMethodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method, typeSupport);
+      String fullMethodName = getClassAndMethodName(resourceImplInstance, method, typeSupport);
       throw new HalApiDeveloperException("The method " + fullMethodName + " returns " + returnTypeDesc + ", "
           + "but it must return an interface annotated with the @" + HalApiInterface.class.getSimpleName()
           + " annotation (or a supported generic type that provides such instances, e.g. Observable)");
     }
+  }
+
+  private static String getReturnTypeDescription(Method method, Class<?> relatedResourceInterface) {
+    Class<?> returnType = method.getReturnType();
+    String returnTypeDesc = relatedResourceInterface.getSimpleName();
+    if (!returnType.equals(relatedResourceInterface)) {
+      return returnType.getSimpleName() + "<" + returnTypeDesc + ">";
+    }
+    return returnTypeDesc;
   }
 
   private Single<List<Link>> createLinksTo(Observable<?> rxRelatedResources) {

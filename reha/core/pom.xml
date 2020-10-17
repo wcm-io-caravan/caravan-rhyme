@@ -29,7 +29,6 @@
     <relativePath>../../parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>io.wcm.caravan</groupId>
   <artifactId>io.wcm.caravan.hal.reha.core</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>

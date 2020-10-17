@@ -41,7 +41,7 @@ class ResourceStateHandler {
 
     Class<?> returnType = invocation.getReturnType();
 
-    log.trace(invocation + " was invoked, method is annotated with @ResourceState and returns type " + returnType.getSimpleName());
+    log.trace("{} was invoked, method is annotated with @ResourceState and returns type {}", invocation, returnType.getSimpleName());
 
     // if the interface is using Maybe or Optional as return type, and the HAL resource does not contain any
     // state properties, then an empty maybe should be returned

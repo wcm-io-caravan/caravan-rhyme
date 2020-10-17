@@ -59,6 +59,7 @@ public final class RxJavaReflectionUtils {
    * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
    * @return an {@link Observable} that emits the items from the reactive stream returned by the method
    */
+  @SuppressWarnings("PMD.PreserveStackTrace")
   public static Observable<?> invokeMethodAndReturnObservable(Object resourceImplInstance, Method method, RequestMetricsCollector metrics,
       HalApiTypeSupport typeSupport) {
 

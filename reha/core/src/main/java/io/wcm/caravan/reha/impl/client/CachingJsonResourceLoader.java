@@ -56,6 +56,7 @@ class CachingJsonResourceLoader implements JsonResourceLoader {
   }
 
   @Override
+  @SuppressWarnings("PMD.PreserveStackTrace")
   public Single<HalResponse> loadJsonResource(String uri) {
     try {
       return cache.get(uri, () -> {

@@ -32,7 +32,6 @@ import io.reactivex.rxjava3.core.ObservableTransformer;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleSource;
 import io.reactivex.rxjava3.core.SingleTransformer;
-import io.reactivex.rxjava3.disposables.Disposable;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 
 /**
@@ -66,28 +65,24 @@ public class EmissionStopwatch<T> implements SingleTransformer<T, T>, Observable
   public SingleSource<T> apply(Single<T> upstream) {
 
     return upstream
-        .doOnSubscribe(this::startStopwatch)
-        .doOnSuccess(this::sendMetrics);
+        .doOnSubscribe(d -> startStopwatch())
+        .doOnSuccess(o -> sendMetrics());
   }
 
   @Override
   public ObservableSource<T> apply(Observable<T> upstream) {
 
     return upstream
-        .doOnSubscribe(this::startStopwatch)
+        .doOnSubscribe(d -> startStopwatch())
         .doOnNext(i -> itemCounter.incrementAndGet())
         .doOnTerminate(this::sendMetrics);
   }
 
 
-  private void startStopwatch(Disposable d) {
+  private void startStopwatch() {
     if (!stopwatch.isRunning()) {
       stopwatch.start();
     }
-  }
-
-  private void sendMetrics(Object o) {
-    sendMetrics();
   }
 
   private void sendMetrics() {

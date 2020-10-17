@@ -68,11 +68,12 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
     try {
       return renderer.renderResource(resourceImpl)
           .map(halResource -> createResponse(resourceImpl, halResource))
-          // for async HalApiInterfaces, errors are usualy emitted from the Single...
+          // for async HalApiInterfaces, errors are usually emitted from the Single...
           .onErrorReturn(ex -> errorRenderer.renderError(requestUri, resourceImpl, ex, metrics));
     }
-    // ... but especially for HalApiInterfaces with blocking return values, they can also be immediately thrown in the invocation
+    // CHECKSTYLE:OFF  ... but especially for HalApiInterfaces with blocking return values, they can also be immediately thrown in the invocation
     catch (RuntimeException ex) {
+      // CHECKSTYLE:ON
       return Single.just(errorRenderer.renderError(requestUri, resourceImpl, ex, metrics));
     }
   }

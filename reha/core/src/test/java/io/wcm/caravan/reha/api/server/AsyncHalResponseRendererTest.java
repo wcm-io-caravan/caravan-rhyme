@@ -37,7 +37,6 @@ import io.wcm.caravan.reha.testing.LinkableTestResource;
 @ExtendWith(MockitoExtension.class)
 public class AsyncHalResponseRendererTest {
 
-  private static final String BASE_URI = "http://localhost";
   private static final String REQUEST_URI = "/";
 
   private AsyncHalResponseRenderer createRenderer() {
