@@ -221,23 +221,15 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void retry_operator_works_() {
+  public void retry_operator_should_cause_multiple_subscriptions_to_source_observable_on_failures() {
 
     HalResponse response = new HalResponse()
         .withStatus(200)
         .withBody(new HalResource(new TestState()));
 
-    AtomicInteger attempts = new AtomicInteger();
+    Single<HalResponse> singleThatEmitsOnFourthCall = createSingleThatEmitsOnFourthCall(response);
 
-    Single<HalResponse> singleThatEmitsOnThirdCall = Single.fromCallable(() -> {
-      int attempt = attempts.incrementAndGet();
-      if (attempt == 4) {
-        return response;
-      }
-      throw new HalApiClientException("It's not yet there", 404, ENTRY_POINT_URI, null);
-    });
-
-    client.mockResponseWithSingle(ENTRY_POINT_URI, singleThatEmitsOnThirdCall);
+    client.mockResponseWithSingle(ENTRY_POINT_URI, singleThatEmitsOnFourthCall);
 
     TestState state = client.createProxy(EntryPoint.class)
         .getState()
@@ -247,6 +239,44 @@ public class ErrorHandlingTest {
     assertThat(state).isNotNull();
 
     verify(client.getMockJsonLoader()).loadJsonResource(ENTRY_POINT_URI);
+  }
+
+  @Test
+  public void retry_operator_should_forward_exception_if_all_retries_failed_() {
+
+    HalResponse response = new HalResponse()
+        .withStatus(200)
+        .withBody(new HalResource(new TestState()));
+
+    Single<HalResponse> singleThatEmitsOnFourthCall = createSingleThatEmitsOnFourthCall(response);
+
+    client.mockResponseWithSingle(ENTRY_POINT_URI, singleThatEmitsOnFourthCall);
+
+    Throwable ex = catchThrowable(() -> client.createProxy(EntryPoint.class)
+        .getState()
+        .retry(2)
+        .blockingGet());
+
+    assertThat(ex).isInstanceOf(HalApiClientException.class);
+
+    assertThat(ex.getCause())
+        .hasMessageStartingWith("It's not there yet");
+
+    verify(client.getMockJsonLoader()).loadJsonResource(ENTRY_POINT_URI);
+  }
+
+  Single<HalResponse> createSingleThatEmitsOnFourthCall(HalResponse response) {
+
+    AtomicInteger attempts = new AtomicInteger();
+
+    Single<HalResponse> singleThatEmitsOnFourthCall = Single.fromCallable(() -> {
+      int attempt = attempts.incrementAndGet();
+      if (attempt == 4) {
+        return response;
+      }
+      throw new HalApiClientException("It's not there yet", 404, ENTRY_POINT_URI, null);
+    });
+    return singleThatEmitsOnFourthCall;
   }
 
   interface EntryPointWithoutAnnotation {
