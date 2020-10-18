@@ -43,8 +43,6 @@ import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
 
 class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
 
-  private static final int MAX_AGE_FOR_40X_RESPONSES = 60;
-
   private static final JsonFactory JSON_FACTORY = new JsonFactory(new ObjectMapper());
 
   private final Cache<String, CacheEntry> cache = CacheBuilder.newBuilder().build();
