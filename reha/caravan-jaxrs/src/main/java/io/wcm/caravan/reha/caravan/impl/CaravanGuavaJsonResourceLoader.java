@@ -102,7 +102,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
       Integer maxAge;
       if (statusCode >= 400) {
         jsonNode = parseResponseBodyAndIgnoreErrors(responseBody);
-        maxAge = MAX_AGE_FOR_40X_RESPONSES;
+        maxAge = null;
       }
       else {
         jsonNode = parseResponseBody(responseBody);
@@ -121,7 +121,9 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
         throw new HalApiClientException(halResponse, uri, cause);
       }
 
-      cache.put(uri, new CacheEntry(halResponse));
+      if (maxAge != null) {
+        cache.put(uri, new CacheEntry(halResponse));
+      }
 
       return halResponse;
 

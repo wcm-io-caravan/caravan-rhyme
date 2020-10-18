@@ -24,6 +24,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
+import java.time.Duration;
+
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.apache.sling.testing.mock.osgi.junit5.OsgiContextExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,7 +77,7 @@ public class CaravanHalApiClientImplTest {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode().put("foo", "bar");
 
-    CaravanHttpMockUtils.mockHttpResponse(httpClient, 200, body, null);
+    CaravanHttpMockUtils.mockHttpResponse(httpClient, 200, body, Duration.ofSeconds(60));
 
     return body;
   }

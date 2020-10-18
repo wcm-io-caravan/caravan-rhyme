@@ -103,7 +103,7 @@ public class CaravanGuavaJsonResourceLoaderTest extends AbstractCaravanJsonResou
   }
 
   @Test
-  public void loadJsonResource_should_cache_responses_without_max_age() throws Exception {
+  public void loadJsonResource_should_not_cache_responses_without_max_age() throws Exception {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode();
     mockHttpResponse(200, body, null);
@@ -114,8 +114,8 @@ public class CaravanGuavaJsonResourceLoaderTest extends AbstractCaravanJsonResou
 
     assertOkResponseWithMaxAge(null);
 
-    // there should be only one mocked http request
-    verify(httpClient).execute(any());
+    // there should be two mocked http requests
+    verify(httpClient, times(2)).execute(any());
   }
 
   @Test
