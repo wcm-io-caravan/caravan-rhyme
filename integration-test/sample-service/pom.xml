@@ -30,11 +30,11 @@
   </parent>
 
   <groupId>io.wcm.caravan</groupId>
-  <artifactId>io.wcm.caravan.hal.integration-test.sample-service</artifactId>
+  <artifactId>io.wcm.caravan.rhyme.integration-test.sample-service</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Caravan Reha - Test and Example Service</name>
+  <name>Caravan Rhyme - Test and Example Service</name>
   <description>A reactive HAL web service based on the OSGi JAX-RS Whiteboard and wcm.io.Caravan Pipeline integration. Used for the integration test launchpad.</description>
 
   <scm>
@@ -51,19 +51,19 @@
   <dependencies>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.api-interfaces</artifactId>
+      <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.caravan-jaxrs</artifactId>
+      <artifactId>io.wcm.caravan.rhyme.osgi-jaxrs</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.core</artifactId>
+      <artifactId>io.wcm.caravan.rhyme.core</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>

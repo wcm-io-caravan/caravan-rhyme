@@ -29,11 +29,11 @@
     <relativePath>../../parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>io.wcm.caravan.hal.reha.api-interfaces</artifactId>
+  <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Caravan Reha - API Interfaces and Annotations</name>
+  <name>Caravan Rhyme - API Interfaces and Annotations</name>
   <description>The single dependency required to define annotated HAL API interfaces</description>
 
   <scm>

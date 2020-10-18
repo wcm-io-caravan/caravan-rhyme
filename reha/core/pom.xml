@@ -29,11 +29,11 @@
     <relativePath>../../parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>io.wcm.caravan.hal.reha.core</artifactId>
+  <artifactId>io.wcm.caravan.rhyme.core</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Caravan Reha - Core Framework</name>
+  <name>Caravan Rhyme - Core Framework</name>
   <description>A platform-agnostic framework to build reactive HAL web services based on annotated HAL API interfaces</description>
 
   <scm>
@@ -51,7 +51,7 @@
     <!-- wcm.io -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.reha.api-interfaces</artifactId>
+      <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>

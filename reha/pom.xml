@@ -31,17 +31,17 @@
   </parent>
 
   <groupId>io.wcm.caravan</groupId>
-  <artifactId>io.wcm.caravan.hal.reha</artifactId>
+  <artifactId>io.wcm.caravan.rhyme</artifactId>
   <version>1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Caravan Reha</name>
+  <name>Caravan Rhyme</name>
   <description>A framework to build reactive HAL web services</description>
 
   <modules>
     <module>api-interfaces</module>
-    <module>caravan-jaxrs</module>
     <module>core</module>
+    <module>osgi-jaxrs</module>
   </modules>
 
   <build>

@@ -31,11 +31,11 @@
   </parent>
 
   <groupId>io.wcm.caravan</groupId>
-  <artifactId>io.wcm.caravan.hal.integration-test</artifactId>
+  <artifactId>io.wcm.caravan.rhyme.integration-test</artifactId>
   <version>1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Caravan Reha - Integration Test</name>
+  <name>Caravan Rhyme - Integration Test</name>
   <description>An example service based on the OSGi JAX-RS Whiteboard that is started in a Sling Launchpad for integration tests</description>
 
   <modules>

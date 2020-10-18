@@ -37,10 +37,10 @@
   io.wcm.caravan/io.wcm.caravan.commons.metrics
   io.wcm.caravan/io.wcm.caravan.commons.performance
   io.wcm.caravan/io.wcm.caravan.hal.resource
-  io.wcm.caravan/io.wcm.caravan.hal.reha.api-interfaces
-  io.wcm.caravan/io.wcm.caravan.hal.reha.caravan-jaxrs
-  io.wcm.caravan/io.wcm.caravan.hal.reha.core
-  io.wcm.caravan/io.wcm.caravan.hal.integration-test.sample-service
+  io.wcm.caravan/io.wcm.caravan.rhyme.api-interfaces
+  io.wcm.caravan/io.wcm.caravan.rhyme.core
+  io.wcm.caravan/io.wcm.caravan.rhyme.osgi-jaxrs
+  io.wcm.caravan/io.wcm.caravan.rhyme.integration-test.sample-service
   io.wcm.caravan/io.wcm.caravan.io.http
   io.wcm.caravan/io.wcm.caravan.pipeline.api
   # io.wcm.caravan/io.wcm.caravan.pipeline.impl
