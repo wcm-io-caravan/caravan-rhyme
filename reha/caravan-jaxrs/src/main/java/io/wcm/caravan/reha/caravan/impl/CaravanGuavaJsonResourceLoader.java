@@ -20,6 +20,7 @@
 package io.wcm.caravan.reha.caravan.impl;
 
 import java.io.IOException;
+import java.time.Clock;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -42,6 +43,8 @@ import io.wcm.caravan.reha.api.spi.JsonResourceLoader;
 
 class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
 
+  private static final int MAX_AGE_FOR_40X_RESPONSES = 60;
+
   private static final JsonFactory JSON_FACTORY = new JsonFactory(new ObjectMapper());
 
   private final Cache<String, CacheEntry> cache = CacheBuilder.newBuilder().build();
@@ -50,9 +53,12 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
 
   private final CaravanHttpClient client;
 
-  CaravanGuavaJsonResourceLoader(CaravanHttpClient client, String serviceId) {
+  private final Clock clock;
+
+  CaravanGuavaJsonResourceLoader(CaravanHttpClient client, String serviceId, Clock clock) {
     this.serviceId = serviceId;
     this.client = client;
+    this.clock = clock;
   }
 
   @Override
@@ -96,7 +102,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
       Integer maxAge;
       if (statusCode >= 400) {
         jsonNode = parseResponseBodyAndIgnoreErrors(responseBody);
-        maxAge = 60;
+        maxAge = MAX_AGE_FOR_40X_RESPONSES;
       }
       else {
         jsonNode = parseResponseBody(responseBody);
@@ -187,9 +193,9 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
     return Single.error(new HalApiClientException(message, null, uri, ex));
   }
 
-  static class CacheEntry {
+  class CacheEntry {
 
-    private final long timeRetrieved = System.currentTimeMillis();
+    private final long timeRetrieved = clock.millis();
     private final HalResponse response;
 
     CacheEntry(HalResponse response) {
@@ -197,7 +203,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
     }
 
     private int getSecondsInCache() {
-      return (int)(System.currentTimeMillis() - timeRetrieved) / 1000;
+      return (int)(clock.millis() - timeRetrieved) / 1000;
     }
 
     boolean isStale() {

@@ -158,10 +158,7 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
       return cache.get(method, () -> new MethodDetails(resourceClass, method));
     }
     catch (UncheckedExecutionException ex) {
-      if (ex.getCause() instanceof RuntimeException) {
-        throw (RuntimeException)ex.getCause();
-      }
-      throw ex;
+      throw (RuntimeException)ex.getCause();
     }
   }
 

@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.reha.caravan.impl;
 
+import java.time.Clock;
 import java.util.concurrent.ExecutionException;
 
 import org.osgi.service.component.annotations.Activate;
@@ -91,7 +92,7 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
       return resourceLoaderCache.get(serviceId);
     }
     catch (ExecutionException | UncheckedExecutionException ex) {
-      throw new HalApiDeveloperException("Failed to find guava cache", ex.getCause());
+      throw new HalApiDeveloperException("Failed to create resource loader for serviceId " + serviceId, ex.getCause());
     }
   }
 
@@ -99,7 +100,7 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
 
     @Override
     public JsonResourceLoader load(String serviceId) throws Exception {
-      return new CaravanGuavaJsonResourceLoader(httpClient, serviceId);
+      return new CaravanGuavaJsonResourceLoader(httpClient, serviceId, Clock.systemUTC());
     }
   }
 

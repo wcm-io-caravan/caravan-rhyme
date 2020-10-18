@@ -51,7 +51,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
 
   protected abstract JsonResourceLoader getResourceLoader();
 
-  private void mockHttpResponse(int status, ObjectNode body, Duration maxAge) {
+  protected void mockHttpResponse(int status, ObjectNode body, Duration maxAge) {
 
     CaravanHttpMockUtils.mockHttpResponse(httpClient, status, body, maxAge);
   }
@@ -66,7 +66,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
         .thenReturn(Observable.error(ex));
   }
 
-  private HalResponse getHalResponse() {
+  protected HalResponse getHalResponse() {
     return getResourceLoader().loadJsonResource(REQUEST_URL).blockingGet();
   }
 
@@ -110,7 +110,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  public void loadJsonResource_should_throw_HalApiClientException_for_501_responses_witout_body() throws Exception {
+  public void loadJsonResource_should_throw_HalApiClientException_for_501_responses_without_body() throws Exception {
 
     mockIllegalResponseRuntimeException(502, null);
 

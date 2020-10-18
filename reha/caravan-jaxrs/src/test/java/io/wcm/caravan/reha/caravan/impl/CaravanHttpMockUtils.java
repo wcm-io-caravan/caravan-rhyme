@@ -41,12 +41,19 @@ public final class CaravanHttpMockUtils {
 
   static void mockHttpResponse(CaravanHttpClient clientMock, int status, ObjectNode body, Duration maxAge) {
 
+    String bodyString = body != null ? body.toString() : null;
+
+    mockHttpResponse(clientMock, status, bodyString, maxAge);
+  }
+
+  static void mockHttpResponse(CaravanHttpClient clientMock, int status, String bodyString, Duration maxAge) {
+
     CaravanHttpResponseBuilder builder = new CaravanHttpResponseBuilder()
         .status(status)
         .reason("OK");
 
-    if (body != null) {
-      builder.body(body.toString(), Charsets.UTF_8);
+    if (bodyString != null) {
+      builder.body(bodyString, Charsets.UTF_8);
     }
 
     if (maxAge != null) {
@@ -58,5 +65,4 @@ public final class CaravanHttpMockUtils {
     when(clientMock.execute(ArgumentMatchers.any()))
         .thenReturn(Observable.just(response));
   }
-
 }
