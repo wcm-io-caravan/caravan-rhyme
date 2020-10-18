@@ -26,6 +26,10 @@ import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 
+/**
+ * An implementation of {@link HalApiTypeSupport} that delegates all method calls to the given
+ * {@link HalApiAnnotationSupport} and {@link HalApiReturnTypeSupport} instances
+ */
 public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
 
   private static final HalApiAnnotationSupport NO_ADDITIONAL_ANNOTATION_SUPPORT = new NoAdditionalAnnotationSupport();
@@ -34,16 +38,26 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
   private final HalApiAnnotationSupport annotationSupport;
   private final HalApiReturnTypeSupport returnTypeSupport;
 
+  /**
+   * @param annotationSupport to allow additional annotations
+   */
   public HalApiTypeSupportAdapter(HalApiAnnotationSupport annotationSupport) {
     this.annotationSupport = annotationSupport;
     this.returnTypeSupport = NO_ADDITIONAL_RETURN_TYPE_SUPPORT;
   }
 
+  /**
+   * @param returnTypeSupport to allow additional return types
+   */
   public HalApiTypeSupportAdapter(HalApiReturnTypeSupport returnTypeSupport) {
     this.annotationSupport = NO_ADDITIONAL_ANNOTATION_SUPPORT;
     this.returnTypeSupport = returnTypeSupport;
   }
 
+  /**
+   * @param annotationSupport optional extension to allow additional annotations
+   * @param returnTypeSupport optional extension to allow additional return types
+   */
   public HalApiTypeSupportAdapter(HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
     this.annotationSupport = annotationSupport != null ? annotationSupport : NO_ADDITIONAL_ANNOTATION_SUPPORT;
     this.returnTypeSupport = returnTypeSupport != null ? returnTypeSupport : NO_ADDITIONAL_RETURN_TYPE_SUPPORT;
@@ -51,47 +65,47 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
 
   @Override
   public boolean isHalApiInterface(Class<?> interfaze) {
-    return this.annotationSupport.isHalApiInterface(interfaze);
+    return annotationSupport.isHalApiInterface(interfaze);
   }
 
   @Override
   public String getContentType(Class<?> halApiInterface) {
-    return this.annotationSupport.getContentType(halApiInterface);
+    return annotationSupport.getContentType(halApiInterface);
   }
 
   @Override
   public boolean isResourceLinkMethod(Method method) {
-    return this.annotationSupport.isResourceLinkMethod(method);
+    return annotationSupport.isResourceLinkMethod(method);
   }
 
   @Override
   public boolean isResourceRepresentationMethod(Method method) {
-    return this.annotationSupport.isResourceRepresentationMethod(method);
+    return annotationSupport.isResourceRepresentationMethod(method);
   }
 
   @Override
   public boolean isRelatedResourceMethod(Method method) {
-    return this.annotationSupport.isRelatedResourceMethod(method);
+    return annotationSupport.isRelatedResourceMethod(method);
   }
 
   @Override
   public boolean isResourceStateMethod(Method method) {
-    return this.annotationSupport.isResourceStateMethod(method);
+    return annotationSupport.isResourceStateMethod(method);
   }
 
   @Override
   public String getRelation(Method method) {
-    return this.annotationSupport.getRelation(method);
+    return annotationSupport.getRelation(method);
   }
 
   @Override
   public <T> Function<Observable, T> convertFromObservable(Class<T> targetType) {
-    return this.returnTypeSupport.convertFromObservable(targetType);
+    return returnTypeSupport.convertFromObservable(targetType);
   }
 
   @Override
   public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
-    return this.returnTypeSupport.convertToObservable(sourceType);
+    return returnTypeSupport.convertToObservable(sourceType);
   }
 
   HalApiAnnotationSupport getAnnotationSupport() {

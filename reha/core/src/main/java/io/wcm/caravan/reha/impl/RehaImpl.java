@@ -84,7 +84,7 @@ final class RehaImpl implements Reha {
   }
 
   @Override
-  public <T> T getEntryPoint(String uri, Class<T> halApiInterface) {
+  public <T> T getUpstreamEntryPoint(String uri, Class<T> halApiInterface) {
 
     return client.getEntryPoint(uri, halApiInterface);
   }

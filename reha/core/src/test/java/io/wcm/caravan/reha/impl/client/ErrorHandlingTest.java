@@ -211,7 +211,7 @@ public class ErrorHandlingTest {
         .withReturnTypeSupport(typeSupport)
         .buildForRequestTo(ENTRY_POINT_URI);
 
-    ResourceWithCustomReturnType entryPoint = reha.getEntryPoint(ENTRY_POINT_URI, ResourceWithCustomReturnType.class);
+    ResourceWithCustomReturnType entryPoint = reha.getUpstreamEntryPoint(ENTRY_POINT_URI, ResourceWithCustomReturnType.class);
 
     Throwable ex = catchThrowable(() -> entryPoint.getStream());
 

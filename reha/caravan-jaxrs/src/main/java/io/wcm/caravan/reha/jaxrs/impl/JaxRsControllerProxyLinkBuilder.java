@@ -44,9 +44,12 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Application;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import com.damnhandy.uri.template.UriTemplate;
 import com.google.common.cache.Cache;
@@ -61,28 +64,36 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.matcher.ElementMatchers;
 
-public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, JaxRsLinkBuilder<T> {
+/**
+ * Implementation of {@link JaxRsLinkBuilder}
+ * @param <JaxRsResourceType> the class of the {@link Component} annotated with {@link JaxrsResource}
+ */
+public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements InvocationHandler, JaxRsLinkBuilder<JaxRsResourceType> {
 
   private static final String CAPTURED_URI_FIELD_NAME = "__capturedUri";
 
   private final String baseUrl;
 
-  private final Class<T> controllerClass;
-  private final Class<? extends T> proxyClass;
+  private final Class<JaxRsResourceType> resourceClass;
+  private final Class<? extends JaxRsResourceType> proxyClass;
 
   private final List<TemplateParameter> additionalQueryParameters = new LinkedList<>();
 
   private final Cache<Method, MethodDetails> cache = CacheBuilder.newBuilder().build();
 
-  public JaxRsControllerProxyLinkBuilder(String baseUrl, Class<T> controllerClass) {
+  /**
+   * @param baseUrl the base path of the JAX-RS {@link Application}
+   * @param resourceClass the class of the {@link Component} annotated with {@link JaxrsResource}
+   */
+  public JaxRsControllerProxyLinkBuilder(String baseUrl, Class<JaxRsResourceType> resourceClass) {
 
     this.baseUrl = baseUrl;
-    this.controllerClass = controllerClass;
+    this.resourceClass = resourceClass;
 
-    this.proxyClass = createProxyClass(controllerClass);
+    this.proxyClass = createProxyClass(resourceClass);
   }
 
-  private Class<? extends T> createProxyClass(Class<T> superClass) {
+  private Class<? extends JaxRsResourceType> createProxyClass(Class<JaxRsResourceType> superClass) {
 
     return new ByteBuddy()
         .subclass(superClass)
@@ -95,7 +106,7 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
   }
 
   @Override
-  public JaxRsLinkBuilder<T> withAdditionalQueryParameters(Map<String, Object> parameters) {
+  public JaxRsLinkBuilder<JaxRsResourceType> withAdditionalQueryParameters(Map<String, Object> parameters) {
 
     parameters.forEach((name, value) -> {
 
@@ -113,10 +124,10 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
   }
 
   @Override
-  public Link buildLinkTo(Consumer<T> consumer) {
+  public Link buildLinkTo(Consumer<JaxRsResourceType> consumer) {
 
     try {
-      T instance = proxyClass.newInstance();
+      JaxRsResourceType instance = proxyClass.newInstance();
 
       consumer.accept(instance);
 
@@ -125,7 +136,7 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
       return new Link(url);
     }
     catch (InstantiationException | IllegalAccessException ex) {
-      throw new RuntimeException("Failed to instantiate proxy for " + controllerClass.getName(), ex);
+      throw new RuntimeException("Failed to instantiate proxy for " + resourceClass.getName(), ex);
     }
   }
 
@@ -141,10 +152,10 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
     return null;
   }
 
-  private JaxRsControllerProxyLinkBuilder<T>.MethodDetails getCachedMethodDetails(Method method) throws ExecutionException {
+  private JaxRsControllerProxyLinkBuilder<JaxRsResourceType>.MethodDetails getCachedMethodDetails(Method method) throws ExecutionException {
 
     try {
-      return cache.get(method, () -> new MethodDetails(controllerClass, method));
+      return cache.get(method, () -> new MethodDetails(resourceClass, method));
     }
     catch (UncheckedExecutionException ex) {
       if (ex.getCause() instanceof RuntimeException) {

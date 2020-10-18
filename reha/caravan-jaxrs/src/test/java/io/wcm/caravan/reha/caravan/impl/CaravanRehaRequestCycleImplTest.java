@@ -101,7 +101,7 @@ public class CaravanRehaRequestCycleImplTest {
 
     CaravanReha reha = requestCycle.createRhymeInstance(uriInfo);
 
-    LinkableTestResource resource = reha.getEntryPoint("/serviceId", REQUEST_URI, LinkableTestResource.class);
+    LinkableTestResource resource = reha.getUpstreamEntryPoint("/serviceId", REQUEST_URI, LinkableTestResource.class);
 
     verifyZeroInteractions(httpClient);
 

@@ -211,6 +211,11 @@ public final class HalApiReflectionUtils {
     }
   }
 
+  /**
+   * @param resourceImplInstance an implementation of a HAL API interface
+   * @param annotationSupport to detect annotated methods
+   * @return a name of the class to be used for logging and embedded metadata
+   */
   public static String getSimpleClassName(Object resourceImplInstance, HalApiAnnotationSupport annotationSupport) {
 
     Class<?> implClass = resourceImplInstance.getClass();

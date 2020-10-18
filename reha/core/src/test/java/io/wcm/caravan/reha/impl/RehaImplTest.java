@@ -64,7 +64,7 @@ public class RehaImplTest {
 
     upstreamResourceTree.getEntryPoint().setNumber(123);
 
-    TestResourceWithRequiredState entryPoint = reha.getEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class);
+    TestResourceWithRequiredState entryPoint = reha.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class);
 
     assertThat(entryPoint.getState()).isNotNull();
     assertThat(entryPoint.getState().number).isEqualTo(123);
@@ -73,7 +73,7 @@ public class RehaImplTest {
   @Test
   public void getEntryPoint_should_fail_if_state_of_non_existing_resource_is_requested() throws Exception {
 
-    TestResourceWithRequiredState entryPoint = reha.getEntryPoint(NON_EXISTING_PATH, TestResourceWithRequiredState.class);
+    TestResourceWithRequiredState entryPoint = reha.getUpstreamEntryPoint(NON_EXISTING_PATH, TestResourceWithRequiredState.class);
 
     HalApiClientException ex = catchThrowableOfType(entryPoint::getState, HalApiClientException.class);
 
@@ -92,7 +92,7 @@ public class RehaImplTest {
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
     Throwable ex = catchThrowable(
-        () -> rehaWithoutResourceLoader.getEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class));
+        () -> rehaWithoutResourceLoader.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageContaining("#getEntryPoint can only be used if you have provided a JsonResourceLoader");

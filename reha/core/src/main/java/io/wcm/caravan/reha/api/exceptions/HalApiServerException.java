@@ -19,17 +19,29 @@
  */
 package io.wcm.caravan.reha.api.exceptions;
 
-
+/**
+ * A server-side exception that you can throw in your resource implementations if you want to send a response with a
+ * specific status code
+ */
 public class HalApiServerException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
   private final int statusCode;
 
+  /**
+   * @param statusCode to use for the HTTP response
+   * @param msg the error message
+   */
   public HalApiServerException(int statusCode, String msg) {
     this(statusCode, msg, null);
   }
 
+  /**
+   * @param statusCode to use for the HTTP response
+   * @param msg the error message
+   * @param cause the root cause
+   */
   public HalApiServerException(int statusCode, String msg, Throwable cause) {
     super(msg, cause);
     this.statusCode = statusCode;

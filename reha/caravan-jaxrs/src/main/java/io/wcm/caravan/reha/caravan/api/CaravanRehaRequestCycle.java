@@ -26,7 +26,7 @@ import javax.ws.rs.core.UriInfo;
 
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
-import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
+import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 
 /**
  * An OSGI service that will handle an incoming request to a server-side {@link HalApiInterface} implementation
@@ -39,7 +39,7 @@ public interface CaravanRehaRequestCycle {
    * <li>Create a {@link CaravanReha} instance</li>
    * <li>Pass that instance on to the given function to create a request context instance</li>
    * <li>Pass that context on to the given function to create the resource implementation to be rendered</li>
-   * <li>Render the resource using the {@link JaxRsAsyncHalResponseHandler} service</li>
+   * <li>Render the resource using the {@link JaxRsAsyncHalResponseRenderer} service</li>
    * <li>Catch and handle any exceptions that are thrown in the previous steps</li>
    * </ol>
    * @param requestUri information on the URI of the incoming request

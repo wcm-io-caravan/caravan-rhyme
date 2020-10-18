@@ -208,7 +208,7 @@ public class RehaBuilderImplTest {
 
     Reha reha = createRehaWithStreamReturnTypeSupport();
 
-    ResourceWithStreamOfLinks entryPoint = reha.getEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithStreamOfLinks.class);
+    ResourceWithStreamOfLinks entryPoint = reha.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithStreamOfLinks.class);
 
     List<LinkableTestResource> linked = entryPoint.getLinks().collect(Collectors.toList());
 
@@ -325,7 +325,7 @@ public class RehaBuilderImplTest {
 
     Reha reha = createRehaWithCustomAnnotationTypeSupport();
 
-    ResourceWithCustomAnnotation resource = reha.getEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithCustomAnnotation.class);
+    ResourceWithCustomAnnotation resource = reha.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithCustomAnnotation.class);
 
     TestState state = resource.getState().get();
     assertThat(state).isNotNull();

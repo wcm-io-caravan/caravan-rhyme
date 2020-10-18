@@ -38,19 +38,20 @@ public interface CaravanReha {
   UriInfo getRequestUri();
 
   /**
-   * Create a dynamic proxy for the entry point of an upstream service
+   * Create a dynamic client proxy to load HAL+JSON resources from an upstream service.
    * @param <T> an interface annotated with {@link HalApiInterface}
    * @param serviceId the ribbon ID for the upstream service
    * @param uri the absolute path of the entry point
    * @param halApiInterface an interface annotated with {@link HalApiInterface}
-   * @return a dynamic proxy instance of the provided {@link HalApiInterface}
+   * @return a dynamic proxy instance of the provided {@link HalApiInterface} that you can use to navigate through the
+   *         resources of the service
    */
-  <T> T getEntryPoint(String serviceId, String uri, Class<T> halApiInterface);
+  <T> T getUpstreamEntryPoint(String serviceId, String uri, Class<T> halApiInterface);
 
   /**
    * Limit the maximum time for which the response should be cached by clients and downstream services. Note that
-   * calling this method only sets the upper limit, if other upstream resource fetched during the current request
-   * indicate a lower max-age value in their header, the lower value takes is being used
+   * calling this method only sets the upper limit: if other upstream resource fetched during the current request
+   * indicate a lower max-age value in their header, that lower value will be used instead.
    * @param duration the max cache time
    */
   void setResponseMaxAge(Duration duration);

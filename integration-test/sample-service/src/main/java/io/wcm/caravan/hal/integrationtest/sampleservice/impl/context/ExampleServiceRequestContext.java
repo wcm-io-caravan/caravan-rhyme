@@ -78,7 +78,7 @@ public class ExampleServiceRequestContext {
   public ExamplesEntryPointResource getUpstreamEntryPoint() {
     if (upstreamEntryPoint == null) {
       String serviceId = getServiceId();
-      upstreamEntryPoint = reha.getEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class);
+      upstreamEntryPoint = reha.getUpstreamEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class);
     }
     return upstreamEntryPoint;
   }

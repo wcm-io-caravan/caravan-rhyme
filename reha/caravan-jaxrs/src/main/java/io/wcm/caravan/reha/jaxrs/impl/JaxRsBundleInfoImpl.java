@@ -31,6 +31,9 @@ import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
 
 import io.wcm.caravan.reha.jaxrs.api.JaxRsBundleInfo;
 
+/**
+ * OSGi DS component that implements {@link JaxRsBundleInfo}
+ */
 @Component(service = JaxRsBundleInfo.class, scope = ServiceScope.BUNDLE)
 public class JaxRsBundleInfoImpl implements JaxRsBundleInfo {
 

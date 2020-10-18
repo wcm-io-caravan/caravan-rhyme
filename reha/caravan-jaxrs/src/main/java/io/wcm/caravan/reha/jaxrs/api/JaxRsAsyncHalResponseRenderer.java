@@ -27,9 +27,19 @@ import org.osgi.annotation.versioning.ProviderType;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 
+/**
+ * A service that asynchronously renders a {@link LinkableResource} to a JAX-RS {@link AsyncResponse}, and handles any
+ * errors that happen during rendering
+ */
 @ProviderType
-public interface JaxRsAsyncHalResponseHandler {
+public interface JaxRsAsyncHalResponseRenderer {
 
+  /**
+   * @param resourceImpl the resource to be rendered
+   * @param uriInfo information about the URI of the incoming request
+   * @param asyncResponse the JAX-RS response to be resumed
+   * @param metrics collects information about all upstream requests executed during the current request
+   */
   void respondWith(LinkableResource resourceImpl, UriInfo uriInfo, AsyncResponse asyncResponse, RequestMetricsCollector metrics);
 
 }

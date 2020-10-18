@@ -29,10 +29,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
 
+/**
+ * Combines the behaviour of multiple {@link ExceptionStatusAndLoggingStrategy} instances
+ */
 public class CompositeExceptionStatusAndLoggingStrategy implements ExceptionStatusAndLoggingStrategy {
 
   private final List<ExceptionStatusAndLoggingStrategy> strategies;
 
+  /**
+   * @param strategies the strategies to combine
+   */
   public CompositeExceptionStatusAndLoggingStrategy(List<ExceptionStatusAndLoggingStrategy> strategies) {
     this.strategies = strategies;
   }

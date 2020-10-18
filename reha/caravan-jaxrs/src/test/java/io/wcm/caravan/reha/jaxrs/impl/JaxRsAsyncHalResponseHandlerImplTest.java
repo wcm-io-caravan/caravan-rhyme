@@ -47,7 +47,7 @@ import io.wcm.caravan.reha.api.annotations.HalApiInterface;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
-import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
+import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressFBWarnings("UWF_NULL_FIELD")
@@ -55,7 +55,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
 
   private static final String REQUEST_URL = "/request/url";
 
-  private JaxRsAsyncHalResponseHandler handler = new JaxRsAsyncHalResponseHandlerImpl();
+  private JaxRsAsyncHalResponseRenderer handler = new JaxRsAsyncHalResponseHandlerImpl();
 
   private RequestMetricsCollector metrics = RequestMetricsCollector.create();
 

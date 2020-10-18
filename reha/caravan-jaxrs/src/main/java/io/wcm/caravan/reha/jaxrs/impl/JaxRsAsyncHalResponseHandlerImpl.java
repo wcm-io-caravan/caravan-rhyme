@@ -39,11 +39,15 @@ import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.reha.api.spi.ExceptionStatusAndLoggingStrategy;
-import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
+import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 
-@Component(service = { JaxRsAsyncHalResponseHandler.class })
+/**
+ * OSGI DS component that implements the {@link JaxRsAsyncHalResponseRenderer} interface using the
+ * {@link AsyncHalResponseRenderer} and a {@link JaxRsExceptionStrategy}
+ */
+@Component(service = { JaxRsAsyncHalResponseRenderer.class })
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseHandler {
+public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRenderer {
 
   private static final Logger log = LoggerFactory.getLogger(JaxRsAsyncHalResponseHandlerImpl.class);
 
@@ -96,8 +100,9 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseHa
 
   @SuppressWarnings("PMD.GuardLogStatement")
   private void resumeWithError(UriInfo uriInfo, AsyncResponse suspended, Throwable fatalError) {
+
     URI uri = uriInfo != null ? uriInfo.getRequestUri() : null;
-    log.error("A fatal exception occured when handling request for " + uri, fatalError);
+    log.error("An exception occured when handling request for " + uri, fatalError);
 
     suspended.resume(fatalError);
   }

@@ -33,7 +33,7 @@ import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.caravan.api.CaravanHalApiClient;
 import io.wcm.caravan.reha.caravan.api.CaravanReha;
 import io.wcm.caravan.reha.caravan.api.CaravanRehaRequestCycle;
-import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
+import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 
 /**
  * Implementations of the {@link CaravanRehaRequestCycle} and {@link CaravanReha} interfaces
@@ -42,7 +42,7 @@ import io.wcm.caravan.reha.jaxrs.api.JaxRsAsyncHalResponseHandler;
 public class CaravanRehaRequestCycleImpl implements CaravanRehaRequestCycle {
 
   @Reference
-  private JaxRsAsyncHalResponseHandler responseHandler;
+  private JaxRsAsyncHalResponseRenderer responseHandler;
 
   @Reference
   private CaravanHalApiClient halApiClient;
@@ -90,7 +90,7 @@ public class CaravanRehaRequestCycleImpl implements CaravanRehaRequestCycle {
     }
 
     @Override
-    public <T> T getEntryPoint(String serviceId, String uri, Class<T> halApiInterface) {
+    public <T> T getUpstreamEntryPoint(String serviceId, String uri, Class<T> halApiInterface) {
 
       return halApiClient.getEntryPoint(serviceId, uri, halApiInterface, metrics);
     }

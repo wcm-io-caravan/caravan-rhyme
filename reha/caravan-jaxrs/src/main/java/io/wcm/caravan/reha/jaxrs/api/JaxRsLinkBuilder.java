@@ -22,18 +22,40 @@ package io.wcm.caravan.reha.jaxrs.api;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.ws.rs.core.Application;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
+
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.jaxrs.impl.JaxRsControllerProxyLinkBuilder;
 
+/**
+ * @param <JaxRsResourceType> the class of the {@link Component} annotated with {@link JaxrsResource}
+ */
 public interface JaxRsLinkBuilder<JaxRsResourceType> {
 
+  /**
+   * @param parameters to append to the parameters
+   * @return this
+   */
   JaxRsLinkBuilder<JaxRsResourceType> withAdditionalQueryParameters(Map<String, Object> parameters);
 
+  /**
+   * @param consumer a function to be called on the proxy that fills in the parameters for the resource
+   * @return a {@link Link} instance with the href already set
+   */
   Link buildLinkTo(Consumer<JaxRsResourceType> consumer);
 
-  static <JaxRsResourceType> JaxRsLinkBuilder<JaxRsResourceType> create(String baseUrl, Class<JaxRsResourceType> controllerClass) {
+  /**
+   * Factory method to create {@link JaxRsLinkBuilder} instances
+   * @param baseUrl the base path of the JAX-RS {@link Application}
+   * @param resourceClass the class of the {@link Component} annotated with {@link JaxrsResource}
+   * @return the created instance
+   */
+  static <JaxRsResourceType> JaxRsLinkBuilder<JaxRsResourceType> create(String baseUrl, Class<JaxRsResourceType> resourceClass) {
 
-    return new JaxRsControllerProxyLinkBuilder<JaxRsResourceType>(baseUrl, controllerClass);
+    return new JaxRsControllerProxyLinkBuilder<JaxRsResourceType>(baseUrl, resourceClass);
   }
 
 }

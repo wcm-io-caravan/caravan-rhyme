@@ -22,6 +22,10 @@ package io.wcm.caravan.reha.impl.reflection;
 import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 
+/**
+ * An internal interface that combines the {@link HalApiReturnTypeSupport} and {@link HalApiAnnotationSupport}
+ * interfaces to keep internal method signatures simple
+ */
 public interface HalApiTypeSupport extends HalApiReturnTypeSupport, HalApiAnnotationSupport {
   // no additional methods are added
 }

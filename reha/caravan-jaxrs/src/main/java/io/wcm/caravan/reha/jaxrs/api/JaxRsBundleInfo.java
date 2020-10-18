@@ -19,12 +19,24 @@
  */
 package io.wcm.caravan.reha.jaxrs.api;
 
+import javax.ws.rs.core.Application;
+
 import org.osgi.annotation.versioning.ProviderType;
 
+/**
+ * Provides information about the OSGi bundle version and the base-path of the {@link Application} contained in the
+ * bundle
+ */
 @ProviderType
 public interface JaxRsBundleInfo {
 
+  /**
+   * @return the base-path of the JAX-RS {@link Application} that is contained in the bundle where this service is used
+   */
   String getApplicationPath();
 
+  /**
+   * @return the version of the bundle where this service is used
+   */
   String getBundleVersion();
 }

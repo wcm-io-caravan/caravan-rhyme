@@ -29,11 +29,16 @@ import com.google.common.collect.ImmutableList;
 
 import io.reactivex.rxjava3.core.Observable;
 
-
+/**
+ * Combines the functionality of multiple {@link HalApiTypeSupport} instances
+ */
 public class CompositeHalApiTypeSupport implements HalApiTypeSupport {
 
   private final List<HalApiTypeSupport> delegates;
 
+  /**
+   * @param delegates the {@link HalApiTypeSupport} instances to combine
+   */
   public CompositeHalApiTypeSupport(Iterable<HalApiTypeSupport> delegates) {
 
     this.delegates = ImmutableList.copyOf(delegates);

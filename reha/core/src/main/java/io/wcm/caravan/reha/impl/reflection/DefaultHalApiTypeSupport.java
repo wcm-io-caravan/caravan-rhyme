@@ -40,7 +40,11 @@ import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 
-
+/**
+ * The default implementation of {@link HalApiTypeSupport} that allows the following types to be used as return types
+ * for methods annotated with {@link RelatedResource} and {@link ResourceState}:
+ * {@link Observable}, {@link Single}, {@link Maybe}, {@link Publisher}, {@link Optional}, {@link List}
+ */
 public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
 
   @Override
@@ -151,6 +155,12 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
     return null;
   }
 
+  /**
+   * @param annotationSupport additional support for different annotations
+   * @param returnTypeSupport additional support for different return types
+   * @return an {@link HalApiTypeSupport} instance that combines the logic of the {@link DefaultHalApiTypeSupport} and
+   *         the given additional SPI implementations
+   */
   public static HalApiTypeSupport extendWith(HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
 
     DefaultHalApiTypeSupport defaultSupport = new DefaultHalApiTypeSupport();

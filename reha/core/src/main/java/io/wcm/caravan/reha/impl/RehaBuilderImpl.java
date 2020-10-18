@@ -34,6 +34,9 @@ import io.wcm.caravan.reha.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.reha.impl.reflection.HalApiTypeSupportAdapter;
 import io.wcm.caravan.reha.impl.renderer.CompositeExceptionStatusAndLoggingStrategy;
 
+/**
+ * Implementation of the {@link RehaBuilder} interface that allows to configure and create {@link Reha} instances
+ */
 public class RehaBuilderImpl implements RehaBuilder {
 
   private final JsonResourceLoader jsonLoader;
@@ -41,6 +44,9 @@ public class RehaBuilderImpl implements RehaBuilder {
 
   private final List<ExceptionStatusAndLoggingStrategy> exceptionStrategies = new ArrayList<>();
 
+  /**
+   * @param jsonLoader to be used to load upstream-resource (or null if not needed)
+   */
   public RehaBuilderImpl(JsonResourceLoader jsonLoader) {
 
     this.jsonLoader = jsonLoader;
@@ -98,5 +104,4 @@ public class RehaBuilderImpl implements RehaBuilder {
 
     return new RehaImpl(incomingRequestUri, jsonLoader, exceptionStrategy, typeSupport);
   }
-
 }
