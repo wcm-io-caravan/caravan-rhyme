@@ -48,9 +48,7 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
   private final Cache<String, CacheEntry> cache = CacheBuilder.newBuilder().build();
 
   private final String serviceId;
-
   private final CaravanHttpClient client;
-
   private final Clock clock;
 
   CaravanGuavaJsonResourceLoader(CaravanHttpClient client, String serviceId, Clock clock) {
@@ -207,17 +205,13 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
     }
 
     boolean isStale() {
-      if (response.getMaxAge() != null) {
-        int secondsCached = getSecondsInCache();
-        return secondsCached > response.getMaxAge();
-      }
-      return false;
+
+      int secondsCached = getSecondsInCache();
+      return secondsCached > response.getMaxAge();
     }
 
     HalResponse getResponseWithAdjustedMaxAge() {
-      if (response.getMaxAge() == null) {
-        return response;
-      }
+
       int newMaxAge = Math.max(0, response.getMaxAge() - getSecondsInCache());
       return response.withMaxAge(newMaxAge);
     }
