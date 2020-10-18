@@ -23,30 +23,30 @@ import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
-import io.wcm.caravan.rhyme.impl.RehaBuilderImpl;
+import io.wcm.caravan.rhyme.impl.RhymeBuilderImpl;
 
 /**
- * A builder to configure and create a {@link Reha} instance to be used throughout the lifecycle of the incoming
+ * A builder to configure and create a {@link Rhyme} instance to be used throughout the lifecycle of the incoming
  * request.
  */
-public interface RehaBuilder {
+public interface RhymeBuilder {
 
   /**
-   * Create a {@link RehaBuilder} that can only build {@link Reha} instances which do not request any resources
+   * Create a {@link RhymeBuilder} that can only build {@link Rhyme} instances which do not request any resources
    * from upstream services
    * @return the new instance
    */
-  static RehaBuilder withoutResourceLoader() {
-    return new RehaBuilderImpl(null);
+  static RhymeBuilder withoutResourceLoader() {
+    return new RhymeBuilderImpl(null);
   }
 
   /**
-   * Create a {@link RehaBuilder} to build {@link Reha} instances that use the given {@link JsonResourceLoader}
+   * Create a {@link RhymeBuilder} to build {@link Rhyme} instances that use the given {@link JsonResourceLoader}
    * @param jsonLoader to load resources from upstream services
    * @return the new instance
    */
-  static RehaBuilder withResourceLoader(JsonResourceLoader jsonLoader) {
-    return new RehaBuilderImpl(jsonLoader);
+  static RhymeBuilder withResourceLoader(JsonResourceLoader jsonLoader) {
+    return new RhymeBuilderImpl(jsonLoader);
   }
 
   /**
@@ -55,7 +55,7 @@ public interface RehaBuilder {
    * @param additionalTypeSupport extension to the default type support
    * @return this
    */
-  RehaBuilder withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport);
+  RhymeBuilder withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport);
 
   /**
    * Extend the core framework to support additional annotation types in your annotated HAL API interfaces.
@@ -63,7 +63,7 @@ public interface RehaBuilder {
    * @param additionalTypeSupport extension to the default type support
    * @return this
    */
-  RehaBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport);
+  RhymeBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport);
 
   /**
    * Allow the exception handling of the core framework to support additional platform / framework specific exceptions.
@@ -71,14 +71,14 @@ public interface RehaBuilder {
    * @param customStrategy extension to the default exception handling.
    * @return this
    */
-  RehaBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy);
+  RhymeBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy);
 
   /**
-   * Create the {@link Reha} instance to be used to throughout the lifecycle of an incoming request
+   * Create the {@link Rhyme} instance to be used to throughout the lifecycle of an incoming request
    * @param incomingRequestUri URI of the incoming request (can be absolute or relative, depending on the
    *          platform/framework)
    * @return the new instance
    */
-  Reha buildForRequestTo(String incomingRequestUri);
+  Rhyme buildForRequestTo(String incomingRequestUri);
 
 }

@@ -30,11 +30,11 @@ import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
 
 /**
  * A facade interface that simplifies all interaction with the core framework to handle an incoming request for a
- * HAL+JSON resource. You should create a {@link Reha} instance immediately after
- * accepting an incoming request (using a {@link RehaBuilder}) and then use this single instance to fetch all upstream
+ * HAL+JSON resource. You should create a {@link Rhyme} instance immediately after
+ * accepting an incoming request (using a {@link RhymeBuilder}) and then use this single instance to fetch all upstream
  * resource and render the response.
  */
-public interface Reha {
+public interface Rhyme {
 
   /**
    * Create a dynamic client proxy to load HAL+JSON resources from an upstream service.

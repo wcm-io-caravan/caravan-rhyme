@@ -24,8 +24,8 @@ import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.Reha;
-import io.wcm.caravan.rhyme.api.RehaBuilder;
+import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
@@ -41,7 +41,7 @@ import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
 
-final class RehaImpl implements Reha {
+final class RhymeImpl implements Rhyme {
 
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
@@ -52,7 +52,7 @@ final class RehaImpl implements Reha {
   private final HalApiClient client;
   private final AsyncHalResponseRenderer renderer;
 
-  RehaImpl(String requestUri, JsonResourceLoader jsonLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport) {
+  RhymeImpl(String requestUri, JsonResourceLoader jsonLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport) {
     this.requestUri = requestUri;
     this.jsonLoader = jsonLoader;
     this.exceptionStrategy = exceptionStrategy;
@@ -68,7 +68,7 @@ final class RehaImpl implements Reha {
         @Override
         public <T> T getEntryPoint(String uri, Class<T> halApiInterface) {
           throw new HalApiDeveloperException("#getEntryPoint can only be used if you have provided a " + JsonResourceLoader.class.getSimpleName()
-              + " when constructing your " + RehaBuilder.class.getSimpleName());
+              + " when constructing your " + RhymeBuilder.class.getSimpleName());
         }
       };
     }

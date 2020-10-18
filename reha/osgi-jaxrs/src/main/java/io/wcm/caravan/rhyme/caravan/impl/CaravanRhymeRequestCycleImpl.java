@@ -31,15 +31,15 @@ import org.osgi.service.component.annotations.Reference;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.caravan.api.CaravanHalApiClient;
-import io.wcm.caravan.rhyme.caravan.api.CaravanReha;
-import io.wcm.caravan.rhyme.caravan.api.CaravanRehaRequestCycle;
+import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
+import io.wcm.caravan.rhyme.caravan.api.CaravanRhymeRequestCycle;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 
 /**
- * Implementations of the {@link CaravanRehaRequestCycle} and {@link CaravanReha} interfaces
+ * Implementations of the {@link CaravanRhymeRequestCycle} and {@link CaravanRhyme} interfaces
  */
-@Component(service = CaravanRehaRequestCycle.class)
-public class CaravanRehaRequestCycleImpl implements CaravanRehaRequestCycle {
+@Component(service = CaravanRhymeRequestCycle.class)
+public class CaravanRhymeRequestCycleImpl implements CaravanRhymeRequestCycle {
 
   @Reference
   private JaxRsAsyncHalResponseRenderer responseHandler;
@@ -49,9 +49,9 @@ public class CaravanRehaRequestCycleImpl implements CaravanRehaRequestCycle {
 
   @Override
   public <RequestContextType> void processRequest(UriInfo requestUri, AsyncResponse response,
-      Function<CaravanReha, RequestContextType> requestContextConstructor, Function<RequestContextType, ? extends LinkableResource> resourceImplConstructor) {
+      Function<CaravanRhyme, RequestContextType> requestContextConstructor, Function<RequestContextType, ? extends LinkableResource> resourceImplConstructor) {
 
-    CaravanRehaImpl rhyme = createRhymeInstance(requestUri);
+    CaravanRhymeImpl rhyme = createRhymeInstance(requestUri);
 
     RequestContextType requestContext = requestContextConstructor.apply(rhyme);
 
@@ -60,12 +60,12 @@ public class CaravanRehaRequestCycleImpl implements CaravanRehaRequestCycle {
     responseHandler.respondWith(resource, requestUri, response, rhyme.metrics);
   }
 
-  CaravanRehaImpl createRhymeInstance(UriInfo requestUri) {
+  CaravanRhymeImpl createRhymeInstance(UriInfo requestUri) {
 
-    return new CaravanRehaImpl(halApiClient, requestUri);
+    return new CaravanRhymeImpl(halApiClient, requestUri);
   }
 
-  static final class CaravanRehaImpl implements CaravanReha {
+  static final class CaravanRhymeImpl implements CaravanRhyme {
 
     private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
@@ -73,7 +73,7 @@ public class CaravanRehaRequestCycleImpl implements CaravanRehaRequestCycle {
 
     private final UriInfo requestUri;
 
-    CaravanRehaImpl(CaravanHalApiClient halApiClient, UriInfo requestUri) {
+    CaravanRhymeImpl(CaravanHalApiClient halApiClient, UriInfo requestUri) {
       this.halApiClient = halApiClient;
       this.requestUri = requestUri;
     }

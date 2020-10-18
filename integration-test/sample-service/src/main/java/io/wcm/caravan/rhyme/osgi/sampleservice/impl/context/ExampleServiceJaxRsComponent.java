@@ -39,8 +39,8 @@ import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.caravan.api.CaravanReha;
-import io.wcm.caravan.rhyme.caravan.api.CaravanRehaRequestCycle;
+import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
+import io.wcm.caravan.rhyme.caravan.api.CaravanRhymeRequestCycle;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsBundleInfo;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
@@ -61,13 +61,13 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ServerSideEr
 public class ExampleServiceJaxRsComponent {
 
   @Reference
-  private CaravanRehaRequestCycle requestCycle;
+  private CaravanRhymeRequestCycle requestCycle;
 
   @Reference
   private JaxRsBundleInfo bundleInfo;
 
-  private ExampleServiceRequestContext createRequestContext(CaravanReha reha) {
-    return new ExampleServiceRequestContext(reha, bundleInfo);
+  private ExampleServiceRequestContext createRequestContext(CaravanRhyme rhyme) {
+    return new ExampleServiceRequestContext(rhyme, bundleInfo);
   }
 
   private void renderResource(UriInfo uriInfo, AsyncResponse response, Function<ExampleServiceRequestContext, LinkableResource> resourceImplConstructor) {

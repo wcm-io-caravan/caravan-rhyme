@@ -22,8 +22,8 @@ package io.wcm.caravan.rhyme.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.wcm.caravan.rhyme.api.Reha;
-import io.wcm.caravan.rhyme.api.RehaBuilder;
+import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
@@ -35,9 +35,9 @@ import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupportAdapter;
 import io.wcm.caravan.rhyme.impl.renderer.CompositeExceptionStatusAndLoggingStrategy;
 
 /**
- * Implementation of the {@link RehaBuilder} interface that allows to configure and create {@link Reha} instances
+ * Implementation of the {@link RhymeBuilder} interface that allows to configure and create {@link Rhyme} instances
  */
-public class RehaBuilderImpl implements RehaBuilder {
+public class RhymeBuilderImpl implements RhymeBuilder {
 
   private final JsonResourceLoader jsonLoader;
   private final List<HalApiTypeSupport> registeredTypeSupports = new ArrayList<>();
@@ -47,7 +47,7 @@ public class RehaBuilderImpl implements RehaBuilder {
   /**
    * @param jsonLoader to be used to load upstream-resource (or null if not needed)
    */
-  public RehaBuilderImpl(JsonResourceLoader jsonLoader) {
+  public RhymeBuilderImpl(JsonResourceLoader jsonLoader) {
 
     this.jsonLoader = jsonLoader;
 
@@ -55,14 +55,14 @@ public class RehaBuilderImpl implements RehaBuilder {
   }
 
   @Override
-  public RehaBuilder withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport) {
+  public RhymeBuilder withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport) {
 
     registeredTypeSupports.add(new HalApiTypeSupportAdapter(additionalTypeSupport));
     return this;
   }
 
   @Override
-  public RehaBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport) {
+  public RhymeBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport) {
 
     registeredTypeSupports.add(new HalApiTypeSupportAdapter(additionalTypeSupport));
     return this;
@@ -78,7 +78,7 @@ public class RehaBuilderImpl implements RehaBuilder {
   }
 
   @Override
-  public RehaBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy) {
+  public RhymeBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy) {
 
     exceptionStrategies.add(customStrategy);
     return this;
@@ -97,11 +97,11 @@ public class RehaBuilderImpl implements RehaBuilder {
   }
 
   @Override
-  public Reha buildForRequestTo(String incomingRequestUri) {
+  public Rhyme buildForRequestTo(String incomingRequestUri) {
 
     HalApiTypeSupport typeSupport = getEffectiveTypeSupport();
     ExceptionStatusAndLoggingStrategy exceptionStrategy = getEffectiveExceptionStrategy();
 
-    return new RehaImpl(incomingRequestUri, jsonLoader, exceptionStrategy, typeSupport);
+    return new RhymeImpl(incomingRequestUri, jsonLoader, exceptionStrategy, typeSupport);
   }
 }

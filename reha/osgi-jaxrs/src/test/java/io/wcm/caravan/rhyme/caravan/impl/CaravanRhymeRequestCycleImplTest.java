@@ -50,12 +50,12 @@ import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.caravan.api.CaravanReha;
+import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
 import io.wcm.caravan.rhyme.jaxrs.impl.JaxRsAsyncHalResponseHandlerImpl;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class CaravanRehaRequestCycleImplTest {
+public class CaravanRhymeRequestCycleImplTest {
 
   private static final String REQUEST_URI = "/";
 
@@ -70,7 +70,7 @@ public class CaravanRehaRequestCycleImplTest {
   @Mock
   private AsyncResponse asyncResponse;
 
-  private CaravanRehaRequestCycleImpl requestCycle;
+  private CaravanRhymeRequestCycleImpl requestCycle;
 
   @BeforeEach
   void setUp() {
@@ -82,7 +82,7 @@ public class CaravanRehaRequestCycleImplTest {
 
     context.registerInjectActivateService(new CaravanHalApiClientImpl());
 
-    requestCycle = context.registerInjectActivateService(new CaravanRehaRequestCycleImpl());
+    requestCycle = context.registerInjectActivateService(new CaravanRhymeRequestCycleImpl());
   }
 
   private ObjectNode mockOkHalResponse() {
@@ -99,9 +99,9 @@ public class CaravanRehaRequestCycleImplTest {
 
     mockOkHalResponse();
 
-    CaravanReha reha = requestCycle.createRhymeInstance(uriInfo);
+    CaravanRhyme rhyme = requestCycle.createRhymeInstance(uriInfo);
 
-    LinkableTestResource resource = reha.getUpstreamEntryPoint("/serviceId", REQUEST_URI, LinkableTestResource.class);
+    LinkableTestResource resource = rhyme.getUpstreamEntryPoint("/serviceId", REQUEST_URI, LinkableTestResource.class);
 
     verifyZeroInteractions(httpClient);
 
@@ -112,9 +112,9 @@ public class CaravanRehaRequestCycleImplTest {
   @Test
   public void getUriInfo_should_return_uri_info() throws Exception {
 
-    CaravanReha reha = requestCycle.createRhymeInstance(uriInfo);
+    CaravanRhyme rhyme = requestCycle.createRhymeInstance(uriInfo);
 
-    assertThat(reha.getRequestUri()).isSameAs(uriInfo);
+    assertThat(rhyme.getRequestUri()).isSameAs(uriInfo);
   }
 
   private Response verifyResumeHasBeenCalled() {
@@ -136,9 +136,9 @@ public class CaravanRehaRequestCycleImplTest {
   @Test
   public void setResponseMaxAge_should_limit_max_age() throws Exception {
 
-    requestCycle.processRequest(uriInfo, asyncResponse, reha -> {
-      reha.setResponseMaxAge(Duration.ofSeconds(123));
-      return new RequestContext(reha);
+    requestCycle.processRequest(uriInfo, asyncResponse, rhyme -> {
+      rhyme.setResponseMaxAge(Duration.ofSeconds(123));
+      return new RequestContext(rhyme);
     }, ResourceImpl::new);
 
     Response response = verifyResumeHasBeenCalled();
@@ -149,10 +149,10 @@ public class CaravanRehaRequestCycleImplTest {
 
   static class RequestContext {
 
-    private final CaravanReha reha;
+    private final CaravanRhyme rhyme;
 
-    RequestContext(CaravanReha reha) {
-      this.reha = reha;
+    RequestContext(CaravanRhyme rhyme) {
+      this.rhyme = rhyme;
     }
   }
 
@@ -168,7 +168,7 @@ public class CaravanRehaRequestCycleImplTest {
     public ObjectNode getState() {
 
       return JsonNodeFactory.instance.objectNode()
-          .put("foo", context.reha.toString());
+          .put("foo", context.rhyme.toString());
     }
 
     @Override

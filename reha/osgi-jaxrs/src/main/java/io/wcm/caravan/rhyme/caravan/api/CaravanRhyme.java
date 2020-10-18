@@ -23,14 +23,14 @@ import java.time.Duration;
 
 import javax.ws.rs.core.UriInfo;
 
-import io.wcm.caravan.rhyme.api.Reha;
+import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 
 /**
- * An alternative to the generic {@link Reha} interface that should be used for OSGi / JAX-RS projects.
- * Use the {@link CaravanRehaRequestCycle} OSGi service to create one instance for each incoming request.
+ * An alternative to the generic {@link Rhyme} interface that should be used for OSGi / JAX-RS projects.
+ * Use the {@link CaravanRhymeRequestCycle} OSGi service to create one instance for each incoming request.
  */
-public interface CaravanReha {
+public interface CaravanRhyme {
 
   /**
    * @return information on the URI of the incoming request

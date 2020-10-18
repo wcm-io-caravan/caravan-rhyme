@@ -40,8 +40,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.Reha;
-import io.wcm.caravan.rhyme.api.RehaBuilder;
+import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
@@ -59,16 +59,16 @@ import io.wcm.caravan.ryhme.testing.resources.TestResource;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 
 @ExtendWith(MockitoExtension.class)
-public class RehaBuilderImplTest {
+public class RhymeBuilderImplTest {
 
   private static final String UPSTREAM_ENTRY_POINT_URI = "/";
   private static final String INCOMING_REQUEST_URI = "/incoming";
 
   private final TestResourceTree upstreamResourceTree = new TestResourceTree();
 
-  private Reha createRehaWithCustomExceptionStrategy() {
+  private Rhyme createRhymeWithCustomExceptionStrategy() {
 
-    return RehaBuilder.withoutResourceLoader()
+    return RhymeBuilder.withoutResourceLoader()
         .withExceptionStrategy(new CustomExceptionStrategy())
         .buildForRequestTo(INCOMING_REQUEST_URI);
   }
@@ -76,11 +76,11 @@ public class RehaBuilderImplTest {
   @Test
   public void withExceptionStrategy_should_apply_custom_exception_strategy() {
 
-    Reha reha = createRehaWithCustomExceptionStrategy();
+    Rhyme rhyme = createRhymeWithCustomExceptionStrategy();
 
     NotImplementedException ex = new NotImplementedException("Foo");
 
-    HalResponse response = reha.renderResponse(new FailingResourceImpl(ex));
+    HalResponse response = rhyme.renderResponse(new FailingResourceImpl(ex));
 
     assertThat(response.getStatus()).isEqualTo(501);
   }
@@ -88,11 +88,11 @@ public class RehaBuilderImplTest {
   @Test
   public void withExceptionStrategy_should_not_disable_default_exception_strategy() {
 
-    Reha reha = createRehaWithCustomExceptionStrategy();
+    Rhyme rhyme = createRhymeWithCustomExceptionStrategy();
 
     HalApiServerException ex = new HalApiServerException(404, "Not Found");
 
-    HalResponse response = reha.renderResponse(new FailingResourceImpl(ex));
+    HalResponse response = rhyme.renderResponse(new FailingResourceImpl(ex));
 
     assertThat(response.getStatus()).isEqualTo(404);
   }
@@ -112,18 +112,18 @@ public class RehaBuilderImplTest {
   @Test
   public void withExceptionStrategy_should_allow_multiple_custom_strategies() {
 
-    Reha reha = RehaBuilder.withoutResourceLoader()
+    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
         .withExceptionStrategy(new CustomExceptionStrategy())
         .withExceptionStrategy(new AdditionalExceptionStrategy())
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
-    HalResponse response404 = reha.renderResponse(new FailingResourceImpl(new HalApiServerException(404, "Not Found")));
+    HalResponse response404 = rhyme.renderResponse(new FailingResourceImpl(new HalApiServerException(404, "Not Found")));
     assertThat(response404.getStatus()).isEqualTo(404);
 
-    HalResponse response400 = reha.renderResponse(new FailingResourceImpl(new IllegalArgumentException()));
+    HalResponse response400 = rhyme.renderResponse(new FailingResourceImpl(new IllegalArgumentException()));
     assertThat(response400.getStatus()).isEqualTo(400);
 
-    HalResponse response501 = reha.renderResponse(new FailingResourceImpl(new NotImplementedException("Foo")));
+    HalResponse response501 = rhyme.renderResponse(new FailingResourceImpl(new NotImplementedException("Foo")));
     assertThat(response501.getStatus()).isEqualTo(501);
 
   }
@@ -153,9 +153,9 @@ public class RehaBuilderImplTest {
     }
   }
 
-  private Reha createRehaWithStreamReturnTypeSupport() {
+  private Rhyme createRhymeWithStreamReturnTypeSupport() {
 
-    return RehaBuilder.withResourceLoader(upstreamResourceTree)
+    return RhymeBuilder.withResourceLoader(upstreamResourceTree)
         .withReturnTypeSupport(new StreamSupport())
         .buildForRequestTo(INCOMING_REQUEST_URI);
   }
@@ -189,11 +189,11 @@ public class RehaBuilderImplTest {
   @Test
   public void withReturnTypeSupport_should_enable_rendering_of_resources_with_custom_return_types() {
 
-    Reha reha = createRehaWithStreamReturnTypeSupport();
+    Rhyme rhyme = createRhymeWithStreamReturnTypeSupport();
 
     ResourceWithStreamOfLinks resourceImpl = new ResourcewithStreamOfLinksImpl();
 
-    HalResponse response = reha.renderResponse(resourceImpl);
+    HalResponse response = rhyme.renderResponse(resourceImpl);
     assertThat(response.getStatus()).isEqualTo(200);
 
     List<Link> links = response.getBody().getLinks(StandardRelations.ITEM);
@@ -206,9 +206,9 @@ public class RehaBuilderImplTest {
     upstreamResourceTree.createLinked(StandardRelations.ITEM);
     upstreamResourceTree.createLinked(StandardRelations.ITEM);
 
-    Reha reha = createRehaWithStreamReturnTypeSupport();
+    Rhyme rhyme = createRhymeWithStreamReturnTypeSupport();
 
-    ResourceWithStreamOfLinks entryPoint = reha.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithStreamOfLinks.class);
+    ResourceWithStreamOfLinks entryPoint = rhyme.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithStreamOfLinks.class);
 
     List<LinkableTestResource> linked = entryPoint.getLinks().collect(Collectors.toList());
 
@@ -293,9 +293,9 @@ public class RehaBuilderImplTest {
 
   }
 
-  private Reha createRehaWithCustomAnnotationTypeSupport() {
+  private Rhyme createRhymeWithCustomAnnotationTypeSupport() {
 
-    return RehaBuilder.withResourceLoader(upstreamResourceTree)
+    return RhymeBuilder.withResourceLoader(upstreamResourceTree)
         .withAnnotationTypeSupport(new CustomAnnotationSupport())
         .buildForRequestTo(INCOMING_REQUEST_URI);
   }
@@ -303,12 +303,12 @@ public class RehaBuilderImplTest {
   @Test
   public void withAnnotationTypeSupport_should_enable_rendering_of_resources_with_custom_annotation() {
 
-    Reha reha = createRehaWithCustomAnnotationTypeSupport();
+    Rhyme rhyme = createRhymeWithCustomAnnotationTypeSupport();
 
     ResourceWithCustomAnnotation resourceImpl = new ResourceWithCustomAnnotationImpl()
         .withEmbedded(new TestState(123), new TestState(456));
 
-    HalResponse response = reha.renderResponse(resourceImpl);
+    HalResponse response = rhyme.renderResponse(resourceImpl);
 
     assertThat(response.getStatus()).isEqualTo(200);
     assertThat(response.getContentType()).isEqualTo(HalResource.CONTENT_TYPE);
@@ -323,9 +323,9 @@ public class RehaBuilderImplTest {
     entryPoint.setNumber(123);
     entryPoint.createEmbedded(ITEM).setNumber(456);
 
-    Reha reha = createRehaWithCustomAnnotationTypeSupport();
+    Rhyme rhyme = createRhymeWithCustomAnnotationTypeSupport();
 
-    ResourceWithCustomAnnotation resource = reha.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithCustomAnnotation.class);
+    ResourceWithCustomAnnotation resource = rhyme.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithCustomAnnotation.class);
 
     TestState state = resource.getState().get();
     assertThat(state).isNotNull();

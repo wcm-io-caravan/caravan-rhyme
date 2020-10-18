@@ -31,12 +31,12 @@ import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 /**
  * An OSGI service that will handle an incoming request to a server-side {@link HalApiInterface} implementation
  */
-public interface CaravanRehaRequestCycle {
+public interface CaravanRhymeRequestCycle {
 
   /**
    * Handles the full request cycle:
    * <ol>
-   * <li>Create a {@link CaravanReha} instance</li>
+   * <li>Create a {@link CaravanRhyme} instance</li>
    * <li>Pass that instance on to the given function to create a request context instance</li>
    * <li>Pass that context on to the given function to create the resource implementation to be rendered</li>
    * <li>Render the resource using the {@link JaxRsAsyncHalResponseRenderer} service</li>
@@ -50,6 +50,6 @@ public interface CaravanRehaRequestCycle {
    *          information to all resource implementations being created within the request cycle
    */
   <RequestContextType> void processRequest(UriInfo requestUri, AsyncResponse response,
-      Function<CaravanReha, RequestContextType> requestContextConstructor,
+      Function<CaravanRhyme, RequestContextType> requestContextConstructor,
       Function<RequestContextType, ? extends LinkableResource> resourceImplConstructor);
 }

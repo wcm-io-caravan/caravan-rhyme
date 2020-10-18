@@ -28,22 +28,22 @@ import javax.ws.rs.core.UriInfo;
 import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.caravan.api.CaravanReha;
+import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsBundleInfo;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsLinkBuilder;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 
 public class ExampleServiceRequestContext {
 
-  private CaravanReha reha;
+  private CaravanRhyme rhyme;
   private JaxRsBundleInfo bundleInfo;
 
   private ExamplesEntryPointResource upstreamEntryPoint;
 
   private JaxRsLinkBuilder<ExampleServiceJaxRsComponent> linkBuilder;
 
-  public ExampleServiceRequestContext(CaravanReha reha, JaxRsBundleInfo bundleInfo) {
-    this.reha = reha;
+  public ExampleServiceRequestContext(CaravanRhyme rhyme, JaxRsBundleInfo bundleInfo) {
+    this.rhyme = rhyme;
     this.bundleInfo = bundleInfo;
 
     this.linkBuilder = createLinkBuilder(bundleInfo);
@@ -72,13 +72,13 @@ public class ExampleServiceRequestContext {
   }
 
   public void limitMaxAge(Duration duration) {
-    reha.setResponseMaxAge(duration);
+    rhyme.setResponseMaxAge(duration);
   }
 
   public ExamplesEntryPointResource getUpstreamEntryPoint() {
     if (upstreamEntryPoint == null) {
       String serviceId = getServiceId();
-      upstreamEntryPoint = reha.getUpstreamEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class);
+      upstreamEntryPoint = rhyme.getUpstreamEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class);
     }
     return upstreamEntryPoint;
   }

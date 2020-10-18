@@ -37,8 +37,8 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
-import io.wcm.caravan.rhyme.api.Reha;
-import io.wcm.caravan.rhyme.api.RehaBuilder;
+import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
@@ -207,11 +207,11 @@ public class ErrorHandlingTest {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestState());
 
-    Reha reha = RehaBuilder.withResourceLoader(client.getMockJsonLoader())
+    Rhyme rhyme = RhymeBuilder.withResourceLoader(client.getMockJsonLoader())
         .withReturnTypeSupport(typeSupport)
         .buildForRequestTo(ENTRY_POINT_URI);
 
-    ResourceWithCustomReturnType entryPoint = reha.getUpstreamEntryPoint(ENTRY_POINT_URI, ResourceWithCustomReturnType.class);
+    ResourceWithCustomReturnType entryPoint = rhyme.getUpstreamEntryPoint(ENTRY_POINT_URI, ResourceWithCustomReturnType.class);
 
     Throwable ex = catchThrowable(() -> entryPoint.getStream());
 

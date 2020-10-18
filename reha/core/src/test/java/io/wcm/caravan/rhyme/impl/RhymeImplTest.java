@@ -34,8 +34,8 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.Reha;
-import io.wcm.caravan.rhyme.api.RehaBuilder;
+import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
@@ -46,7 +46,7 @@ import io.wcm.caravan.ryhme.testing.LinkableTestResource;
 import io.wcm.caravan.ryhme.testing.TestState;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 
-public class RehaImplTest {
+public class RhymeImplTest {
 
   private static final String UPSTREAM_ENTRY_POINT_URI = "/";
   private static final String NON_EXISTING_PATH = "/does/not/exist";
@@ -54,8 +54,8 @@ public class RehaImplTest {
 
   private final TestResourceTree upstreamResourceTree = new TestResourceTree();
 
-  // create RehaImpl instance with default configuration by using the RehaBuilder without calling any customization methods
-  private final Reha reha = RehaBuilder
+  // create Rhyme instance with default configuration by using the RhymeBuilder without calling any customization methods
+  private final Rhyme rhyme = RhymeBuilder
       .withResourceLoader(upstreamResourceTree)
       .buildForRequestTo(INCOMING_REQUEST_URI);
 
@@ -64,7 +64,7 @@ public class RehaImplTest {
 
     upstreamResourceTree.getEntryPoint().setNumber(123);
 
-    TestResourceWithRequiredState entryPoint = reha.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class);
+    TestResourceWithRequiredState entryPoint = rhyme.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class);
 
     assertThat(entryPoint.getState()).isNotNull();
     assertThat(entryPoint.getState().number).isEqualTo(123);
@@ -73,7 +73,7 @@ public class RehaImplTest {
   @Test
   public void getEntryPoint_should_fail_if_state_of_non_existing_resource_is_requested() throws Exception {
 
-    TestResourceWithRequiredState entryPoint = reha.getUpstreamEntryPoint(NON_EXISTING_PATH, TestResourceWithRequiredState.class);
+    TestResourceWithRequiredState entryPoint = rhyme.getUpstreamEntryPoint(NON_EXISTING_PATH, TestResourceWithRequiredState.class);
 
     HalApiClientException ex = catchThrowableOfType(entryPoint::getState, HalApiClientException.class);
 
@@ -87,12 +87,12 @@ public class RehaImplTest {
   @Test
   public void getEntryPoint_should_fail_if_no_resource_loader_was_provided() throws Exception {
 
-    Reha rehaWithoutResourceLoader = RehaBuilder
+    Rhyme rhymeWithoutResourceLoader = RhymeBuilder
         .withoutResourceLoader()
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
     Throwable ex = catchThrowable(
-        () -> rehaWithoutResourceLoader.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class));
+        () -> rhymeWithoutResourceLoader.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageContaining("#getEntryPoint can only be used if you have provided a JsonResourceLoader");
@@ -101,9 +101,9 @@ public class RehaImplTest {
   @Test
   public void setResponseMaxAge_should_affect_maxAge_of_rendered_response() throws Exception {
 
-    reha.setResponseMaxAge(Duration.ofMinutes(2));
+    rhyme.setResponseMaxAge(Duration.ofMinutes(2));
 
-    HalResponse response = reha.renderResponse(new LinkableTestResourceImpl());
+    HalResponse response = rhyme.renderResponse(new LinkableTestResourceImpl());
 
     assertThat(response.getMaxAge()).isEqualTo(120);
   }
@@ -125,7 +125,7 @@ public class RehaImplTest {
 
     LinkableTestResourceImpl resourceImpl = new LinkableTestResourceWithDelayedState();
 
-    HalResponse response = reha.renderResponse(resourceImpl);
+    HalResponse response = rhyme.renderResponse(resourceImpl);
 
     verifyResponse(response);
   }
@@ -135,7 +135,7 @@ public class RehaImplTest {
 
     LinkableTestResourceImpl resourceImpl = new LinkableTestResourceWithDelayedState();
 
-    CompletionStage<HalResponse> response = reha.renderResponseAsync(resourceImpl);
+    CompletionStage<HalResponse> response = rhyme.renderResponseAsync(resourceImpl);
 
     CompletableFuture<HalResponse> future = response.toCompletableFuture();
     assertThat(future).isNotCompleted();
@@ -148,7 +148,7 @@ public class RehaImplTest {
 
     HalApiServerException ex = new HalApiServerException(403, "Permission denied");
 
-    HalResponse response = reha.renderVndErrorResponse(ex);
+    HalResponse response = rhyme.renderVndErrorResponse(ex);
 
     assertThat(response.getStatus()).isEqualTo(403);
     assertThat(response.getContentType()).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
