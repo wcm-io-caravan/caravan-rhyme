@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 
-import io.wcm.caravan.reha.api.annotations.LinkName;
 import io.wcm.caravan.reha.api.annotations.RelatedResource;
 import io.wcm.caravan.reha.api.annotations.TemplateVariable;
 import io.wcm.caravan.reha.api.annotations.TemplateVariables;
@@ -49,7 +48,6 @@ class HalApiMethodInvocation {
   private final HalApiAnnotationSupport annotationSupport;
 
   private final Map<String, Object> templateVariables;
-  private final String linkName;
   private final boolean calledWithOnlyNullParameters;
 
 
@@ -62,7 +60,7 @@ class HalApiMethodInvocation {
     this.templateVariables = new LinkedHashMap<>();
 
     boolean nonNullParameterFound = false;
-    String foundLinkName = null;
+
     for (int i = 0; i < method.getParameterCount(); i++) {
       Parameter parameter = method.getParameters()[i];
 
@@ -70,7 +68,6 @@ class HalApiMethodInvocation {
       nonNullParameterFound = nonNullParameterFound || parameterValue != null;
 
       TemplateVariable variable = parameter.getAnnotation(TemplateVariable.class);
-      LinkName name = parameter.getAnnotation(LinkName.class);
       TemplateVariables variables = parameter.getAnnotation(TemplateVariables.class);
 
       if (variable != null) {
@@ -79,24 +76,13 @@ class HalApiMethodInvocation {
       else if (variables != null) {
         templateVariables.putAll(getTemplateVariablesFrom(parameterValue, parameter.getType()));
       }
-      else if (name != null) {
-        if (foundLinkName != null) {
-          throw new HalApiDeveloperException("More than one parameter of " + toString() + " is annotated with @" + LinkName.class.getSimpleName());
-        }
-        if (parameterValue == null) {
-          throw new HalApiDeveloperException(
-              "You must provide a non-null value for for the parameter annotated with @" + LinkName.class.getSimpleName() + " when calling " + toString());
-        }
-        foundLinkName = parameterValue.toString();
-      }
       else {
-        throw new HalApiDeveloperException("all parameters of " + toString() + " need to be either annotated with @"
-            + LinkName.class.getSimpleName() + ", @" + TemplateVariable.class.getSimpleName()
+        throw new HalApiDeveloperException("all parameters of " + toString() + " need to be either annotated with"
+            + " @" + TemplateVariable.class.getSimpleName()
             + " or @" + TemplateVariables.class.getSimpleName());
       }
     }
 
-    this.linkName = foundLinkName;
     this.calledWithOnlyNullParameters = !nonNullParameterFound;
   }
 
@@ -141,10 +127,6 @@ class HalApiMethodInvocation {
 
   Map<String, Object> getTemplateVariables() {
     return templateVariables;
-  }
-
-  String getLinkName() {
-    return linkName;
   }
 
   String getDescription() {

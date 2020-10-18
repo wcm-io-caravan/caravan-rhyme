@@ -65,21 +65,20 @@ class RelatedResourceHandler {
           " which does not have a @" + HalApiInterface.class.getSimpleName() + " annotation.");
     }
 
-    List<Link> links = filterLinksIfNamedLinkAnnotationWasUsed(invocation, contextResource.getLinks(relation));
+    List<Link> links = contextResource.getLinks(relation);
     List<HalResource> embeddedResources = contextResource.getEmbedded(relation);
 
-    Observable<Object> rxEmbedded = getEmbedded(invocation, relation, relatedResourceType, embeddedResources, links);
+    Observable<Object> rxEmbedded = getEmbedded(relation, relatedResourceType, embeddedResources, links);
     Observable<Object> rxLinked = getLinked(invocation, relation, relatedResourceType, embeddedResources, links);
 
     return rxEmbedded.concatWith(rxLinked);
   }
 
-  private Observable<Object> getEmbedded(HalApiMethodInvocation invocation, String relation, Class<?> relatedResourceType, List<HalResource> embeddedResources,
-      List<Link> links) {
+  private Observable<Object> getEmbedded(String relation, Class<?> relatedResourceType, List<HalResource> embeddedResources, List<Link> links) {
 
     log.trace("{} embedded resources with relation {} were found in the context resource", embeddedResources.size(), relation);
 
-    return createProxiesFromEmbeddedResources(relatedResourceType, embeddedResources, links, invocation);
+    return createProxiesFromEmbeddedResources(relatedResourceType, embeddedResources, links);
   }
 
   private Observable<Object> getLinked(HalApiMethodInvocation invocation, String relation, Class<?> relatedResourceType, List<HalResource> embeddedResources,
@@ -150,29 +149,12 @@ class RelatedResourceHandler {
     return relevantLinks;
   }
 
-  private static List<Link> filterLinksIfNamedLinkAnnotationWasUsed(HalApiMethodInvocation invocation, List<Link> links) {
-
-    String selectedLinkName = invocation.getLinkName();
-    if (selectedLinkName == null) {
-      return links;
-    }
-
-    List<Link> filteredLinks = links.stream()
-        .filter(link -> selectedLinkName.equals(link.getName()))
-        .collect(Collectors.toList());
-
-    return filteredLinks;
-  }
-
-  private Observable<Object> createProxiesFromEmbeddedResources(Class<?> relatedResourceType, List<HalResource> embeddedResources, List<Link> links,
-      HalApiMethodInvocation invocation) {
+  private Observable<Object> createProxiesFromEmbeddedResources(Class<?> relatedResourceType, List<HalResource> embeddedResources, List<Link> links) {
 
     Map<String, Link> linksByHref = links.stream()
         .collect(Collectors.toMap(Link::getHref, link -> link, (l1, l2) -> l1));
 
     return Observable.fromIterable(embeddedResources)
-        // if a @LinkName parameter was used then only consider embedded resources with a self-link that corresponds to the filtered links
-        .filter(embedded -> invocation.getLinkName() == null || (embedded.getLink() != null && linksByHref.containsKey(embedded.getLink().getHref())))
         .map(embeddedResource -> {
 
           // if the embedded resource is also linked, we want to make the original (possibly named) link available

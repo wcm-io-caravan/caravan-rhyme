@@ -88,6 +88,7 @@ public class VndErrorResponseRendererImpl implements VndErrorResponseRenderer {
     return strategy.getErrorMessageWithoutRedundantInformation(t);
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   private void logError(Throwable error, String uri, int status) {
 
     if (strategy.logAsCompactWarning(error)) {

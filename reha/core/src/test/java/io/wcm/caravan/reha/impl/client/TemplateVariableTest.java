@@ -248,6 +248,6 @@ public class TemplateVariableTest {
         () -> client.createProxy(ResourceWithMissingAnnotations.class).getItem("foo"));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("all parameters ").hasMessageEndingWith("need to be either annotated with @LinkName, @TemplateVariable or @TemplateVariables");
+        .hasMessageStartingWith("all parameters ").hasMessageEndingWith("need to be either annotated with @TemplateVariable or @TemplateVariables");
   }
 }
