@@ -20,10 +20,10 @@
 
 package io.wcm.caravan.reha.api.relations;
 
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 
 /**
- * Constants for standard link relations used in {@link RelatedResource} annotations.
+ * Constants for standard link relations used in {@link Related} annotations.
  * @see <a href="http://www.iana.org/assignments/link-relations/link-relations.xhtml">IANA Link Relation Types</a>
  */
 public final class StandardRelations {

@@ -21,20 +21,20 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.api.errors;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.TemplateVariable;
 
 @HalApiInterface
 public interface ErrorExamplesResource {
 
-  @RelatedResource(relation = "errors:serverSide")
+  @Related("errors:serverSide")
   Single<ErrorResource> provokeError(
       @TemplateVariable("statusCode") Integer statusCode,
       @TemplateVariable("message") String message,
       @TemplateVariable("withCause") Boolean withCause);
 
 
-  @RelatedResource(relation = "errors:httpError")
+  @Related("errors:httpError")
   Single<ErrorResource> provokeHttpClientError(
       @TemplateVariable("statusCode") Integer statusCode,
       @TemplateVariable("message") String message,

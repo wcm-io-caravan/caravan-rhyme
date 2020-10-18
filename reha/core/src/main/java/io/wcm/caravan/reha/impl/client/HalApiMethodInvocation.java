@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.TemplateVariable;
 import io.wcm.caravan.reha.api.annotations.TemplateVariables;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
@@ -89,7 +89,7 @@ class HalApiMethodInvocation {
 
   String getRelation() {
     String relation = annotationSupport.getRelation(method);
-    Preconditions.checkNotNull(relation, this + " does not have a @" + RelatedResource.class.getSimpleName() + " annotation");
+    Preconditions.checkNotNull(relation, this + " does not have a @" + Related.class.getSimpleName() + " annotation");
     return relation;
   }
 

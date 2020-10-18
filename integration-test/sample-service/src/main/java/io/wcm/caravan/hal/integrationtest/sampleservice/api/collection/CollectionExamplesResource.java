@@ -22,7 +22,7 @@ package io.wcm.caravan.hal.integrationtest.sampleservice.api.collection;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.annotations.TemplateVariable;
 import io.wcm.caravan.reha.api.annotations.TemplateVariables;
@@ -34,24 +34,24 @@ public interface CollectionExamplesResource {
   @ResourceState
   Single<TitledState> getState();
 
-  @RelatedResource(relation = StandardRelations.COLLECTION)
+  @Related(StandardRelations.COLLECTION)
   Single<ItemCollectionResource> getCollection(
       @TemplateVariables CollectionParameters options);
 
-  @RelatedResource(relation = StandardRelations.ITEM)
+  @Related(StandardRelations.ITEM)
   Single<ItemResource> getItem(
       @TemplateVariable("index") Integer index,
       @TemplateVariable("delayMs") Integer delayMs);
 
-  @RelatedResource(relation = "client:collection")
+  @Related("client:collection")
   Single<ItemCollectionResource> getCollectionThroughClient(
       @TemplateVariables CollectionParameters options);
 
-  @RelatedResource(relation = "client:item")
+  @Related("client:item")
   Single<ItemResource> getItemThroughClient(
       @TemplateVariable("index") Integer index,
       @TemplateVariable("delayMs") Integer delayMs);
 
-  @RelatedResource(relation = StandardRelations.INDEX)
+  @Related(StandardRelations.INDEX)
   Single<ExamplesEntryPointResource> getEntryPoint();
 }

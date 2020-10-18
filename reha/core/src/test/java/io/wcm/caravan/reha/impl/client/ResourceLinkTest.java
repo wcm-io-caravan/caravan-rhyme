@@ -35,7 +35,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceLink;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.annotations.TemplateVariable;
@@ -73,7 +73,7 @@ public class ResourceLinkTest {
   @HalApiInterface
   interface ResourceWithSingleLinked {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<LinkTargetResource> getLinked();
   }
 
@@ -109,7 +109,7 @@ public class ResourceLinkTest {
   @HalApiInterface
   interface ResourceWithMultipleLinked {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Observable<LinkTargetResource> getLinked();
   }
 
@@ -178,7 +178,7 @@ public class ResourceLinkTest {
   @HalApiInterface
   interface ResourceWithSingleEmbedded {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<LinkTargetResource> getEmbedded();
   }
 
@@ -247,7 +247,7 @@ public class ResourceLinkTest {
   @HalApiInterface
   interface ResourceWithLinkTemplate {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<LinkTargetResource> getLinked(
         @TemplateVariable("intParam") Integer intParam,
         @TemplateVariable("stringParam") String stringParam,
@@ -302,7 +302,7 @@ public class ResourceLinkTest {
   @HalApiInterface
   interface EntyPointWithEmbedded {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<ResourceWithUri> getEmbedded();
   }
 

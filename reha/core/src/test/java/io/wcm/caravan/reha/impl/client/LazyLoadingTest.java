@@ -33,7 +33,7 @@ import io.reactivex.rxjava3.subjects.SingleSubject;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceLink;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.impl.client.ClientTestSupport.MockClientTestSupport;
@@ -84,7 +84,7 @@ public class LazyLoadingTest {
   @HalApiInterface
   interface ResourceWithLink {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<ResourceWithObjectNode> getLinked();
   }
 
@@ -154,7 +154,7 @@ public class LazyLoadingTest {
   @HalApiInterface
   interface LinkingEntryPoint {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<LinkableResource> getLinked();
   }
 

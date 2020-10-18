@@ -40,7 +40,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.reha.api.Reha;
 import io.wcm.caravan.reha.api.RehaBuilder;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.common.HalResponse;
@@ -61,7 +61,7 @@ public class ErrorHandlingTest {
     @ResourceState
     Maybe<TestState> getState();
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Observable<LinkableTestResource> getLinked();
 
     @ResourceRepresentation
@@ -183,7 +183,7 @@ public class ErrorHandlingTest {
   @HalApiInterface
   public interface ResourceWithCustomReturnType extends LinkableTestResource {
 
-    @RelatedResource(relation = "foo:bar")
+    @Related("foo:bar")
     Stream<LinkableTestResource> getStream();
   }
 
@@ -254,7 +254,7 @@ public class ErrorHandlingTest {
     @ResourceState
     Maybe<TestState> getState();
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Observable<LinkedResource> getLinked();
   }
 

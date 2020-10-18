@@ -27,7 +27,7 @@ import io.wcm.caravan.hal.integrationtest.sampleservice.api.caching.CachingExamp
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.CollectionExamplesResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.errors.ErrorExamplesResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 
 @HalApiInterface
@@ -36,12 +36,12 @@ public interface ExamplesEntryPointResource {
   @ResourceState
   Maybe<ObjectNode> getState();
 
-  @RelatedResource(relation = "examples:collections")
+  @Related("examples:collections")
   Single<CollectionExamplesResource> getCollectionExamples();
 
-  @RelatedResource(relation = "examples:caching")
+  @Related("examples:caching")
   Single<CachingExamplesResource> getCachingExamples();
 
-  @RelatedResource(relation = "examples:errors")
+  @Related("examples:errors")
   Single<ErrorExamplesResource> getErrorExamples();
 }

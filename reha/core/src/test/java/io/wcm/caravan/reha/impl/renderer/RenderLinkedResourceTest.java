@@ -37,7 +37,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.TemplateVariable;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
@@ -49,7 +49,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithSingleLink {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     Single<TestResource> getLinked();
   }
 
@@ -101,7 +101,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithMaybeLink {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     Maybe<TestResource> getLinked();
   }
 
@@ -152,7 +152,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithPublisherLinks {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     Publisher<TestResource> getLinked();
   }
 
@@ -187,7 +187,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithObservableLinks {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     Observable<TestResource> getLinked();
   }
 
@@ -228,7 +228,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithSingleLinkTemplate {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     Single<TestResource> getLinkedWithNumber(@TemplateVariable("number") Integer number);
   }
 
@@ -262,7 +262,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithSingleExternalLink {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     Single<LinkableResource> getExternal();
   }
 

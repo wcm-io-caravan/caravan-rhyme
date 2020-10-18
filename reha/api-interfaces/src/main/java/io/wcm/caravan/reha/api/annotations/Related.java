@@ -26,29 +26,19 @@ import java.lang.annotation.Target;
 
 /**
  * Used to annotate methods that allow access to linked or embedded resources. The return value of methods
- * annotated with {@link RelatedResource} must be a reactive stream of another interface annotated with
- * {@link HalApiInterface}. Methods with this annotation can have parameters with {@link TemplateVariable} or
+ * annotated with {@link Related} must provide one ore more instances of other {@link HalApiInterface} objects.
+ * Methods with this annotation can have parameters with {@link TemplateVariable} or
  * {@link TemplateVariables} annotations to allow clients to expand link templates with the values specified
  * in those parameters.
  */
-// TODO: this could be renamed to @Related which is shorter and doesn't imply that it returns just a single resource
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface RelatedResource {
+public @interface Related {
 
   /**
    * Defines the relation of the target resource to this context resource.
    * @return a standard relation or CURI of a custom relation (i.e. "prefix:relation")
    */
-  String relation();
-
-  /**
-   * Defines the HTTP method that should be used by clients when following links with this relation
-   * @return "GET" or any other HTTP method explicitly defined in the annotation
-   */
-  // TODO: this parameter should be removed as long as we don't actually support anything but "GET"
-  // another benefit of removing this parameter is that if we only have a single parameter
-  // we could just use "value" so using the annotation would be as simple as @RelatedResource("relation")
-  String method() default "GET";
+  String value();
 
 }

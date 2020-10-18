@@ -36,7 +36,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.resources.EmbeddableResource;
@@ -63,7 +63,7 @@ final class RelatedResourcesRendererImpl {
    * @param resourceImplInstance the context resource for which the related resources should be discovered and rendered
    * @return a {@link Single} that emits a list with one {@link RelationRenderResult} instance for each method annotated
    *         with
-   *         {@link RelatedResource}
+   *         {@link Related}
    */
   Single<List<RelationRenderResult>> renderRelated(Class<?> apiInterface, Object resourceImplInstance) {
 

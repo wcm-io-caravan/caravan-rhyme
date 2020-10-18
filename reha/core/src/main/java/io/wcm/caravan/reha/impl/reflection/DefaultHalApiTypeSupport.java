@@ -33,7 +33,7 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceLink;
 import io.wcm.caravan.reha.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
@@ -42,7 +42,7 @@ import io.wcm.caravan.reha.api.spi.HalApiReturnTypeSupport;
 
 /**
  * The default implementation of {@link HalApiTypeSupport} that allows the following types to be used as return types
- * for methods annotated with {@link RelatedResource} and {@link ResourceState}:
+ * for methods annotated with {@link Related} and {@link ResourceState}:
  * {@link Observable}, {@link Single}, {@link Maybe}, {@link Publisher}, {@link Optional}, {@link List}
  */
 public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
@@ -59,7 +59,7 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
 
   @Override
   public boolean isRelatedResourceMethod(Method method) {
-    return method.isAnnotationPresent(RelatedResource.class);
+    return method.isAnnotationPresent(Related.class);
   }
 
   @Override
@@ -83,7 +83,7 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
   @Override
   public String getRelation(Method method) {
     if (isRelatedResourceMethod(method)) {
-      return method.getAnnotation(RelatedResource.class).relation();
+      return method.getAnnotation(Related.class).value();
     }
     return null;
   }

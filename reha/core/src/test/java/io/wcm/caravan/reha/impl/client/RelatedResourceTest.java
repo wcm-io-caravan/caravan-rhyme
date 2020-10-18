@@ -36,7 +36,7 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
@@ -54,7 +54,7 @@ public class RelatedResourceTest {
   @HalApiInterface
   interface ResourceWithSingleRelated {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<ResourceWithSingleState> getItem();
   }
 
@@ -112,7 +112,7 @@ public class RelatedResourceTest {
   @HalApiInterface
   interface ResourceWithOptionalRelated {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Maybe<ResourceWithSingleState> getOptionalItem();
   }
 
@@ -172,7 +172,7 @@ public class RelatedResourceTest {
   @HalApiInterface
   interface ResourceWithMultipleRelated {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Observable<ResourceWithSingleState> getItems();
   }
 
@@ -291,7 +291,7 @@ public class RelatedResourceTest {
   @HalApiInterface
   interface ResourceWithPublisherRelated {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Publisher<ResourceWithSingleState> getItems();
   }
 
@@ -321,10 +321,10 @@ public class RelatedResourceTest {
 
     Single<ResourceWithSingleState> noAnnotation();
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<ResourceWithoutAnnotation> getInvalidLinked();
 
-    @RelatedResource(relation = SECTION)
+    @Related(SECTION)
     Single<TestState> notAnInterface();
   }
 

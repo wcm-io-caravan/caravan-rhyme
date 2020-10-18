@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.client.HalApiClient;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
@@ -76,7 +76,7 @@ public class RelatedResourceTest {
   @HalApiInterface
   interface ResourceWithSingleRelated {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     ResourceWithRequiredState getItem();
   }
 
@@ -142,7 +142,7 @@ public class RelatedResourceTest {
   @HalApiInterface
   interface ResourceWithOptionalRelated {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Optional<ResourceWithRequiredState> getOptionalItem();
   }
 
@@ -202,7 +202,7 @@ public class RelatedResourceTest {
   @HalApiInterface
   interface ResourceWithMultipleRelated {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     List<ResourceWithRequiredState> getItems();
   }
 

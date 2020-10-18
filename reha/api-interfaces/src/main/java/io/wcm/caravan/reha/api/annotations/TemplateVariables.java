@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used on parameters of methods annotated with {@link RelatedResource} to mark
+ * Annotation to be used on parameters of methods annotated with {@link Related} to mark
  * a single DTO parameter that is used to expand multiple template variables. This can be used
  * to simply method signatures with a lot of parameters, by defining a single composite DTO type with
  * multiple fields that are named exactly as the corresponding template variables. Parameters with

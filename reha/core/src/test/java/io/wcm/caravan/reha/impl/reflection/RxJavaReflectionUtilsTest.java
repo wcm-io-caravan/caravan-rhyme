@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.exceptions.HalApiServerException;
@@ -48,7 +48,7 @@ public class RxJavaReflectionUtilsTest {
   @HalApiInterface
   public interface TestResourceWithCheckedException {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     LinkableResource getExternal() throws IOException;
   }
 

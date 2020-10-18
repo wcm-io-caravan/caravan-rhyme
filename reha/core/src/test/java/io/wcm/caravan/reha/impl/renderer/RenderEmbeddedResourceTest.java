@@ -32,7 +32,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.resources.EmbeddableResource;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.testing.TestResource;
@@ -44,7 +44,7 @@ public class RenderEmbeddedResourceTest {
   @HalApiInterface
   public interface TestResourceWithObservableEmbedded {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Observable<TestResource> getItems();
   }
 

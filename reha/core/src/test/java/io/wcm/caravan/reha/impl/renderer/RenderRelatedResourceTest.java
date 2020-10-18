@@ -35,7 +35,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.impl.renderer.RenderLinkedResourceTest.TestResourceWithObservableLinks;
@@ -51,25 +51,25 @@ public class RenderRelatedResourceTest {
   @HalApiInterface
   public interface ResourceWithManyRelations extends LinkableResource {
 
-    @RelatedResource(relation = "custom:ghi")
+    @Related("custom:ghi")
     Single<LinkableResource> getCustomGhi();
 
-    @RelatedResource(relation = "item")
+    @Related("item")
     Single<LinkableResource> getItem();
 
-    @RelatedResource(relation = "section")
+    @Related("section")
     Single<LinkableResource> getSection();
 
-    @RelatedResource(relation = "custom:abc")
+    @Related("custom:abc")
     Single<LinkableResource> getCustomAbc();
 
-    @RelatedResource(relation = "canonical")
+    @Related("canonical")
     Single<LinkableResource> getCanonical();
 
-    @RelatedResource(relation = "custom:def")
+    @Related("custom:def")
     Single<LinkableResource> getCustomDef();
 
-    @RelatedResource(relation = "alternate")
+    @Related("alternate")
     Single<LinkableResource> getAlternate();
 
   }
@@ -146,7 +146,7 @@ public class RenderRelatedResourceTest {
   @HalApiInterface
   public interface TestResourceWithInvalidEmissionType {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     Maybe<TestState> getLinked();
   }
 
@@ -173,7 +173,7 @@ public class RenderRelatedResourceTest {
   @HalApiInterface
   public interface TestResourceWithExtendedType {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     Maybe<ExtendedLinkableTestResource> getLinked();
 
     interface ExtendedLinkableTestResource extends LinkableTestResource {
@@ -199,7 +199,7 @@ public class RenderRelatedResourceTest {
   @HalApiInterface
   public interface ResourceWithInvalidRelatedMethod {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Observable<TestState> getRelated();
   }
 

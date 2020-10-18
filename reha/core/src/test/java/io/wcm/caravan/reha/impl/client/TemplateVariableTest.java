@@ -37,7 +37,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.TemplateVariable;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.impl.client.ClientTestSupport.MockClientTestSupport;
@@ -66,7 +66,7 @@ public class TemplateVariableTest {
   @HalApiInterface
   interface ResourceWithSimpleLinkTemplate {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<ResourceWithSingleState> getLinked(@TemplateVariable("number") Integer number);
   }
 
@@ -106,7 +106,7 @@ public class TemplateVariableTest {
   @HalApiInterface
   interface ResourceWithComplexLinkTemplate {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<ResourceWithSingleState> getLinked(
         @TemplateVariable("number") Integer number,
         @TemplateVariable("optionalFlag") Boolean optionalFlag);
@@ -145,10 +145,10 @@ public class TemplateVariableTest {
   @HalApiInterface
   interface ResourceWithTemplateAndResolvedLinks {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<ResourceWithSingleState> getLinked(@TemplateVariable("number") Integer number);
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Observable<ResourceWithSingleState> getAllLinked();
   }
 
@@ -237,7 +237,7 @@ public class TemplateVariableTest {
   @HalApiInterface
   interface ResourceWithMissingAnnotations {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<ResourceWithSingleState> getItem(String parameter);
   }
 

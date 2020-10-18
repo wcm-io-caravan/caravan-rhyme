@@ -39,7 +39,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceLink;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.annotations.TemplateVariables;
@@ -107,7 +107,7 @@ public class TemplateVariablesTest {
   @HalApiInterface
   interface ResourceWithTemplateVariablesDto {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<LinkedResourceWithSingleState> getItem(@TemplateVariables VariablesDto dto);
   }
 
@@ -196,7 +196,7 @@ public class TemplateVariablesTest {
   @HalApiInterface
   interface ResourceWithTemplateVariablesDtoWithPrivateFields {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<LinkedResourceWithSingleState> getItem(@TemplateVariables VariablesDtoWithPrivateFields dto);
   }
 
@@ -223,7 +223,7 @@ public class TemplateVariablesTest {
   @HalApiInterface
   interface ResourceWithTemplateVariablesInterface {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Single<LinkedResourceWithSingleState> getItem(@TemplateVariables VariablesInterface dto);
   }
 

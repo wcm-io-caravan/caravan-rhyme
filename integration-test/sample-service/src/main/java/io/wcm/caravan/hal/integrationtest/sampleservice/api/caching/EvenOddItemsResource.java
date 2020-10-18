@@ -23,18 +23,18 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.hal.integrationtest.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.relations.StandardRelations;
 
 @HalApiInterface
 public interface EvenOddItemsResource {
 
-  @RelatedResource(relation = "example:evenItems")
+  @Related("example:evenItems")
   Single<ItemCollectionResource> getEvenItems();
 
-  @RelatedResource(relation = "example:oddItems")
+  @Related("example:oddItems")
   Single<ItemCollectionResource> getOddItems();
 
-  @RelatedResource(relation = StandardRelations.INDEX)
+  @Related(StandardRelations.INDEX)
   Single<ExamplesEntryPointResource> getEntryPoint();
 }

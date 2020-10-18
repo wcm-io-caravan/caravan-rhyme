@@ -41,7 +41,7 @@ import io.reactivex.rxjava3.subjects.SingleSubject;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.client.HalApiClient;
@@ -87,10 +87,10 @@ public class ProxyCachingTest {
     @ResourceState
     Maybe<TestState> getState();
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     Observable<LinkableTestResource> getLinked();
 
-    @RelatedResource(relation = ALTERNATE)
+    @Related(ALTERNATE)
     Observable<LinkableTestResource> getAlternate();
 
     @ResourceRepresentation

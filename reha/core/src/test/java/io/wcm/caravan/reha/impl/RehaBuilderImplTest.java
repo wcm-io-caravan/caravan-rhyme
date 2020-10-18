@@ -43,7 +43,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.Reha;
 import io.wcm.caravan.reha.api.RehaBuilder;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.common.HalResponse;
 import io.wcm.caravan.reha.api.exceptions.HalApiServerException;
@@ -163,7 +163,7 @@ public class RehaBuilderImplTest {
   @HalApiInterface
   public interface ResourceWithStreamOfLinks extends LinkableResource {
 
-    @RelatedResource(relation = StandardRelations.ITEM)
+    @Related(StandardRelations.ITEM)
     Stream<LinkableTestResource> getLinks();
   }
 

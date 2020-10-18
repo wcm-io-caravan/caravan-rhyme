@@ -34,7 +34,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.resources.EmbeddableResource;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
@@ -56,12 +56,12 @@ public class RenderEmbeddedResourceTest {
       return Optional.empty();
     };
 
-    @RelatedResource(relation = TestRelations.LINKED)
+    @Related(TestRelations.LINKED)
     default List<BlockingTestResource> getLinked() {
       return Collections.emptyList();
     }
 
-    @RelatedResource(relation = TestRelations.EMBEDDED)
+    @Related(TestRelations.EMBEDDED)
     default List<BlockingTestResource> getEmbedded() {
       return Collections.emptyList();
     }
@@ -70,7 +70,7 @@ public class RenderEmbeddedResourceTest {
   @HalApiInterface
   public interface TestResourceWithMultipleEmbedded {
 
-    @RelatedResource(relation = ITEM)
+    @Related(ITEM)
     List<BlockingTestResource> getItems();
   }
 

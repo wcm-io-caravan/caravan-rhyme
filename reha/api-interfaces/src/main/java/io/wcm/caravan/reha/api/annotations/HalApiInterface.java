@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 
 /**
  * A marker annotation that is required for all HAL API interfaces, to indicate that it should be scanned for the
- * presence of methods annotated with {@link RelatedResource}, {@link ResourceState}, etc that actually define the API.
+ * presence of methods annotated with {@link Related}, {@link ResourceState}, etc that actually define the API.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

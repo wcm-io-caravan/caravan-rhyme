@@ -34,7 +34,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.reha.api.annotations.HalApiInterface;
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.reha.api.resources.LinkableResource;
 import io.wcm.caravan.reha.testing.LinkableTestResource;
@@ -49,7 +49,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithRequiredLink {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     TestResource getLinked();
   }
 
@@ -83,7 +83,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithOptionalLink {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     Optional<TestResource> getLinked();
   }
 
@@ -135,7 +135,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithMultipleLinks {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     List<TestResource> getLinked();
   }
 
@@ -177,7 +177,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithRequiredExternalLink {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     LinkableResource getExternal();
   }
 
@@ -235,7 +235,7 @@ public class RenderLinkedResourceTest {
   @HalApiInterface
   public interface TestResourceWithInvalidReturnType extends LinkableResource {
 
-    @RelatedResource(relation = LINKED)
+    @Related(LINKED)
     String getExternal();
   }
 

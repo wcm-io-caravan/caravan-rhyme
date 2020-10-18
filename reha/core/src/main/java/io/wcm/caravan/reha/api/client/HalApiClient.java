@@ -22,7 +22,7 @@ package io.wcm.caravan.reha.api.client;
 
 import org.osgi.annotation.versioning.ProviderType;
 
-import io.wcm.caravan.reha.api.annotations.RelatedResource;
+import io.wcm.caravan.reha.api.annotations.Related;
 import io.wcm.caravan.reha.api.annotations.ResourceState;
 import io.wcm.caravan.reha.api.common.RequestMetricsCollector;
 import io.wcm.caravan.reha.api.spi.HalApiAnnotationSupport;
@@ -33,7 +33,7 @@ import io.wcm.caravan.reha.impl.reflection.DefaultHalApiTypeSupport;
 
 /**
  * A generic HAL API client that will provide a dynamic proxy implementation of a given HAL API interface
- * which loads data via HTTP as required when the interface methods annotated with {@link RelatedResource},
+ * which loads data via HTTP as required when the interface methods annotated with {@link Related},
  * {@link ResourceState} etc are called.
  */
 @ProviderType
