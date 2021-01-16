@@ -35,11 +35,16 @@
   <version>1</version>
   <packaging>pom</packaging>
 
-  <name>Caravan Rhyme Root</name>
-  <description>TBD</description>
+  <name>Rhyme Root</name>
+  <description>A framework to build reactive HAL web services</description>
 
   <modules>
+    <module>api-interfaces</module>
+    <module>core</module>
+    <module>examples/osgi-jaxrs-example-launchpad</module>
+    <module>examples/osgi-jaxrs-example-service</module>
     <module>parent</module>
+    <module>osgi-jaxrs</module>
   </modules>
 
   <build>
