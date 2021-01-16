@@ -1,0 +1,82 @@
+  # Libraries for Integration Test
+
+[feature name=integration-test]
+
+[artifacts]
+  io.wcm.caravan/io.wcm.caravan.integration-test.minimal-launchpad//slingfeature
+
+[artifacts startLevel=15]
+  
+  com.damnhandy/handy-uri-templates
+  com.fasterxml.jackson.core/jackson-core
+  com.fasterxml.jackson.core/jackson-annotations
+  com.fasterxml.jackson.core/jackson-databind
+  commons-beanutils/commons-beanutils
+  javax.annotation/javax.annotation-api
+  org.apache.commons/commons-lang3/3.3.2
+  org.apache.httpcomponents/httpcore-osgi
+  org.apache.httpcomponents/httpclient-osgi
+  org.apache.httpcomponents/httpasyncclient-osgi
+  org.apache.httpcomponents/httpcore-nio
+  org.codehaus.jackson/jackson-core-asl/1.9.13
+  org.codehaus.jackson/jackson-mapper-asl/1.9.13
+  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.hibernate-validator
+
+  # RxJava
+  com.github.akarnokd/rxjava3-interop
+  org.reactivestreams/reactive-streams
+  io.reactivex.rxjava3/rxjava
+  io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.rxjava
+
+  # ByteBuddy
+  net.bytebuddy/byte-buddy
+
+  io.wcm.caravan/io.wcm.caravan.commons.httpasyncclient
+  io.wcm.caravan/io.wcm.caravan.commons.httpclient
+  io.wcm.caravan/io.wcm.caravan.commons.jsonpath
+  io.wcm.caravan/io.wcm.caravan.commons.metrics
+  io.wcm.caravan/io.wcm.caravan.commons.performance
+  io.wcm.caravan/io.wcm.caravan.hal.resource
+  io.wcm.caravan/io.wcm.caravan.rhyme.api-interfaces
+  io.wcm.caravan/io.wcm.caravan.rhyme.core
+  io.wcm.caravan/io.wcm.caravan.rhyme.osgi-jaxrs
+  io.wcm.caravan/io.wcm.caravan.rhyme.integration-test.sample-service
+  io.wcm.caravan/io.wcm.caravan.io.http
+  io.wcm.caravan/io.wcm.caravan.pipeline.api
+  # io.wcm.caravan/io.wcm.caravan.pipeline.impl
+  # io.wcm.caravan/io.wcm.caravan.pipeline.cache.guava
+
+  # Metrics
+  io.dropwizard.metrics/metrics-core
+  io.dropwizard.metrics/metrics-annotation
+  io.dropwizard.metrics/metrics-graphite
+  io.dropwizard.metrics/metrics-healthchecks
+  io.dropwizard.metrics/metrics-httpclient
+  io.dropwizard.metrics/metrics-json
+  io.dropwizard.metrics/metrics-jvm
+  io.dropwizard.metrics/metrics-servlet
+  io.dropwizard.metrics/metrics-servlets
+  io.dropwizard.metrics/metrics-logback
+
+  # JAX RS Whiteboard (and additional required bundles)
+  org.apache.aries.jax.rs/org.apache.aries.jax.rs.whiteboard/1.0.6
+  org.apache.aries.spec/org.apache.aries.javax.jax.rs-api/1.0.4
+  org.osgi/org.osgi.util.promise/1.1.0
+  org.osgi/org.osgi.util.function/1.1.0
+  org.osgi/org.osgi.service.cm/1.6.0
+  org.osgi/org.osgi.service.http/1.2.1
+  org.osgi/org.osgi.service.http.whiteboard/1.1.0
+  org.osgi/org.osgi.service.jaxrs/1.0.0
+  org.apache.servicemix.specs/org.apache.servicemix.specs.annotation-api-1.3/1.3_1
+  org.apache.felix/org.apache.felix.http.whiteboard/4.0.0
+
+[configurations]
+  io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig-localhost
+    serviceId="/caravan/hal/sample-service"
+    ribbonHosts=["localhost:8080"]
+
+[configurations]
+  io.wcm.caravan.commons.httpclient.impl.HttpClientConfigImpl-localhost
+    hostPatterns=["localhost"]
+    maxConnectionsPerHost="5000"
+    maxTotalConnections="5000"
