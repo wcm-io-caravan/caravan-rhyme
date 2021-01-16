@@ -24,16 +24,16 @@
 
   <parent>
     <groupId>io.wcm.caravan</groupId>
-    <artifactId>io.wcm.caravan.hal.parent</artifactId>
-    <version>1.1.3-SNAPSHOT</version>
-    <relativePath>../../parent/pom.xml</relativePath>
+    <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme.osgi-jaxrs</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Caravan Rhyme - OSGi/JAX-RS  implementations</name>
+  <name>Rhyme - OSGi/JAX-RS Integration</name>
   <description>Implementation support classes to build reactive HAL web services based on the OSGi JAX-RS Whiteboard and wcm.io.Caravan Pipeline projects</description>
 
   <scm>
@@ -75,6 +75,16 @@
     </dependency>
 
     <!-- OSGI/JAX-RS Integration  -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.cmpn</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.aries.spec</groupId>
       <artifactId>org.apache.aries.javax.jax.rs-api</artifactId>
