@@ -24,9 +24,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -218,15 +218,15 @@ public class CompositeHalApiTypeSupportTest {
   @Test
   public void convertFromObservable_should_return_first_non_null_value() throws Exception {
 
-    Function<Observable, Stream> fun = o -> ((List)o.toList().blockingGet()).stream();
-    assertThatCompositeReturnsFirstNonNullValueOfReturnTypeMock(a -> a.convertFromObservable(Stream.class), fun);
+    Function<Observable, Iterator> fun = o -> ((List)o.toList().blockingGet()).iterator();
+    assertThatCompositeReturnsFirstNonNullValueOfReturnTypeMock(a -> a.convertFromObservable(Iterator.class), fun);
   }
 
   @Test
   public void convertToObservable_should_return_first_non_null_value() throws Exception {
 
     @SuppressWarnings("unchecked")
-    Function<Object, Observable<?>> fun = s -> Observable.fromStream((Stream)s);
-    assertThatCompositeReturnsFirstNonNullValueOfReturnTypeMock(a -> a.convertToObservable(Stream.class), fun);
+    Function<Object, Observable<?>> fun = o -> Observable.fromIterable(() -> ((List)o).iterator());
+    assertThatCompositeReturnsFirstNonNullValueOfReturnTypeMock(a -> a.convertToObservable(Iterator.class), fun);
   }
 }

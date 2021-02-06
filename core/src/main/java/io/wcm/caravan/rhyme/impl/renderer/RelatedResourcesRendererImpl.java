@@ -92,7 +92,7 @@ final class RelatedResourcesRendererImpl {
     // and (asynchronously) render those resources that should be embedded
     Single<List<HalResource>> rxEmbeddedHalResources = renderEmbeddedResources(method, rxRelatedResources);
 
-    // collect all resource impl classes taht cannot be rendered (because they don't extend either of EmbeddableResource and LinkableResource)
+    // collect all resource impl classes that cannot be rendered (because they don't extend either of EmbeddableResource and LinkableResource)
     Single<List<String>> rxUnsupportedClassNames = findUnsupportedClassNames(rxRelatedResources);
 
     // wait for all this to be complete before creating a RelatedResourceInfo for this method
@@ -108,7 +108,7 @@ final class RelatedResourcesRendererImpl {
           return new RelationRenderResult(relation, links, embeddedResources);
         });
 
-    Class<?> emissionType = RxJavaReflectionUtils.getObservableEmissionType(method);
+    Class<?> emissionType = RxJavaReflectionUtils.getObservableEmissionType(method, typeSupport);
 
     // and measure the time of the emissions
     return renderResult
@@ -130,7 +130,7 @@ final class RelatedResourcesRendererImpl {
   private void verifyReturnType(Object resourceImplInstance, Method method) {
 
     // get the emitted result resource type from the method signature
-    Class<?> relatedResourceInterface = RxJavaReflectionUtils.getObservableEmissionType(method);
+    Class<?> relatedResourceInterface = RxJavaReflectionUtils.getObservableEmissionType(method, typeSupport);
 
     if (!HalApiReflectionUtils.isHalApiInterface(relatedResourceInterface, typeSupport) && !LinkableResource.class.equals(relatedResourceInterface)) {
 

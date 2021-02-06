@@ -85,7 +85,7 @@ public class ProxyCachingTest {
   interface EntryPoint {
 
     @ResourceState
-    Maybe<TestState> getState();
+    Observable<TestState> getState();
 
     @Related(ITEM)
     Observable<LinkableTestResource> getLinked();
@@ -135,8 +135,8 @@ public class ProxyCachingTest {
 
     EntryPoint entryPoint = client.createProxy(EntryPoint.class);
 
-    Maybe<TestState> state1 = entryPoint.getState();
-    Maybe<TestState> state2 = entryPoint.getState();
+    Observable<TestState> state1 = entryPoint.getState();
+    Observable<TestState> state2 = entryPoint.getState();
 
     assertThat(state1).isSameAs(state2);
 
@@ -243,7 +243,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void caching_should_work_if_two_subscriptions_haben_before_emission() {
+  public void caching_should_work_if_two_subscriptions_happen_before_emission() {
 
     entryPointHal.addLinks(StandardRelations.ALTERNATE, new Link(ALT_1_URL));
 

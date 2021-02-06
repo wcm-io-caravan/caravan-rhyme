@@ -36,7 +36,7 @@ import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
 
 
@@ -45,17 +45,17 @@ class HalApiMethodInvocation {
   private final Class interfaze;
   private final Method method;
   private final Class<?> emissionType;
-  private final HalApiAnnotationSupport annotationSupport;
+  private final HalApiTypeSupport typeSupport;
 
   private final Map<String, Object> templateVariables;
   private final boolean calledWithOnlyNullParameters;
 
 
-  HalApiMethodInvocation(Class interfaze, Method method, Object[] args, HalApiAnnotationSupport annotationSupport) {
+  HalApiMethodInvocation(Class interfaze, Method method, Object[] args, HalApiTypeSupport typeSupport) {
     this.interfaze = interfaze;
     this.method = method;
-    this.emissionType = hasTemplatedReturnType() ? RxJavaReflectionUtils.getObservableEmissionType(method) : method.getReturnType();
-    this.annotationSupport = annotationSupport;
+    this.emissionType = hasTemplatedReturnType() ? RxJavaReflectionUtils.getObservableEmissionType(method, typeSupport) : method.getReturnType();
+    this.typeSupport = typeSupport;
 
     this.templateVariables = new LinkedHashMap<>();
 
@@ -88,25 +88,25 @@ class HalApiMethodInvocation {
 
 
   String getRelation() {
-    String relation = annotationSupport.getRelation(method);
+    String relation = typeSupport.getRelation(method);
     Preconditions.checkNotNull(relation, this + " does not have a @" + Related.class.getSimpleName() + " annotation");
     return relation;
   }
 
   boolean isForMethodAnnotatedWithRelatedResource() {
-    return annotationSupport.isRelatedResourceMethod(method);
+    return typeSupport.isRelatedResourceMethod(method);
   }
 
   boolean isForMethodAnnotatedWithResourceLink() {
-    return annotationSupport.isResourceLinkMethod(method);
+    return typeSupport.isResourceLinkMethod(method);
   }
 
   boolean isForMethodAnnotatedWithResourceState() {
-    return annotationSupport.isResourceStateMethod(method);
+    return typeSupport.isResourceStateMethod(method);
   }
 
   boolean isForMethodAnnotatedWithResourceRepresentation() {
-    return annotationSupport.isResourceRepresentationMethod(method);
+    return typeSupport.isResourceRepresentationMethod(method);
   }
 
   boolean hasTemplatedReturnType() {

@@ -25,9 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.verify;
 
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -184,7 +184,7 @@ public class ErrorHandlingTest {
   public interface ResourceWithCustomReturnType extends LinkableTestResource {
 
     @Related("foo:bar")
-    Stream<LinkableTestResource> getStream();
+    Iterator<LinkableTestResource> getStream();
   }
 
   @Test
@@ -196,12 +196,16 @@ public class ErrorHandlingTest {
 
       @Override
       public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
-        throw cause;
+        return (returnValue) -> {
+          throw cause;
+        };
       }
 
       @Override
       public <T> Function<Observable, T> convertFromObservable(Class<T> targetType) {
-        throw cause;
+        return (obs) -> {
+          throw cause;
+        };
       }
     };
 

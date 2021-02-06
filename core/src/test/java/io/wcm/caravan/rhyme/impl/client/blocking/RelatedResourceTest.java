@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -312,4 +313,40 @@ public class RelatedResourceTest {
     }
   }
 
+  @HalApiInterface
+  interface ResourceWithStreamRelated {
+
+    @Related(ITEM)
+    Stream<ResourceWithRequiredState> getItems();
+  }
+
+  @Test
+  public void related_method_with_stream_return_type_should_be_supported() throws Exception {
+
+    int numItems = 10;
+    Observable.range(0, numItems).forEach(i -> entryPoint.createEmbedded(ITEM).setNumber(i));
+
+    List<ResourceWithRequiredState> embedded = createClientProxy(ResourceWithStreamRelated.class)
+        .getItems()
+        .collect(Collectors.toList());
+
+    assertThat(embedded).hasSize(numItems);
+  }
+
+  @Test
+  public void related_method_with_stream_return_type_can_be_called_multiple_times() throws Exception {
+
+    int numItems = 3;
+    Observable.range(0, numItems).forEach(i -> entryPoint.createEmbedded(ITEM).setNumber(i));
+
+    ResourceWithStreamRelated resource = createClientProxy(ResourceWithStreamRelated.class);
+
+    List<ResourceWithRequiredState> embedded1 = resource.getItems()
+        .collect(Collectors.toList());
+
+    List<ResourceWithRequiredState> embedded2 = resource.getItems()
+        .collect(Collectors.toList());
+
+    assertThat(embedded1).containsExactlyElementsOf(embedded2);
+  }
 }
