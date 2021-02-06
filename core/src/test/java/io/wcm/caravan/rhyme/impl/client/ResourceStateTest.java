@@ -110,8 +110,7 @@ public class ResourceStateTest {
         () -> client.createProxy(ResourceWithIllegalReturnType.class).notSupported());
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("The given target type")
-        .hasMessageEndingWith(" is not a supported return type");
+        .hasMessageStartingWith("The return type Future of method ResourceWithIllegalReturnType#notSupported is not supported.");
   }
 
 }

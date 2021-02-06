@@ -34,6 +34,7 @@ import com.google.common.base.Stopwatch;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
@@ -101,7 +102,7 @@ public final class RxJavaReflectionUtils {
    * @param method a method that returns a Observable
    * @return the type of the emitted results
    */
-  public static Class<?> getObservableEmissionType(Method method) {
+  public static Class<?> getObservableEmissionType(Method method, HalApiTypeSupport typeSupport) {
     Type returnType = method.getGenericReturnType();
 
     if (!(returnType instanceof ParameterizedType)) {
@@ -109,6 +110,14 @@ public final class RxJavaReflectionUtils {
     }
 
     ParameterizedType observableType = (ParameterizedType)returnType;
+
+    Function<Object, Observable<?>> conversion = typeSupport.convertToObservable(method.getReturnType());
+
+    if (conversion == null) {
+      throw new HalApiDeveloperException("The return type " + method.getReturnType().getSimpleName()
+          + " of method " + method.getDeclaringClass().getSimpleName() + "#" + method.getName() + " is not supported."
+          + " If you do want to use this return type, you can add support for it by using " + RhymeBuilder.class.getSimpleName() + "#withReturnTypeSupport");
+    }
 
     Type resourceType = observableType.getActualTypeArguments()[0];
 
@@ -127,7 +136,7 @@ public final class RxJavaReflectionUtils {
    * @return an instance of the target type that will replay (and cache!) the items emitted by the given reactive
    *         instance
    */
-  public static Object convertAndCacheReactiveType(Object reactiveInstance, Class<?> targetType, RequestMetricsCollector metrics, String description,
+  public static Observable<?> convertAndCacheReactiveType(Object reactiveInstance, Class<?> targetType, RequestMetricsCollector metrics, String description,
       HalApiReturnTypeSupport typeSupport) {
 
     Observable<?> observable = convertToObservable(reactiveInstance, typeSupport)
@@ -136,10 +145,10 @@ public final class RxJavaReflectionUtils {
     // do not use Observable#cache() here, because we want consumers to be able to use Observable#retry()
     Observable<?> cached = observable.compose(RxJavaTransformers.cacheIfCompleted());
 
-    return convertObservableTo(cached, targetType, typeSupport);
+    return cached;
   }
 
-  private static Object convertObservableTo(Observable<?> observable, Class<?> targetType, HalApiReturnTypeSupport typeSupport) {
+  public static Object convertObservableTo(Observable<?> observable, Class<?> targetType, HalApiReturnTypeSupport typeSupport) {
 
     Preconditions.checkNotNull(targetType, "A target type must be provided");
 
@@ -160,9 +169,6 @@ public final class RxJavaReflectionUtils {
       throw new HalApiDeveloperException("The given instance of " + reactiveInstance.getClass().getName() + " is not a supported return type");
     }
 
-    Observable<?> observable = conversion.apply(reactiveInstance);
-
-    return observable;
-
+    return conversion.apply(reactiveInstance);
   }
 }

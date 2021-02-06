@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.reactivestreams.Publisher;
 
@@ -115,6 +116,9 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
     if (targetType.isAssignableFrom(List.class)) {
       return obs -> (T)obs.toList().blockingGet();
     }
+    if (targetType.isAssignableFrom(Stream.class)) {
+      return obs -> (T)((List<?>)obs.toList().blockingGet()).stream();
+    }
 
     if (targetType.getTypeParameters().length == 0) {
       return obs -> (T)obs.singleOrError().blockingGet();
@@ -147,6 +151,9 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
     }
     if (List.class.isAssignableFrom(sourceType)) {
       return o -> Observable.fromIterable((List<?>)o);
+    }
+    if (Stream.class.isAssignableFrom(sourceType)) {
+      return o -> Observable.fromStream((Stream<?>)o);
     }
     if (sourceType.getTypeParameters().length == 0) {
       return o -> Observable.just(o);

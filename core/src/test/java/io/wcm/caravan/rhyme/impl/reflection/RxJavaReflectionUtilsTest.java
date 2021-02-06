@@ -25,10 +25,12 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Iterator;
 
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
@@ -77,6 +79,18 @@ public class RxJavaReflectionUtilsTest {
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageStartingWith("Failed to invoke method #test of TestResourceWithCheckedExceptionImpl")
         .hasCauseInstanceOf(IllegalAccessException.class);
+  }
+
+  @Test
+  public void convertObservableTo_should_fail_for_unsupported_types() {
+
+    Observable<String> obs = Observable.just("foo");
+
+    Throwable ex = catchThrowable(
+        () -> RxJavaReflectionUtils.convertObservableTo(obs, Iterator.class, typeSupport));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessage("The given target type of java.util.Iterator is not a supported return type");
   }
 
   private static final class TestResourceWithCheckedExceptionImpl implements TestResourceWithCheckedException {

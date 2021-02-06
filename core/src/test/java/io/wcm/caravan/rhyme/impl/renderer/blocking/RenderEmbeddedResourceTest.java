@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -117,6 +118,34 @@ public class RenderEmbeddedResourceTest {
 
     assertThat(hal.getLinks(ITEM)).isEmpty();
 
+  }
+
+  @HalApiInterface
+  public interface TestResourceWithStreamEmbedded {
+
+    @Related(ITEM)
+    Stream<BlockingTestResource> getItems();
+  }
+
+  @Test
+  public void streams_should_be_supported_for_related_embedded_resources() {
+
+    Stream<TestState> states = Stream.of(1, 2, 3, 4)
+        .map(i -> new TestState(i));
+
+    TestResourceWithStreamEmbedded resourceImpl = new TestResourceWithStreamEmbedded() {
+
+      @Override
+      public Stream<BlockingTestResource> getItems() {
+
+        return states.map(EmbeddedTestResource::new);
+      }
+    };
+
+    HalResource hal = render(resourceImpl);
+
+    List<HalResource> actualEmbedded = hal.getEmbedded(ITEM);
+    assertThat(actualEmbedded).hasSize(4);
   }
 
   static class LinkedEmbeddableTestResource extends EmbeddedTestResource implements LinkableResource {
