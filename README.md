@@ -1,6 +1,6 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> wcm.io Caravan Rhyme
 ======
-[![Build Status](https://travis-ci.com/wcm-io-caravan/caravan-rhyme.png?branch=develop)](https://travis-ci.com/wcm-io-caravan/caravan-rhyme)
+[![Build](https://github.com/wcm-io-caravan/caravan-rhyme/workflows/Build/badge.svg?branch=develop)](https://github.com/wcm-io-caravan/caravan-rhyme/actions?query=workflow%3ABuild+branch%3Adevelop)
 [![Code Coverage](https://codecov.io/gh/wcm-io-caravan/caravan-rhyme/branch/develop/graph/badge.svg)](https://codecov.io/gh/wcm-io-caravan/caravan-rhyme)
 
 wcm.io Caravan - TBD
@@ -12,7 +12,7 @@ TBD
 Documentation: https://caravan.wcm.io/rhyme/<br/>
 Issues: https://wcm-io.atlassian.net/<br/>
 Wiki: https://wcm-io.atlassian.net/wiki/<br/>
-Continuous Integration: https://travis-ci.com/wcm-io-caravan/caravan-rhyme/<br/>
+Continuous Integration: https://github.com/wcm-io-caravan/caravan-rhyme/actions<br/>
 Commercial support: https://wcm.io/commercial-support.html
 
 
@@ -20,7 +20,7 @@ Commercial support: https://wcm.io/commercial-support.html
 
 If you want to build wcm.io from sources make sure you have configured all [Maven Repositories](https://caravan.wcm.io/maven.html) in your settings.xml.
 
-See [Travis Maven settings.xml](https://github.com/wcm-io-caravan/caravan-rhyme/blob/master/.travis.maven-settings.xml) for an example with a full configuration.
+See [Maven Settings](https://github.com/wcm-io-caravan/caravan-rhyme/blob/develop/.maven-settings.xml) for an example with a full configuration.
 
 Then you can build using
 
