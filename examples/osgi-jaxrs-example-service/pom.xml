@@ -43,10 +43,6 @@
     <tag>HEAD</tag>
   </scm>
 
-  <properties>
-    <site.url.module.prefix>hal/integration-test/sample-service</site.url.module.prefix>
-  </properties>
-  
   <dependencies>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
@@ -92,14 +88,26 @@
   <build>
     <plugins>
 
+      <!-- do not into maven repository -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <!-- do not generate site for this project -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
-
-  <distributionManagement>
-    <site>
-      <id>${site.deploy.id}</id>
-      <url>${site.deploy.url}${site.url.module.prefix}</url>
-    </site>
-  </distributionManagement>
 
 </project>

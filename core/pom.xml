@@ -44,7 +44,7 @@
   </scm>
 
   <properties>
-    <site.url.module.prefix>hal/reha/core</site.url.module.prefix>
+    <site.url.module.prefix>rhyme/core</site.url.module.prefix>
   </properties>
   
   <dependencies>
@@ -147,7 +147,7 @@
   <distributionManagement>
     <site>
       <id>${site.deploy.id}</id>
-      <url>${site.deploy.url}${site.url.module.prefix}</url>
+      <url>${site.deploy.url}/${site.url.module.prefix}</url>
     </site>
   </distributionManagement>
 

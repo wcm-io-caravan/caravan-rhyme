@@ -257,7 +257,7 @@
         </configuration>
       </plugin>
 
-      <!-- do not deploy this hierarchy pom into maven repository -->
+      <!-- do not into maven repository -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
@@ -271,6 +271,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
+          <skip>true</skip>
           <skipDeploy>true</skipDeploy>
         </configuration>
       </plugin>
