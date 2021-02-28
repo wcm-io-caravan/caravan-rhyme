@@ -97,20 +97,6 @@
         <version>1.0.0</version>
       </dependency>
 
-      <!-- JUnit 5 -->
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>5.7.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-junit-jupiter</artifactId>
-        <!-- Use same version as in io.wcm.caravan.parent_toplevel -->
-        <version>2.25.1</version>
-      </dependency>
     </dependencies>
 
   </dependencyManagement>
