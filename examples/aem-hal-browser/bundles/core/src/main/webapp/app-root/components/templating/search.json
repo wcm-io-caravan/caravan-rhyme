@@ -1,6 +1,0 @@
-{
-  "jcr:primaryType": "cq:Component",
-  "jcr:title": "Quick Search",
-  "componentGroup": "aem-hal-browser Templating",
-  "sling:resourceSuperType": "wcm-io/wcm/core/components/search/v1/search"
-}

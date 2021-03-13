@@ -1,6 +1,0 @@
-{
-  "jcr:primaryType": "cq:Component",
-  "jcr:title": "Text",
-  "componentGroup": "aem-hal-browser Content",
-  "sling:resourceSuperType": "wcm-io/wcm/core/components/text/v2/text"
-}

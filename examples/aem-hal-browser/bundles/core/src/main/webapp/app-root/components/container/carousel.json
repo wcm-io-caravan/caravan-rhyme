@@ -1,6 +1,0 @@
-{
-  "jcr:primaryType": "cq:Component",
-  "jcr:title": "Carousel",
-  "componentGroup": "aem-hal-browser Container",
-  "sling:resourceSuperType": "wcm-io/wcm/core/components/carousel/v1/carousel"
-}

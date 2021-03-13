@@ -1,6 +1,0 @@
-{
-  "jcr:primaryType": "cq:Component",
-  "jcr:title": "Accordion",
-  "componentGroup": "aem-hal-browser Container",
-  "sling:resourceSuperType": "wcm-io/wcm/core/components/accordion/v1/accordion"
-}

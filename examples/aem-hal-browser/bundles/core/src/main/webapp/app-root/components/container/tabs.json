@@ -1,6 +1,0 @@
-{
-  "jcr:primaryType": "cq:Component",
-  "jcr:title": "Tabs",
-  "componentGroup": "aem-hal-browser Container",
-  "sling:resourceSuperType": "wcm-io/wcm/core/components/tabs/v1/tabs"
-}

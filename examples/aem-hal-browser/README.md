@@ -48,9 +48,6 @@ Modules of this project:
 * [parent](parent/): Parent POM with dependency management for the whole project. All 3rdparty artifact versions used in the project are defined here.
 * [bundles/core](bundles/core/): OSGi bundle containing:
   * Java classes (e.g. Sling Models, Servlets, business logic) with unit tests
-  * AEM templates and components with their scripts and dialog definitions (included as `Sling-Initial-Content`)
-  * i18n
-* [bundles/clientlibs](bundles/clientlibs/): OSGi bundle containing the HTML client libraries with JavaScript and CSS
 * [content-packages/apps-repository-structure](content-packages/apps-repository-structure/): AEM content package defining root paths for application package validation
 * [content-packages/complete](content-packages/complete/): AEM content package containing all OSGi bundles of the application and their dependencies
 * [content-packages/sample-content](content-packages/sample-content/): AEM content package containing sample content (for development and test purposes)

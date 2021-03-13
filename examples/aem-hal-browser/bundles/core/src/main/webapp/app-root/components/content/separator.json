@@ -1,6 +1,0 @@
-{
-  "jcr:primaryType": "cq:Component",
-  "jcr:title": "Separator",
-  "componentGroup": "aem-hal-browser Content",
-  "sling:resourceSuperType": "wcm-io/wcm/core/components/separator/v1/separator"
-}

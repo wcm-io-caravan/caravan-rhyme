@@ -1,6 +1,0 @@
-{
-  "jcr:primaryType": "cq:Component",
-  "jcr:title": "Navigation",
-  "componentGroup": "aem-hal-browser Templating",
-  "sling:resourceSuperType": "wcm-io/wcm/core/components/navigation/v1/navigation"
-}

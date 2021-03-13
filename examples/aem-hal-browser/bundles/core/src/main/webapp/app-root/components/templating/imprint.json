@@ -1,9 +1,0 @@
-{
-  "jcr:primaryType": "cq:Component",
-  "jcr:title": "Imprint (Custom)",
-  "componentGroup": "aem-hal-browser Templating",
-
-  "cq:editConfig": {
-    "jcr:primaryType": "cq:EditConfig"
-  }
-}

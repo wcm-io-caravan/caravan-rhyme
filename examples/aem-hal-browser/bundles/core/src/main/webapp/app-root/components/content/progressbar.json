@@ -1,6 +1,0 @@
-{
-  "jcr:primaryType": "cq:Component",
-  "jcr:title": "Progress Bar",
-  "componentGroup": "aem-hal-browser Content",
-  "sling:resourceSuperType": "wcm-io/wcm/core/components/progressbar/v1/progressbar"
-}

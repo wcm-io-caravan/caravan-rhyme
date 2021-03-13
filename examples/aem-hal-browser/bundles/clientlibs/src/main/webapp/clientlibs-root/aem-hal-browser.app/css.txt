@@ -1,4 +1,0 @@
-#base=css
-
-image.css
-customcarousel.css
