@@ -41,6 +41,7 @@
   <modules>
     <module>api-interfaces</module>
     <module>core</module>
+    <module>examples/aem-hal-browser</module>
     <module>examples/osgi-jaxrs-example-launchpad</module>
     <module>examples/osgi-jaxrs-example-service</module>
     <module>parent</module>
