@@ -13,10 +13,6 @@ templateDir: aem-hal-browser-aem-cms
 files:
 
 
-# AEM Core WCM components
-- url: mvn:com.adobe.cq/core.wcm.components.all//zip
-  dir: packages
-
 # AEM OSGi System Configuration
 - file: aem-hal-browser-aem-cms-config.provisioning
   dir: packages
