@@ -35,7 +35,6 @@
     <module>parent</module>
     <module>bundles/core</module>
     <module>content-packages/complete</module>
-    <module>content-packages/sample-content</module>
     <module>config-definition</module>
     <module>tests/integration</module>
   </modules>

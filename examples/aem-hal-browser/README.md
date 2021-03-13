@@ -50,7 +50,6 @@ Modules of this project:
   * Java classes (e.g. Sling Models, Servlets, business logic) with unit tests
 * [content-packages/apps-repository-structure](content-packages/apps-repository-structure/): AEM content package defining root paths for application package validation
 * [content-packages/complete](content-packages/complete/): AEM content package containing all OSGi bundles of the application and their dependencies
-* [content-packages/sample-content](content-packages/sample-content/): AEM content package containing sample content (for development and test purposes)
 * [config-definition](config-definition/): Defines the CONGA roles and templates for this application. Also contains a `development` CONGA environment for deploying to local development instances.
 * [tests/integration](tests/integration/): Integration tests running against the HTTP interface of AEM
 

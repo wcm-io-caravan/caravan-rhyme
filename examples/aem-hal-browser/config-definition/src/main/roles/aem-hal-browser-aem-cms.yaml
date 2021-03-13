@@ -57,12 +57,6 @@ files:
 - url: mvn:io.wcm.caravan/io.wcm.caravan.rhyme.examples.aem-hal-browser.complete//zip
   dir: packages
 
-# Application sample content package
-- url: mvn:io.wcm.caravan/io.wcm.caravan.rhyme.examples.aem-hal-browser.sample-content//zip
-  dir: packages
-  condition: ${app.sampleContent}
-
-
 # Defines configuration parameters and default values
 config:
   contentPackage:
