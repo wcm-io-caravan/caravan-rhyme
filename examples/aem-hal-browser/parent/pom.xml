@@ -178,6 +178,23 @@
         <version>1.10.0</version>
       </dependency>
 
+      <!-- wcm.io Caravan Rhyme and dependencies-->
+      <dependency>
+        <groupId>.io.wcm.caravan</groupId>
+        <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>.io.wcm.caravan</groupId>
+        <artifactId>io.wcm.caravan.rhyme.core</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>io.wcm.caravan</groupId>
+        <artifactId>io.wcm.caravan.hal.browser</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+
       <!-- wcm.io Testing -->
       <dependency>
         <groupId>io.wcm</groupId>

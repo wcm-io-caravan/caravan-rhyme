@@ -35,6 +35,18 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- wcm.io Caravan Rhyme and dependencies-->
+    <dependency>
+      <groupId>.io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>.io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.rhyme.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>io.wcm</groupId>
       <artifactId>io.wcm.sling.models</artifactId>
