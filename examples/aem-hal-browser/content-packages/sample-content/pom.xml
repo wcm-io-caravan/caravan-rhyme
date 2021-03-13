@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.wcm.caravan</groupId>
+    <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../../parent/pom.xml</relativePath>
+  </parent>
+
+  <groupId>io.wcm.caravan</groupId>
+  <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.sample-content</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>content-package</packaging>
+
+  <name>aem-hal-browser Package sample-content</name>
+  <description>AEM Application sample content</description>
+
+  <properties>
+    <contentPackage.name>aem-hal-browser-sample-content</contentPackage.name>
+    <contentPackage.group>aem-hal-browser</contentPackage.group>
+  </properties>
+
+  <build>
+    <finalName>${contentPackage.name}-${project.version}</finalName>
+    <resources>
+      <resource>
+        <directory>jcr_root</directory>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>filevault-package-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <name>${contentPackage.name}</name>
+          <group>${contentPackage.group}</group>
+          <packageType>content</packageType>
+          <validatorsSettings>
+            <jackrabbit-filter>
+              <options>
+                <validRoots>
+                  /conf,
+                  /content,
+                  /content/dam
+                </validRoots>
+              </options>
+            </jackrabbit-filter>
+          </validatorsSettings>
+        </configuration>
+      </plugin>
+
+      <!-- Do not generate eclipse project files -->
+      <plugin>
+        <groupId>io.wcm.devops.maven.plugins</groupId>
+        <artifactId>eclipse-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <!-- Do not generate sources JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <configuration>
+          <skipSource>true</skipSource>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

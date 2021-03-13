@@ -1,0 +1,13 @@
+{
+  "jcr:primaryType": "cq:Template",
+  "jcr:title": "aem-hal-browser Content",
+  "ranking": 10,
+
+  "allowedPaths": "^/content/aem-hal-browser/.+$",
+  "allowedChildren": "^/apps/aem-hal-browser/core/.*$",
+
+  "jcr:content": {
+    "jcr:primaryType": "cq:PageContent",
+    "sling:resourceType": "aem-hal-browser/core/components/page/contentpage"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "jcr:primaryType": "cq:Component",
+  "jcr:title": "Form Button",
+  "componentGroup": "aem-hal-browser Form",
+  "sling:resourceSuperType": "wcm-io/wcm/core/components/form/button/v2/button"
+}

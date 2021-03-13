@@ -1,0 +1,6 @@
+{
+  "jcr:primaryType": "cq:Component",
+  "jcr:title": "Teaser",
+  "componentGroup": "aem-hal-browser Content",
+  "sling:resourceSuperType": "wcm-io/wcm/core/components/teaser/v1/teaser"
+}

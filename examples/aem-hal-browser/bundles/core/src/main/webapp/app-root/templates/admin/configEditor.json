@@ -1,0 +1,13 @@
+{
+  "jcr:primaryType": "cq:Template",
+  "jcr:title": "aem-hal-browser Configuration Editor",
+  "ranking": 120,
+
+  "allowedPaths": "^/content/aem-hal-browser(/.+)*/tools(/.+)?$",
+  "allowedChildren": "",
+
+  "jcr:content": {
+    "jcr:primaryType": "cq:PageContent",
+    "sling:resourceType": "aem-hal-browser/core/components/admin/page/configEditor"
+  }
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:conf="/conf/aem-hal-browser"
+        cq:deviceGroups="[mobile/groups/responsive]"
+        cq:template="/apps/aem-hal-browser/core/templates/homepage"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="en"
+        sling:resourceType="aem-hal-browser/core/components/page/homepage"
+        navTitle="HOME"
+        pageTitle="aem-hal-browser Sample Site">
+            <content
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="wcm-io/wcm/parsys/components/parsys">
+                <customcarousel
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="aem-hal-browser/core/components/content/customcarousel">
+                    <slides jcr:primaryType="nt:unstructured">
+                        <item0
+                            jcr:primaryType="nt:unstructured"
+                            fileReference="/content/dam/aem-hal-browser/chicago.jpg"/>
+                        <item1
+                            jcr:primaryType="nt:unstructured"
+                            fileReference="/content/dam/aem-hal-browser/nature.jpg"/>
+                        <item2
+                            jcr:primaryType="nt:unstructured"
+                            fileReference="/content/dam/aem-hal-browser/prague.jpg"/>
+                    </slides>
+                </customcarousel>
+                <title
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Hello aem-hal-browser"
+                    sling:resourceType="aem-hal-browser/core/components/content/title"
+                    type="h1"/>
+                <text
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="aem-hal-browser/core/components/content/text"
+                    text="&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras arcu mi, commodo ut interdum quis, aliquet sed sapien. In hac habitasse platea dictumst. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer sit amet venenatis velit, sit amet pulvinar dolor. Donec in risus enim. Nullam ultricies dui posuere blandit euismod. Aenean varius porta aliquet. Mauris sed tempor massa, malesuada rhoncus tortor. Vestibulum vitae viverra enim. Duis feugiat mollis tortor, a efficitur massa fringilla ut.&lt;/p&gt;"
+                    textIsRich="true"/>
+            </content>
+    </jcr:content>
+    <tools/>
+</jcr:root>

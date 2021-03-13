@@ -1,0 +1,6 @@
+{
+  "jcr:primaryType": "cq:Component",
+  "jcr:title": "Content Fragment",
+  "componentGroup": "aem-hal-browser Content",
+  "sling:resourceSuperType": "wcm-io/wcm/core/components/contentfragment/v1/contentfragment"
+}

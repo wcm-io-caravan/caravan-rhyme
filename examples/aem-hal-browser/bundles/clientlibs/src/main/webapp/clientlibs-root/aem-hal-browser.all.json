@@ -1,0 +1,21 @@
+{
+  "jcr:primaryType": "cq:ClientLibraryFolder",
+  "categories": [
+    "aem-hal-browser.all"
+  ],
+  "embed": [
+    "core.wcm.components.commons.datalayer.v1",
+    "core.wcm.components.commons.site.container",
+    "core.wcm.components.carousel.v1",
+    "core.wcm.components.tabs.v1",
+    "core.wcm.components.accordion.v1",
+    "aem-hal-browser.3rdparty",
+    "aem-hal-browser.app"
+  ],
+  "jsProcessor": [
+    "default:none",
+    "min:gcc;compilationLevel=whitespace"
+  ],
+  "longCacheKey": "${project.version}-${buildNumber}",
+  "allowProxy": true
+}

@@ -1,0 +1,6 @@
+{
+  "jcr:primaryType": "cq:Component",
+  "jcr:title": "Breadcrumb",
+  "componentGroup": "aem-hal-browser Templating",
+  "sling:resourceSuperType": "wcm-io/wcm/core/components/breadcrumb/v2/breadcrumb"
+}

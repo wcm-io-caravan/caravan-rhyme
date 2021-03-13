@@ -1,0 +1,6 @@
+{
+  "jcr:primaryType": "cq:Component",
+  "jcr:title": "Container",
+  "componentGroup": "aem-hal-browser Container",
+  "sling:resourceSuperType": "wcm-io/wcm/core/components/container/v1/container"
+}

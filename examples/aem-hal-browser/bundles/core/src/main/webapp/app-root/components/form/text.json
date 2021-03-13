@@ -1,0 +1,6 @@
+{
+  "jcr:primaryType": "cq:Component",
+  "jcr:title": "Form Text",
+  "componentGroup": "aem-hal-browser Form",
+  "sling:resourceSuperType": "wcm-io/wcm/core/components/form/text/v2/text"
+}

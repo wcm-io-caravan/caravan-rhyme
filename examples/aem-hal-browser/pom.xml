@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.wcm.caravan</groupId>
+    <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>parent/pom.xml</relativePath>
+  </parent>
+
+  <groupId>io.wcm.caravan</groupId>
+  <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>aem-hal-browser</name>
+
+  <build>
+    <plugins>
+
+      <!-- do not deploy this hierarchy pom into maven repository -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <modules>
+    <module>parent</module>
+    <module>bundles/core</module>
+    <module>bundles/clientlibs</module>
+    <module>content-packages/complete</module>
+    <module>content-packages/sample-content</module>
+    <module>config-definition</module>
+    <module>tests/integration</module>
+  </modules>
+</project>

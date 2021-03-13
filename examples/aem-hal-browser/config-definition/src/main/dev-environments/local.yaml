@@ -1,0 +1,34 @@
+# AEM configuration for local development environment
+
+nodes:
+
+- node: aem-author
+  roles:
+  - role: aem-hal-browser-aem-cms
+    variant: aem-author
+  config:
+    replication.author.publishTargets:
+    - name: publish1
+      url: ${maven::sling.publish.url}
+      transportUser: admin
+      transportPassword: admin
+
+- node: aem-publish
+  roles:
+  - role: aem-hal-browser-aem-cms
+    variant: aem-publish
+
+
+config:
+  contentPackage.group: aem-hal-browser
+  app:
+    # Default log level for application code
+    logLevel: info
+    # Whether to deploy conf content with editable template definitions
+    confContent: true
+    # Whether to deploy sample content
+    sampleContent: true
+
+  quickstart:
+    # Enable Apache Sling DavEx Servlet to be able to use CRXDE Lite
+    enableDavEx: true

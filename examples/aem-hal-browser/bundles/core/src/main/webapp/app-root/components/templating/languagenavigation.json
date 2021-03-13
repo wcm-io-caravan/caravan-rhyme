@@ -1,0 +1,6 @@
+{
+  "jcr:primaryType": "cq:Component",
+  "jcr:title": "Language Navigation",
+  "componentGroup": "aem-hal-browser Templating",
+  "sling:resourceSuperType": "wcm-io/wcm/core/components/languagenavigation/v1/languagenavigation"
+}

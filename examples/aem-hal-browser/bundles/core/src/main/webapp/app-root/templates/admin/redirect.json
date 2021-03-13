@@ -1,0 +1,14 @@
+{
+  "jcr:primaryType": "cq:Template",
+  "jcr:title": "aem-hal-browser Redirect",
+  "ranking": 110,
+
+  "allowedPaths": "^/content/aem-hal-browser/.+$",
+  "allowedParents": "^/apps/aem-hal-browser/core/templates/.*$",
+  "allowedChildren": "^/apps/aem-hal-browser/core/templates/.*$",
+
+  "jcr:content": {
+    "jcr:primaryType": "cq:PageContent",
+    "sling:resourceType": "aem-hal-browser/core/components/admin/page/redirect"
+  }
+}
