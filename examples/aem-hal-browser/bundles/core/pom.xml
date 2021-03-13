@@ -197,6 +197,8 @@
               SLING-INF/app-root;overwrite:=true;ignoreImportProviders:=xml;path:=/apps/aem-hal-browser/core, \
               SLING-INF/app-i18n;overwrite:=true;ignoreImportProviders:=json;path:=/apps/aem-hal-browser/core/i18n
 
+            Sling-Model-Packages: io.wcm.caravan.rhyme.aem
+
             <!-- All wcm.io Handler SPI implementation only get active for the resource paths of this application -->
             Wcmio-CAService-ContextPathRegex: ^(/content|/content/dam|/content/experience-fragments|/conf)/aem-hal-browser(/.*)?$
 
