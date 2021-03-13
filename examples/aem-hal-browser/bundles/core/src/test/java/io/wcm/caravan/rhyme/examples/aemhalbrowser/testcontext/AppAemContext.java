@@ -11,15 +11,11 @@ import java.io.IOException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.jetbrains.annotations.NotNull;
 
+import io.wcm.caravan.rhyme.examples.aemhalbrowser.config.impl.LinkHandlerConfigImpl;
+import io.wcm.caravan.rhyme.examples.aemhalbrowser.config.impl.MediaHandlerConfigImpl;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextCallback;
-import io.wcm.testing.mock.wcmio.caconfig.MockCAConfig;
-
-import io.wcm.caravan.rhyme.examples.aemhalbrowser.config.AppTemplate;
-import io.wcm.caravan.rhyme.examples.aemhalbrowser.config.impl.LinkHandlerConfigImpl;
-import io.wcm.caravan.rhyme.examples.aemhalbrowser.config.impl.MediaFormatProviderImpl;
-import io.wcm.caravan.rhyme.examples.aemhalbrowser.config.impl.MediaHandlerConfigImpl;
 
 /**
  * Sets up {@link AemContext} for unit tests in this application.
@@ -48,13 +44,9 @@ public final class AppAemContext {
     @Override
     public void execute(@NotNull AemContext context) throws PersistenceException, IOException {
 
-      // context path strategy
-      MockCAConfig.contextPathStrategyRootTemplate(context, AppTemplate.HOMEPAGE.getTemplatePath());
-
       // setup handler
       context.registerInjectActivateService(new LinkHandlerConfigImpl());
       context.registerInjectActivateService(new MediaHandlerConfigImpl());
-      context.registerInjectActivateService(new MediaFormatProviderImpl());
 
     }
   };

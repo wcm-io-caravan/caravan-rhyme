@@ -16,9 +16,6 @@ import io.wcm.handler.link.type.ExternalLinkType;
 import io.wcm.handler.link.type.InternalCrossContextLinkType;
 import io.wcm.handler.link.type.InternalLinkType;
 import io.wcm.handler.link.type.MediaLinkType;
-import io.wcm.wcm.commons.util.Template;
-
-import io.wcm.caravan.rhyme.examples.aemhalbrowser.config.AppTemplate;
 
 /**
  * Link handler configuration.
@@ -39,12 +36,12 @@ public class LinkHandlerConfigImpl extends LinkHandlerConfig {
 
   @Override
   public boolean isValidLinkTarget(@NotNull Page page) {
-    return !Template.is(page, AppTemplate.ADMIN_STRUCTURE_ELEMENT);
+    return true;
   }
 
   @Override
   public boolean isRedirect(@NotNull Page page) {
-    return Template.is(page, AppTemplate.ADMIN_REDIRECT);
+    return false;
   }
 
   @Override
