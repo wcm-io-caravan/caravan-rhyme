@@ -13,4 +13,6 @@ public interface SlingResourceAdapter {
 
   <T> T getPropertiesAs(Class<T> clazz);
 
+  SlingResourceAdapter ifAdaptableTo(Class<?> adapterClazz);
+
 }

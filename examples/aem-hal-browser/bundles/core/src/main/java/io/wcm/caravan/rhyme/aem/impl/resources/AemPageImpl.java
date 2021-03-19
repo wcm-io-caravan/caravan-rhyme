@@ -7,7 +7,6 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
 import com.day.cq.wcm.api.Page;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.AemPage;
@@ -17,10 +16,10 @@ import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, SlingResource.class })
-public class SlingResourceImpl implements SlingResource {
+@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemPage.class }, resourceType = "wcm/foundation/components/basicpage/v1/basicpage")
+public class AemPageImpl implements AemPage {
 
-  public static final String SELECTOR = "slingresource";
+  public static final String SELECTOR = "aempage";
 
   @RhymeObject
   private SlingResourceAdapter resource;
@@ -29,27 +28,21 @@ public class SlingResourceImpl implements SlingResource {
   private SlingLinkBuilder linkBuilder;
 
   @Override
-  public JsonNode getProperties() {
+  public SlingResource asSlingResource() {
 
-    return resource.getPropertiesAs(JsonNode.class);
+    return resource.getSelfAs(SlingResource.class).get();
   }
 
   @Override
-  public Optional<AemPage> asAemPage() {
+  public Optional<AemPage> getParentPage() {
 
-    return resource.ifAdaptableTo(Page.class).getSelfAs(AemPage.class);
+    return resource.ifAdaptableTo(Page.class).getParentAs(AemPage.class);
   }
 
   @Override
-  public Optional<SlingResource> getParent() {
+  public Stream<AemPage> getChildPages() {
 
-    return resource.getParentAs(SlingResource.class);
-  }
-
-  @Override
-  public Stream<SlingResource> getChildren() {
-
-    return resource.getChildrenAs(SlingResource.class);
+    return resource.ifAdaptableTo(Page.class).getChildrenAs(AemPage.class);
   }
 
   @Override
@@ -57,4 +50,5 @@ public class SlingResourceImpl implements SlingResource {
 
     return linkBuilder.createLinkToCurrentResource(this);
   }
+
 }

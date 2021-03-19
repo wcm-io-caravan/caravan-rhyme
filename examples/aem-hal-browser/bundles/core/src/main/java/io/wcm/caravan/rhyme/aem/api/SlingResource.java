@@ -16,6 +16,9 @@ public interface SlingResource extends LinkableResource {
   @ResourceState
   JsonNode getProperties();
 
+  @Related(AemRelations.PAGE)
+  Optional<AemPage> asAemPage();
+
   @Related(SlingRelations.PARENT)
   Optional<SlingResource> getParent();
 

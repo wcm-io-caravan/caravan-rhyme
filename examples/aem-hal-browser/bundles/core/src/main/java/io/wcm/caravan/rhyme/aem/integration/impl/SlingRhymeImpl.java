@@ -1,5 +1,8 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -8,8 +11,13 @@ import org.apache.sling.api.request.RequestParameterMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import io.wcm.caravan.rhyme.aem.api.AemPage;
+import io.wcm.caravan.rhyme.aem.api.SlingResource;
+import io.wcm.caravan.rhyme.aem.impl.resources.AemPageImpl;
+import io.wcm.caravan.rhyme.aem.impl.resources.SlingResourceImpl;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
@@ -46,7 +54,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   }
 
   @Override
-  public <@Nullable T> T adaptResource(Resource resource, Class<T> modelClass) {
+  public <@Nullable T> T adaptResource(Resource resource, @NotNull Class<T> modelClass) {
 
     if (resource == null) {
       return null;
@@ -84,13 +92,34 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   public HalResponse renderRequestedResource() {
 
     try {
-      LinkableResource resourceImpl = adaptResource(getRequestedResource(), LinkableResource.class);
+      Resource requestedResource = getRequestedResource();
+
+      LinkableResource resourceImpl = adaptToLinkableResource(requestedResource);
 
       return rhyme.renderResponse(resourceImpl);
     }
     catch (RuntimeException ex) {
       return rhyme.renderVndErrorResponse(ex);
     }
+  }
+
+  private LinkableResource adaptToLinkableResource(Resource requestedResource) {
+
+    LinkableResource resourceImpl;
+
+    List<String> selectors = Arrays.asList(request.getRequestPathInfo().getSelectors());
+
+    if (selectors.contains(AemPageImpl.SELECTOR)) {
+      resourceImpl = adaptResource(requestedResource, AemPage.class);
+    }
+    if (selectors.contains(SlingResourceImpl.SELECTOR)) {
+      resourceImpl = adaptResource(requestedResource, SlingResource.class);
+    }
+    else {
+      resourceImpl = adaptResource(requestedResource, LinkableResource.class);
+    }
+
+    return resourceImpl;
   }
 
   @Override

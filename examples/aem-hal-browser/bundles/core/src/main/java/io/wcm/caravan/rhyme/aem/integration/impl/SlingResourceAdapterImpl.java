@@ -1,5 +1,7 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -27,7 +29,27 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Self
   private Resource currentResource;
 
+  private final List<Class> adaptersToVerify;
+
+  public SlingResourceAdapterImpl() {
+    this.adaptersToVerify = new ArrayList<>();
+  }
+
+  private SlingResourceAdapterImpl(SlingResourceAdapterImpl toClone, Class adapterToVerify) {
+    this.slingRhyme = toClone.slingRhyme;
+    this.currentResource = toClone.currentResource;
+    this.adaptersToVerify = new ArrayList<>(toClone.adaptersToVerify);
+    this.adaptersToVerify.add(adapterToVerify);
+  }
+
   private <@Nullable T> T adaptToResourceImpl(Resource res, Class<T> resourceModelClass) {
+
+    for (Class toVerify : adaptersToVerify) {
+      Object adapted = res.adaptTo(toVerify);
+      if (adapted == null) {
+        return null;
+      }
+    }
 
     return slingRhyme.adaptResource(res, resourceModelClass);
   }
@@ -71,5 +93,11 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     return getStreamOfChildren(currentResource)
         .map(resource -> adaptToResourceImpl(resource, resourceModelClass))
         .filter(Objects::nonNull);
+  }
+
+  @Override
+  public SlingResourceAdapter ifAdaptableTo(Class<?> adapterClazz) {
+
+    return new SlingResourceAdapterImpl(this, adapterClazz);
   }
 }
