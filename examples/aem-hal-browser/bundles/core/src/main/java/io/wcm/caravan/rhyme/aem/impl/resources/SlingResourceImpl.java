@@ -13,25 +13,21 @@ import org.jetbrains.annotations.Nullable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.SlingResource;
-import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
+import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Model(adaptables = Resource.class, adapters = LinkableResource.class)
 public class SlingResourceImpl implements SlingResource {
-
-  private static final JsonNodeFactory JSON_NODE_FACTORY = JsonNodeFactory.instance;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   @Self
   private Resource resource;
 
-  @Self
-  private SlingLinkBuilder linkBuilder;
+  private SlingRhyme rhyme;
 
   @Override
   public JsonNode getProperties() {
@@ -52,9 +48,9 @@ public class SlingResourceImpl implements SlingResource {
     return Optional.ofNullable(adaptToResourceImpl(parent));
   }
 
-  private static @Nullable SlingResource adaptToResourceImpl(Resource res) {
+  private @Nullable SlingResource adaptToResourceImpl(Resource res) {
 
-    return res.adaptTo(SlingResourceImpl.class);
+    return rhyme.adaptResource(res, SlingResourceImpl.class);
   }
 
   private static Stream<Resource> getStreamOfChildren(Resource res) {
@@ -67,7 +63,7 @@ public class SlingResourceImpl implements SlingResource {
 
     return getStreamOfChildren(resource)
         .sorted((r1, r2) -> r1.getName().compareTo(r2.getName()))
-        .map(SlingResourceImpl::adaptToResourceImpl)
+        .map(this::adaptToResourceImpl)
         .filter(Objects::nonNull);
   }
 
@@ -75,6 +71,6 @@ public class SlingResourceImpl implements SlingResource {
   @Override
   public Link createLink() {
 
-    return linkBuilder.createLinkToCurrentResource();
+    return rhyme.getLinkBuilder().createLinkToCurrentResource();
   }
 }

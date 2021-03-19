@@ -1,38 +1,19 @@
 package io.wcm.caravan.rhyme.aem.integration;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.models.annotations.Model;
-import org.apache.sling.models.annotations.injectorspecific.Self;
-
-import io.wcm.caravan.rhyme.api.Rhyme;
-import io.wcm.caravan.rhyme.api.RhymeBuilder;
-import io.wcm.caravan.rhyme.api.common.HalResponse;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-
-@Model(adaptables = SlingHttpServletRequest.class)
-public class SlingRhyme {
-
-  @Self
-  private SlingHttpServletRequest request;
-
-  private Rhyme rhyme;
-
-  @PostConstruct
-  void init() {
-    rhyme = RhymeBuilder.withoutResourceLoader()
-        .buildForRequestTo(request.getRequestURL().toString());
-  }
+import org.apache.sling.api.request.RequestParameterMap;
+import org.apache.sling.api.resource.Resource;
 
 
-  public HalResponse renderResponseForCurrentResource() {
+public interface SlingRhyme {
 
-    LinkableResource resourceImpl = request.getResource().adaptTo(LinkableResource.class);
-    if (resourceImpl == null) {
-      throw new RuntimeException("Failed to adapt resource of current request");
-    }
+  Resource getRequestedResource();
 
-    return rhyme.renderResponse(resourceImpl);
-  }
+  Resource getCurrentResource();
+
+  RequestParameterMap getRequestParameters();
+
+  SlingLinkBuilder getLinkBuilder();
+
+  <T> T adaptResource(Resource resource, Class<T> modelClass);
+
 }
