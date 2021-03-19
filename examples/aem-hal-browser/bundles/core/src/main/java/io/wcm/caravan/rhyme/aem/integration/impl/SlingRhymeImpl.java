@@ -14,8 +14,10 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import io.wcm.caravan.rhyme.aem.api.AemAsset;
 import io.wcm.caravan.rhyme.aem.api.AemPage;
 import io.wcm.caravan.rhyme.aem.api.SlingResource;
+import io.wcm.caravan.rhyme.aem.impl.resources.AemAssetImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.AemPageImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.SlingResourceImpl;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
@@ -112,8 +114,11 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     if (selectors.contains(AemPageImpl.SELECTOR)) {
       resourceImpl = adaptResource(requestedResource, AemPage.class);
     }
-    if (selectors.contains(SlingResourceImpl.SELECTOR)) {
+    else if (selectors.contains(SlingResourceImpl.SELECTOR)) {
       resourceImpl = adaptResource(requestedResource, SlingResource.class);
+    }
+    else if (selectors.contains(AemAssetImpl.SELECTOR)) {
+      resourceImpl = adaptResource(requestedResource, AemAsset.class);
     }
     else {
       resourceImpl = adaptResource(requestedResource, LinkableResource.class);

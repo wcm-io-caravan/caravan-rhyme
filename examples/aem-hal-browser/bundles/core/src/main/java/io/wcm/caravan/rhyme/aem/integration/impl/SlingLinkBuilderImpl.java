@@ -32,7 +32,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     String url = buildResourceUrl(slingModel);
 
     Link link = new Link(url)
-        .setTitle(targetResource.getResourceType() + " via " + request.getRequestParameterMap())
+        .setTitle(targetResource.getResourceType())
         .setName(targetResource.getName());
 
     return link;

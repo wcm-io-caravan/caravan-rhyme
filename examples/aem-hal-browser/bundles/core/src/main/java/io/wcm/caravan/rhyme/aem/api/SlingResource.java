@@ -19,9 +19,16 @@ public interface SlingResource extends LinkableResource {
   @Related(AemRelations.PAGE)
   Optional<AemPage> asAemPage();
 
-  @Related(SlingRelations.PARENT)
+  @Related(AemRelations.ASSET)
+  Optional<AemAsset> asAemAsset();
+
+  @Related(AemRelations.INFINITY_JSON)
+  Optional<InfinityJsonResource> getJcrContentAsJson();
+
+  @Related(AemRelations.SLING_PARENT)
   Optional<SlingResource> getParent();
 
-  @Related(SlingRelations.CHILD)
+  @Related(AemRelations.SLING_CHILD)
   Stream<SlingResource> getChildren();
+
 }

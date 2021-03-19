@@ -11,8 +11,12 @@ public interface SlingResourceAdapter {
 
   <T> Optional<T> getParentAs(Class<T> resourceModelClass);
 
+  <T> Stream<T> getLinkedAs(Class<T> resourceModelClass);
+
   <T> T getPropertiesAs(Class<T> clazz);
 
-  SlingResourceAdapter ifAdaptableTo(Class<?> adapterClazz);
+  SlingResourceAdapter withDifferentResource(String path);
+
+  SlingResourceFilter filter();
 
 }

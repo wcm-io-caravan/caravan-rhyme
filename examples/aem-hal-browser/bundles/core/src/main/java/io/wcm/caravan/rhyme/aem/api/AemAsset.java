@@ -9,20 +9,17 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @HalApiInterface
-public interface AemPage extends LinkableResource {
+public interface AemAsset extends LinkableResource {
 
   @ResourceState
-  AemPageProperties getProperties();
+  AemAssetProperties getProperties();
 
   @Related(AemRelations.SLING_RESOURCE)
   SlingResource asSlingResource();
 
-  @Related(AemRelations.PARENT)
-  Optional<AemPage> getParentPage();
+  @Related(AemRelations.RENDITION)
+  Stream<AemRendition> getRenditions();
 
-  @Related(AemRelations.CHILD)
-  Stream<AemPage> getChildPages();
-
-  @Related(AemRelations.LINKED_CONTENT)
-  AemLinkedContent getLinkedContent();
+  @Related(AemRelations.BINARY)
+  Optional<LinkableResource> getOriginalRendition();
 }
