@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.SlingResource;
+import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
@@ -27,6 +28,7 @@ public class SlingResourceImpl implements SlingResource {
   @Self
   private Resource resource;
 
+  @RhymeObject
   private SlingRhyme rhyme;
 
   @Override

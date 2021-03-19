@@ -1,8 +1,10 @@
-package io.wcm.caravan.rhyme.aem.integration;
+package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import org.apache.sling.api.resource.Resource;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
+import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.handler.url.UrlHandler;
 
 public class SlingLinkBuilderImpl implements SlingLinkBuilder {

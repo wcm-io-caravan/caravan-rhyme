@@ -1,10 +1,12 @@
-package io.wcm.caravan.rhyme.aem.integration;
+package io.wcm.caravan.rhyme.aem.integration.impl;
 
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestParameterMap;
 import org.apache.sling.api.resource.Resource;
+import org.jetbrains.annotations.Nullable;
 
+import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
+import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
@@ -38,27 +40,20 @@ public class SlingRhymeImpl implements SlingRhyme {
   }
 
   @Override
-  public <T> T adaptResource(Resource resource, Class<T> modelClass) {
+  public <@Nullable T> T adaptResource(Resource resource, Class<T> modelClass) {
 
     if (resource == null) {
       return null;
     }
 
-    T model = resource.adaptTo(modelClass);
-
-    if (model == null) {
+    T slingModel = resource.adaptTo(modelClass);
+    if (slingModel == null) {
       throw new RuntimeException("Failed to adapt " + request + " to " + modelClass.getSimpleName());
     }
 
-    try {
-      FieldUtils.writeField(model, "rhyme", new SlingRhymeImpl(this, resource), true);
-    }
-    catch (IllegalAccessException ex) {
-      throw new RuntimeException("Failed to inject new SlingRhymeImpl instance into " + model, ex);
-    }
+    RhymeObjects.injectIntoSlingModel(slingModel, () -> new SlingRhymeImpl(this, resource));
 
-
-    return model;
+    return slingModel;
   }
 
 

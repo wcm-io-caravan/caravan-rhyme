@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.integration;
+package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import static org.apache.sling.api.servlets.ServletResolverConstants.DEFAULT_RESOURCE_TYPE;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;

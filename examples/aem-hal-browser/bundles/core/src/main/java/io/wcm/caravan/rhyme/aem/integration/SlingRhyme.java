@@ -2,6 +2,7 @@ package io.wcm.caravan.rhyme.aem.integration;
 
 import org.apache.sling.api.request.RequestParameterMap;
 import org.apache.sling.api.resource.Resource;
+import org.jetbrains.annotations.Nullable;
 
 
 public interface SlingRhyme {
@@ -14,6 +15,6 @@ public interface SlingRhyme {
 
   SlingLinkBuilder getLinkBuilder();
 
-  <T> T adaptResource(Resource resource, Class<T> modelClass);
+  <@Nullable T> T adaptResource(Resource resource, Class<T> modelClass);
 
 }

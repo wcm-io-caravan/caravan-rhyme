@@ -143,6 +143,13 @@
       <artifactId>io.wcm.testing.wcm-io-mock.handler</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- AssertJ for fluent assertions -->
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.19.0</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>com.adobe.cq</groupId>
