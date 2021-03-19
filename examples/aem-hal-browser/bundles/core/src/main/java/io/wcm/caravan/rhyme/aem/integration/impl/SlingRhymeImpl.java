@@ -1,11 +1,15 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.adapter.SlingAdaptable;
 import org.apache.sling.api.request.RequestParameterMap;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.Nullable;
 
-import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
@@ -13,13 +17,15 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.url.UrlHandler;
 
-public class SlingRhymeImpl implements SlingRhyme {
+@Model(adaptables = SlingHttpServletRequest.class)
+public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
+
 
   private final SlingHttpServletRequest request;
   private final Resource currentResource;
   private final Rhyme rhyme;
 
-  public SlingRhymeImpl(SlingHttpServletRequest request) {
+  public SlingRhymeImpl(@Self SlingHttpServletRequest request) {
 
     System.out.println(this + " was instantiated");
 
@@ -32,7 +38,7 @@ public class SlingRhymeImpl implements SlingRhyme {
 
   }
 
-  private SlingRhymeImpl(SlingRhymeImpl slingRhyme, Resource currentResource) {
+  SlingRhymeImpl(SlingRhymeImpl slingRhyme, Resource currentResource) {
 
     this.request = slingRhyme.request;
     this.currentResource = currentResource;
@@ -48,12 +54,30 @@ public class SlingRhymeImpl implements SlingRhyme {
 
     T slingModel = resource.adaptTo(modelClass);
     if (slingModel == null) {
-      throw new RuntimeException("Failed to adapt " + request + " to " + modelClass.getSimpleName());
+      throw new RuntimeException("Failed to adapt " + resource + " to " + modelClass.getSimpleName());
     }
 
     RhymeObjects.injectIntoSlingModel(slingModel, () -> new SlingRhymeImpl(this, resource));
 
     return slingModel;
+  }
+
+  @Override
+  public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
+
+    System.out.println("Trying to adapt " + this + " to " + type);
+    if (UrlHandler.class.isAssignableFrom(type)) {
+      return (AdapterType)request.adaptTo(UrlHandler.class);
+    }
+    if (Resource.class.isAssignableFrom(type)) {
+      return (AdapterType)currentResource;
+    }
+    if (HttpServletRequest.class.isAssignableFrom(type)) {
+      return (AdapterType)request;
+    }
+    System.out.println("Failed to adapt " + this + " to " + type);
+
+    return super.adaptTo(type);
   }
 
 
@@ -85,11 +109,5 @@ public class SlingRhymeImpl implements SlingRhyme {
   public Resource getCurrentResource() {
 
     return currentResource;
-  }
-
-  @Override
-  public SlingLinkBuilder getLinkBuilder() {
-
-    return new SlingLinkBuilderImpl(this, request.adaptTo(UrlHandler.class));
   }
 }

@@ -25,6 +25,13 @@ public class RhymeObjects {
         if (hasSlingRhymeType(field)) {
           writeFieldUnchecked(slingModel, field, slingRhyme);
         }
+        else {
+          Object adapted = slingRhyme.adaptTo(field.getType());
+          if (adapted == null) {
+            throw new RuntimeException("Failed to adapt " + slingRhyme.getClass().getName() + " instance to " + field.getType());
+          }
+          writeFieldUnchecked(slingModel, field, adapted);
+        }
       }
     }
   }
@@ -45,9 +52,9 @@ public class RhymeObjects {
     try {
       FieldUtils.writeField(field, instance, value, true);
     }
-    catch (IllegalAccessException ex) {
+    catch (IllegalAccessException | RuntimeException ex) {
       throw new RuntimeException(
-          "Failed to inject new instance of " + value.getClass().getName() + " into field " + field.getName() + " of class " + instance.getClass().getName(),
+          "Failed to inject instance of " + value.getClass().getName() + " into field " + field.getName() + " of class " + instance.getClass().getName(),
           ex);
     }
   }

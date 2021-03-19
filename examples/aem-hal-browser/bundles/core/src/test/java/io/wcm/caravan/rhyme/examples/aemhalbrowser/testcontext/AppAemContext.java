@@ -30,17 +30,23 @@ public final class AppAemContext {
    * @return {@link AemContext}
    */
   public static AemContext newAemContext() {
-    return new AemContextBuilder()
+    AemContext context = new AemContextBuilder()
         .plugin(CACONFIG)
         .plugin(WCMIO_SLING, WCMIO_WCM, WCMIO_CACONFIG, WCMIO_HANDLER)
         .afterSetUp(SETUP_CALLBACK)
+        .registerSlingModelsFromClassPath(true)
         .build();
+
+    context.addModelsForPackage("io.wcm.caravan.rhyme.aem");
+
+    return context;
   }
 
   /**
    * Custom set up rules required in all unit tests.
    */
   private static final AemContextCallback SETUP_CALLBACK = new AemContextCallback() {
+
     @Override
     public void execute(@NotNull AemContext context) throws PersistenceException, IOException {
 

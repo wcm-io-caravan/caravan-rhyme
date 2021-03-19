@@ -43,7 +43,10 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
   protected void doGet(@NotNull SlingHttpServletRequest request, @NotNull SlingHttpServletResponse response)
       throws ServletException, IOException {
 
-    SlingRhymeImpl rhyme = new SlingRhymeImpl(request);
+    SlingRhymeImpl rhyme = request.adaptTo(SlingRhymeImpl.class);
+    if (rhyme == null) {
+      throw new RuntimeException("request could not be adapted to " + SlingRhymeImpl.class);
+    }
 
     HalResponse halResponse = rhyme.renderRequestedResource();
 
