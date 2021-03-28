@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 
-public class RhymeObjects {
+class RhymeObjects {
 
   static void injectIntoSlingModel(@NotNull Object slingModel, Supplier<SlingRhyme> rhymeSupplier) {
 

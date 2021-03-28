@@ -24,12 +24,12 @@ import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.url.UrlHandler;
 
-@Model(adaptables = SlingHttpServletRequest.class)
+@Model(adaptables = SlingHttpServletRequest.class, adapters = { SlingRhyme.class, SlingRhymeImpl.class })
 public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
-
 
   private final SlingHttpServletRequest request;
   private final Resource currentResource;
@@ -37,15 +37,12 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
 
   public SlingRhymeImpl(@Self SlingHttpServletRequest request) {
 
-    System.out.println(this + " was instantiated");
-
     this.request = request;
 
     this.currentResource = request.getResource();
 
     this.rhyme = RhymeBuilder.withoutResourceLoader()
         .buildForRequestTo(request.getRequestURL().toString());
-
   }
 
   SlingRhymeImpl(SlingRhymeImpl slingRhyme, Resource currentResource) {
@@ -59,12 +56,12 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   public <@Nullable T> T adaptResource(Resource resource, @NotNull Class<T> modelClass) {
 
     if (resource == null) {
-      return null;
+      throw new HalApiDeveloperException("Cannot adapt null resource to " + modelClass.getSimpleName());
     }
 
     T slingModel = resource.adaptTo(modelClass);
     if (slingModel == null) {
-      throw new RuntimeException("Failed to adapt " + resource + " to " + modelClass.getSimpleName());
+      throw new HalApiDeveloperException("Failed to adapt " + resource + " to " + modelClass.getSimpleName());
     }
 
     RhymeObjects.injectIntoSlingModel(slingModel, () -> new SlingRhymeImpl(this, resource));
@@ -75,7 +72,6 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   @Override
   public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
 
-    System.out.println("Trying to adapt " + this + " to " + type);
     if (UrlHandler.class.isAssignableFrom(type)) {
       return (AdapterType)request.adaptTo(UrlHandler.class);
     }
@@ -85,7 +81,6 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     if (HttpServletRequest.class.isAssignableFrom(type)) {
       return (AdapterType)request;
     }
-    System.out.println("Failed to adapt " + this + " to " + type);
 
     return super.adaptTo(type);
   }
@@ -143,5 +138,10 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   public Resource getCurrentResource() {
 
     return currentResource;
+  }
+
+  Rhyme getCaravanRhyme() {
+
+    return rhyme;
   }
 }

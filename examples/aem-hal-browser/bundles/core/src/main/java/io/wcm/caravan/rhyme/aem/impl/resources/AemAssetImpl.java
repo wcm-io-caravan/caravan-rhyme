@@ -20,7 +20,7 @@ import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.media.MediaHandler;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemAsset.class }, resourceType = "wcm/foundation/components/basicpage/v1/basicpage")
+@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemAsset.class })
 
 public class AemAssetImpl implements AemAsset {
 
