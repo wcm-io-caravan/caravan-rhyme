@@ -15,26 +15,22 @@ import com.day.cq.wcm.api.Page;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.AemAsset;
 import io.wcm.caravan.rhyme.aem.api.AemPage;
 import io.wcm.caravan.rhyme.aem.api.InfinityJsonResource;
 import io.wcm.caravan.rhyme.aem.api.SlingResource;
+import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
+import io.wcm.caravan.rhyme.aem.integration.NewResourceAdapter;
 import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
-import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
-import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Model(adaptables = Resource.class, adapters = { LinkableResource.class, SlingResource.class })
-public class SlingResourceImpl implements SlingResource {
+public class SlingResourceImpl extends AbstractLinkableResource implements SlingResource {
 
   public static final String SELECTOR = "slingresource";
 
   @RhymeObject
-  private SlingResourceAdapter resourceAdapter;
-
-  @RhymeObject
-  private SlingLinkBuilder linkBuilder;
+  private NewResourceAdapter resourceAdapter;
 
   @Self
   private Resource resource;
@@ -50,7 +46,9 @@ public class SlingResourceImpl implements SlingResource {
 
     return resourceAdapter
         .filter().onlyIfAdaptableTo(Page.class)
-        .getSelfAs(AemPage.class);
+        .adaptTo(AemPage.class)
+        .withLinkTitle("Show the specific HAL representation for this AEM page")
+        .asOptional();
   }
 
   @Override
@@ -58,37 +56,43 @@ public class SlingResourceImpl implements SlingResource {
 
     return resourceAdapter
         .filter().onlyIfAdaptableTo(Asset.class)
-        .getSelfAs(AemAsset.class);
+        .adaptTo(AemAsset.class)
+        .asOptional();
   }
-
 
   @Override
   public Optional<SlingResource> getParent() {
 
-    return resourceAdapter.getParentAs(SlingResource.class);
+    return resourceAdapter
+        .select().parent()
+        .adaptTo(SlingResource.class)
+        .asOptional();
   }
 
   @Override
   public Stream<SlingResource> getChildren() {
 
-    return resourceAdapter.getChildrenAs(SlingResource.class);
+    return resourceAdapter
+        .select().children()
+        .adaptTo(SlingResource.class)
+        .asStream();
   }
 
   @Override
   public Optional<InfinityJsonResource> getJcrContentAsJson() {
 
     return resourceAdapter
-        .filter().onlyIfNameIs(JcrConstants.JCR_CONTENT)
-        .getChildrenAs(InfinityJsonResource.class).findFirst();
+        .select().child(JcrConstants.JCR_CONTENT)
+        .adaptTo(InfinityJsonResource.class)
+        .asOptional();
   }
 
   @Override
-  public Link createLink() {
+  protected String getDefaultLinkTitle() {
 
     String resourceType = defaultIfNull(resource.getResourceType(), "unknown");
 
-    return linkBuilder.createLinkToCurrentResource(this)
-        .setTitle(resourceType + " resource");
+    return resourceType + " resource";
   }
 
 }

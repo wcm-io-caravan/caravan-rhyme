@@ -10,27 +10,22 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.wcm.api.Page;
 
-import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.AemLinkedContent;
 import io.wcm.caravan.rhyme.aem.api.AemPage;
 import io.wcm.caravan.rhyme.aem.api.AemPageProperties;
 import io.wcm.caravan.rhyme.aem.api.SlingResource;
+import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
+import io.wcm.caravan.rhyme.aem.integration.NewResourceAdapter;
 import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
-import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
-import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemPage.class }, resourceType = "wcm/foundation/components/basicpage/v1/basicpage")
-public class AemPageImpl implements AemPage {
+public class AemPageImpl extends AbstractLinkableResource implements AemPage {
 
   public static final String SELECTOR = "aempage";
 
   @RhymeObject
-  private SlingResourceAdapter resourceAdapter;
-
-  @RhymeObject
-  private SlingLinkBuilder linkBuilder;
+  private NewResourceAdapter resourceAdapter;
 
   @Self
   private Page page;
@@ -50,38 +45,45 @@ public class AemPageImpl implements AemPage {
   @Override
   public SlingResource asSlingResource() {
 
-    return resourceAdapter.getSelfAs(SlingResource.class).get();
+    return resourceAdapter
+        .adaptTo(SlingResource.class)
+        .withLinkTitle("Show the generic sling resource HAL representation of this page")
+        .get();
   }
 
   @Override
   public Optional<AemPage> getParentPage() {
 
-    return resourceAdapter.filter().onlyIfAdaptableTo(Page.class)
-        .getParentAs(AemPage.class);
+    return resourceAdapter
+        .select().parent()
+        .filter().onlyIfAdaptableTo(Page.class)
+        .adaptTo(AemPage.class)
+        .asOptional();
   }
 
   @Override
   public Stream<AemPage> getChildPages() {
 
-    return resourceAdapter.filter().onlyIfAdaptableTo(Page.class)
-        .getChildrenAs(AemPage.class);
+    return resourceAdapter
+        .select().children()
+        .filter().onlyIfAdaptableTo(Page.class)
+        .adaptTo(AemPage.class)
+        .asStream();
   }
 
   @Override
   public AemLinkedContent getLinkedContent() {
 
-    return resourceAdapter.filter().onlyIfNameIs(JcrConstants.JCR_CONTENT)
-        .getChildrenAs(AemLinkedContent.class)
-        .findFirst()
-        .orElseThrow(() -> new HalApiDeveloperException("Failed to find a jcr:content node for a cq:Page resource"));
+    return resourceAdapter
+        .select().child(JcrConstants.JCR_CONTENT)
+        .adaptTo(AemLinkedContent.class)
+        .get();
   }
 
   @Override
-  public Link createLink() {
+  protected String getDefaultLinkTitle() {
 
-    return linkBuilder.createLinkToCurrentResource(this)
-        .setTitle(page.getTitle());
+    return page.getTitle();
   }
-
 
 }
