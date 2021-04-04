@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
@@ -145,6 +146,15 @@ public class CompositeHalApiTypeSupportTest {
     fut.apply(verify(mockAnnotationSupport));
   }
 
+  private void assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(Function<HalApiReturnTypeSupport, Boolean> fut) {
+
+    HalApiTypeSupport composite = createCompositeTypeSupport();
+
+    when(fut.apply(mockReturnTypeSupport)).thenReturn(true);
+    assertThat(fut.apply(composite)).isTrue();
+    fut.apply(verify(mockReturnTypeSupport));
+  }
+
   private void assertThatCompositeReturnsFirstNonNullValueOfMock(Function<HalApiAnnotationSupport, Object> fut, Object returnValue) {
 
     HalApiTypeSupport composite = createCompositeTypeSupport();
@@ -229,4 +239,11 @@ public class CompositeHalApiTypeSupportTest {
     Function<Object, Observable<?>> fun = o -> Observable.fromIterable(() -> ((List)o).iterator());
     assertThatCompositeReturnsFirstNonNullValueOfReturnTypeMock(a -> a.convertToObservable(Iterator.class), fun);
   }
+
+  @Test
+  public void isProviderOfMultiplerValues_should_return_first_true_value() throws Exception {
+
+    assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfMultiplerValues(Set.class));
+  }
+
 }
