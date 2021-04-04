@@ -55,10 +55,10 @@ Here is how the corresponding Java interface looks like:
     PageResource getFirstPage();
   }
 ```
-- [@HalApiInterface](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/HalApiInterface.java) is just a marker interface that helps the framework identify the relevant interfaces through reflection
-- by extending [LinkableResource](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/resources/LinkableResource.java) we define that this resource is directly accessible through a URL (which will be found in the `self` link)
-- The `getItemById` function corresponds to the link template with `item` relation, and the parameter annotated with [@TemplateVariable](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/TemplateVariable.java) indicates that you must provide an `id` parameter that will be used to expand the link template into the final URL that will be used to retrieve the item resource
-- Since a HAL API should allow to discover all available data whenever possible, there is also a `getFirstPage` function that allows you to start browsing all available items using the `first` link
+- [@HalApiInterface](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/HalApiInterface.java) is just a marker annotation that helps the framework identify the relevant interfaces through reflection.
+- by extending [LinkableResource](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/resources/LinkableResource.java) we define that this resource is directly accessible through a URL (which will be found in the `self` link).
+- The `getItemById` function corresponds to the link template with `item` relation, and the parameter annotated with [@TemplateVariable](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/TemplateVariable.java) indicates that you must provide an `id` parameter. It will be used to expand the link template into the final URL that will be used to retrieve the item resource.
+- A HAL API should allow to discover all available data whenever possible. That's why there is also a `getFirstPage` function which allows you to start browsing all available items using the `first` link.
 
 The return type of these functions are again java interfaces that describe the structure and available relations of the linked resources:
 
@@ -85,11 +85,11 @@ The return type of these functions are again java interfaces that describe the s
     Stream<ItemResource> getRelatedItems();
   }
 ````
-- Note that none of these interfaces define anything regarding the URL structure of these resources. This matches the HAL/HATEOAS principle that client's only should have to know a single URL (of the entry point), and all other URLs should be found as links in the resources
-- Again, methods annotated with [@Related](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) are used to model the relations / links between resources
-- `Stream` is used as return type whenever where there may be multiple links with the same relation
-- `Optional` is used when it is not guaranteed that a link will be present (e.g. on the last page, there will be no 'next' link)
-- The method annotated with [@ResourceState](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) finally returns the actual data that represents an item 
+- Note that none of these interfaces define anything regarding the URL structure of these resources. This matches the HAL/HATEOAS principle that client's only should have to know a single URL (of the entry point), and all other URLs should be found as links in the resources.
+- Again, methods annotated with [@Related](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) are used to model the relations / links between resources.
+- `Stream` is used as return type whenever where there may be multiple links with the same relation.
+- `Optional` is used when it is not guaranteed that a link will be present (e.g. on the last page, there will be no 'next' link).
+- The method annotated with [@ResourceState](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) finally returns the actual data that represents an item.
 
 As a return type for the @ResourceState method, you could either use a [jackson](https://github.com/FasterXML/jackson) `ObjectNode` or any other type that can be  parsed from and serialized to JSON using the default jackson `ObjectMapper`. If you want to provide a type-safe API to your consumers you should define simple classes that match the JSON structure. You shouldn't share any **code** with this classes, so a simple struct-like class like this works well:
 
@@ -126,7 +126,7 @@ An actual HAL resource that matches the `ItemResource` interface defined above l
 
 ## Rendering HAL resources in your web service 
 
-For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) facade to automatically render a HAL+JSON representation based on the annotation found in the interfaces:
+For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) interface to automatically render a HAL+JSON representation based on the annotation found in the interfaces:
 
 ````
     // create a single Rhyme instance as early as possible in the request-cycle 
@@ -171,7 +171,7 @@ Here's what happens in the implementation class:
   }
 ````
 
-What [Rhyme#renderResponse] does is to scan your implementation class and **recursively** call all the annotated methods from the `@HalApiInterface`:
+What `Rhyme#renderResponse` does is to scan your implementation class and **recursively** call all the annotated methods from the `@HalApiInterface`:
 
 - `#createLink()` is called to generate the `self` link directly
 - `#getFirstPage()` is called to create a PageResource instance, and then `#createLink()` is called on that resource to create the link to it
