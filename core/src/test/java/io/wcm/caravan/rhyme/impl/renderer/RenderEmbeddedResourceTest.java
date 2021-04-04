@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -183,5 +184,34 @@ public class RenderEmbeddedResourceTest {
     HalResource hal = render(resourceImpl);
     assertThat(hal.getEmbedded(ITEM)).hasSameSizeAs(states);
     assertThat(hal.getLinks(ITEM)).isEmpty();
+  }
+
+  @HalApiInterface
+  public interface TestResourceWithSingleEmbedded {
+
+    @Related(ITEM)
+    Single<TestResource> getEmbeddedItem();
+  }
+
+  @Test
+  public void single_embedded_resources_should_be_rendered_in_object() {
+
+    TestState state = new TestState(0);
+
+    TestResourceWithSingleEmbedded resourceImpl = new TestResourceWithSingleEmbedded() {
+
+      @Override
+      public Single<TestResource> getEmbeddedItem() {
+
+        return Single.just(new EmbeddedTestResource(state));
+      }
+    };
+
+    HalResource hal = render(resourceImpl);
+
+    List<HalResource> actualEmbedded = hal.getEmbedded(ITEM);
+
+    assertThat(actualEmbedded).hasSize(1);
+    assertThat(hal.getModel().path("_embedded").path(ITEM).isObject()).isEqualTo(true);
   }
 }

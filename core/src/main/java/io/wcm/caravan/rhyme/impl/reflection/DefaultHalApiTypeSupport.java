@@ -162,6 +162,15 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
     return null;
   }
 
+  @Override
+  public boolean isProviderOfMultiplerValues(Class<?> returnType) {
+
+    return List.class.isAssignableFrom(returnType)
+        || Stream.class.isAssignableFrom(returnType)
+        || Observable.class.isAssignableFrom(returnType)
+        || Publisher.class.isAssignableFrom(returnType);
+  }
+
   /**
    * @param annotationSupport additional support for different annotations
    * @param returnTypeSupport additional support for different return types
@@ -175,4 +184,5 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
 
     return new CompositeHalApiTypeSupport(ImmutableList.of(defaultSupport, adapter));
   }
+
 }

@@ -207,6 +207,11 @@ public class ErrorHandlingTest {
           throw cause;
         };
       }
+
+      @Override
+      public boolean isProviderOfMultiplerValues(Class<?> returnType) {
+        return false;
+      }
     };
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestState());

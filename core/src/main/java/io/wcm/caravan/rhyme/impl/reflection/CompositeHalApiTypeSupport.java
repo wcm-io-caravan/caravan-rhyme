@@ -108,7 +108,14 @@ public class CompositeHalApiTypeSupport implements HalApiTypeSupport {
     return firstNonNull(delegate -> delegate.convertToObservable(sourceType));
   }
 
+  @Override
+  public boolean isProviderOfMultiplerValues(Class<?> returnType) {
+
+    return anyMatch(delegate -> delegate.isProviderOfMultiplerValues(returnType));
+  }
+
   List<HalApiTypeSupport> getDelegates() {
     return delegates;
   }
+
 }
