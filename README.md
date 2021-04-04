@@ -16,7 +16,9 @@ Its core principles are
 - these interfaces are shared with the consumers, which can use them as a highly abstracted client API
 - the same interfaces are also used to keep the server-side implementation well structured, and in sync with the published API
 
-# Representing a HAL API as annotated Java interfaces
+# Examples to understand the key concepts
+
+## Representing a HAL API as annotated Java interfaces
 
 As an example, here is the HAL entry point to a simple web service that provides access to a database of simple generic items that may be related to each other:
 
@@ -83,12 +85,13 @@ The return type of these functions are again java interfaces that describe the s
     Stream<ItemResource> getRelatedItems();
   }
 ````
+- Note that none of these interfaces define anything regarding the URL structure of these resources. This matches the HAL/HATEOAS principle that client's only should have to know a single URL (of the entry point), and all other URLs should be found as links in the resources
 - Again, methods annotated with [@Related](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) are used to model the relations / links between resources
 - `Stream` is used as return type whenever where there may be multiple links with the same relation
 - `Optional` is used when it is not guaranteed that a link will be present (e.g. on the last page, there will be no 'next' link)
 - The method annotated with [@ResourceState](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) finally returns the actual data that represents an item 
 
-As a return type for the @ResourceState method, you could either use a (jackson)[https://github.com/FasterXML/jackson] `ObjectNode` or any other type that can be  parsed from and serialized to JSON using the default jackson `ObjectMapper`. If you want to provide a type-safe API to your consumers you should define simple classes that match the JSON structure. You shouldn't share any **code** with this classes, so a simple struct-like class like this works well:
+As a return type for the @ResourceState method, you could either use a [jackson](https://github.com/FasterXML/jackson) `ObjectNode` or any other type that can be  parsed from and serialized to JSON using the default jackson `ObjectMapper`. If you want to provide a type-safe API to your consumers you should define simple classes that match the JSON structure. You shouldn't share any **code** with this classes, so a simple struct-like class like this works well:
 
 ````
   public class Item {
@@ -98,7 +101,7 @@ As a return type for the @ResourceState method, you could either use a (jackson)
   }
 ````
 
-An actual HAL resource that corresponds to the ItemResource looks like this:
+An actual HAL resource that matches the `ItemResource` interface defined above looks like this:
 
 ````
 {
@@ -120,6 +123,59 @@ An actual HAL resource that corresponds to the ItemResource looks like this:
   }
 }
 ````
+
+## Rendering HAL resources in your web service 
+
+For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) facade to automatically render a HAL+JSON representation based on the annotation found in the interfaces:
+
+````
+    // create a single Rhyme instance as early as possible in the request-cycle 
+    Rhyme rhyme = RhymeBuilder.withoutResourceLoader().buildForRequestTo(incomingRequest.getUrl());
+    
+    // instantiate your server-side implementation of the @HalApiInterface resource that is requested, e.g.
+    ApiEntryPoint entryPoint = new ApiEntryPointImpl(database);
+    
+    // create the HAL+JSON representation (and response headers) for this resource
+    HalResponse response = rhyme.renderResponse(entryPoint);
+
+    // finally convert that response to your framework's representation of a web/JSON response...
+````
+
+Here's what happens in the implementation class:
+
+````
+  class ApiEntryPointImpl implements ApiEntryPoint {
+
+    private final ItemDatabase database;
+
+    ApiEntryPointImpl(ItemDatabase database) {
+      this.database = database;
+    }
+
+    @Override
+    public PageResource getFirstPage() {
+      return new PageResourceImpl(database, 0);
+    }
+
+    @Override
+    public ItemResource getItemById(String id) {
+      return new ItemResourceImpl(database, id);
+    }
+
+    @Override
+    public Link createLink() {
+
+      return new Link("https://hal-api.example.org/")
+          .setTitle("The entry point for this example HAL API");
+    }
+  }
+````
+
+What [Rhyme#renderResponse] does is to scan your implementation class and **recursively** call all the annotated methods from the `@HalApiInterface`:
+
+- `#createLink()` is called to generate the `self` link directly
+- `#getFirstPage()` is called to create a PageResource instance, and then `#createLink()` is called on that resource to create the link to it
+- `#getItemById()` is called (with the `id` parameter being null, as the entry point should only contain a link template and no specific id is known yet), and then again `#createLink()` is called on the implementation instance being returned (to actually create the link template)
 
 ## Related Links
 
