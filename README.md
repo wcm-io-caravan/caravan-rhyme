@@ -158,11 +158,11 @@ With that proxy instance you can easily navigate through the resources of the AP
     // obtaining a client proxy will not fetch the entry point resource yet (until you call a method on it)
     ApiEntryPoint api = getApiEntryPoint();
     
-    // calling the method will fetch the entry point, then find and expland the URI template so
-    // that you now have a ItemResource that knows the full URL of the resource (and how to fetch it)
+    // calling the method will fetch the entry point, then find and expland the URI template.
     ItemResource itemResource = api.getItemById("foo");
-
-    // again that resource is only actually fetched when you call a method on the resource
+    
+    // now you have a ItemResource that knows the full URL of the resource (and how to fetch it),
+    // but again that resource is only actually fetched when you call a method on the resource
     Item foo = itemResource.getState();
 
     // You can call another method on the same instance without any resource being fetched twice
