@@ -93,7 +93,9 @@ The return type of these functions are again java interfaces. They describe the 
 - `Optional` is used when it is not guaranteed that a link will be present (e.g. on the last page, there will be no 'next' link).
 - The method annotated with [@ResourceState](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) finally returns the actual data that represents an item.
 
-As a return type for the @ResourceState method, you could either use a [jackson](https://github.com/FasterXML/jackson) `ObjectNode` or any other type that can be  parsed from and serialized to JSON using the default jackson `ObjectMapper`. Using generic JSON types in your API is preferred if you are forwarding JSON resources from an external source, and those JSON resources' structure is expected to be extended frequently. has If you want to provide a typed API to your consumers, you should define simple classes that match the JSON structure. You shouldn't share any **code** with this classes, so a simple struct-like class like this works well:
+As a return type for the @ResourceState method, you could either use a [jackson](https://github.com/FasterXML/jackson) `ObjectNode` or any other type that can be  parsed from and serialized to JSON using the default jackson `ObjectMapper`. Using generic JSON types in your API is preferred if you are forwarding JSON resources from an external source, and those JSON resources' structure is expected to be extended frequently.
+
+If you want to provide a strongly **typed** API to your consumers, you should define simple classes that match the JSON structure of your resources' state. You shouldn't share any **code** with theses classes, so a simple struct-like class like this works well:
 
 ````
   public class Item {
@@ -103,7 +105,7 @@ As a return type for the @ResourceState method, you could either use a [jackson]
   }
 ````
 
-An actual HAL resource that matches the `ItemResource` interface defined above looks like this:
+In the end, an actual HAL resource that matches the `ItemResource` interface defined above would look like this:
 
 ````
 {
