@@ -3,11 +3,125 @@
 [![Build](https://github.com/wcm-io-caravan/caravan-rhyme/workflows/Build/badge.svg?branch=develop)](https://github.com/wcm-io-caravan/caravan-rhyme/actions?query=workflow%3ABuild+branch%3Adevelop)
 [![Code Coverage](https://codecov.io/gh/wcm-io-caravan/caravan-rhyme/branch/develop/graph/badge.svg)](https://codecov.io/gh/wcm-io-caravan/caravan-rhyme)
 
-wcm.io Caravan - TBD
+wcm.io Caravan - Rhyme
 
 ![Caravan](https://github.com/wcm-io-caravan/caravan-tooling/blob/master/public_site/src/site/resources/images/caravan.gif)
 
-TBD
+# Introduction
+
+**Rhyme** is a Java framework for providing or consuming RESTful APIs using the [HAL+JSON media format](http://stateless.co/hal_specification.html). It really shines when you need to do both, e.g. build a web service that aggregates data from one or more other HAL APIs.
+
+Its core principles are
+- HAL APIs are represented as type-safe **annotated Java interfaces**
+- these interfaces are shared with the consumers, which can use them as a highly abstracted client API
+- the same interfaces are also used to keep the server-side implementation well structured, and in sync with the published API
+
+# Representing a HAL API as annotated Java interfaces
+
+As an example, here is the HAL entry point to a simple web service that provides access to a database of simple generic items that may be related to each other:
+
+```
+{
+  "_links":{
+    "self":{
+      "href":"https://hal-api.example.org/",
+      "title":"The entry point for this example HAL API"
+    },
+    "item":{
+      "href":"https://hal-api.example.org/items/{id}",
+      "templated":true,
+      "title":"A link template to retrieve the item with the specified id from the database"
+    },
+    "first":{
+      "href":"https://hal-api.example.org/items",
+      "title":"A pageable list of all available items in the database"
+    }
+  }
+}
+```
+
+Here is how the corresponding Java interface looks like:
+
+```
+  @HalApiInterface
+  public interface ApiEntryPoint extends LinkableResource {
+
+    @Related("item")
+    ItemResource getItemById(@TemplateVariable("id") String id);
+
+    @Related("first")
+    PageResource getFirstPage();
+  }
+```
+- [@HalApiInterface](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/HalApiInterface.java) is just a marker interface that helps the framework identify the relevant interfaces through reflection
+- by extending [LinkableResource](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/resources/LinkableResource.java) we define that this resource is directly accessible through a URL (which will be found in the `self` link)
+- The `getItemById` function corresponds to the link template with `item` relation, and the parameter annotated with [@TemplateVariable](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/TemplateVariable.java) indicates that you must provide an `id` parameter that will be used to expand the link template into the final URL that will be used to retrieve the item resource
+- Since a HAL API should allow to discover all available data whenever possible, there is also a `getFirstPage` function that allows you to start browsing all available items using the `first` link
+
+The return type of these functions are again java interfaces that describe the structure and available relations of the linked resources:
+
+````
+  @HalApiInterface
+  public interface PageResource extends LinkableResource {
+
+    @Related("item")
+    Stream<ItemResource> getItemsOnPage();
+
+    @Related("next")
+    Optional<PageResource> getNextPage();
+  }
+````
+
+````
+  @HalApiInterface
+  public interface ItemResource extends LinkableResource {
+
+    @ResourceState
+    Item getState();
+
+    @Related("related")
+    Stream<ItemResource> getRelatedItems();
+  }
+````
+- Again, methods annotated with [@Related](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) are used to model the relations / links between resources
+- `Stream` is used as return type whenever where there may be multiple links with the same relation
+- `Optional` is used when it is not guaranteed that a link will be present (e.g. on the last page, there will be no 'next' link)
+- The method annotated with [@ResourceState](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) finally returns the actual data that represents an item 
+
+As a return type for the @ResourceState method, you could either use a (jackson)[https://github.com/FasterXML/jackson] `ObjectNode` or any other type that can be  parsed from and serialized to JSON using the default jackson `ObjectMapper`. If you want to provide a type-safe API to your consumers you should define simple classes that match the JSON structure. You shouldn't share any **code** with this classes, so a simple struct-like class like this works well:
+
+````
+  public class Item {
+
+    public String id;
+    public String title;
+  }
+````
+
+An actual HAL resource that corresponds to the ItemResource looks like this:
+
+````
+{
+  "id":"2",
+  "title":"Item #2",
+  "_links":{
+    "self":{
+      "href":"https://hal-api.example.org/items/2",
+      "title":"The item with id '2'",
+      "name":"2"
+    },
+    "related":[
+      {
+        "href":"https://hal-api.example.org/items/12",
+        "title":"The item with id '12'",
+        "name":"12"
+      }
+    ]
+  }
+}
+````
+
+## Related Links
 
 Documentation: https://caravan.wcm.io/rhyme/<br/>
 Issues: https://wcm-io.atlassian.net/<br/>
