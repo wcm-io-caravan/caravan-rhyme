@@ -124,6 +124,46 @@ An actual HAL resource that matches the `ItemResource` interface defined above l
 }
 ````
 
+## Consuming HAL resources with dynamic client proxies
+
+Now that you have a set of interfaces that represent your HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example no URL patterns are being exposed in the interfaces).
+
+To be able to retrieve HAL+JSON resources through HTTP you must first create an implementation of the [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) SPI interface. This is intentionally out of scope of the core framework, as the choice of HTTP client framework should be entirely up to you.
+
+The interface however just consists of a single method that will load a HAL response from a given URL.:
+````
+Single<HalResponse> loadJsonResource(String uri);
+````
+
+Once you have a `JsonResourceLoader` instance, it just requires a few lines of code to create a client implementation of your HAL API's entry point interface: 
+
+````
+  private ApiEntryPoint getApiEntryPoint() {
+
+    // create a Rhyme instance that knows how to load any external JSON resource
+    Rhyme rhyme = RhymeBuilder.withResourceLoader(jsonLoader)
+        .buildForRequestTo(incomingRequest.getUrl());
+
+    // create a dynamic proxy that knows who to fetch the entry point from the given URL
+    return rhyme.getUpstreamEntryPoint("https://hal-api.example.org", ApiEntryPoint.class);
+  }
+````
+
+Using that proxy instance you can easily navigate through the resources of the API by simply calling the methods defined in your `HalApiInterface`s
+````
+    ApiEntryPoint api = getApiEntryPoint();
+
+    ItemResource itemResource = api.getItemById("foo");
+
+    Item foo = itemResource.getState();
+    assertThat(foo.id).isEqualTo("foo");
+
+    List<Item> relatedToFoo = itemResource.getRelatedItems()
+        .map(ItemResource::getState)
+        .collect(Collectors.toList());
+    assertThat(relatedToFoo).isNotNull();
+````
+
 ## Rendering HAL resources in your web service 
 
 For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) interface to automatically render a HAL+JSON representation based on the annotation found in the interfaces:
@@ -132,7 +172,7 @@ For the server-side implementation of your HAL API, you will have to implement t
     // create a single Rhyme instance as early as possible in the request-cycle 
     Rhyme rhyme = RhymeBuilder.withoutResourceLoader().buildForRequestTo(incomingRequest.getUrl());
     
-    // instantiate your server-side implementation of the @HalApiInterface resource that is requested, e.g.
+    // instantiate your server-side implementation of the requested @HalApiInterface resource
     ApiEntryPoint entryPoint = new ApiEntryPointImpl(database);
     
     // create the HAL+JSON representation (and response headers) for this resource
@@ -140,6 +180,12 @@ For the server-side implementation of your HAL API, you will have to implement t
 
     // finally convert that response to your framework's representation of a web/JSON response...
 ````
+
+What `Rhyme#renderResponse` does is to scan your implementation class and **recursively** call all the annotated methods from the `@HalApiInterface`:
+
+- `#createLink()` is called to generate the `self` link directly
+- `#getFirstPage()` is called to create a PageResource instance, and then `#createLink()` is called on that resource to create the link to it
+- `#getItemById()` is called (with the `id` parameter being null, as the entry point should only contain a link template and no specific id is known yet), and then again `#createLink()` is called on the implementation instance being returned (to actually create the link template)
 
 Here's what happens in the implementation class:
 
@@ -171,11 +217,13 @@ Here's what happens in the implementation class:
   }
 ````
 
-What `Rhyme#renderResponse` does is to scan your implementation class and **recursively** call all the annotated methods from the `@HalApiInterface`:
 
-- `#createLink()` is called to generate the `self` link directly
-- `#getFirstPage()` is called to create a PageResource instance, and then `#createLink()` is called on that resource to create the link to it
-- `#getItemById()` is called (with the `id` parameter being null, as the entry point should only contain a link template and no specific id is known yet), and then again `#createLink()` is called on the implementation instance being returned (to actually create the link template)
+Note that the implementation of the `@Related` method looks **exactly** the same as if you were implementing a normal service interface. This ensures that all consumer code running in the same JVM can use your API directly (i.e. avoiding the overhead of serializing to HAL+JSON) with the same interfaces that external clients are using. This allows the following approach when designing a larger software system:
+- You can start with keeping everything in the same JVM, but separate the code into modules that are using `@HalApiInterface`s for the internal APIs from the beginning
+- During development you can easily expose these internal APIs through HTTP using the Rhyme framework (even though your other modules are still using the implementation classes). This can be very helpful for inspecting data sources without using a debugger
+- You can still re-factor everything easily during development, and continously verify that the API is designed well
+- When there is an actual reason to break up your system into multiple services, you can easily do so. As the interfaces for remote access via HAL+API are exactly the same, you can keep much of the existing code. 
+
 
 ## Related Links
 
