@@ -81,6 +81,7 @@ final class RelatedResourcesRendererImpl {
 
     verifyReturnType(resourceImplInstance, method);
     String relation = typeSupport.getRelation(method);
+    boolean multiValue = typeSupport.isProviderOfMultiplerValues(method.getReturnType());
 
     // call the implementation of the method to get an observable of related resource implementation instances
     Observable<?> rxRelatedResources = invokeMethodAndReturnObservable(resourceImplInstance, method, metrics, typeSupport)
@@ -105,7 +106,7 @@ final class RelatedResourcesRendererImpl {
                 + " This is not the case for " + unsupportedClassNames);
           }
 
-          return new RelationRenderResult(relation, links, embeddedResources);
+          return new RelationRenderResult(relation, links, embeddedResources, multiValue);
         });
 
     Class<?> emissionType = RxJavaReflectionUtils.getObservableEmissionType(method, typeSupport);
@@ -227,10 +228,14 @@ final class RelatedResourcesRendererImpl {
     private final List<Link> links;
     private final List<HalResource> embedded;
 
-    private RelationRenderResult(String relation, List<Link> links, List<HalResource> embedded) {
+    private final boolean multiValue;
+
+
+    private RelationRenderResult(String relation, List<Link> links, List<HalResource> embedded, boolean multiValue) {
       this.relation = relation;
       this.links = links;
       this.embedded = embedded;
+      this.multiValue = multiValue;
     }
 
     String getRelation() {
@@ -244,5 +249,10 @@ final class RelatedResourcesRendererImpl {
     List<HalResource> getEmbedded() {
       return this.embedded;
     }
+
+    boolean isMultiValue() {
+      return multiValue;
+    }
+
   }
 }

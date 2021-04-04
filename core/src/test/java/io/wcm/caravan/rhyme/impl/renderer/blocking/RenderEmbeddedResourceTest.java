@@ -189,4 +189,33 @@ public class RenderEmbeddedResourceTest {
     assertThat(hal.getLinks(ITEM)).hasSameSizeAs(states);
   }
 
+  @HalApiInterface
+  public interface TestResourceWithSingleEmbedded {
+
+    @Related(ITEM)
+    BlockingTestResource getEmbeddedItem();
+  }
+
+  @Test
+  public void single_embedded_resources_should_be_rendered_in_object() {
+
+    TestState state = new TestState(0);
+
+    TestResourceWithSingleEmbedded resourceImpl = new TestResourceWithSingleEmbedded() {
+
+      @Override
+      public BlockingTestResource getEmbeddedItem() {
+
+        return new EmbeddedTestResource(state);
+      }
+    };
+
+    HalResource hal = render(resourceImpl);
+
+    List<HalResource> actualEmbedded = hal.getEmbedded(ITEM);
+
+    assertThat(actualEmbedded).hasSize(1);
+    assertThat(hal.getModel().path("_embedded").path(ITEM).isObject()).isEqualTo(true);
+  }
+
 }

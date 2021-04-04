@@ -41,4 +41,10 @@ public interface HalApiReturnTypeSupport {
    */
   Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType);
 
+  /**
+   * @param returnType the return type of an annotated method
+   * @return true if the type is a collection or a reactive type that can emit multiple values
+   */
+  boolean isProviderOfMultiplerValues(Class<?> returnType);
+
 }

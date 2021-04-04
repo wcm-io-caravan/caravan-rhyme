@@ -238,6 +238,11 @@ public class RhymeBuilderImplTest {
       return null;
     }
 
+    @Override
+    public boolean isProviderOfMultiplerValues(Class<?> returnType) {
+      return false;
+    }
+
   }
 
   @MyApiInterface

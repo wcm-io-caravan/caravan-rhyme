@@ -143,8 +143,20 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
     }
 
     for (RelationRenderResult related : listOfRelated) {
-      hal.addLinks(related.getRelation(), related.getLinks());
-      hal.addEmbedded(related.getRelation(), related.getEmbedded());
+      String relation = related.getRelation();
+
+      if (related.isMultiValue()) {
+        hal.addLinks(relation, related.getLinks());
+        hal.addEmbedded(relation, related.getEmbedded());
+      }
+      else {
+        if (!related.getLinks().isEmpty()) {
+          hal.setLink(relation, related.getLinks().get(0));
+        }
+        if (!related.getEmbedded().isEmpty()) {
+          hal.setEmbedded(relation, related.getEmbedded().get(0));
+        }
+      }
     }
 
     return hal;
