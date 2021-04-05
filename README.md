@@ -165,7 +165,7 @@ With that proxy instance you can easily navigate through the resources of the AP
     // obtaining a client proxy will not fetch the entry point resource yet (until you call a method on it)
     ApiEntryPoint api = getApiEntryPoint();
     
-    // calling the method will fetch the entry point, then find and expland the URI template.
+    // calling the method will fetch the entry point, then find and expand the URI template.
     ItemResource itemResource = api.getItemById("foo");
     
     // now you have a ItemResource that knows the full URL of the resource (and how to fetch it),
@@ -176,9 +176,6 @@ With that proxy instance you can easily navigate through the resources of the AP
     List<Item> relatedToFoo = itemResource.getRelatedItems()
         .map(ItemResource::getState)
         .collect(Collectors.toList());
-        
-    assertThat(foo.id).isEqualTo("foo");
-    assertThat(relatedToFoo).isNotNull();
 ```
 
 ## Rendering HAL resources in your web service 
