@@ -138,7 +138,7 @@ In the end, an actual HAL resource that matches the `ItemResource` interface def
 }
 ```
 
-Hardcore RESTafarians may say that everything you have read in this section is a bad idea, as it's all about sharing out-of-band information about your API with your clients. However any consumer needs to have some reasonable expectations about the available links and data structures provided by your API to create reliable client code. The aim of those annotated interfaces isto specify exactly these kind of guarantees given by the API in a very concise way, that can directly be used in client-side code. At the same time, the interfaces don't expose too many implementation details (such as URL structures). 
+Hardcore *RESTafarians* may say that everything you have read in this section is a bad idea, as it's all about sharing out-of-band information about your API with your clients. However any consumer needs to have some reasonable expectations about the available links and data structures provided by your API to create reliable client code. The aim of those annotated interfaces isto specify exactly these kind of guarantees given by the API in a very concise way, that can directly be used in client-side code. At the same time, the interfaces don't expose too many implementation details (such as URL structures). 
 
 If you don't like the idea of sharing these interfaces with consumers (as outlied in the next section), then keep in mind that this is entirely optional. Your API will still be using plain HAL+JSON data structures, and nothing forces you to use the Rhyme framework and these interfaces on *both* sides.
 
@@ -360,9 +360,9 @@ If you want to keep your client and server-side code completely asynchronous and
 - `Observable<T>` is used (instead of `Stream<T>`) whenever multiple values can be emitted
 - `Maybe<T>`is used (instead of `Optional<T>`) when ever 
 
-If you rather want to use Spring Reactor types (or types from othe JxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the types you want to use to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java)
+If you rather want to use Spring Reactor types (or types from othe RxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the additional types to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java)
 
-On the client side, you'll only have to ensure to implement [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) using a fully asynchronous HTTP client library. 
+On the client side, you'll have to implement [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) using a fully asynchronous HTTP client library. 
 
 Then you can use the full range of RxJava operators to construct a chain of API operations that are all executed asynchronusly (and in parallel where possible):
 
@@ -379,7 +379,7 @@ Then you can use the full range of RxJava operators to construct a chain of API 
     // all observables provided by rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
 ```
 
-On the server-side, just use the `renderResponseAsync`function from the Rhyme interface, to ensure that the HAL representatio of your server-side resources are rendered asynchronously:
+On the server-side, just use the `renderResponseAsync` function from the Rhyme interface to ensure that your code is not blocking while rendering the HAL representation of your server-side resource implementations:
 
 ```java
 CompletionStage<HalResponse> response = rhyme.renderResponseAsync(resource);
