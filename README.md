@@ -179,7 +179,14 @@ With that proxy instance of your entry point you can easily navigate through all
         .map(ItemResource::getState)
         .collect(Collectors.toList());
 ```
-The proxy instance will fully take care of fetching and parsing the resources, finding links and link templates based on their relations (found in the annotated interface methods), and will fetch these linked resources as required. A local in-memory caching will ensure that the same resources are not fetched more than once as long as you are using the same Rhyme instance.
+The proxy instance will take care of
+- fetching and parsing the resource
+- finding links (or embedded resources) based on their relations (based on the information from the annotated interface methods)
+- expanding link templates with the parameters from the method invocation
+- fetching further linked resources as required
+- keeping track of all resources that have been retrieved
+ 
+A local in-memory caching will ensure that the same resources are not fetched more than once as long as you are using the same Rhyme instance.
 
 
 ## Rendering HAL resources in your web service 
