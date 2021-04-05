@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
-
 import com.damnhandy.uri.template.UriTemplate;
 import com.google.common.collect.ImmutableList;
 
@@ -187,7 +185,7 @@ public class ReadMeExamples {
   // server side implementation
 
 
-  @Test
+  //@Test (not really a test but junit was used to execute this method to provide the example JSON)
   void handleEntryPointRequest() {
 
     // create a single Rhyme instance as early as possible in the request-cycle
@@ -203,7 +201,7 @@ public class ReadMeExamples {
     convertToFrameworkResponse(response);
   }
 
-  @Test
+  //@Test (not really a test but junit was used to execute this method to provide the example JSON)
   void handleItemResourceRequest() {
 
     Rhyme rhyme = createRhymeForIncomingRequest();
@@ -215,7 +213,7 @@ public class ReadMeExamples {
     convertToFrameworkResponse(response);
   }
 
-  @Test
+  //@Test (not really a test but junit was used to execute this method to provide the example JSON)
   void handleFirstPageRequest() {
 
     Rhyme rhyme = createRhymeForIncomingRequest();
