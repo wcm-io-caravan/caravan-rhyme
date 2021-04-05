@@ -292,7 +292,7 @@ There are a few more **best practices** to keep in mind when implementing your s
 
       if (id != null) {
         // it's good practice to always provide a human readable 'title' attribute for the link,
-        // this will appear in tools such as the HAL browser
+        // as this will appear in tools such as the HAL browser
         link.setTitle("The item with id '" + id + "'");
         // for machines, you should set always set a 'name' attribute to distinguish
         // multiple links with the same relations
