@@ -14,7 +14,7 @@
 The key concepts and features of **Rhyme** are:
 - HAL APIs are represented as type-safe **annotated Java interfaces**
 - these interfaces are shared with the consumers, which can use them as a **highly abstracted client API**
-- the same interfaces are also used to **keep the server-side implementation well structured**, and in sync with the published API
+- the same interfaces are also used to **keep the server-side implementation well structured**, and always in sync with the published API
 - consistent support for **controlling caching** using the `cache-control: max-age` header
 - simplify **data debugging and performance analysis**, by including metadata in every response
 - **consistent error handling over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
