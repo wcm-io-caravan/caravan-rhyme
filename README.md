@@ -126,6 +126,13 @@ In the end, an actual HAL resource that matches the `ItemResource` interface def
 }
 ```
 
+Hardcore RESTafarians may say that everything you have read in this paragraph is a bad idea, as it's all about sharing out-of-band information about your API with your clients. However any consumer needs to have some reasonable expectations about the available links and data structures provided by your API to create reliable client code. The annotated interfaces allow to specify the guarantees given by the API in a very concise way, without exposing too many implementation details (such as URL structures). If you don't like the idea of sharing these interfaces with consumers (as outlied in the next section), then keep in mind that this is entirely optional. Your API will still be using plain HAL+JSON data structures, and nothing forces you to use the Rhyme framework and these interfaces on *both* sides.
+
+But especially as long as you (or your team) are the sole consumers of your API anyway, sharing these interfaces will give you many benefits:
+- refactoring of your API (e.g. renaming relations) throughout a distributed system is very easy and reliable
+- your IDE is able to understand who is actually using a specific API method
+- your IDE is able to find the server-side implementation(s) of every API method
+
 ## Consuming HAL resources with Rhyme client proxies
 
 Now that you have a set of interfaces that represent your HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example no URL patterns are being exposed in the interfaces).
