@@ -339,7 +339,7 @@ To keep your resource implementations simple, you are likely to end up with some
 
 ## Using reactive types in your API
 
-If you want to keep your client and server-side code completely asynchronous and non-blocking, you start with using RxJava reactives types as return types throughout your API interfaces: 
+If you want to keep your client and server-side code completely asynchronous and non-blocking, you start with using RxJava reactives types as return values throughout your API interfaces: 
 
 ```java
   @HalApiInterface
@@ -358,7 +358,7 @@ If you want to keep your client and server-side code completely asynchronous and
 
 - `Single<T>` is used (instead of `T`) whenever it's guaranteed that exactly one value is emitted
 - `Observable<T>` is used (instead of `Stream<T>`) whenever multiple values can be emitted
-- `Maybe<T>`is used (instead of `Optional<T>`) when ever 
+- `Maybe<T>`is used (instead of `Optional<T>`) when a value may be present or not
 
 If you rather want to use Spring Reactor types (or types from othe RxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the additional types to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java)
 
@@ -395,7 +395,7 @@ Commercial support: https://wcm.io/commercial-support.html
 
 # Build from sources
 
-If you want to build wcm.io from sources make sure you have configured all [Maven Repositories](https://caravan.wcm.io/maven.html) in your settings.xml.
+If you want to build wcm.io Caravan Rhyme from sources make sure you have configured all [Maven Repositories](https://caravan.wcm.io/maven.html) in your settings.xml.
 
 See [Maven Settings](https://github.com/wcm-io-caravan/caravan-rhyme/blob/develop/.maven-settings.xml) for an example with a full configuration.
 
