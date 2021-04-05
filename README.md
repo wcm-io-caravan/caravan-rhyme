@@ -287,17 +287,20 @@ There are a few more **best practices** to keep in mind when implementing your s
       if (id != null) {
         uriTemplate.set("id", id);
       }
-      String uri = uriTemplate.expandPartial();
+      Link link = new Link(uriTemplate.expandPartial());
 
-      // it's good practice to always provide a human readable 'title' attribute
-      Link link = new Link(uri);
       if (id != null) {
+        // it's good practice to always provide a human readable 'title' attribute for the link,
+        // this will appear in tools such as the HAL browser
         link.setTitle("The item with id '" + id + "'");
         // for machines, you should set always set a 'name' attribute to distinguish
         // multiple links with the same relations
         link.setName(id);
       }
       else {
+        // especially link templates should always have a good description in title, as these
+        // are likely to appear in the entry point of your resource, and will help to make
+        // your API self-explainable
         link.setTitle("A link template to retrieve the item with the specified id from the database");
       }
 
@@ -309,7 +312,7 @@ There are a few more **best practices** to keep in mind when implementing your s
 
 One thing you should have noticed is that link generation is quite complex even for this simple example. This is due to the fact that the `#createLink()` method of a resource implementation is responsible to render **all** possible variations of links and link template to this kind of resource. The benefit of this approach is that the code that generates these links is not cluttered all over your project. 
 
-To keep your resource implementations simple, you are likely to end up with something like a LinkBuilder class to avoid duplication of code and URLs in your resource implementations. Since the best way to create links varies depending on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this. 
+To keep your resource implementations simple, you are likely to end up with something like a LinkBuilder class to avoid duplication of code and URLs in your resource implementations. Since the best way to create links varies depending a lot on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this. 
 
 
 ## Related Links
