@@ -142,9 +142,9 @@ In the end, an actual HAL resource that matches the `ItemResource` interface def
 }
 ```
 
-Hardcore *RESTafarians* may say that everything you have read in this section is a bad idea, as it's all about sharing out-of-band information about your API with your clients. However any consumer needs to have some reasonable expectations about the available links and data structures provided by your API to create reliable client code. The aim of those annotated interfaces is to specify exactly these kind of guarantees given by the API in a very concise way, that can directly be used in client-side code. At the same time, the interfaces don't expose too many implementation details (such as URL structures). 
+[*RESTafarians*](https://mikeschinkel.com/2006/whatisarestafarian/) may say that everything you have read in this section is a bad idea, as it's all about sharing out-of-band information about your API with your clients. However any consumer needs to have some reasonable expectations about the available links and data structures provided by your API to create reliable client code. The aim of those annotated interfaces is to specify exactly these kind of guarantees given by the API in a very concise way, that can directly be used in client-side code. At the same time, the interfaces don't expose too many implementation details (such as URL structures). 
 
-If you don't like the idea of sharing these interfaces with consumers (as outlined in the next section), then keep in mind that this is entirely optional. Your API will still be using plain HAL+JSON data structures, and nothing forces you to use the **Rhyme** framework and these interfaces on *both* sides.
+If you don't like the idea of using these interfaces in client code (as outlined in the next section), then keep in mind that this is entirely optional. Your API will still be using plain HAL+JSON data structures, and nothing forces you to use the **Rhyme** framework and these interfaces on *both* sides.
 
 But especially as long as you (or your team) are the sole consumers of your API anyway, sharing these interfaces between your services will give you many benefits:
 - refactoring of your API (e.g. renaming relations) throughout a distributed system is very easy and reliable
