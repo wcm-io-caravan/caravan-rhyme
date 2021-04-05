@@ -15,7 +15,8 @@ The key concepts and features of **Rhyme** are:
 - HAL APIs are represented as type-safe **annotated Java interfaces**.
 - These interfaces are shared with the consumers, which can use them as a **highly abstracted client API**.
 - The same interfaces are also used to **keep the server-side implementation well structured**, and always in sync with the published API.
-- Consistent support for **controlling caching** using the `cache-control: max-age` header
+- simple and transparent support for **embedded resources**
+-  **controlling caching** using the `cache-control: max-age` header
 - Simplify **data debugging and performance analysis** (by including embedded metadata in every response)
 - **Retaining error information over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
 - **Supporting asynchronous, reactive programming** on the client and server side
@@ -341,6 +342,18 @@ There are a few more **best practices** to keep in mind when implementing your s
 One thing you should have noticed is that link generation is quite complex even for this simple example. This is due to the fact that the `#createLink()` method of a resource implementation is responsible to render **all** possible variations of links and link templates to this kind of resource. The benefit of this approach is that the link generation code is not cluttered all over your project. Instead it can all be found in exactly the same class that will be using the parameters encoded in the links.
 
 To keep your resource implementations simple, you are likely to end up with something like a project-specific `LinkBuilder` class to avoid duplication of code and URLs. Since the best way to create links varies a lot depending on the web framework your are using, the core **Rhyme** framework does not try to provide or enforce a solution for this (but you will find some ideas and concepts in the examples).
+
+## Embedded Resources
+
+If you have many small resources, there will be an additional overhead if they are retrieved individually. To avoid this, the HAL+JSON format specifies a way to embed resources (in addition to link them) in a context resource.
+
+Embedding resources with **Rhyme** is straight-forward: Simply make your server-side resource implementation classes also implement the [EmbeddableResource](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/resources/EmbeddableResource.java) interface.
+
+If you don't override any of the default methods from the interface, the `Rhyme#renderResponse` method will automatically embed a complete representation of your resource wherever it is linked to (with a fully resolved URI, not for templated links). You can also override `EmbeddableResource#isEmbedded` to have more control over the process, and decide based on the context or configuration whether embedding a resource is beneficial to performance.
+
+Proxy client implementations created with the **Rhyme** framework will also always look if any embedded resources are present when a method annotated with `@Related` is being called. If they find embedded resources for that relation, they will be used instead of following the corresponding links.
+
+You can also create a nested hierarchy of embedded resources. This may for example be useful if you have a deep hierarchy tree of objects, where the leaf object require links to other resources be present. In those cases it may not always be reasonable to have a unique URI to access each resource in the tree individually. To achieve that, simply make your server-side resources **only** implement `EmbeddedResource` (but not `LinkableResource`). 
 
 ## Controlling caching
 
