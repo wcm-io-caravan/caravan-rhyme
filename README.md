@@ -18,6 +18,7 @@ The key concepts and features of **Rhyme** are:
 - consistent support for **controlling caching** using the `cache-control: max-age` header
 - simplify **data debugging and performance analysis**, by including metadata in every response
 - **consistent error handling over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
+- using asynchronous, reactive code on the client and server side is fully supported 
 
 **Rhyme** is based on several years of experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch (with an unreasonably high unit test coverage) with the goal of being useful within any Java web framework. 
 
