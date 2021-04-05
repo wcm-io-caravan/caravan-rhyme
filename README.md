@@ -369,7 +369,6 @@ On the client side, you'll have to implement [JsonResourceLoader](core/src/main/
 Then you can use the full range of RxJava operators to construct a chain of API operations that are all executed lazily and asynchronously (and in parallel where possible):
 
 ```java
-
     ReactiveResource resource = rhyme.getUpstreamEntryPoint("https://foo.bar", ReactiveResource.class);
 
     Observable<Item> parentsOfRelated = resource.getRelatedItems()
@@ -378,7 +377,7 @@ Then you can use the full range of RxJava operators to construct a chain of API 
         .concatMapSingle(ReactiveResource::getState)
         .distinct(item -> item.id);
     
-    // all observables provided by rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
+    // all Observable provided by rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
 ```
 
 On the server-side, just use the `renderResponseAsync` function from the Rhyme interface to ensure that your code is not blocking while rendering the HAL representation of your server-side resource implementations:
