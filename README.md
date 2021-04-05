@@ -9,9 +9,7 @@
 
 **Rhyme** is a Java framework for providing or consuming hypermedia APIs using the [HAL+JSON media format](http://stateless.co/hal_specification.html). It really shines when you need to do both, e.g. build a distributed system of microservices that are connected through several HAL APIs.
 
-**Rhyme** stands for **R**eactive **Hy**per**me**dia, as it fully supports asynchronous generation and retrieval of HAL+JSON resources (using [RxJava 3](https://github.com/ReactiveX/RxJava) internally). Other reactive libraries (e.g. [Spring Reactor](https://projectreactor.io/) or RxJava 1 & 2) can be used as well using an extension point. 
-
-Using reactive types however is (almost) entirely optional, and it's up to you whether you want to use them in your APIs. It will have benefits if you have to deal with a lot of long-running requests that you want to execute in parallel without blocking your main request handling thread. But don't underestimate the increased complexity that comes with it. In the examples in this document, we'll mostly stick to using the simpler blocking code, but there is a section on how reactive types can be used.
+**Rhyme** stands for **R**eactive **Hy**per**me**dia, as it fully supports asynchronous generation and retrieval of HAL+JSON resources (using [RxJava 3](https://github.com/ReactiveX/RxJava) internally). Using reactive types however is (almost) entirely optional. In the examples in this document, we'll mostly stick to using the simpler blocking code, but there is a section on how reactive types can be used.
 
 The key concepts of **Rhyme** are
 - HAL APIs are represented as type-safe **annotated Java interfaces**
@@ -341,6 +339,8 @@ To keep your resource implementations simple, you are likely to end up with some
 
 ## Using reactive types in your API
 
+Using asynchronous code to retrieve and render HAL resources can be desired if you have to deal with a lot of long-running requests. It will allow you to execute upstream requests in parallel without blocking your main request handling thread. But don't underestimate the increased complexity that comes with it.
+
 If you want to keep your client and server-side code completely asynchronous and non-blocking, you start with using RxJava reactive types as return values throughout your API interfaces: 
 
 ```java
@@ -362,7 +362,7 @@ If you want to keep your client and server-side code completely asynchronous and
 - `Observable<T>` is used (instead of `Stream<T>`) whenever multiple values can be emitted
 - `Maybe<T>`is used (instead of `Optional<T>`) when a value may be present or not
 
-If you rather want to use Spring Reactor types (or types from othe RxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the additional types to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java).
+If you rather want to use [Spring Reactor](https://projectreactor.io/) types (or types from othe RxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the additional types to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java).
 
 On the client side, you'll have to implement [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) using a fully asynchronous HTTP client library. 
 
