@@ -240,6 +240,75 @@ Having the same interfaces on the server- and client-side allows the following a
 - You can still re-factor everything easily during development, and continously verify that the API is designed well
 - When there is an actual reason to break up your system into multiple services, you can easily do so. As the interfaces for remote access via HAL+API are exactly the same as for the server-side implementation, you can keep much of the existing code. 
 
+There are a few more best practices to keep in mind when implementing your server-side resources. Here is another example that explains the most important things that you need to be aware of:
+
+```java
+  class ItemResourceImpl implements ItemResource {
+
+    // all dependencies and request parameters required to render the resource will be provided
+    // when the instance is created. We are using constructor injection here, but you can also
+    // use whatever IoC injection mechanism is available in the framework of your choice.
+    private final ItemDatabase database;
+    
+    // be aware that 'id' can be null (e.g. if this resource is created/linked to from the entry point)
+    private final String id;
+
+    // your constructors should be as leight-weight as possible, as one instance of your
+    // resource is created even if only a link to the resource is rendered
+    ItemResourceImpl(ItemDatabase database, String id) {
+      this.database = database;
+      this.id = id;
+    }
+
+    // Any I/O should only happen in the methods that are annotated with @Related
+    // or @ResourceState which are being called when the resource is actually rendered
+    // (and it's guaranteed that the 'id' parameter is set)
+    @Override
+    public Item getState() {
+      return database.getById(id);
+    }
+
+    // to generate links to related resources, you'll simply instantiate their resource
+    // implementation classes with the right 'id' parameter. This also ensures the method
+    // is perfectly usable when called directly by an internal consumer.
+    @Override
+    public Stream<ItemResource> getRelatedItems() {
+
+      return database.getIdsOfItemsRelatedTo(id).stream()
+          .map(relatedId -> new ItemResourceImpl(database, relatedId));
+    }
+
+    @Override
+    public Link createLink() {
+
+      // this method is the one and only location where all links to this resource are rendered.
+      // This includes the generation of link templates (e.g. when 'id' is null)
+      UriTemplate uriTemplate = UriTemplate.fromTemplate("https://hal-api.example.org/items/{id}");
+      if (id != null) {
+        uriTemplate.set("id", id);
+      }
+      String uri = uriTemplate.expandPartial();
+
+      // it's good practice to always provide a human readable 'title' attribute
+      Link link = new Link(uri);
+      if (id != null) {
+        link.setTitle("The item with id '" + id + "'");
+        // for machines, you should set always set a 'name' attribute to distinguish
+        // multiple links with the same relations
+        link.setName(id);
+      }
+      else {
+        link.setTitle("A link template to retrieve the item with the specified id from the database");
+      }
+
+      return link;
+    }
+  }
+
+```
+
+One thing you should have noticed is that link generation is quite complex even for this simple example. This is due to the fact that the #createLink method of a resource implementation is responsible to render **all** possible variations of links and link template to this kind of resource. The benefit of this approach is that the code that generates these links is not cluttered all over your project. To keep your resource implementations simple, you are likely to end up with something like a LinkBuilder class to avoid duplication of code. Since the best way to create links varies depending on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this. 
+
 
 ## Related Links
 
