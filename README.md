@@ -17,7 +17,7 @@ The key concepts and features of **Rhyme** are:
 - The same interfaces are also used to **keep the server-side implementation well structured**, and always in sync with the published API.
 - Consistent support for **controlling caching** using the `cache-control: max-age` header
 - Simplify **data debugging and performance analysis** (by including embedded metadata in every response)
-- **Consistent error handling over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
+- **Retaining error information over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
 - **Supporting asynchronous, reactive programming** on the client and server side
 
 **Rhyme** is based on several years of experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch (with an unreasonably high unit test coverage) with the goal of being useful within any Java web framework. 
@@ -380,7 +380,7 @@ This resource will contain the following information:
 
 While the overhead of using the **Rhyme** framework is usually neglible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
 
-## Consistent error handling over service boundaries
+## Retaining error information over service boundaries
 
 Any runtime exceptions that are thrown by your implementation classes (or any **Rhyme** framework code) during the execution of `Rhyme#renderResponse` will be caught and handled: Instead of the regular HAL+JSON response with 200 status code, the `renderResponse` method will render a response with an appropriate status code, and a JSON body according to the [vnd.error+json](https://github.com/blongden/vnd.error) media type. This media type is just a very simple convention how error information is represented in a HAL+JSON compatible format, and will include the exception classes and messages of the whole exception chain.
 
