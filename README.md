@@ -340,8 +340,7 @@ To keep your resource implementations simple, you are likely to end up with some
 
 ## Related Links
 
-Documentation: https://caravan.wcm.io/rhyme/<br/>
-Issues: https://wcm-io.atlassian.net/<br/>
+Issues: https://wcm-io.atlassian.net/projects/WCARAV/<br/>
 Wiki: https://wcm-io.atlassian.net/wiki/<br/>
 Continuous Integration: https://github.com/wcm-io-caravan/caravan-rhyme/actions<br/>
 Commercial support: https://wcm.io/commercial-support.html
