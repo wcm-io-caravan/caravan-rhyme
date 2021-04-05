@@ -11,10 +11,22 @@
 
 **Rhyme** stands for **R**eactive **Hy**per**me**dia, as it fully supports asynchronous generation and retrieval of HAL+JSON resources (using [RxJava 3](https://github.com/ReactiveX/RxJava) internally). Other reactive libraries (e.g. [Spring Reactor](https://projectreactor.io/) or RxJava 1 & 2) can be used as well using an extension point. Using reactive types however is (almost) entirely optional, and it's up to you whether you want to use them in your APIs. It will have benefits if you have to deal with a lot of long-running requests that you want to execute in parallel without blocking your main request handling thread. But don't underestimate the increased complexity that comes with it. In the examples in this document, we'll mostly stick to using the simpler blocking code, but there is a section on how reactive types can be used.
 
-The key concepts of Rhyme are
+The key concepts of **Rhyme** are
 - HAL APIs are represented as type-safe **annotated Java interfaces**
 - these interfaces are shared with the consumers, which can use them as a highly abstracted client API
 - the same interfaces are also used to keep the server-side implementation well structured, and in sync with the published API
+
+**Rhyme** is based on several years experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch to be used with any web framework. 
+
+## Modules in this repository
+
+- [api-interfaces](api-interfaces) - contains only annotations, interfaces and dependencies to be used in your API interface definitions
+- [core](core) - the core framework that can be used with any Java web framework
+- [osgi-jaxrs](osgi-jaxrs) - additional code for implementing HAL webservices using the [OSGi r7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan)
+- [examples/osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example / show-case service using RxJava interfaces
+- [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the example service (and run some integration tests)
+
+Another example for usage with spring-boot can be found at https://github.com/feffef/reactive-hal-spring-example.
 
 # Key concepts explained
 
