@@ -16,16 +16,16 @@ The key concepts and features of **Rhyme** are
 - these interfaces are shared with the consumers, which can use them as a **highly abstracted client API**
 - the same interfaces are also used to **keep the server-side implementation well structured**, and in sync with the published API
 - consistent support for **controlling caching** using the `cache-control: max-age` header
-- simplify data-debugging by **including `via` links to upstream resources** in every response
+- simplify data debugging and performance analysis, by including metadata in every response
 - **consistent error handling over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
 
-**Rhyme** is based on several years experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch with the goal of being usable within any Java web framework. 
+**Rhyme** is based on several years experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch (with an unreasonably high unit test coverage) with the goal of being useful within any Java web framework. 
 
 ## Modules in this repository
 
 - [api-interfaces](api-interfaces) - contains only annotations, interfaces and dependencies to be used in your API interface definitions
-- [core](core) - the core framework that can be used with any Java web framework
-- [osgi-jaxrs](osgi-jaxrs) - additional code for implementing HAL webservices using the [OSGi r7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
+- [core](core) - the core framework that can be integrated within any Java web service
+- [osgi-jaxrs](osgi-jaxrs) - additional code for implementing HAL web services using the [OSGi r7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
 - [examples/osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
 - [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the example service (and run some integration tests)
 
@@ -206,7 +206,9 @@ A local in-memory caching will ensure that the same resources are not fetched mo
 
 ## Rendering HAL resources in your web service 
 
-For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) facade to automatically render a HAL+JSON representation based on the annotation found in the interfaces:
+For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) facade to automatically render a HAL+JSON representation based on the annotation found in the interfaces.
+
+What's important to note is that **you should only create a single `Rhyme` instance** in the life-cycle of an incoming request. 
 
 ```java
     // create a single Rhyme instance as early as possible in the request-cycle 
@@ -339,6 +341,44 @@ There are a few more **best practices** to keep in mind when implementing your s
 One thing you should have noticed is that link generation is quite complex even for this simple example. This is due to the fact that the `#createLink()` method of a resource implementation is responsible to render **all** possible variations of links and link template to this kind of resource. The benefit of this approach is that the link generation code is not cluttered all over your project. Instead it can all be found in exactly the same class that will be using the parameters encoded in the links.
 
 To keep your resource implementations simple, you are likely to end up with something like a project-specific LinkBuilder class to avoid duplication of code and URLs. Since the best way to create links varies depending a lot on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this.
+
+## Controlling caching
+
+The `cache-control: max-age` header is probably the most useful way of controlling caching in a system of distributed stateless web services. It does not require clients to keep track of last-modified dates or etags, and there is also good support for it in CDNs, browsers and caching proxies.
+
+Within your server-side implementation, you can call `Rhyme#setResponseMaxAge(Duration)` at any time to set this cache header in the respose. If you call it multiple times, the lowest duration will be used. 
+
+If you are building a service that is also fetching HAL/JSON responses from other services (which is the main use case for **Rhyme**), the `max-age` headers from these upstream responses should also be taken into account: If any of those responses are only to be cached for a short time, the derived response that you are creating must also not be cached any longer than that. Otherwise you'll run into issues that updates to these upstream resources won't become effective to your consumers. This will all happen automatically if you make sure to re-use the same `Rhyme` instance to fetch upstream resources and render your own response.
+
+The **Rhyme** core framework does not implement any client-side caching layer itself. If you need such a cache layer, it can be added to your [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) implementation. But you should make sure to respect and update the max-age information from the Hal Response being cached.
+
+## Data debugging and performance analysis
+
+There is another benefit of re-using the same `Rhyme` instance while handling an incoming request: Every upstream resource that is fetched, and every annotated method called by the framework will be tracked by the Rhyme instance.
+
+When a HAL response is rendered, it will include a small embedded resource (using the `caravan:embedded` relation) that allows you to inspect what exactly the framework did to generate the response.
+
+This resource will contain the following information:
+- a list of `via` links to every HAL resource that was fetched from an upstream service. The title and names from the original `self` links of those resources will be included as well, giving you a very nice overview which kind of external resources were required to render your resource
+- a sorted list of the measured response times for each of those upstream resources. This allows you to identify which upstream service may be slowing down your system
+- a sorted list of the `max-age`headers for each of those upstream resources. This allows you to identify the reason why your own response's `max-age` may be lower as expected
+- some extensive statistics about the time spent in method calls to your resource implementation classes, or the dynamic client proxies provided by the framework. 
+
+While the overhead of using the **Rhyme** framework is usually neglible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
+```json
+{
+  "measurements": [
+    "6.774 ms - sum of 50x calling #createLink of DelayableItemResourceImpl",
+    "0.954 ms - sum of 2x calling #createLink of DelayableCollectionResourceImpl",
+    "0.307 ms - 1x calling #renderLinkedOrEmbeddedResource with DelayableCollectionResourceImpl",
+    "0.026 ms - 1x calling #getItems of DelayableCollectionResourceImpl",
+    "0.024 ms - 1x calling #getState of DelayableCollectionResourceImpl",
+    "0.018 ms - 1x calling #getAlternate of DelayableCollectionResourceImpl"
+  ],
+  "title": "A breakdown of time spent in blocking method calls by AsyncHalResourceRenderer"
+}
+```
+
 
 ## Using reactive types in your API
 
