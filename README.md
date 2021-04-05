@@ -172,7 +172,8 @@ With that proxy instance you can easily navigate through the resources of the AP
     // but again that resource is only actually fetched when you call a method on the resource
     Item foo = itemResource.getState();
 
-    // You can call another method on the same instance without any resource being fetched twice
+    // You can call another method on the same instance (without any resource being fetched twice),
+    // and use stream operations fo fetch multiple resources with a simple expression.
     List<Item> relatedToFoo = itemResource.getRelatedItems()
         .map(ItemResource::getState)
         .collect(Collectors.toList());
