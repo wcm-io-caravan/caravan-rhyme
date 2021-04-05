@@ -360,11 +360,11 @@ If you want to keep your client and server-side code completely asynchronous and
 - `Observable<T>` is used (instead of `Stream<T>`) whenever multiple values can be emitted
 - `Maybe<T>`is used (instead of `Optional<T>`) when a value may be present or not
 
-If you rather want to use Spring Reactor types (or types from othe RxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the additional types to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java)
+If you rather want to use Spring Reactor types (or types from othe RxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the additional types to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java).
 
 On the client side, you'll have to implement [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) using a fully asynchronous HTTP client library. 
 
-Then you can use the full range of RxJava operators to construct a chain of API operations that are all executed asynchronusly (and in parallel where possible):
+Then you can use the full range of RxJava operators to construct a chain of API operations that are all executed lazily and asynchronously (and in parallel where possible):
 
 ```java
 
