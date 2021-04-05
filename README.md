@@ -18,7 +18,7 @@ The key concepts of **Rhyme** are
 - these interfaces are shared with the consumers, which can use them as a highly abstracted client API
 - the same interfaces are also used to keep the server-side implementation well structured, and in sync with the published API
 
-**Rhyme** is based on several years experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch to be used with any web framework. 
+**Rhyme** is based on several years experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch with the goal of being usable within any Java web framework. 
 
 ## Modules in this repository
 
