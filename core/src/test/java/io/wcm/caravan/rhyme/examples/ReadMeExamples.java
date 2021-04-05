@@ -21,11 +21,11 @@ package io.wcm.caravan.rhyme.examples;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -35,6 +35,9 @@ import org.junit.jupiter.api.Test;
 import com.damnhandy.uri.template.UriTemplate;
 import com.google.common.collect.ImmutableList;
 
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
@@ -65,11 +68,11 @@ public class ReadMeExamples {
   @HalApiInterface
   public interface ApiEntryPoint extends LinkableResource {
 
-    @Related("first")
-    PageResource getFirstPage();
-
     @Related("item")
     ItemResource getItemById(@TemplateVariable("id") String id);
+
+    @Related("first")
+    PageResource getFirstPage();
   }
 
   @HalApiInterface
@@ -92,6 +95,19 @@ public class ReadMeExamples {
     Stream<ItemResource> getRelatedItems();
   }
 
+  @HalApiInterface
+  public interface ReactiveResource extends LinkableResource {
+
+    @ResourceState
+    Single<Item> getState();
+
+    @Related("related")
+    Observable<ReactiveResource> getRelatedItems();
+
+    @Related("parent")
+    Maybe<ReactiveResource> getParentItem();
+  }
+
   public class Item {
 
     public String id;
@@ -109,24 +125,35 @@ public class ReadMeExamples {
 
   private void convertToFrameworkResponse(HalResponse response) {
 
+    response.getBody().removeEmbedded("caravan:metadata");
+    if (response.getBody().getModel().path("_embedded").size() == 0) {
+      response.getBody().getModel().remove("_embedded");
+    }
     System.out.println(response.getBody().getModel().toString());
   }
 
   private ApiEntryPoint getApiEntryPoint() {
 
-    Rhyme rhyme = createRhymeForIncomingRequest();
+    // create a Rhyme instance that knows how to load any external JSON resource
+    Rhyme rhyme = RhymeBuilder.withResourceLoader(jsonLoader)
+        .buildForRequestTo(incomingRequest.getUrl());
 
+    // create a dynamic proxy that knows who to fetch the entry point from the given URL
     return rhyme.getUpstreamEntryPoint("https://hal-api.example.org", ApiEntryPoint.class);
   }
 
   void fetchItems() {
-
+    // obtaining a client proxy will not fetch the entry point resource yet (until you call a method on it)
     ApiEntryPoint api = getApiEntryPoint();
 
+    // calling the method will fetch the entry point, then find and expand the URI template.
     ItemResource itemResource = api.getItemById("foo");
 
+    // now you have a ItemResource that knows the full URL of the resource (and how to fetch it),
+    // but again that resource is only actually fetched when you call a method on the resource
     Item foo = itemResource.getState();
 
+    // You can call another method on the same instance without any resource being fetched twice
     List<Item> relatedToFoo = itemResource.getRelatedItems()
         .map(ItemResource::getState)
         .collect(Collectors.toList());
@@ -163,12 +190,16 @@ public class ReadMeExamples {
   @Test
   void handleEntryPointRequest() {
 
-    Rhyme rhyme = createRhymeForIncomingRequest();
+    // create a single Rhyme instance as early as possible in the request-cycle
+    Rhyme rhyme = RhymeBuilder.withoutResourceLoader().buildForRequestTo(incomingRequest.getUrl());
 
+    // instantiate your server-side implementation of the requested @HalApiInterface resource
     ApiEntryPoint entryPoint = new ApiEntryPointImpl(database);
 
+    // create the HAL+JSON representation (and response headers) for this resource
     HalResponse response = rhyme.renderResponse(entryPoint);
 
+    // finally convert that response to your framework's representation of a web/JSON response...
     convertToFrameworkResponse(response);
   }
 
@@ -189,11 +220,29 @@ public class ReadMeExamples {
 
     Rhyme rhyme = createRhymeForIncomingRequest();
 
-    PageResource resource = new PagingPageResourceImpl(database, 0);
+    PageResource resource = new PageResourceImpl(database, 0);
 
     HalResponse response = rhyme.renderResponse(resource);
 
     convertToFrameworkResponse(response);
+  }
+
+  void reactiveExample() {
+
+    Rhyme rhyme = RhymeBuilder.withResourceLoader(jsonLoader)
+        .buildForRequestTo(incomingRequest.getUrl());
+
+    ReactiveResource resource = rhyme.getUpstreamEntryPoint("https://foo.bar", ReactiveResource.class);
+
+    Observable<Item> parentsOfRelated = resource.getRelatedItems()
+        .concatMapEager(ReactiveResource::getRelatedItems)
+        .concatMapMaybe(ReactiveResource::getParentItem)
+        .concatMapSingle(ReactiveResource::getState)
+        .distinct(item -> item.id);
+
+    // all Observable provided by rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
+
+    CompletionStage<HalResponse> response = rhyme.renderResponseAsync(resource);
   }
 
   class ApiEntryPointImpl implements ApiEntryPoint {
@@ -206,7 +255,7 @@ public class ReadMeExamples {
 
     @Override
     public PageResource getFirstPage() {
-      return new SimplePageResourceImpl(database);
+      return new PageResourceImpl(database, 0);
     }
 
     @Override
@@ -222,41 +271,15 @@ public class ReadMeExamples {
     }
   }
 
-  class SimplePageResourceImpl implements PageResource {
 
-    private final ItemDatabase database;
-
-    public SimplePageResourceImpl(ItemDatabase database) {
-      this.database = database;
-    }
-
-    @Override
-    public Stream<ItemResource> getItemsOnPage() {
-      return database.getAllIds().stream()
-          .map(id -> new ItemResourceImpl(database, id));
-    }
-
-    @Override
-    public Optional<PageResource> getNextPage() {
-      return Optional.empty();
-    }
-
-    @Override
-    public Link createLink() {
-      return new Link("https://hal-api.example.org/items")
-          .setTitle("A pageable list of all available items in the database");
-    }
-
-  }
-
-  class PagingPageResourceImpl implements PageResource {
+  class PageResourceImpl implements PageResource {
 
     private final ItemDatabase database;
 
     private int numItemsPerPage = 10;
     private int startIndex;
 
-    public PagingPageResourceImpl(ItemDatabase database, int startIndex) {
+    public PageResourceImpl(ItemDatabase database, int startIndex) {
       this.database = database;
       this.startIndex = startIndex;
     }
@@ -278,7 +301,7 @@ public class ReadMeExamples {
         return Optional.empty();
       }
 
-      return Optional.of(new PagingPageResourceImpl(database, startIndex + numItemsPerPage));
+      return Optional.of(new PageResourceImpl(database, startIndex + numItemsPerPage));
     }
 
     @Override
@@ -290,20 +313,32 @@ public class ReadMeExamples {
 
   class ItemResourceImpl implements ItemResource {
 
+    // all dependencies and request parameters required to render the resource will be provided
+    // when the instance is created. We are using constructor injection here, but you can also
+    // use whatever IoC injection mechanism is available in the framework of your choice.
     private final ItemDatabase database;
+
+    // be aware that 'id' can be null (e.g. if this resource is created/linked to from the entry point)
     private final String id;
 
-    public ItemResourceImpl(ItemDatabase database, String id) {
+    // your constructors should be as leight-weight as possible, as one instance of your
+    // resource is created even if only a link to the resource is rendered
+    ItemResourceImpl(ItemDatabase database, String id) {
       this.database = database;
       this.id = id;
     }
 
+    // Any I/O should only happen in the methods that are annotated with @Related
+    // or @ResourceState which are being called when the resource is actually rendered
+    // (and it's guaranteed that the 'id' parameter is set)
     @Override
     public Item getState() {
-
       return database.getById(id);
     }
 
+    // to generate links to related resources, you'll simply instantiate their resource
+    // implementation classes with the right 'id' parameter. This also ensures the method
+    // is perfectly usable when called directly by an internal consumer.
     @Override
     public Stream<ItemResource> getRelatedItems() {
 
@@ -314,20 +349,27 @@ public class ReadMeExamples {
     @Override
     public Link createLink() {
 
+      // this method is the one and only location where all links to this resource are rendered.
+      // This includes the generation of link templates (e.g. when 'id' is null)
       UriTemplate uriTemplate = UriTemplate.fromTemplate("https://hal-api.example.org/items/{id}");
-
       if (id != null) {
         uriTemplate.set("id", id);
       }
-
       Link link = new Link(uriTemplate.expandPartial());
 
       if (id != null) {
+        // it's good practice to always provide a human readable 'title' attribute for the link,
+        // as this will appear in tools such as the HAL browser
         link.setTitle("The item with id '" + id + "'");
+        // for machines, you should set always set a 'name' attribute to distinguish
+        // multiple links with the same relations
         link.setName(id);
       }
       else {
-        link.setTitle("Retrieves the item with the specified id");
+        // especially link templates should always have a good description in title, as these
+        // are likely to appear in the entry point of your resource, and will help to make
+        // your API self-explainable
+        link.setTitle("A link template to retrieve the item with the specified id from the database");
       }
 
       return link;
@@ -378,7 +420,10 @@ public class ReadMeExamples {
     @Override
     public List<String> getIdsOfItemsRelatedTo(String id) {
 
-      return Collections.emptyList();
+      return getAllIds().stream()
+          .filter(otherId -> !otherId.equals(id))
+          .filter(otherId -> otherId.contains(id))
+          .collect(Collectors.toList());
     }
 
     @Override
