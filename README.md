@@ -202,8 +202,8 @@ For the server-side implementation of your HAL API, you will have to implement t
 What `Rhyme#renderResponse` does is to scan your implementation class and **recursively** call all the annotated methods from the `@HalApiInterface`:
 
 - `#createLink()` is called to generate the `self` link directly
-- `#getFirstPage()` is called to create a PageResource instance, and then `#createLink()` is called on that resource to create the link to it
-- `#getItemById()` is called (with the `id` parameter being null, as the entry point should only contain a link template and no specific id is known yet), and then again `#createLink()` is called on the implementation instance being returned (to actually create the link template)
+- `#getFirstPage()` is called to create a PageResource instance, and then `PageResource#createLink()` is called to create the link to it
+- `#getItemById()` is called (with the `id` parameter being null, as the entry point should only contain a link template and no specific id is known yet), and then again `ItemResource#createLink()` is called on the implementation instance being returned (to actually create the link template)
 
 Here's what happens in the implementation class:
 
