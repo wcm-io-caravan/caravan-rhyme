@@ -240,7 +240,7 @@ Having the same interfaces on the server- and client-side allows the following a
 - You can still re-factor everything easily during development, and continously verify that the API is designed well
 - When there is an actual reason to break up your system into multiple services, you can easily do so. As the interfaces for remote access via HAL+API are exactly the same as for the server-side implementation, you can keep much of the existing code. 
 
-There are a few more best practices to keep in mind when implementing your server-side resources. Here is another example that explains the most important things that you need to be aware of:
+There are a few more **best practices** to keep in mind when implementing your server-side resources. Here is another example that explains the most important things that you need to be aware of:
 
 ```java
   class ItemResourceImpl implements ItemResource {
@@ -307,7 +307,9 @@ There are a few more best practices to keep in mind when implementing your serve
 
 ```
 
-One thing you should have noticed is that link generation is quite complex even for this simple example. This is due to the fact that the #createLink method of a resource implementation is responsible to render **all** possible variations of links and link template to this kind of resource. The benefit of this approach is that the code that generates these links is not cluttered all over your project. To keep your resource implementations simple, you are likely to end up with something like a LinkBuilder class to avoid duplication of code. Since the best way to create links varies depending on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this. 
+One thing you should have noticed is that link generation is quite complex even for this simple example. This is due to the fact that the `#createLink()` method of a resource implementation is responsible to render **all** possible variations of links and link template to this kind of resource. The benefit of this approach is that the code that generates these links is not cluttered all over your project. 
+
+To keep your resource implementations simple, you are likely to end up with something like a LinkBuilder class to avoid duplication of code and URLs in your resource implementations. Since the best way to create links varies depending on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this. 
 
 
 ## Related Links
