@@ -141,7 +141,8 @@ Now that you have a set of interfaces that represent your HAL API, you can use t
 
 To be able to retrieve HAL+JSON resources through HTTP you must first create an implementation of the [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) SPI interface. This is intentionally out of scope of the core framework, as the choice of HTTP client library should be entirely up to you.
 
-The interface however just consists of a single method that will load a HAL resource from a given URL, and asynchronously emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved.
+The interface however just consists of a single method that will load a HAL resource from a given URL, and asynchronously emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
+
 ```java
 Single<HalResponse> loadJsonResource(String uri);
 ```
