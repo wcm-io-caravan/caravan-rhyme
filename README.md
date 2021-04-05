@@ -316,7 +316,7 @@ There are a few more **best practices** to keep in mind when implementing your s
 
 One thing you should have noticed is that link generation is quite complex even for this simple example. This is due to the fact that the `#createLink()` method of a resource implementation is responsible to render **all** possible variations of links and link template to this kind of resource. The benefit of this approach is that the link generation code is not cluttered all over your project. Instead it can all be found in exactly the same class that will be using the parameters encoded in the links.
 
-To keep your resource implementations simple, you are likely to end up with something like a project-specific LinkBuilder class to avoid duplication of code and URLs in your resource implementations. Since the best way to create links varies depending a lot on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this. 
+To keep your resource implementations simple, you are likely to end up with something like a project-specific LinkBuilder class to avoid duplication of code and URLs. Since the best way to create links varies depending a lot on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this. 
 
 
 ## Related Links
