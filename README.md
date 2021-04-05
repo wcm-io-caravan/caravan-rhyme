@@ -86,7 +86,7 @@ The return type of these functions are again java interfaces. They describe the 
   }
 ```
 - Note that none of these interfaces define anything regarding the URL structure of these resources. This matches the HAL/HATEOAS principle that client's should only should to know a single URL (of the entry point). All other URLs should be discoverable through links in the resources.
-- Methods annotated with [@Related](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) are used to again to define all possible relations / links between resources.
+- Methods annotated with [@Related](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) are used to define all possible relations / links between resources.
 - `Stream` is used as return type whenever where there may be multiple links with the same relation. If you don't like Streams you can use `List` instead.
 - `Optional` is used when it is not guaranteed that a link will be present (e.g. on the last page, there will be no 'next' link).
 - The method annotated with [@ResourceState](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) finally returns the actual data that represents an item.
