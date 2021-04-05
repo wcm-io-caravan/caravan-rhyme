@@ -7,7 +7,7 @@
 
 # Introduction
 
-**Rhyme** is a Java framework for providing or consuming hypermedia APIs using the [HAL+JSON media format](http://stateless.co/hal_specification.html). It really shines when you need to do both, e.g. build a distributed system of microservices that are connected through several HAL APIs.
+**Rhyme** is a Java framework for providing or consuming hypermedia APIs using the [HAL+JSON media format](http://stateless.co/hal_specification.html). It really shines when you need to do both, e.g. build a distributed system of web services that are connected through several HAL APIs.
 
 **Rhyme** stands for **R**eactive **Hy**per**me**dia, as it fully supports asynchronous generation and retrieval of HAL+JSON resources (using [RxJava 3](https://github.com/ReactiveX/RxJava) internally). Using reactive types however is (almost) entirely optional. In the examples in this document, we'll mostly stick to using the simpler blocking code, but there is a section on how reactive types can be used.
 
@@ -16,7 +16,7 @@ The key concepts and features of **Rhyme** are:
 - these interfaces are shared with the consumers, which can use them as a **highly abstracted client API**
 - the same interfaces are also used to **keep the server-side implementation well structured**, and always in sync with the published API
 - consistent support for **controlling caching** using the `cache-control: max-age` header
-- simplify **data debugging and performance analysis**, by including metadata in every response
+- simplify **data debugging and performance analysis** (by including embedded metadata in every response)
 - **consistent error handling over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
 - using asynchronous, reactive code on the client and server side is fully supported 
 
@@ -30,13 +30,13 @@ The key concepts and features of **Rhyme** are:
 - [examples/osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
 - [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the example service (and run some integration tests)
 
-Another example for usage with spring-boot can be found at https://github.com/feffef/reactive-hal-spring-example.
+Another example for usage with Spring Boot can be found at https://github.com/feffef/reactive-hal-spring-example.
 
 # Key concepts explained
 
 ## Define a HAL API with annotated interfaces
 
-As an example, here is the HAL entry point of a simple web service that provides access to a database of simple generic items:
+As an example, here is the HAL entry point resource of a simple web service that provides access to a database of simple generic items:
 
 ```json
 {
@@ -58,7 +58,7 @@ As an example, here is the HAL entry point of a simple web service that provides
 }
 ```
 
-Here is how the corresponding Java interface looks like:
+And this is how the corresponding Java interface looks like:
 
 ```java
   @HalApiInterface
@@ -76,7 +76,7 @@ Here is how the corresponding Java interface looks like:
 - The `getItemById` function corresponds to the link template with `item` relation, and the parameter annotated with [@TemplateVariable](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/TemplateVariable.java) indicates that you must provide an `id` parameter. It will be used to expand the link template into the final URL that will be used to retrieve the item resource.
 - A HAL API should allow to discover all available data whenever possible. That's why there is also a `getFirstPage` function which allows you to start browsing all available items using the `first` link.
 
-The return type of these functions are again java interfaces. They describe the structure and available relations of the linked resources:
+The return type of these functions are again annotated java interfaces. They describe the structure and available relations of the linked resources:
 
 ```java
   @HalApiInterface
@@ -101,7 +101,7 @@ The return type of these functions are again java interfaces. They describe the 
     Stream<ItemResource> getRelatedItems();
   }
 ```
-- Note that none of these interfaces define anything regarding the URL structure of these resources. This matches the HAL/HATEOAS principle that clients should only need to know a single URL (of the entry point). All other URLs should be discoverable through links in the resources.
+- Note that none of these interfaces define anything regarding the URL structure of these resources. This matches the [HATEOAS](https://en.wikipedia.org/wiki/HATEOAS) principle that clients should only need to know a single URL (of the entry point). All other URLs should be discoverable through links in the resources.
 - Methods annotated with [@Related](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) are used to define all possible relations / links between resources.
 - `Stream` is used as return type whenever where there may be multiple links with the same relation. If you don't like Streams you can use `List` instead.
 - `Optional` is used when it is not guaranteed that a link will be present (e.g. on the last page, there will be no 'next' link).
