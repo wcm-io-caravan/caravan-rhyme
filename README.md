@@ -20,7 +20,7 @@ The key concepts and features of **Rhyme** are:
 - **Retaining error information over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
 - **Supporting asynchronous, reactive programming** on the client and server side
 
-**Rhyme** is based on several years of experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch (with an unreasonably high unit test coverage) with the goal of being useful within any Java web framework. 
+**Rhyme** is based on several years of experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS, RxJava & wcm.io Caravan code). But it has been re-written from scratch (with an unreasonably high unit test coverage) with the goal of being useful within any Java web framework. 
 
 ## Modules in this repository
 
