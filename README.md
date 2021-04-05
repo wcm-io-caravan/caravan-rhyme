@@ -356,15 +356,14 @@ The **Rhyme** core framework does not implement any client-side caching layer it
 
 There is another benefit of re-using the same `Rhyme` instance while handling an incoming request: Every upstream resource that is fetched, and every annotated method called by the framework will be tracked by the Rhyme instance.
 
-When a HAL response is rendered, it will include a small embedded resource (using the `caravan:embedded` relation) that allows you to inspect what exactly the framework did to generate the response.
+When a HAL response is rendered, it will include a small embedded resource (using the `caravan:metadata` relation) that allows you to inspect what exactly the framework did to generate the response.
 
 This resource will contain the following information:
-- a list of `via` links to every HAL resource that was fetched from an upstream service. The title and names from the original `self` links of those resources will be included as well, giving you a very nice overview which kind of external resources were required to render your resource
+- a list of `via` links to every HAL resource that was fetched from an upstream service. The title and names from the original `self` links of those resources will be included as well, giving you a very nice overview which kind of external resources were retrieved to render your resource. This is super helpful to dive directly into the relevant source data of your upstream services.
 - a sorted list of the measured response times for each of those upstream resources. This allows you to identify which upstream service may be slowing down your system
 - a sorted list of the `max-age`headers for each of those upstream resources. This allows you to identify the reason why your own response's `max-age` may be lower as expected
 - some extensive statistics about the time spent in method calls to your resource implementation classes, or the dynamic client proxies provided by the framework. 
 
-While the overhead of using the **Rhyme** framework is usually neglible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
 ```json
 {
   "measurements": [
@@ -378,6 +377,8 @@ While the overhead of using the **Rhyme** framework is usually neglible (especia
   "title": "A breakdown of time spent in blocking method calls by AsyncHalResourceRenderer"
 }
 ```
+
+While the overhead of using the **Rhyme** framework is usually neglible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
 
 
 ## Using reactive types in your API
