@@ -22,7 +22,7 @@ The key concepts of **Rhyme** are
 
 - [api-interfaces](api-interfaces) - contains only annotations, interfaces and dependencies to be used in your API interface definitions
 - [core](core) - the core framework that can be used with any Java web framework
-- [osgi-jaxrs](osgi-jaxrs) - additional code for implementing HAL webservices using the [OSGi r7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan)
+- [osgi-jaxrs](osgi-jaxrs) - additional code for implementing HAL webservices using the [OSGi r7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
 - [examples/osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example / show-case service using RxJava interfaces
 - [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the example service (and run some integration tests)
 
