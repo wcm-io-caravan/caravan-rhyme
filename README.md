@@ -7,7 +7,7 @@
 
 # Introduction
 
-**Rhyme** is a Java framework for providing or consuming RESTful APIs using the [HAL+JSON media format](http://stateless.co/hal_specification.html). It really shines when you need to do both, e.g. build a distributed system of microservices that are connected through several HAL APIs.
+**Rhyme** is a Java framework for providing or consuming hypermedia APIs using the [HAL+JSON media format](http://stateless.co/hal_specification.html). It really shines when you need to do both, e.g. build a distributed system of microservices that are connected through several HAL APIs.
 
 **Rhyme** stands for **R**eactive **Hy**per**me**dia, as it fully supports asynchronous generation and retrieval of HAL+JSON resources (using [RxJava 3](https://github.com/ReactiveX/RxJava) internally). Other reactive libraries (e.g. [Spring Reactor](https://projectreactor.io/) or RxJava 1 & 2) can be used as well using an extension point. Using reactive types however is (almost) entirely optional, and it's up to you whether you want to use them in your APIs. It will have benefits if you have to deal with a lot of long-running requests that you want to execute in parallel without blocking your main request handling thread. But don't underestimate the increased complexity that comes with it. In the examples in this document, we'll mostly stick to using the simpler blocking code, but there is a section on how reactive types can be used.
 
