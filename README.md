@@ -339,7 +339,7 @@ To keep your resource implementations simple, you are likely to end up with some
 
 ## Using reactive types in your API
 
-If you want to keep your client and server-side code completely asynchronous and non-blocking, you start with using RxJava reactives types as return values throughout your API interfaces: 
+If you want to keep your client and server-side code completely asynchronous and non-blocking, you start with using RxJava reactive types as return values throughout your API interfaces: 
 
 ```java
   @HalApiInterface
