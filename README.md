@@ -395,9 +395,7 @@ Some exceptions may also be thrown **before** you are calling `Rhyme#renderRespo
 
 The benefit of rendering this vnd.error response body for any error is that clients using the `Rhyme` framework will be able to parse this body, and include the error information in the [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java). If an upstream service fails, your service will not only render the information from the exception that has been caught, but also all information extracted from the vnd.error response of the upstream service. Even if you have multiple layers of remote services, your vnd.error response will have a neat list of all exception classes and messages, up to the original root cause on the remote server. This may sound trivial, but is very helpful to immediately understand what went wrong, without having to look into the logs of several external services.
 
-The vnd.error resource also always contains a direct link to the resource that failed to load, which can be convenient to reproduce the error.
-
-The embedded `caravan:metadata` resource with `via` links to all upstream resources is also present in the vnd.error resource. This can be useful to investigate the error as often a runtime error is caused by unexpected data in an upstream service.
+The embedded `caravan:metadata` resource with `via` links to all upstream resources that were loaded (until the error occured) is also present in the vnd.error resource. This can be useful to investigate the root cause as often a runtime exception is caused by unexpected data in an upstream service.
 
 ## Using reactive types in your API
 
