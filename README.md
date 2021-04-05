@@ -18,9 +18,9 @@ The key concepts of Rhyme are
 - these interfaces are shared with the consumers, which can use them as a highly abstracted client API
 - the same interfaces are also used to keep the server-side implementation well structured, and in sync with the published API
 
-# Examples for the key concepts
+# Key concepts explained
 
-## Representing a HAL API as annotated Java interfaces
+## Define a HAL API with annotated interfaces
 
 As an example, here is the HAL entry point of a simple web service that provides access to a database of simple generic items:
 
