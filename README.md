@@ -161,7 +161,7 @@ Once you have a `JsonResourceLoader` instance, it just requires a few lines of c
   }
 ```
 
-With that proxy instance you can easily navigate through the resources of the API by simply calling the methods defined in your interfaces: 
+With that proxy instance of your entry point you can easily navigate through all resources of the API by simply calling the methods defined in your interfaces: 
 ```java
     // obtaining a client proxy will not fetch the entry point resource yet (until you call a method on it)
     ApiEntryPoint api = getApiEntryPoint();
@@ -179,6 +179,8 @@ With that proxy instance you can easily navigate through the resources of the AP
         .map(ItemResource::getState)
         .collect(Collectors.toList());
 ```
+The proxy instance will fully take care of fetching and parsing the resources, finding links and link templates based on their relations (found in the annotated interface methods), and will fetch these linked resources as required. A local in-memory caching will ensure that the same resources are not fetched more than once as long as you are using the same Rhyme instance.
+
 
 ## Rendering HAL resources in your web service 
 
