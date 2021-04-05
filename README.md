@@ -153,7 +153,7 @@ Now that you have a set of interfaces that represent your HAL API, you can use t
 
 To be able to retrieve HAL+JSON resources through HTTP you must first create an implementation of the [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) SPI interface. This is intentionally out of scope of the core framework, as the choice of HTTP client library should be entirely up to you.
 
-The interface however just consists of a single method that will load a HAL resource from a given URL, and asynchronously emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
+The interface however just consists of a single method that will load a HAL resource from a given URL, and emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
 
 ```java
 Single<HalResponse> loadJsonResource(String uri);
@@ -335,10 +335,57 @@ There are a few more **best practices** to keep in mind when implementing your s
 
 One thing you should have noticed is that link generation is quite complex even for this simple example. This is due to the fact that the `#createLink()` method of a resource implementation is responsible to render **all** possible variations of links and link template to this kind of resource. The benefit of this approach is that the link generation code is not cluttered all over your project. Instead it can all be found in exactly the same class that will be using the parameters encoded in the links.
 
-To keep your resource implementations simple, you are likely to end up with something like a project-specific LinkBuilder class to avoid duplication of code and URLs. Since the best way to create links varies depending a lot on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this. 
+To keep your resource implementations simple, you are likely to end up with something like a project-specific LinkBuilder class to avoid duplication of code and URLs. Since the best way to create links varies depending a lot on the web framework your are using, the core Rhyme framework does not provide or enforce a solution for this.
 
+## Using reactive types in your API
 
-## Related Links
+If you want to keep your client and server-side code completely asynchronous and non-blocking, you start with using RxJava reactives types as return types throughout your API interfaces: 
+
+```java
+  @HalApiInterface
+  public interface ReactiveResource extends LinkableResource {
+
+    @ResourceState
+    Single<Item> getState();
+
+    @Related("related")
+    Observable<ReactiveResource> getRelatedItems();
+
+    @Related("parent")
+    Maybe<ReactiveResource> getParentItem();
+  }
+```
+
+- `Single<T>` is used (instead of `T`) whenever it's guaranteed that exactly one value is emitted
+- `Observable<T>` is used (instead of `Stream<T>`) whenever multiple values can be emitted
+- `Maybe<T>`is used (instead of `Optional<T>`) when ever 
+
+If you rather want to use Spring Reactor types (or types from othe JxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the types you want to use to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java)
+
+On the client side, you'll only have to ensure to implement [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) using a fully asynchronous HTTP client library. 
+
+Then you can use the full range of RxJava operators to construct a chain of API operations that are all executed asynchronusly (and in parallel where possible):
+
+```java
+
+    ReactiveResource resource = rhyme.getUpstreamEntryPoint("https://foo.bar", ReactiveResource.class);
+
+    Observable<Item> parentsOfRelated = resource.getRelatedItems()
+        .concatMapEager(ReactiveResource::getRelatedItems)
+        .concatMapMaybe(ReactiveResource::getParentItem)
+        .concatMapSingle(ReactiveResource::getState)
+        .distinct(item -> item.id);
+    
+    // all observables provided by rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
+```
+
+On the server-side, just use the `renderResponseAsync`function from the Rhyme interface, to ensure that the HAL representatio of your server-side resources are rendered asynchronously:
+
+```java
+CompletionStage<HalResponse> response = rhyme.renderResponseAsync(resource);
+```
+
+# Related Links
 
 Issues: https://wcm-io.atlassian.net/projects/WCARAV/<br/>
 Wiki: https://wcm-io.atlassian.net/wiki/<br/>
@@ -346,7 +393,7 @@ Continuous Integration: https://github.com/wcm-io-caravan/caravan-rhyme/actions<
 Commercial support: https://wcm.io/commercial-support.html
 
 
-## Build from sources
+# Build from sources
 
 If you want to build wcm.io from sources make sure you have configured all [Maven Repositories](https://caravan.wcm.io/maven.html) in your settings.xml.
 
