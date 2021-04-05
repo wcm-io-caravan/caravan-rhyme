@@ -362,7 +362,7 @@ This resource will contain the following information:
 - a list of `via` links to every HAL resource that was fetched from an upstream service. The `title` and `name` attributes from the original `self` links of those resources will be included as well, giving you a very nice overview which external resources were retrieved to generate your resource. This is super helpful to dive directly into the relevant source data of your upstream services.
 - a sorted list of the measured response times for each of those upstream resources. This allows you to identify which upstream service may be slowing down your system
 - a sorted list of the `max-age`headers for each of those upstream resources. This allows you to identify the reason why your own response's `max-age` may be lower as expected
-- some extensive statistics about the time spent in method calls to your resource implementation classes, or the dynamic client proxies provided by the framework. 
+- some extensive statistics about the time spent in method calls to your resource implementation classes, or the dynamic client proxies provided by the framework: 
 
 ```json
 {
@@ -380,6 +380,24 @@ This resource will contain the following information:
 
 While the overhead of using the **Rhyme** framework is usually neglible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
 
+## Consistent error handling over service boundaries
+
+Any runtime errors that are thrown by your implementation classes (or any Rhyme framework code) during the execution of `Rhyme#renderResponse` will be caught and handled. Instead of the regular HAL+JSON response with 200 status code, the `renderResponse` method will render a response with an appropriate status code, and a JSON body according to the [vnd.error+json](https://github.com/blongden/vnd.error) media type. This media type is just a very simple convention how error information is represented in a HAL+JSON resource, and will include the exception class and message of the whole exception chain.
+
+The status code will be determined as follows:
+- any errors while retrieving an upstream resource should lead to a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) from which the original status code can be extracted and by default is also used in your service's response
+- this works well in many cases, but you may of course also catch those exception yourself (in your resource implementations), and either return some suitable fallback content or re-throw a [HalApiServerException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiServerException.java) with a different status code
+- the Rhyme framework classes may also throw a [HalApiDeveloperException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiDeveloperException.java) that usually indicates that you did something wrong (and hopefully have a clear explanation, otherwise please open an issue). In this case a 500 status code is used.
+- when you use the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java) to create your `Rhyme` instance you may also register a [ExceptionStatusAndLoggingStrategy](develop/core/src/main/java/io/wcm/caravan/rhyme/api/spi/ExceptionStatusAndLoggingStrategy.java)) that can extract a suitable status code for any other exception (e.g. an exception used by your web framework)
+- any other runtime exceptions will lead to a 500 status code
+
+Some exceptions may also be thrown **before** you are calling `Rhyme#renderResponse`. You should try to catch those as well and call `Rhyme#renderVndErrorResponse(Throwable)` yourself to create a vnd.error response yourself.
+
+The benefit of rendering this vnd.error response body for any error is that any clients using the `Rhyme` framework will parse this body, and include the error information in the [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java). If an upstream service fails, your service will not only render the chain of exceptions that has been caught, but also the error information extracted from the vnd.error response of the upstream service. Even if you have multiple layers of remote services, your vnd.error response will have a neat list of all exception classes and messages, up to the original root cause on the remote server. This may sound trivial, but is very helpful to immediately understand what went wrong, without having to look into the logs of several external services.
+
+The vnd.error resource also always contains a direct link to the resource that failed to load, which can be convenient to reproduce the error.
+
+The embedded `caravan:metadata` resource with `via` links to all upstream resources is also present in the vnd.error resource. This can be useful to investigate the error as often a runtime error is caused by unexpected data in an upstream service.
 
 ## Using reactive types in your API
 
