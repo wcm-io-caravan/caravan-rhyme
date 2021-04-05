@@ -1,7 +1,5 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -13,21 +11,17 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.base.Preconditions;
 
+import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
-import io.wcm.caravan.rhyme.aem.integration.SlingResourceFilter;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 @Model(adaptables = SlingRhyme.class, adapters = SlingResourceAdapter.class)
 public class SlingResourceAdapterImpl implements SlingResourceAdapter {
-
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-      .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
   @Self
   private SlingRhyme slingRhyme;
@@ -35,78 +29,65 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Self
   private Resource currentResource;
 
-  private final List<Predicate<Resource>> adaptersToVerify;
+  private final ResourceSelector resourceSelector;
+
+  private final ResourceFilter resourceFilter;
 
   public SlingResourceAdapterImpl() {
-    this.adaptersToVerify = new ArrayList<>();
+    System.out.println("Creating new instance " + this);
+    resourceSelector = new ResourceSelector(null, null);
+    resourceFilter = new ResourceFilter(null, null);
   }
 
-  private SlingResourceAdapterImpl(SlingResourceAdapterImpl toClone, Predicate<Resource> additionalPredicate) {
-    this.slingRhyme = toClone.slingRhyme;
-    this.currentResource = toClone.currentResource;
-    this.adaptersToVerify = new ArrayList<>(toClone.adaptersToVerify);
-    this.adaptersToVerify.add(additionalPredicate);
-  }
+  private SlingResourceAdapterImpl(SlingRhyme rhyme, Resource resource, ResourceSelector selector, ResourceFilter filter) {
+    slingRhyme = rhyme;
+    currentResource = resource;
+    resourceSelector = new ResourceSelector(selector.description, selector.resources);
+    resourceFilter = new ResourceFilter(filter.description, filter.predicate);
 
-  private SlingResourceAdapterImpl(SlingResourceAdapterImpl toClone, Resource currentResource) {
-    this.slingRhyme = toClone.slingRhyme;
-    this.currentResource = currentResource;
-    this.adaptersToVerify = new ArrayList<>(toClone.adaptersToVerify);
-  }
-
-  private <@Nullable T> T adaptToResourceImpl(Resource res, Class<T> resourceModelClass) {
-
-    for (Predicate<Resource> predicate : adaptersToVerify) {
-      if (!predicate.test(res)) {
-        return null;
-      }
-    }
-
-    return slingRhyme.adaptResource(res, resourceModelClass);
+    System.out.println("New instance " + this + "with selector " + resourceSelector.description + " has been created");
   }
 
   @Override
-  public <T> T getPropertiesAs(Class<T> clazz) {
+  public SlingResourceAdapter select(Stream<Resource> resources) {
 
-    ValueMap valueMap = currentResource.getValueMap();
-
-    return OBJECT_MAPPER.convertValue(valueMap, clazz);
+    return resourceSelector.add(resources,
+        "custom stream of resourcs");
   }
 
   @Override
-  public <T> Optional<T> getSelfAs(Class<T> resourceModelClass) {
+  public SlingResourceAdapter selectCurrentResource() {
 
-    return getOptionalOf(currentResource, resourceModelClass);
+    return resourceSelector.add(Stream.of(currentResource),
+        "current resource at " + currentResource.getPath());
   }
 
   @Override
-  public <T> Optional<T> getParentAs(Class<T> resourceModelClass) {
+  public SlingResourceAdapter selectParentResource() {
 
-    return getOptionalOf(currentResource.getParent(), resourceModelClass);
-  }
-
-  private <T> Optional<T> getOptionalOf(Resource resource, Class<T> resourceModelClass) {
-    if (resource == null) {
-      return Optional.empty();
-    }
-
-    return Optional.ofNullable(adaptToResourceImpl(resource, resourceModelClass));
+    return resourceSelector.add(Stream.of(currentResource.getParent()).filter(Objects::nonNull),
+        "parent of " + currentResource.getPath());
   }
 
   @Override
-  public <T> Stream<T> getChildrenAs(Class<T> resourceModelClass) {
+  public SlingResourceAdapter selectChildResources() {
 
-    return ResourceUtils.getStreamOfChildren(currentResource)
-        .map(resource -> adaptToResourceImpl(resource, resourceModelClass))
-        .filter(Objects::nonNull);
+    return resourceSelector.add(ResourceUtils.getStreamOfChildren(currentResource),
+        "children of " + currentResource.getPath());
   }
 
   @Override
-  public <T> Stream<T> getLinkedAs(Class<T> resourceModelClass) {
+  public SlingResourceAdapter selectChildResource(String name) {
 
-    return findLinkedResourcesIn(currentResource)
-        .map(resource -> adaptToResourceImpl(resource, resourceModelClass))
-        .filter(Objects::nonNull);
+    return resourceSelector.add(ResourceUtils.getStreamOfChildren(currentResource).filter(r -> name.equals(r.getName())),
+        "child named '" + name + "' of " + currentResource.getPath());
+  }
+
+  @Override
+  public SlingResourceAdapter selectLinkedResources() {
+
+    return resourceSelector.add(findLinkedResourcesIn(currentResource),
+        "resources that are linked from " + currentResource.getPath());
   }
 
   private Stream<Resource> findLinkedResourcesIn(Resource contentResource) {
@@ -128,36 +109,204 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     return Stream.concat(linkedInThisResource, linkedInChildResources);
   }
 
+
   @Override
-  public SlingResourceFilter filter() {
-    return new SlingResourceFilter() {
+  public SlingResourceAdapter selectResourceAt(String path) {
 
-      @Override
-      public SlingResourceAdapter onlyMatching(Predicate<Resource> predicate) {
-        return new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, predicate);
-      }
+    Resource resource = currentResource.getResourceResolver().getResource(path);
+    if (resource == null) {
+      return resourceSelector.add(Stream.empty(), "non-existant resource at " + path);
+    }
 
-      @Override
-      public SlingResourceAdapter onlyIfNameIs(String resourceName) {
-        return onlyMatching((res) -> res.getName().equals(resourceName));
-      }
+    return resourceSelector.add(Stream.of(resource),
+        "different resource at " + resource.getPath());
+  }
 
-      @Override
-      public SlingResourceAdapter onlyIfAdaptableTo(Class<?> adapterClazz) {
-        return onlyMatching((res) -> res.adaptTo(adapterClazz) != null);
-      }
-    };
+
+  @Override
+  public SlingResourceAdapter filter(Predicate<Resource> predicate) {
+
+    return resourceFilter.add(predicate, "custom predicate");
   }
 
   @Override
-  public SlingResourceAdapter withDifferentResource(String path) {
+  public SlingResourceAdapter filterAdaptableTo(Class<?> adapterClazz) {
 
-    Resource child = currentResource.getResourceResolver().getResource(path);
-    if (child == null) {
-      throw new HalApiDeveloperException("No resource exists at path " + path);
+    return resourceFilter.add((res) -> res.adaptTo(adapterClazz) != null,
+        "if resource can be adapted to " + adapterClazz.getSimpleName());
+  }
+
+  @Override
+  public SlingResourceAdapter filterWithName(String resourceName) {
+
+    return resourceFilter.add((res) -> res.getName().equals(resourceName),
+        "if resource name is " + resourceName);
+  }
+
+  @Override
+  public <ModelType> TypedResourceAdapter<ModelType> adaptTo(Class<ModelType> clazz) {
+
+    return new ResourceAdapterImpl<ModelType>(clazz);
+  }
+
+  private final class ResourceAdapterImpl<ModelType> implements TypedResourceAdapter<ModelType> {
+
+    private final Class<ModelType> clazz;
+
+    private LinkDecorator<ModelType> linkDecorator;
+
+    private ResourceAdapterImpl(Class<ModelType> clazz) {
+      this.clazz = clazz;
+      this.linkDecorator = null;
     }
 
-    return new SlingResourceAdapterImpl(this, child);
+    private ResourceAdapterImpl(Class<ModelType> clazz, LinkDecorator<ModelType> decorator) {
+      this.clazz = clazz;
+      this.linkDecorator = decorator;
+
+      if (AbstractLinkableResource.class.isAssignableFrom(clazz)) {
+        throw new HalApiDeveloperException(
+            "Your model class must implement " + AbstractLinkableResource.class.getName() + " if you want to decorate your links");
+      }
+    }
+
+    private ResourceAdapterImpl<ModelType> withLinkDecorator(LinkDecorator<ModelType> decorator) {
+      return new ResourceAdapterImpl<ModelType>(clazz, decorator);
+    }
+
+    @Override
+    public TypedResourceAdapter<ModelType> withLinkTitle(String title) {
+
+      return withLinkDecorator((r, m) -> title);
+    }
+
+    @Override
+    public ModelType getInstance() {
+
+      return getOptional().orElseThrow(() -> new HalApiDeveloperException("No elements were found"));
+    }
+
+    @Override
+    public Optional<ModelType> getOptional() {
+
+      return getStream().findFirst();
+    }
+
+    @Override
+    public Stream<ModelType> getStream() {
+
+      System.out.println("Processing stream with selector " + resourceSelector.description + " of instance " + SlingResourceAdapterImpl.this);
+
+      Stream<Resource> resources = resourceSelector.resources;
+
+      if (resources == null) {
+        throw new HalApiDeveloperException("No resources have been selected with this adapter");
+      }
+
+      if (resourceFilter.predicate != null) {
+        resources = resources.filter(resourceFilter.predicate);
+      }
+
+      return resources.map(this::adaptToModelTypeAnDecorateLinks);
+    }
+
+    private ModelType adaptToModelTypeAnDecorateLinks(Resource res) {
+
+      ModelType model = slingRhyme.adaptResource(res, this.clazz);
+
+      if (linkDecorator != null) {
+        decorateLinks(res, model);
+      }
+      return model;
+    }
+
+    private void decorateLinks(Resource resource, ModelType model) {
+
+      if (!(model instanceof AbstractLinkableResource)) {
+        throw new HalApiDeveloperException(
+            "model class " + model.getClass().getSimpleName() + " does not implement " + AbstractLinkableResource.class.getName());
+      }
+
+      AbstractLinkableResource linkable = (AbstractLinkableResource)model;
+
+      linkable.setLinkTitle(linkDecorator.getLinkTitle(resource, model));
+    }
+  }
+
+  private interface LinkDecorator<ModelType> {
+
+    String getLinkTitle(Resource resource, ModelType model);
+  }
+
+  private final class ResourceFilter {
+
+    private final String description;
+    private final Predicate<Resource> predicate;
+
+    private ResourceFilter(String description, Predicate<Resource> predicate) {
+      this.description = description;
+      this.predicate = predicate;
+    }
+
+    private SlingResourceAdapterImpl add(Predicate<Resource> newPredicate, String newDescription) {
+
+      System.out
+          .println("Adding filter " + newDescription + " to instance " + SlingResourceAdapterImpl.this + " with selector " + resourceSelector.description);
+
+      ResourceFilter newFilter;
+      if (predicate != null) {
+
+        String mergedDescription = this.description + " and " + newDescription;
+        Predicate<Resource> mergedPredicate = predicate.and(newPredicate);
+
+        newFilter = new ResourceFilter(mergedDescription, mergedPredicate);
+      }
+      else {
+        newFilter = new ResourceFilter(newDescription, newPredicate);
+      }
+
+      SlingResourceAdapterImpl newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, resourceSelector, newFilter);
+
+      System.out.println("added filter " + newFilter.description + " to new instance " + newInstance);
+
+      return newInstance;
+    }
+
+  }
+
+  private final class ResourceSelector {
+
+    private final String description;
+    private final Stream<Resource> resources;
+
+    private ResourceSelector(String description, Stream<Resource> resources) {
+      this.description = description;
+      this.resources = resources;
+    }
+
+    private SlingResourceAdapterImpl add(@NotNull Stream<Resource> newResources, String newDescription) {
+
+      Preconditions.checkNotNull(newResources, "the stream of resources must not be null");
+
+      ResourceSelector newSelector;
+      if (resources != null) {
+
+        String mergedDescription = this.description + " and " + newDescription;
+        Stream<Resource> mergedStream = Stream.concat(this.resources, newResources);
+
+        newSelector = new ResourceSelector(mergedDescription, mergedStream);
+      }
+      else {
+        newSelector = new ResourceSelector(newDescription, newResources);
+      }
+
+
+      SlingResourceAdapterImpl newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, newSelector, resourceFilter);
+
+      System.out.println("added selector " + newSelector.description + " to new instance " + newInstance);
+
+      return newInstance;
+    }
   }
 
 

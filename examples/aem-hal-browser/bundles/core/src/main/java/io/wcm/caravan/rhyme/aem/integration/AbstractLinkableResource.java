@@ -6,6 +6,9 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 public abstract class AbstractLinkableResource implements LinkableResource {
 
   @RhymeObject
+  protected SlingResourceAdapter resourceAdapter;
+
+  @RhymeObject
   private SlingLinkBuilder linkBuilder;
 
   private String contextLinkTitle;

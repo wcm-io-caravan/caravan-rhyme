@@ -15,8 +15,8 @@ import io.wcm.caravan.rhyme.aem.api.AemPage;
 import io.wcm.caravan.rhyme.aem.api.AemPageProperties;
 import io.wcm.caravan.rhyme.aem.api.SlingResource;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.aem.integration.NewResourceAdapter;
 import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
+import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemPage.class }, resourceType = "wcm/foundation/components/basicpage/v1/basicpage")
@@ -25,7 +25,7 @@ public class AemPageImpl extends AbstractLinkableResource implements AemPage {
   public static final String SELECTOR = "aempage";
 
   @RhymeObject
-  private NewResourceAdapter resourceAdapter;
+  protected SlingResourceAdapter resourceAdapter;
 
   @Self
   private Page page;
@@ -46,38 +46,39 @@ public class AemPageImpl extends AbstractLinkableResource implements AemPage {
   public SlingResource asSlingResource() {
 
     return resourceAdapter
+        .selectCurrentResource()
         .adaptTo(SlingResource.class)
         .withLinkTitle("Show the generic sling resource HAL representation of this page")
-        .get();
+        .getInstance();
   }
 
   @Override
   public Optional<AemPage> getParentPage() {
 
     return resourceAdapter
-        .select().parent()
-        .filter().onlyIfAdaptableTo(Page.class)
+        .selectParentResource()
+        .filterAdaptableTo(Page.class)
         .adaptTo(AemPage.class)
-        .asOptional();
+        .getOptional();
   }
 
   @Override
   public Stream<AemPage> getChildPages() {
 
     return resourceAdapter
-        .select().children()
-        .filter().onlyIfAdaptableTo(Page.class)
+        .selectChildResources()
+        .filterAdaptableTo(Page.class)
         .adaptTo(AemPage.class)
-        .asStream();
+        .getStream();
   }
 
   @Override
   public AemLinkedContent getLinkedContent() {
 
     return resourceAdapter
-        .select().child(JcrConstants.JCR_CONTENT)
+        .selectChildResource(JcrConstants.JCR_CONTENT)
         .adaptTo(AemLinkedContent.class)
-        .get();
+        .getInstance();
   }
 
   @Override

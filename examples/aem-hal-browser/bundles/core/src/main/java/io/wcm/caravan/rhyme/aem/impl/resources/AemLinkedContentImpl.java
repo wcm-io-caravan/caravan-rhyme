@@ -13,8 +13,8 @@ import io.wcm.caravan.rhyme.aem.api.AemAsset;
 import io.wcm.caravan.rhyme.aem.api.AemLinkedContent;
 import io.wcm.caravan.rhyme.aem.api.AemPage;
 import io.wcm.caravan.rhyme.aem.api.SlingResource;
-import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
+import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
 
 @Model(adaptables = Resource.class, adapters = { AemLinkedContent.class })
 public class AemLinkedContentImpl implements AemLinkedContent {
@@ -31,24 +31,30 @@ public class AemLinkedContentImpl implements AemLinkedContent {
   public Stream<AemPage> getLinkedPages() {
 
     return resourceAdapter
-        .filter().onlyMatching(IS_PAGE)
-        .getLinkedAs(AemPage.class);
+        .selectLinkedResources()
+        .filter(IS_PAGE)
+        .adaptTo(AemPage.class)
+        .getStream();
   }
 
   @Override
   public Stream<AemAsset> getLinkedAssets() {
 
     return resourceAdapter
-        .filter().onlyMatching(IS_ASSET)
-        .getLinkedAs(AemAsset.class);
+        .selectLinkedResources()
+        .filter(IS_ASSET)
+        .adaptTo(AemAsset.class)
+        .getStream();
   }
 
   @Override
   public Stream<SlingResource> getOtherLinkedResources() {
 
     return resourceAdapter
-        .filter().onlyMatching(IS_OTHER)
-        .getLinkedAs(SlingResource.class);
+        .selectLinkedResources()
+        .filter(IS_OTHER)
+        .adaptTo(SlingResource.class)
+        .getStream();
   }
 
 }

@@ -3,7 +3,7 @@ package io.wcm.caravan.rhyme.aem.api;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
@@ -14,7 +14,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 public interface SlingResource extends LinkableResource {
 
   @ResourceState
-  JsonNode getProperties();
+  ObjectNode getProperties();
 
   @Related(AemRelations.PAGE)
   Optional<AemPage> asAemPage();
