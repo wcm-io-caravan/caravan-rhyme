@@ -24,7 +24,7 @@ The key concepts of Rhyme are
 
 As an example, here is the HAL entry point of a simple web service that provides access to a database of simple generic items:
 
-```
+```json
 {
   "_links":{
     "self":{
@@ -46,7 +46,7 @@ As an example, here is the HAL entry point of a simple web service that provides
 
 Here is how the corresponding Java interface looks like:
 
-```
+```java
   @HalApiInterface
   public interface ApiEntryPoint extends LinkableResource {
 
@@ -64,7 +64,7 @@ Here is how the corresponding Java interface looks like:
 
 The return type of these functions are again java interfaces. They describe the structure and available relations of the linked resources:
 
-````
+```java
   @HalApiInterface
   public interface PageResource extends LinkableResource {
 
@@ -74,9 +74,9 @@ The return type of these functions are again java interfaces. They describe the 
     @Related("next")
     Optional<PageResource> getNextPage();
   }
-````
+```
 
-````
+```java
   @HalApiInterface
   public interface ItemResource extends LinkableResource {
 
@@ -86,7 +86,7 @@ The return type of these functions are again java interfaces. They describe the 
     @Related("related")
     Stream<ItemResource> getRelatedItems();
   }
-````
+```
 - Note that none of these interfaces define anything regarding the URL structure of these resources. This matches the HAL/HATEOAS principle that client's should only should to know a single URL (of the entry point). All other URLs should be discoverable through links in the resources.
 - Again, methods annotated with [@Related](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) are used to model the relations / links between resources.
 - `Stream` is used as return type whenever where there may be multiple links with the same relation. If you don't like Streams you can use `List` instead.
@@ -97,17 +97,17 @@ As a return type for the @ResourceState method, you could either use a [jackson]
 
 If you want to provide a strongly **typed** API to your consumers, you should define simple classes that match the JSON structure of your resources' state. You shouldn't share any **code** with theses classes, so a simple struct-like class like this works well:
 
-````
+```java
   public class Item {
 
     public String id;
     public String title;
   }
-````
+```
 
 In the end, an actual HAL resource that matches the `ItemResource` interface defined above would look like this:
 
-````
+```javascript
 {
   "id":"2",
   "title":"Item #2",
@@ -126,7 +126,7 @@ In the end, an actual HAL resource that matches the `ItemResource` interface def
     ]
   }
 }
-````
+```
 
 ## Consuming HAL resources with Rhyme client proxies
 
@@ -135,13 +135,13 @@ Now that you have a set of interfaces that represent your HAL API, you can use t
 To be able to retrieve HAL+JSON resources through HTTP you must first create an implementation of the [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) SPI interface. This is intentionally out of scope of the core framework, as the choice of HTTP client framework should be entirely up to you.
 
 The interface however just consists of a single method that will load a HAL resource from a given URL, and asynchronously emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved.
-````
+```java
 Single<HalResponse> loadJsonResource(String uri);
-````
+```
 
 Once you have a `JsonResourceLoader` instance, it just requires a few lines of code to create a client implementation of your HAL API's entry point interface: 
 
-````
+```java
   private ApiEntryPoint getApiEntryPoint() {
 
     // create a Rhyme instance that knows how to load any external JSON resource
@@ -151,10 +151,10 @@ Once you have a `JsonResourceLoader` instance, it just requires a few lines of c
     // create a dynamic proxy that knows who to fetch the entry point from the given URL
     return rhyme.getUpstreamEntryPoint("https://hal-api.example.org", ApiEntryPoint.class);
   }
-````
+```
 
-With that proxy instance you can easily navigate through the resources of the API by simply calling the methods defined in your interfaces, without worrying about 
-````
+With that proxy instance you can easily navigate through the resources of the API by simply calling the methods defined in your interfaces: 
+```java
     // obtaining a client proxy will not fetch the entry point resource yet (until you call a method on it)
     ApiEntryPoint api = getApiEntryPoint();
     
@@ -172,13 +172,13 @@ With that proxy instance you can easily navigate through the resources of the AP
         
     assertThat(foo.id).isEqualTo("foo");
     assertThat(relatedToFoo).isNotNull();
-````
+```
 
 ## Rendering HAL resources in your web service 
 
 For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) facade to automatically render a HAL+JSON representation based on the annotation found in the interfaces:
 
-````
+```java
     // create a single Rhyme instance as early as possible in the request-cycle 
     Rhyme rhyme = RhymeBuilder.withoutResourceLoader().buildForRequestTo(incomingRequest.getUrl());
     
@@ -189,7 +189,7 @@ For the server-side implementation of your HAL API, you will have to implement t
     HalResponse response = rhyme.renderResponse(entryPoint);
 
     // finally convert that response to your framework's representation of a web/JSON response...
-````
+```
 
 What `Rhyme#renderResponse` does is to scan your implementation class and **recursively** call all the annotated methods from the `@HalApiInterface`:
 
@@ -199,7 +199,7 @@ What `Rhyme#renderResponse` does is to scan your implementation class and **recu
 
 Here's what happens in the implementation class:
 
-````
+```java
   class ApiEntryPointImpl implements ApiEntryPoint {
 
     private final ItemDatabase database;
@@ -225,7 +225,7 @@ Here's what happens in the implementation class:
           .setTitle("The entry point for this example HAL API");
     }
   }
-````
+```
 
 
 Note that the implementation of the `@Related` method looks exactly the same as if you were implementing a normal service interface. This ensures that all consumer code running in the same JVM can use your implementation directly through the same interfaces that external clients are using. This avoids the overhead of http requests and JSON (de)serialisation. 
