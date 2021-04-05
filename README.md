@@ -299,7 +299,7 @@ There are a few more **best practices** to keep in mind when implementing your s
         link.setName(id);
       }
       else {
-        // especially link templates should always have a good description in title, as these
+        // especially link templates should always have a good description in the title, as these
         // are likely to appear in the entry point of your resource, and will help to make
         // your API self-explainable
         link.setTitle("A link template to retrieve the item with the specified id from the database");
