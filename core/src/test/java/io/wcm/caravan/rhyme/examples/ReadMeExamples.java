@@ -136,7 +136,7 @@ public class ReadMeExamples {
     Rhyme rhyme = RhymeBuilder.withResourceLoader(jsonLoader)
         .buildForRequestTo(incomingRequest.getUrl());
 
-    // create a dynamic proxy that knows who to fetch the entry point from the given URL
+    // create a dynamic proxy that knows how to fetch the entry point from the given URL
     return rhyme.getUpstreamEntryPoint("https://hal-api.example.org", ApiEntryPoint.class);
   }
 
@@ -151,7 +151,8 @@ public class ReadMeExamples {
     // but again that resource is only actually fetched when you call a method on the resource
     Item foo = itemResource.getState();
 
-    // You can call another method on the same instance without any resource being fetched twice
+    // You can call another method on the same instance (without any resource being fetched twice),
+    // and use stream operations to fetch multiple resources with a simple expression.
     List<Item> relatedToFoo = itemResource.getRelatedItems()
         .map(ItemResource::getState)
         .collect(Collectors.toList());
@@ -319,14 +320,14 @@ public class ReadMeExamples {
     // be aware that 'id' can be null (e.g. if this resource is created/linked to from the entry point)
     private final String id;
 
-    // your constructors should be as leight-weight as possible, as one instance of your
+    // your constructors should be as leight-weight as possible, as an instance of your
     // resource is created even if only a link to the resource is rendered
     ItemResourceImpl(ItemDatabase database, String id) {
       this.database = database;
       this.id = id;
     }
 
-    // Any I/O should only happen in the methods that are annotated with @Related
+    // any I/O should only happen in the methods that are annotated with @Related
     // or @ResourceState which are being called when the resource is actually rendered
     // (and it's guaranteed that the 'id' parameter is set)
     @Override
