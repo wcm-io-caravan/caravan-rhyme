@@ -16,10 +16,10 @@ The key concepts and features of **Rhyme** are
 - these interfaces are shared with the consumers, which can use them as a **highly abstracted client API**
 - the same interfaces are also used to **keep the server-side implementation well structured**, and in sync with the published API
 - consistent support for **controlling caching** using the `cache-control: max-age` header
-- simplify data debugging and performance analysis, by including metadata in every response
+- simplify **data debugging and performance analysis**, by including metadata in every response
 - **consistent error handling over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
 
-**Rhyme** is based on several years experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch (with an unreasonably high unit test coverage) with the goal of being useful within any Java web framework. 
+**Rhyme** is based on several years of experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS & RxJava 1). But it has been re-written from scratch (with an unreasonably high unit test coverage) with the goal of being useful within any Java web framework. 
 
 ## Modules in this repository
 
