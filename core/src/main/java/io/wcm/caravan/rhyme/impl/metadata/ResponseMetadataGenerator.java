@@ -90,6 +90,7 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
 
     if (metadataWasRendered.get()) {
       log.warn("Response from {} was retrieved after embedded metadata resource was rendered", resourceUri);
+      return;
     }
 
     if (maxAgeSeconds != null) {
