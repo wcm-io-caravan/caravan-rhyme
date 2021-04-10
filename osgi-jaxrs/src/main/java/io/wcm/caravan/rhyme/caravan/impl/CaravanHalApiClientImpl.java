@@ -19,13 +19,15 @@
  */
 package io.wcm.caravan.rhyme.caravan.impl;
 
+import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
+import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
+
 import java.time.Clock;
 import java.util.concurrent.ExecutionException;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -37,6 +39,8 @@ import io.wcm.caravan.pipeline.JsonPipelineFactory;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
 import io.wcm.caravan.rhyme.caravan.api.CaravanHalApiClient;
 
@@ -53,8 +57,15 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
   @Reference
   private CaravanHttpClient httpClient;
 
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+  @Reference(cardinality = OPTIONAL, policyOption = GREEDY)
   private JsonPipelineFactory pipelineFactory;
+
+  @Reference(cardinality = OPTIONAL, policyOption = GREEDY)
+  private HalApiReturnTypeSupport returnTypeSupport;
+
+  @Reference(cardinality = OPTIONAL, policyOption = GREEDY)
+  private HalApiAnnotationSupport annotationSupport;
+
 
   @Activate
   void setUp() {
@@ -81,7 +92,7 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
 
     JsonResourceLoader jsonLoader = getOrCreateJsonResourceLoader(serviceId);
 
-    HalApiClient client = HalApiClient.create(jsonLoader, metrics);
+    HalApiClient client = HalApiClient.create(jsonLoader, metrics, annotationSupport, returnTypeSupport);
 
     return client.getEntryPoint(uri, halApiInterface);
   }
