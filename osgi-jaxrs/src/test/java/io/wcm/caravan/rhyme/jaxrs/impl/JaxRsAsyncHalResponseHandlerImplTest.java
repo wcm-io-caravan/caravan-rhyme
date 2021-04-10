@@ -244,4 +244,14 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
 
     assertThat(t).isSameAs(expectedEx);
   }
+
+  @Test
+  public void respondWithError_should_handle_null_uris() throws Exception {
+
+    WebApplicationException ex = new WebApplicationException("Not implemented!", SC_NOT_IMPLEMENTED);
+
+    handler.respondWithError(ex, null, asyncResponse, metrics);
+
+    verifyResumeHasBeenCalledWithVndErrorResource(SC_NOT_IMPLEMENTED, ex);
+  }
 }
