@@ -76,8 +76,13 @@ class HalApiMethodInvocation {
       else if (variables != null) {
         templateVariables.putAll(getTemplateVariablesFrom(parameterValue, parameter.getType()));
       }
+      // if no annotation was used, we can try to extract the parameter name from the method.
+      // these arguments will be called "arg0", "arg1" etc if this information was stripped from the compiler
+      else if (!("arg" + i).equals(parameter.getName())) {
+        templateVariables.put(parameter.getName(), parameterValue);
+      }
       else {
-        throw new HalApiDeveloperException("all parameters of " + toString() + " need to be either annotated with"
+        throw new HalApiDeveloperException("method parameter names have been stripped for  " + toString() + ", so they do need to be annotated with either"
             + " @" + TemplateVariable.class.getSimpleName()
             + " or @" + TemplateVariables.class.getSimpleName());
       }
