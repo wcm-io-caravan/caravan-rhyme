@@ -51,11 +51,9 @@ public class CaravanRhymeRequestCycleImpl implements CaravanRhymeRequestCycle {
   public <RequestContextType> void processRequest(UriInfo requestUri, AsyncResponse response,
       Function<CaravanRhyme, RequestContextType> requestContextConstructor, Function<RequestContextType, ? extends LinkableResource> resourceImplConstructor) {
 
-    CaravanRhymeImpl rhyme = null;
+    CaravanRhymeImpl rhyme = createRhymeInstance(requestUri);
 
     try {
-      rhyme = createRhymeInstance(requestUri);
-
       RequestContextType requestContext = requestContextConstructor.apply(rhyme);
 
       LinkableResource resource = resourceImplConstructor.apply(requestContext);
@@ -65,10 +63,7 @@ public class CaravanRhymeRequestCycleImpl implements CaravanRhymeRequestCycle {
     // CHECKSTYLE:OFF - we really want to catch any exceptions here
     catch (RuntimeException ex) {
       // CHECKSTYLE:ON - ... and make sure a proper vnd.error response is rendered
-
-      // if a metrics instance is already available then use it (to include links to via links)
-      RequestMetricsCollector metrics = rhyme != null ? rhyme.metrics : RequestMetricsCollector.create();
-      responseHandler.respondWithError(ex, requestUri, response, metrics);
+      responseHandler.respondWithError(ex, requestUri, response, rhyme.metrics);
     }
   }
 
