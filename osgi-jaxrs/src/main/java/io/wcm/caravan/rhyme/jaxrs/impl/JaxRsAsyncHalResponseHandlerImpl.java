@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.rhyme.jaxrs.impl;
 
-import java.net.URI;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.CacheControl;
@@ -38,6 +36,7 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
+import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 
@@ -62,19 +61,38 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRe
       AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy);
 
       // asynchronously render the given resource (or create a vnd.error response if any exceptions are thrown)
-      String requestUri = uriInfo.getRequestUri().toString();
+      String requestUri = getRequestUri(uriInfo);
       Single<HalResponse> rxResponse = renderer.renderResponse(requestUri, resourceImpl);
 
       rxResponse.subscribe(
           // return the HAL or VND+Error response when it is available
           halResponse -> resumeWithResponse(suspended, halResponse),
           // or fall back to the regular JAX-RS error handling if an exception was not caught
-          fatalException -> resumeWithError(uriInfo, suspended, fatalException));
+          fatalException -> resumeAfterFatalError(uriInfo, suspended, fatalException));
     }
     // CHECKSTYLE:OFF - we really want to catch any exceptions here
     catch (RuntimeException ex) {
       // CHECKSTYLE:ON
-      resumeWithError(uriInfo, suspended, ex);
+      // when anything fatal happens we still need the response to be resumed with regular JAX-RS error handling
+      resumeAfterFatalError(uriInfo, suspended, ex);
+    }
+  }
+
+  @Override
+  public void respondWithError(Throwable ex, UriInfo uriInfo, AsyncResponse suspended, RequestMetricsCollector metrics) {
+
+    try {
+      VndErrorResponseRenderer renderer = VndErrorResponseRenderer.create(exceptionStrategy);
+
+      HalResponse response = renderer.renderError(getRequestUri(uriInfo), null, ex, metrics);
+
+      resumeWithResponse(suspended, response);
+    }
+    // CHECKSTYLE:OFF - we really want to catch any exceptions here
+    catch (RuntimeException rex) {
+      // CHECKSTYLE:ON
+      // when anything fatal happens we still need the response to be resumed with regular JAX-RS error handling
+      resumeAfterFatalError(uriInfo, suspended, rex);
     }
   }
 
@@ -99,12 +117,26 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRe
   }
 
   @SuppressWarnings("PMD.GuardLogStatement")
-  private void resumeWithError(UriInfo uriInfo, AsyncResponse suspended, Throwable fatalError) {
+  private void resumeAfterFatalError(UriInfo uriInfo, AsyncResponse suspended, Throwable fatalError) {
 
-    URI uri = uriInfo != null ? uriInfo.getRequestUri() : null;
+    String uri;
+    try {
+      uri = getRequestUri(uriInfo);
+    }
+    // CHECKSTYLE:OFF - we really want to catch any exceptions here
+    catch (RuntimeException ex) {
+      // CHECKSTYLE:ON
+      log.error("Failed to get request URI from " + uriInfo, ex);
+      uri = "(unknown url)";
+    }
+
     log.error("An exception occured when handling request for " + uri, fatalError);
 
     suspended.resume(fatalError);
+  }
+
+  private static String getRequestUri(UriInfo uriInfo) {
+    return uriInfo != null ? uriInfo.getRequestUri().toString() : null;
   }
 
   /**
@@ -124,4 +156,5 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRe
       return null;
     }
   }
+
 }

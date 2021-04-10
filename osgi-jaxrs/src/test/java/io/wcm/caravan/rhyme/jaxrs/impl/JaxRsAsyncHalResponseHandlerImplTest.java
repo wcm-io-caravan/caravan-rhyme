@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.rhyme.jaxrs.impl;
 
+import static org.apache.http.HttpStatus.SC_NOT_IMPLEMENTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
@@ -26,18 +27,20 @@ import static org.mockito.Mockito.verify;
 import java.net.URI;
 import java.time.Duration;
 
-import javax.ws.rs.ServiceUnavailableException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -47,6 +50,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,7 +84,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
     Response response = verifyResumeHasBeenCalled();
 
     assertThat(response.getStatus()).isEqualTo(statusCode);
-    assertThat(response.getMediaType()).isEqualTo(new MediaType("application", "vnd.error+json"));
+    assertThat(response.getMediaType()).isEqualTo(MediaType.valueOf(VndErrorResponseRenderer.CONTENT_TYPE));
     assertThat(response.getEntity()).isInstanceOf(HalResource.class);
 
     HalResource hal = (HalResource)response.getEntity();
@@ -161,7 +165,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   @Test
   public void respondWith_should_extract_status_code_from_jaxrs_exceptions() throws Exception {
 
-    ServiceUnavailableException ex = new ServiceUnavailableException("Not implemented!");
+    WebApplicationException ex = new WebApplicationException("Not implemented!", SC_NOT_IMPLEMENTED);
 
     LinkableResource resourceImpl = new LinkableTestResource() {
 
@@ -173,7 +177,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
 
     handler.respondWith(resourceImpl, uriInfo, asyncResponse, metrics);
 
-    verifyResumeHasBeenCalledWithVndErrorResource(503, ex);
+    verifyResumeHasBeenCalledWithVndErrorResource(SC_NOT_IMPLEMENTED, ex);
   }
 
   @Test
@@ -199,7 +203,8 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   @Test
   public void respondWith_should_resume_with_fatal_error_thrown_in_handler() throws Exception {
 
-    uriInfo = null;
+    NotImplementedException expectedEx = new NotImplementedException("request URI not availbable");
+    Mockito.when(uriInfo.getRequestUri()).thenThrow(expectedEx);
 
     LinkableResource resourceImpl = new LinkableTestResource() {
 
@@ -213,6 +218,30 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
 
     Throwable t = verifyResumeHasBeenCalledWithFatalError();
 
-    assertThat(t).isNotNull();
+    assertThat(t).isSameAs(expectedEx);
+  }
+
+
+  @Test
+  public void respondWithError_should_extract_status_code_from_jaxrs_exceptions() throws Exception {
+
+    WebApplicationException ex = new WebApplicationException("Not implemented!", SC_NOT_IMPLEMENTED);
+
+    handler.respondWithError(ex, uriInfo, asyncResponse, metrics);
+
+    verifyResumeHasBeenCalledWithVndErrorResource(SC_NOT_IMPLEMENTED, ex);
+  }
+
+  @Test
+  public void respondWithError_should_resume_with_fatal_error_thrown_in_handler() throws Exception {
+
+    NotImplementedException expectedEx = new NotImplementedException("request URI not availbable");
+    Mockito.when(uriInfo.getRequestUri()).thenThrow(expectedEx);
+
+    handler.respondWithError(new RuntimeException("foo"), uriInfo, asyncResponse, metrics);
+
+    Throwable t = verifyResumeHasBeenCalledWithFatalError();
+
+    assertThat(t).isSameAs(expectedEx);
   }
 }
