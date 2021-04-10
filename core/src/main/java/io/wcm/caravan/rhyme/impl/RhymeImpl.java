@@ -23,7 +23,6 @@ import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava3.core.Single;
-import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
@@ -112,15 +111,7 @@ final class RhymeImpl implements Rhyme {
 
     VndErrorResponseRenderer errorRenderer = VndErrorResponseRenderer.create(exceptionStrategy);
 
-    LinkableResource resourceImpl = new LinkableResource() {
-
-      @Override
-      public Link createLink() {
-        return null;
-      }
-    };
-
-    return errorRenderer.renderError(requestUri, resourceImpl, error, metrics);
+    return errorRenderer.renderError(requestUri, null, error, metrics);
   }
 
   private Single<HalResponse> respondWith(LinkableResource resourceImpl) {

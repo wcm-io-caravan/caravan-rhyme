@@ -259,6 +259,14 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
+  public void metadata_resource_can_be_created_with_null_resource_instance() throws Exception {
+
+    HalResource metadata = metrics.createMetadataResource(null);
+
+    assertThat(metadata).isNotNull();
+  }
+
+  @Test
   public void metadata_resource_contains_source_links() throws Exception {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, 10, ANY_RESPONSE_TIME);
