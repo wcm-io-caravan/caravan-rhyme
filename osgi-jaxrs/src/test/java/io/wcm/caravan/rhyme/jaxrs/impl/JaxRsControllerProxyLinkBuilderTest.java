@@ -332,4 +332,30 @@ public class JaxRsControllerProxyLinkBuilderTest {
     assertLinkUrlFor(r -> r.withBeanParam(params))
         .isEqualTo("/test/123?bar=456");
   }
+
+  public static final class FinalJaxRsComponent {
+    // no code required as this fails on proxy instantiation
+  }
+
+  @Test
+  public void should_fail_with_HalApiDeveloperException_if_controller_class_is_final() {
+
+    Throwable t = catchThrowable(() -> JaxRsLinkBuilder.create("", FinalJaxRsComponent.class));
+
+    assertThat(t).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("Failed to create proxy subclass");
+  }
+
+  static class NonPublicJaxRsComponent {
+    // no code required as this fails on proxy instantiation
+  }
+
+  @Test
+  public void should_fail_with_HalApiDeveloperException_if_controller_class_is_not_public() {
+
+    Throwable t = catchThrowable(() -> JaxRsLinkBuilder.create("", NonPublicJaxRsComponent.class));
+
+    assertThat(t).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("Failed to create proxy subclass");
+  }
 }

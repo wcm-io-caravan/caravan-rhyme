@@ -95,14 +95,22 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
 
   private Class<? extends JaxRsResourceType> createProxyClass(Class<JaxRsResourceType> superClass) {
 
-    return new ByteBuddy()
-        .subclass(superClass)
-        .method(ElementMatchers.any())
-        .intercept(InvocationHandlerAdapter.of(this))
-        .defineField(CAPTURED_URI_FIELD_NAME, String.class, java.lang.reflect.Modifier.PUBLIC)
-        .make()
-        .load(superClass.getClassLoader())
-        .getLoaded();
+    try {
+      return new ByteBuddy()
+          .subclass(superClass)
+          .method(ElementMatchers.any())
+          .intercept(InvocationHandlerAdapter.of(this))
+          .defineField(CAPTURED_URI_FIELD_NAME, String.class, java.lang.reflect.Modifier.PUBLIC)
+          .make()
+          .load(superClass.getClassLoader())
+          .getLoaded();
+    }
+    // CHECKSTYLE:OFF
+    catch (RuntimeException | IllegalAccessError ex) {
+      // CHECKSTYLE:ON
+      throw new HalApiDeveloperException("Failed to create proxy subclass for " + superClass.getSimpleName() +
+          ", please make sure it's public and not final", ex);
+    }
   }
 
   @Override
