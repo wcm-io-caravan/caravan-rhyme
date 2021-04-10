@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.rhyme.caravan.impl;
 
+import static org.apache.http.HttpStatus.SC_NOT_IMPLEMENTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -26,11 +27,13 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import java.net.URI;
 import java.time.Duration;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.http.HttpStatus;
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.apache.sling.testing.mock.osgi.junit5.OsgiContextExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,13 +47,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.net.HttpHeaders;
 
+import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
+import io.wcm.caravan.rhyme.caravan.impl.CaravanRhymeRequestCycleImpl.CaravanRhymeImpl;
 import io.wcm.caravan.rhyme.jaxrs.impl.JaxRsAsyncHalResponseHandlerImpl;
 
 @ExtendWith(OsgiContextExtension.class)
@@ -130,7 +137,60 @@ public class CaravanRhymeRequestCycleImplTest {
 
     Response response = verifyResumeHasBeenCalled();
 
-    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.SC_OK);
+    assertThat(response.getHeaderString(HttpHeaders.CONTENT_TYPE)).isEqualTo(HalResource.CONTENT_TYPE);
+  }
+
+  @Test
+  public void processRequest_should_handle_exception_when_creating_context() throws Exception {
+
+    requestCycle.processRequest(uriInfo, asyncResponse, this::failWithNotImplemented, ResourceImpl::new);
+
+    Response response = verifyResumeHasBeenCalled();
+
+    assertThatVndErrorResponseIsRendered(response);
+  }
+
+  @Test
+  public void processRequest_should_handle_exception_when_creating_resource() throws Exception {
+
+    requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, this::failWithNotImplemented);
+
+    Response response = verifyResumeHasBeenCalled();
+
+    assertThatVndErrorResponseIsRendered(response);
+  }
+
+  @Test
+  public void processRequest_should_handle_exception_when_rendering_state() throws Exception {
+
+    requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImplFailsToRender::new);
+
+    Response response = verifyResumeHasBeenCalled();
+
+    assertThatVndErrorResponseIsRendered(response);
+  }
+
+  @Test
+  public void processRequest_should_handle_exception_when_creatingLink() throws Exception {
+
+    requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImplFailsToCreateLink::new);
+
+    Response response = verifyResumeHasBeenCalled();
+
+    assertThatVndErrorResponseIsRendered(response);
+  }
+
+  private void assertThatVndErrorResponseIsRendered(Response response) {
+
+    // verify that the status code from the thrown exception is actually used in the rsponse
+    assertThat(response.getStatus()).isEqualTo(SC_NOT_IMPLEMENTED);
+    assertThat(response.getHeaderString(HttpHeaders.CONTENT_TYPE)).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
+  }
+
+
+  private <T, U> U failWithNotImplemented(T parameter) {
+    throw new WebApplicationException("Failed to create context with rhyme instance " + parameter, HttpStatus.SC_NOT_IMPLEMENTED);
   }
 
   @Test
@@ -153,6 +213,7 @@ public class CaravanRhymeRequestCycleImplTest {
 
     RequestContext(CaravanRhyme rhyme) {
       this.rhyme = rhyme;
+      assertThat(rhyme).isInstanceOf(CaravanRhymeImpl.class);
     }
   }
 
@@ -162,6 +223,7 @@ public class CaravanRhymeRequestCycleImplTest {
 
     ResourceImpl(RequestContext context) {
       this.context = context;
+      assertThat(context).isNotNull();
     }
 
     @Override
@@ -175,6 +237,32 @@ public class CaravanRhymeRequestCycleImplTest {
     public Link createLink() {
       return new Link(REQUEST_URI);
     }
+  }
+
+  static class ResourceImplFailsToRender extends ResourceImpl {
+
+    ResourceImplFailsToRender(RequestContext context) {
+      super(context);
+    }
+
+    @Override
+    public ObjectNode getState() {
+      throw new WebApplicationException(SC_NOT_IMPLEMENTED);
+    }
+
+  }
+
+  static class ResourceImplFailsToCreateLink extends ResourceImpl {
+
+    ResourceImplFailsToCreateLink(RequestContext context) {
+      super(context);
+    }
+
+    @Override
+    public Link createLink() {
+      throw new WebApplicationException(SC_NOT_IMPLEMENTED);
+    }
+
   }
 
   @HalApiInterface

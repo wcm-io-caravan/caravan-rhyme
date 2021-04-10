@@ -37,9 +37,17 @@ public interface JaxRsAsyncHalResponseRenderer {
   /**
    * @param resourceImpl the resource to be rendered
    * @param uriInfo information about the URI of the incoming request
-   * @param asyncResponse the JAX-RS response to be resumed
+   * @param suspended the JAX-RS response to be resumed
    * @param metrics collects information about all upstream requests executed during the current request
    */
-  void respondWith(LinkableResource resourceImpl, UriInfo uriInfo, AsyncResponse asyncResponse, RequestMetricsCollector metrics);
+  void respondWith(LinkableResource resourceImpl, UriInfo uriInfo, AsyncResponse suspended, RequestMetricsCollector metrics);
 
+  /**
+   * Render a response for an exception that was caught before a {@link LinkableResource} was created
+   * @param ex the response t
+   * @param uriInfo information about the URI of the incoming request
+   * @param suspended the JAX-RS response to be resumed
+   * @param metrics collects information about all upstream requests executed during the current request
+   */
+  void respondWithError(Throwable ex, UriInfo uriInfo, AsyncResponse suspended, RequestMetricsCollector metrics);
 }
