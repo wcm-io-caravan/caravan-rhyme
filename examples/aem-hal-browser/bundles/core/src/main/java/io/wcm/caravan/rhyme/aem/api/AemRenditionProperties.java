@@ -2,11 +2,13 @@ package io.wcm.caravan.rhyme.aem.api;
 
 public interface AemRenditionProperties {
 
-  String getTitle();
+  boolean isValid();
 
-  String getResourceType();
-
-  String getName();
+  String getInvalidReason();
 
   String getMimeType();
+
+  Integer getHeight();
+
+  Integer getWidth();
 }

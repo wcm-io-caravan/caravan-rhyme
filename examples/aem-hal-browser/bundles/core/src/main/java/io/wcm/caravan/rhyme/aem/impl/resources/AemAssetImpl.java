@@ -1,11 +1,8 @@
 package io.wcm.caravan.rhyme.aem.impl.resources;
 
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
@@ -69,17 +66,13 @@ public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
   }
 
   @Override
-  public Stream<AemRendition> getRenditions() {
+  public Optional<AemRendition> getRendition(Integer width, Integer height) {
 
-    ResourceResolver resolver = resource.getResourceResolver();
-
-    Stream<Resource> renditionResources = asset.getRenditions().stream()
-        .map(rendition -> resolver.getResource(rendition.getPath()))
-        .filter(Objects::nonNull);
-
-    return resourceAdapter.select(renditionResources)
+    return resourceAdapter
+        .selectCurrentResource()
         .adaptTo(AemRendition.class)
-        .getStream();
+        .withLinkTitle("Get a dynamic rendition for this asset with the specified width and/or height")
+        .getOptional();
   }
 
   @Override

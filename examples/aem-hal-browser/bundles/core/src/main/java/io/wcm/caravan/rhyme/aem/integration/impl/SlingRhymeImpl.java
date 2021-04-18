@@ -16,9 +16,11 @@ import org.jetbrains.annotations.Nullable;
 
 import io.wcm.caravan.rhyme.aem.api.AemAsset;
 import io.wcm.caravan.rhyme.aem.api.AemPage;
+import io.wcm.caravan.rhyme.aem.api.AemRendition;
 import io.wcm.caravan.rhyme.aem.api.SlingResource;
 import io.wcm.caravan.rhyme.aem.impl.resources.AemAssetImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.AemPageImpl;
+import io.wcm.caravan.rhyme.aem.impl.resources.AemRenditionImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.SlingResourceImpl;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -115,6 +117,9 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     else if (selectors.contains(AemAssetImpl.SELECTOR)) {
       resourceImpl = adaptResource(requestedResource, AemAsset.class);
     }
+    else if (selectors.contains(AemRenditionImpl.SELECTOR)) {
+      resourceImpl = adaptResource(requestedResource, AemRendition.class);
+    }
     else {
       resourceImpl = adaptResource(requestedResource, LinkableResource.class);
     }
@@ -144,4 +149,5 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
 
     return rhyme;
   }
+
 }

@@ -17,4 +17,5 @@ public interface SlingRhyme extends Adaptable {
 
   <@Nullable T> T adaptResource(Resource resource, @NotNull Class<T> modelClass);
 
+
 }

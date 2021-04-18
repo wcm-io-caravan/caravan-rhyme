@@ -1,21 +1,43 @@
 package io.wcm.caravan.rhyme.aem.impl.resources;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 
-import com.day.cq.dam.api.Rendition;
+import com.day.cq.dam.api.Asset;
 
+import io.wcm.caravan.rhyme.aem.api.AemAsset;
 import io.wcm.caravan.rhyme.aem.api.AemRendition;
 import io.wcm.caravan.rhyme.aem.api.AemRenditionProperties;
-import io.wcm.caravan.rhyme.aem.integration.impl.ResourceUtils;
+import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.media.Media;
+import io.wcm.handler.media.MediaArgs;
 import io.wcm.handler.media.MediaBuilder;
 import io.wcm.handler.media.MediaHandler;
+import io.wcm.handler.media.Rendition;
+import io.wcm.handler.media.format.MediaFormat;
+import io.wcm.handler.media.format.MediaFormatBuilder;
 
 @Model(adaptables = Resource.class, adapters = { AemRendition.class })
-public class AemRenditionImpl implements AemRendition {
+public class AemRenditionImpl extends AbstractLinkableResource implements AemRendition {
+
+  private static final String HEIGHT = "height";
+  private static final String WIDTH = "width";
+
+  public static final String SELECTOR = "aemrendition";
+
+  @Self
+  private Asset asset;
 
   @Self
   private MediaHandler mediaHandler;
@@ -23,60 +45,134 @@ public class AemRenditionImpl implements AemRendition {
   @Self
   private Resource resource;
 
-  @Self
-  private Rendition rendition;
+  @SlingObject
+  private SlingHttpServletRequest request;
+
+  private Integer width;
+  private Integer height;
+
+  private MediaBuilder mediaBuilder;
+  private Media media;
+
+  @PostConstruct
+  void activate() {
+    width = parseRequestParameter(WIDTH);
+    height = parseRequestParameter(HEIGHT);
+
+    this.mediaBuilder = createMediaBuilder();
+    this.media = mediaBuilder.build();
+  }
+
+  private Integer parseRequestParameter(String name) {
+    RequestParameter param = request.getRequestParameter(name);
+    if (param == null) {
+      return null;
+    }
+    try {
+      return Integer.parseInt(param.getString());
+    }
+    catch (NumberFormatException ex) {
+      return null;
+    }
+  }
+
+  private MediaBuilder createMediaBuilder() {
+    MediaFormatBuilder formatBuilder = MediaFormatBuilder.create("foo")
+        .extensions("gif", "jpg", "png");
+
+    if (width != null) {
+      formatBuilder = formatBuilder.width(width);
+    }
+    if (height != null) {
+      formatBuilder = formatBuilder.height(height);
+    }
+    MediaFormat format = formatBuilder.build();
+
+    return mediaHandler.get(resource.getPath())
+        .args(new MediaArgs(format).autoCrop(true));
+  }
+
 
   @Override
   public AemRenditionProperties getProperties() {
 
-    Resource assetResource = ResourceUtils.getParentAssetResource(resource);
-
-    MediaBuilder builder = mediaHandler.get(assetResource.getPath())
-        .includeAssetThumbnails(true)
-        .includeAssetWebRenditions(true);
-
-    Media media = builder.build();
-
-    System.out.println("this resource is " + resource.getPath());
-    System.out.println("asset resource is " + assetResource.getPath());
-
-    System.out.println("it has " + media.getRenditions().size() + " renditions");
-
-    io.wcm.handler.media.Rendition wcmIoRendition = media.getRenditions().stream()
-        .peek(r -> System.out.println("rendition path is " + r.getPath()))
-        .filter(r -> r.getPath().equals(resource.getPath()))
-        .findFirst().orElse(null);
+    Rendition rendition = media.getRendition();
 
     return new AemRenditionProperties() {
 
       @Override
-      public String getTitle() {
-        return getName() + " (" + getResourceType() + ")";
+      public Integer getWidth() {
+        if (rendition == null) {
+          return null;
+        }
+        return (int)rendition.getWidth();
       }
 
       @Override
-      public String getName() {
-        return rendition.getName();
-      }
-
-      @Override
-      public String getResourceType() {
-
-        return rendition.getResourceType();
+      public Integer getHeight() {
+        if (rendition == null) {
+          return null;
+        }
+        return (int)rendition.getHeight();
       }
 
       @Override
       public String getMimeType() {
+        if (rendition == null) {
+          return null;
+        }
         return rendition.getMimeType();
       }
+
+      @Override
+      public boolean isValid() {
+        return media.isValid();
+      }
+
+      @Override
+      public String getInvalidReason() {
+        if (media.isValid()) {
+          return null;
+        }
+        return media.getMediaInvalidReason().toString();
+      }
+
     };
   }
 
   @Override
-  public LinkableResource getBinaryResource() {
+  public Optional<LinkableResource> getBinaryResource() {
 
-    return new BinaryAssetResource(mediaHandler, rendition);
+    if (!media.isValid() || media.getRendition() == null) {
+      return Optional.empty();
+    }
+
+    return Optional.of(new BinaryAssetResource(mediaBuilder)
+        .withTitle("Download the dynamic rendition " + media.getRendition()));
   }
 
+  @Override
+  public AemAsset getAsset() {
+
+    return resourceAdapter
+        .selectCurrentResource()
+        .adaptTo(AemAsset.class)
+        .withLinkTitle("The asset resource for this rendition")
+        .getInstance();
+  }
+
+  @Override
+  protected String getDefaultLinkTitle() {
+    return "dynamic rendition of asset at " + asset.getPath() + " with width=" + width + " and height=" + height;
+  }
+
+  @Override
+  public Map<String, Object> getQueryParameters() {
+
+    Map<String, Object> parts = new HashMap<>();
+    parts.put(HEIGHT, height);
+    parts.put(WIDTH, width);
+    return parts;
+  }
 
 }

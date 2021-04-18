@@ -1,9 +1,12 @@
 package io.wcm.caravan.rhyme.aem.integration;
 
+import java.util.Collections;
+import java.util.Map;
+
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-public abstract class AbstractLinkableResource implements LinkableResource {
+public abstract class AbstractLinkableResource implements LinkableResource, SlingLinkableResource {
 
   @RhymeObject
   protected SlingResourceAdapter resourceAdapter;
@@ -16,10 +19,13 @@ public abstract class AbstractLinkableResource implements LinkableResource {
   @Override
   public Link createLink() {
 
-    String linkTitle = contextLinkTitle != null ? contextLinkTitle : getDefaultLinkTitle();
+    return linkBuilder.createLinkToCurrentResource(this);
+  }
 
-    return linkBuilder.createLinkToCurrentResource(this)
-        .setTitle(linkTitle);
+  @Override
+  public String getLinkTitle() {
+
+    return contextLinkTitle != null ? contextLinkTitle : getDefaultLinkTitle();
   }
 
   public void setLinkTitle(String linkTitle) {
@@ -28,5 +34,10 @@ public abstract class AbstractLinkableResource implements LinkableResource {
   }
 
   protected abstract String getDefaultLinkTitle();
+
+  @Override
+  public Map<String, Object> getQueryParameters() {
+    return Collections.emptyMap();
+  }
 
 }
