@@ -5,11 +5,12 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.apache.jackrabbit.JcrConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
+import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.dam.api.Asset;
 import com.day.cq.wcm.api.Page;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -92,7 +93,21 @@ public class SlingResourceImpl extends AbstractLinkableResource implements Sling
 
     String resourceType = defaultIfNull(resource.getResourceType(), "unknown");
 
-    return resourceType + " resource";
+    String titleSuffix = getResourceTitleSuffix();
+
+    return resourceType + " resource " + titleSuffix;
+  }
+
+  private String getResourceTitleSuffix() {
+
+    Resource contentResource = resource.getChild(JcrConstants.JCR_CONTENT);
+    if (contentResource != null) {
+      String jcrTitle = contentResource.getValueMap().get(JcrConstants.JCR_TITLE, String.class);
+      if (StringUtils.isNotBlank(jcrTitle)) {
+        return "with title '" + jcrTitle + "'";
+      }
+    }
+    return "without a title";
   }
 
 }

@@ -34,7 +34,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   private final ResourceFilter resourceFilter;
 
   public SlingResourceAdapterImpl() {
-    System.out.println("Creating new instance " + this);
     resourceSelector = new ResourceSelector(null, null);
     resourceFilter = new ResourceFilter(null, null);
   }
@@ -44,8 +43,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     currentResource = resource;
     resourceSelector = new ResourceSelector(selector.description, selector.resources);
     resourceFilter = new ResourceFilter(filter.description, filter.predicate);
-
-    System.out.println("New instance " + this + "with selector " + resourceSelector.description + " has been created");
   }
 
   @Override
@@ -146,21 +143,21 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public <ModelType> TypedResourceAdapter<ModelType> adaptTo(Class<ModelType> clazz) {
 
-    return new ResourceAdapterImpl<ModelType>(clazz);
+    return new TypedResourceAdapterImpl<ModelType>(clazz);
   }
 
-  private final class ResourceAdapterImpl<ModelType> implements TypedResourceAdapter<ModelType> {
+  private final class TypedResourceAdapterImpl<ModelType> implements TypedResourceAdapter<ModelType> {
 
     private final Class<ModelType> clazz;
 
-    private LinkDecorator<ModelType> linkDecorator;
+    private final LinkDecorator<ModelType> linkDecorator;
 
-    private ResourceAdapterImpl(Class<ModelType> clazz) {
+    private TypedResourceAdapterImpl(Class<ModelType> clazz) {
       this.clazz = clazz;
       this.linkDecorator = null;
     }
 
-    private ResourceAdapterImpl(Class<ModelType> clazz, LinkDecorator<ModelType> decorator) {
+    private TypedResourceAdapterImpl(Class<ModelType> clazz, LinkDecorator<ModelType> decorator) {
       this.clazz = clazz;
       this.linkDecorator = decorator;
 
@@ -170,8 +167,8 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       }
     }
 
-    private ResourceAdapterImpl<ModelType> withLinkDecorator(LinkDecorator<ModelType> decorator) {
-      return new ResourceAdapterImpl<ModelType>(clazz, decorator);
+    private TypedResourceAdapterImpl<ModelType> withLinkDecorator(LinkDecorator<ModelType> decorator) {
+      return new TypedResourceAdapterImpl<ModelType>(clazz, decorator);
     }
 
     @Override
@@ -195,8 +192,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     @Override
     public Stream<ModelType> getStream() {
 
-      System.out.println("Processing stream with selector " + resourceSelector.description + " of instance " + SlingResourceAdapterImpl.this);
-
       Stream<Resource> resources = resourceSelector.resources;
 
       if (resources == null) {
@@ -214,7 +209,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
       ModelType model = slingRhyme.adaptResource(res, this.clazz);
 
-      if (linkDecorator != null) {
+      if (linkDecorator != null && model != null) {
         decorateLinks(res, model);
       }
       return model;
@@ -250,9 +245,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
     private SlingResourceAdapterImpl add(Predicate<Resource> newPredicate, String newDescription) {
 
-      System.out
-          .println("Adding filter " + newDescription + " to instance " + SlingResourceAdapterImpl.this + " with selector " + resourceSelector.description);
-
       ResourceFilter newFilter;
       if (predicate != null) {
 
@@ -266,8 +258,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       }
 
       SlingResourceAdapterImpl newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, resourceSelector, newFilter);
-
-      System.out.println("added filter " + newFilter.description + " to new instance " + newInstance);
 
       return newInstance;
     }
@@ -302,8 +292,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
 
       SlingResourceAdapterImpl newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, newSelector, resourceFilter);
-
-      System.out.println("added selector " + newSelector.description + " to new instance " + newInstance);
 
       return newInstance;
     }

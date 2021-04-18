@@ -64,7 +64,8 @@ public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
   @Override
   public Optional<LinkableResource> getOriginalRendition() {
 
-    return Optional.of(new BinaryAssetResource(mediaHandler, asset));
+    return Optional.of(new BinaryAssetResource(mediaHandler, asset)
+        .withTitle("The binary data of this asset's original rendition"));
   }
 
   @Override

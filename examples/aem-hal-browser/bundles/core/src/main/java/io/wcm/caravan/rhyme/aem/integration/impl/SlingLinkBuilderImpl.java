@@ -1,6 +1,5 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
-import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
@@ -18,9 +17,6 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
   private static final String SELECTOR_CONSTANT = "SELECTOR";
 
   @Self
-  private SlingHttpServletRequest request;
-
-  @Self
   private Resource targetResource;
 
   @Self
@@ -32,7 +28,6 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     String url = buildResourceUrl(slingModel);
 
     Link link = new Link(url)
-        .setTitle(targetResource.getResourceType())
         .setName(targetResource.getName());
 
     return link;
@@ -53,7 +48,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
       return slingModel.getClass().getField(SELECTOR_CONSTANT).get(null).toString();
     }
     catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException ex) {
-      throw new HalApiDeveloperException("Failed to read value from static field " + SELECTOR_CONSTANT + " of class " + slingModel.getClass());
+      throw new HalApiDeveloperException("Failed to read value from static field " + SELECTOR_CONSTANT + " of class " + slingModel.getClass(), ex);
     }
   }
 }

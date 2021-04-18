@@ -19,6 +19,8 @@ class BinaryAssetResource implements LinkableResource {
   private final Asset asset;
   private final Rendition rendition;
 
+  private String title;
+
   public BinaryAssetResource(MediaHandler mediaHandler, Asset asset) {
     this.mediaHandler = mediaHandler;
     this.assetResource = asset.adaptTo(Resource.class);
@@ -41,6 +43,13 @@ class BinaryAssetResource implements LinkableResource {
 
     String mediaUrl = mediaBuilder.buildUrl();
 
-    return new Link(mediaUrl).setType(asset.getMimeType());
+    return new Link(mediaUrl)
+        .setType(asset.getMimeType())
+        .setTitle(title);
+  }
+
+  public BinaryAssetResource withTitle(String value) {
+    title = value;
+    return this;
   }
 }

@@ -13,16 +13,16 @@ import io.wcm.caravan.rhyme.aem.api.AemAsset;
 import io.wcm.caravan.rhyme.aem.api.AemLinkedContent;
 import io.wcm.caravan.rhyme.aem.api.AemPage;
 import io.wcm.caravan.rhyme.aem.api.SlingResource;
-import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
+import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 
 @Model(adaptables = Resource.class, adapters = { AemLinkedContent.class })
 public class AemLinkedContentImpl implements AemLinkedContent {
 
-  private static Predicate<Resource> IS_ASSET = res -> res.adaptTo(Asset.class) != null;
-  private static Predicate<Resource> IS_PAGE = res -> res.adaptTo(Page.class) != null;
+  private static final Predicate<Resource> IS_ASSET = res -> res.adaptTo(Asset.class) != null;
+  private static final Predicate<Resource> IS_PAGE = res -> res.adaptTo(Page.class) != null;
 
-  private static Predicate<Resource> IS_OTHER = IS_ASSET.or(IS_PAGE).negate();
+  private static final Predicate<Resource> IS_OTHER = IS_ASSET.or(IS_PAGE).negate();
 
   @RhymeObject
   private SlingResourceAdapter resourceAdapter;
