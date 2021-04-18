@@ -78,6 +78,7 @@ public class RenderLinkedResourceTest {
 
     assertThat(hal.getEmbedded(LINKED)).isEmpty();
     assertThat(hal.getLinks(LINKED)).containsExactly(testLink);
+    assertThat(hal.getModel().path("_links").path(LINKED).isObject()).isTrue();
   }
 
   @HalApiInterface
@@ -112,6 +113,7 @@ public class RenderLinkedResourceTest {
 
     assertThat(hal.getEmbedded(LINKED)).isEmpty();
     assertThat(hal.getLinks(LINKED)).containsExactly(testLink);
+    assertThat(hal.getModel().path("_links").path(LINKED).isObject()).isTrue();
   }
 
   @Test
@@ -129,6 +131,7 @@ public class RenderLinkedResourceTest {
     HalResource hal = render(resourceImpl);
     assertThat(hal.getEmbedded(LINKED)).isEmpty();
     assertThat(hal.getLinks(LINKED)).isEmpty();
+    assertThat(hal.getModel().path("_links").path(LINKED).isMissingNode()).isTrue();
   }
 
 
@@ -203,6 +206,7 @@ public class RenderLinkedResourceTest {
     HalResource hal = render(resourceImpl);
 
     assertThat(hal.getLinks(LINKED)).containsExactly(externalLink);
+    assertThat(hal.getModel().path("_links").path(LINKED).isObject()).isTrue();
   }
 
   @Test

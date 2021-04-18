@@ -53,11 +53,18 @@ public class CaravanRhymeRequestCycleImpl implements CaravanRhymeRequestCycle {
 
     CaravanRhymeImpl rhyme = createRhymeInstance(requestUri);
 
-    RequestContextType requestContext = requestContextConstructor.apply(rhyme);
+    try {
+      RequestContextType requestContext = requestContextConstructor.apply(rhyme);
 
-    LinkableResource resource = resourceImplConstructor.apply(requestContext);
+      LinkableResource resource = resourceImplConstructor.apply(requestContext);
 
-    responseHandler.respondWith(resource, requestUri, response, rhyme.metrics);
+      responseHandler.respondWith(resource, requestUri, response, rhyme.metrics);
+    }
+    // CHECKSTYLE:OFF - we really want to catch any exceptions here
+    catch (RuntimeException ex) {
+      // CHECKSTYLE:ON - ... and make sure a proper vnd.error response is rendered
+      responseHandler.respondWithError(ex, requestUri, response, rhyme.metrics);
+    }
   }
 
   CaravanRhymeImpl createRhymeInstance(UriInfo requestUri) {

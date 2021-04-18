@@ -24,6 +24,7 @@ import static io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ENTRY_POINT_URI
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,9 +41,13 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ResourceStateTest.ResourceWithSingleState;
+import io.wcm.caravan.ryhme.testing.LinkableTestResource;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.annotation.AnnotationDescription;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class TemplateVariableTest {
@@ -235,10 +240,10 @@ public class TemplateVariableTest {
 
 
   @HalApiInterface
-  interface ResourceWithMissingAnnotations {
+  public interface ResourceWithMissingAnnotations {
 
     @Related(ITEM)
-    Single<ResourceWithSingleState> getItem(String parameter);
+    LinkableTestResource getItem(String parameter);
   }
 
   @Test
@@ -248,6 +253,47 @@ public class TemplateVariableTest {
         () -> client.createProxy(ResourceWithMissingAnnotations.class).getItem("foo"));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("all parameters ").hasMessageEndingWith("need to be either annotated with @TemplateVariable or @TemplateVariables");
+        .hasMessageStartingWith("method parameter names have been stripped for ")
+        .hasMessageEndingWith("need to be annotated with either @TemplateVariable or @TemplateVariables");
+  }
+
+  @Test
+  public void should_not_throw_developer_exception_if_parameter_names_are_available_instead_of_annotation() {
+
+    entryPoint.addLinks(ITEM, new Link("/items/{id}"));
+
+    // by default parameter names are stripped from class files. This can be avoided with compiler settings, and
+    // this would be required if you want to use template methods without using annotations.
+
+    // to unit-test the support for this, we'll need to create a dynamic class that extends ResourceWithMissingAnnotations.
+    // but ensures the name of the parameters are available
+    Class<? extends ResourceWithMissingAnnotations> resourceClass = createHalApiInterfaceWithPreservedParameterNames();
+
+    ResourceWithMissingAnnotations proxy = client.createProxy(resourceClass);
+    LinkableTestResource linkedResource = proxy.getItem("foo");
+
+    Link link = linkedResource.createLink();
+    assertThat(link.getHref()).isEqualTo("/items/foo");
+  }
+
+  private Class<? extends ResourceWithMissingAnnotations> createHalApiInterfaceWithPreservedParameterNames() {
+
+    AnnotationDescription halApiAnnotation = AnnotationDescription.Builder.ofType(HalApiInterface.class).build();
+    AnnotationDescription relatedAnnotation = AnnotationDescription.Builder.ofType(Related.class).define("value", StandardRelations.ITEM).build();
+
+    ByteBuddy bb = new ByteBuddy();
+
+    Class<? extends ResourceWithMissingAnnotations> resourceClass = bb.makeInterface(ResourceWithMissingAnnotations.class)
+        .annotateType(halApiAnnotation)
+        // override the ResourceWithMissingAnnotations#getItem but this dynamic version will have parameter names present
+        .defineMethod("getItem", LinkableTestResource.class, Modifier.PUBLIC)
+        .withParameter(String.class, "id")
+        .withoutCode()
+        .annotateMethod(relatedAnnotation)
+        .make()
+        .load(getClass().getClassLoader())
+        .getLoaded();
+
+    return resourceClass;
   }
 }

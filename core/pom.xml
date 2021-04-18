@@ -135,7 +135,12 @@
       <artifactId>jsonassert</artifactId>
       <scope>test</scope>
     </dependency>
-    
+    <!-- Byte Buddy for creating dynamic proxies of classes -->
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   
   <build>

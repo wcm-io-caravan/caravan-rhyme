@@ -108,6 +108,11 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
     return returnTypeSupport.convertToObservable(sourceType);
   }
 
+  @Override
+  public boolean isProviderOfMultiplerValues(Class<?> returnType) {
+    return returnTypeSupport.isProviderOfMultiplerValues(returnType);
+  }
+
   HalApiAnnotationSupport getAnnotationSupport() {
     return annotationSupport;
   }
@@ -126,6 +131,11 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
     @Override
     public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
       return null;
+    }
+
+    @Override
+    public boolean isProviderOfMultiplerValues(Class<?> returnType) {
+      return false;
     }
 
   }

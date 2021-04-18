@@ -259,6 +259,14 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
+  public void metadata_resource_can_be_created_with_null_resource_instance() throws Exception {
+
+    HalResource metadata = metrics.createMetadataResource(null);
+
+    assertThat(metadata).isNotNull();
+  }
+
+  @Test
   public void metadata_resource_contains_source_links() throws Exception {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, 10, ANY_RESPONSE_TIME);
@@ -306,5 +314,15 @@ public class ResponseMetadataGeneratorTest {
     assertThat(metadata.getModel().path("sumOfResponseAndParseTimes").asText()).isEqualTo("5.0ms");
     assertThat(metadata.getModel().path("sumOfProxyInvocationTime").asText()).isEqualTo("0.5ms");
     assertThat(metadata.getModel().path("sumOfResourceAssemblyTime").asText()).isEqualTo("0.3ms");
+  }
+
+  @Test
+  public void responses_that_were_retrieved_after_metadata_generation_should_be_ignored() throws Exception {
+
+    HalResource metadata = metrics.createMetadataResource(resource);
+
+    metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, null, 100);
+
+    assertThat(metadata.getModel().path("sumOfResponseAndParseTimes").asText()).isEqualTo("0.0ms");
   }
 }

@@ -90,6 +90,7 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
 
     if (metadataWasRendered.get()) {
       log.warn("Response from {} was retrieved after embedded metadata resource was rendered", resourceUri);
+      return;
     }
 
     if (maxAgeSeconds != null) {
@@ -212,7 +213,9 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
     HalResource metadataResource = new HalResource();
 
     metadataResource.getModel().put("title", "Detailed information about the performance and input data for this request");
-    metadataResource.getModel().put("class", resourceImpl.getClass().getName());
+    if (resourceImpl != null) {
+      metadataResource.getModel().put("class", resourceImpl.getClass().getName());
+    }
 
     HalResource viaLinks = new HalResource().addLinks(StandardRelations.VIA, getSourceLinks());
     addEmbedded(metadataResource, SOURCE_LINKS, viaLinks,
