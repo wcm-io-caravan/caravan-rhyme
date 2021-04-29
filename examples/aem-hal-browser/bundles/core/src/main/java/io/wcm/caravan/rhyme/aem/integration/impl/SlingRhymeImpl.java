@@ -2,6 +2,7 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,14 +15,6 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import io.wcm.caravan.rhyme.aem.api.AemAsset;
-import io.wcm.caravan.rhyme.aem.api.AemPage;
-import io.wcm.caravan.rhyme.aem.api.AemRendition;
-import io.wcm.caravan.rhyme.aem.api.SlingResource;
-import io.wcm.caravan.rhyme.aem.impl.resources.AemAssetImpl;
-import io.wcm.caravan.rhyme.aem.impl.resources.AemPageImpl;
-import io.wcm.caravan.rhyme.aem.impl.resources.AemRenditionImpl;
-import io.wcm.caravan.rhyme.aem.impl.resources.SlingResourceImpl;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
@@ -88,12 +81,14 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   }
 
 
-  public HalResponse renderRequestedResource() {
+  public HalResponse renderRequestedResource(Map<String, Class<? extends LinkableResource>> selectorModelClassMap) {
 
     try {
       Resource requestedResource = getRequestedResource();
 
-      LinkableResource resourceImpl = adaptToLinkableResource(requestedResource);
+      Class<? extends LinkableResource> slingModelClass = findSlingModelClass(selectorModelClassMap);
+
+      LinkableResource resourceImpl = adaptResource(requestedResource, slingModelClass);
 
       return rhyme.renderResponse(resourceImpl);
     }
@@ -102,29 +97,18 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     }
   }
 
-  private LinkableResource adaptToLinkableResource(Resource requestedResource) {
-
-    LinkableResource resourceImpl;
+  private Class<? extends LinkableResource> findSlingModelClass(Map<String, Class<? extends LinkableResource>> selectorModelClassMap) {
 
     List<String> selectors = Arrays.asList(request.getRequestPathInfo().getSelectors());
 
-    if (selectors.contains(AemPageImpl.SELECTOR)) {
-      resourceImpl = adaptResource(requestedResource, AemPage.class);
-    }
-    else if (selectors.contains(SlingResourceImpl.SELECTOR)) {
-      resourceImpl = adaptResource(requestedResource, SlingResource.class);
-    }
-    else if (selectors.contains(AemAssetImpl.SELECTOR)) {
-      resourceImpl = adaptResource(requestedResource, AemAsset.class);
-    }
-    else if (selectors.contains(AemRenditionImpl.SELECTOR)) {
-      resourceImpl = adaptResource(requestedResource, AemRendition.class);
-    }
-    else {
-      resourceImpl = adaptResource(requestedResource, LinkableResource.class);
+    for (String selector : selectors) {
+      Class<? extends LinkableResource> modelClass = selectorModelClassMap.get(selector);
+      if (modelClass != null) {
+        return modelClass;
+      }
     }
 
-    return resourceImpl;
+    return LinkableResource.class;
   }
 
   @Override

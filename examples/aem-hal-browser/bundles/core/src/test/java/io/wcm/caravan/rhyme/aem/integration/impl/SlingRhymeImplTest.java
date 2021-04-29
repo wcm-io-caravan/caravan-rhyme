@@ -9,6 +9,8 @@ import org.apache.sling.models.annotations.Model;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import com.google.common.collect.ImmutableMap;
+
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
@@ -25,6 +27,8 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 public class SlingRhymeImplTest {
 
   private AemContext context = AppAemContext.newAemContext();
+
+  private ImmutableMap<String, Class<? extends LinkableResource>> selectorModelClassMap = ImmutableMap.of("testresource", TestResource.class);
 
   @Test
   public void can_be_adapted_from_SlingHttpServletRequest_to_impl_class() throws Exception {
@@ -148,7 +152,7 @@ public class SlingRhymeImplTest {
 
     SlingRhymeImpl rhyme = createRhymeInstance();
 
-    HalResponse response = rhyme.renderRequestedResource();
+    HalResponse response = rhyme.renderRequestedResource(selectorModelClassMap);
 
     assertThat(response).isNotNull();
     assertThat(response.getStatus()).isEqualTo(HttpStatus.SC_OK);

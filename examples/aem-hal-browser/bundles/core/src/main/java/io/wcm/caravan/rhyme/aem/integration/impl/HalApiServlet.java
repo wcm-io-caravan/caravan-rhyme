@@ -7,6 +7,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -22,8 +23,18 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableMap;
 
+import io.wcm.caravan.rhyme.aem.api.AemAsset;
+import io.wcm.caravan.rhyme.aem.api.AemPage;
+import io.wcm.caravan.rhyme.aem.api.AemRendition;
+import io.wcm.caravan.rhyme.aem.api.SlingResource;
+import io.wcm.caravan.rhyme.aem.impl.resources.AemAssetImpl;
+import io.wcm.caravan.rhyme.aem.impl.resources.AemPageImpl;
+import io.wcm.caravan.rhyme.aem.impl.resources.AemRenditionImpl;
+import io.wcm.caravan.rhyme.aem.impl.resources.SlingResourceImpl;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 
 @Component(service = Servlet.class, property = {
@@ -39,6 +50,18 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
 
   static final String HAL_API_SELECTOR = "halapi";
 
+
+  protected Map<String, Class<? extends LinkableResource>> getSelectorModelClassMap() {
+
+    return new ImmutableMap.Builder<String, Class<? extends LinkableResource>>()
+        .put(AemPageImpl.SELECTOR, AemPage.class)
+        .put(SlingResourceImpl.SELECTOR, SlingResource.class)
+        .put(AemAssetImpl.SELECTOR, AemAsset.class)
+        .put(AemRenditionImpl.SELECTOR, AemRendition.class)
+        .build();
+  }
+
+
   @Override
   protected void doGet(@NotNull SlingHttpServletRequest request, @NotNull SlingHttpServletResponse response)
       throws ServletException, IOException {
@@ -48,10 +71,13 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
       throw new RuntimeException("request could not be adapted to " + SlingRhymeImpl.class);
     }
 
-    HalResponse halResponse = rhyme.renderRequestedResource();
+    Map<String, Class<? extends LinkableResource>> selectorModelClassMap = getSelectorModelClassMap();
+
+    HalResponse halResponse = rhyme.renderRequestedResource(selectorModelClassMap);
 
     writeHalResponse(halResponse, response);
   }
+
 
   private void writeHalResponse(HalResponse halResponse, SlingHttpServletResponse servletResponse)
       throws IOException, JsonGenerationException, JsonMappingException {
