@@ -41,6 +41,11 @@
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>.io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.rhyme.aem</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>io.wcm</groupId>

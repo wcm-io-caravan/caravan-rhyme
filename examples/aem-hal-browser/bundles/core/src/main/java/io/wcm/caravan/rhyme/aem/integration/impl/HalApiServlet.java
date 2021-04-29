@@ -33,6 +33,7 @@ import io.wcm.caravan.rhyme.aem.impl.resources.AemAssetImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.AemPageImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.AemRenditionImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.SlingResourceImpl;
+import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
@@ -66,7 +67,7 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
   protected void doGet(@NotNull SlingHttpServletRequest request, @NotNull SlingHttpServletResponse response)
       throws ServletException, IOException {
 
-    SlingRhymeImpl rhyme = request.adaptTo(SlingRhymeImpl.class);
+    SlingRhyme rhyme = request.adaptTo(SlingRhyme.class);
     if (rhyme == null) {
       throw new RuntimeException("request could not be adapted to " + SlingRhymeImpl.class);
     }

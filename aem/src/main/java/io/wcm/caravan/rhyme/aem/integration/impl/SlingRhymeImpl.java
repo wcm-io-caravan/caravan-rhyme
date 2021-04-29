@@ -81,6 +81,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   }
 
 
+  @Override
   public HalResponse renderRequestedResource(Map<String, Class<? extends LinkableResource>> selectorModelClassMap) {
 
     try {

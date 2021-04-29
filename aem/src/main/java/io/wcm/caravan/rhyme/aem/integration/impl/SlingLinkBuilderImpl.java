@@ -43,7 +43,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     String classSpecificSelector = getClassSpecificSelector(slingModel);
 
     String url = urlHandler.get(targetResource)
-        .selectors(HalApiServlet.HAL_API_SELECTOR + "." + classSpecificSelector)
+        .selectors("halapi" + "." + classSpecificSelector)
         .extension("json")
         .buildExternalResourceUrl();
 

@@ -150,7 +150,7 @@ public class SlingRhymeImplTest {
   @Test
   public void renderRequestedResource() throws Exception {
 
-    SlingRhymeImpl rhyme = createRhymeInstance();
+    SlingRhyme rhyme = createRhymeInstance();
 
     HalResponse response = rhyme.renderRequestedResource(selectorModelClassMap);
 

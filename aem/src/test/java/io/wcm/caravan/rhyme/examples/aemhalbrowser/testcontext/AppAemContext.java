@@ -37,7 +37,7 @@ public final class AppAemContext {
         .registerSlingModelsFromClassPath(true)
         .build();
 
-    context.addModelsForPackage("io.wcm.caravan.rhyme.aem");
+    context.addModelsForPackage("io.wcm.caravan.rhyme.aem.integration.impl");
 
     return context;
   }
@@ -51,8 +51,8 @@ public final class AppAemContext {
     public void execute(@NotNull AemContext context) throws PersistenceException, IOException {
 
       // setup handler
-      //      context.registerInjectActivateService(new LinkHandlerConfigImpl());
-      //      context.registerInjectActivateService(new MediaHandlerConfigImpl());
+      //context.registerInjectActivateService(new LinkHandlerConfigImpl());
+      //context.registerInjectActivateService(new MediaHandlerConfigImpl());
 
     }
   };
