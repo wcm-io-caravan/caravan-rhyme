@@ -1,7 +1,8 @@
-package io.wcm.caravan.rhyme.aem.api;
+package io.wcm.caravan.rhyme.aem.api.assets;
 
 import java.util.Optional;
 
+import io.wcm.caravan.rhyme.aem.api.AemRelations;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;

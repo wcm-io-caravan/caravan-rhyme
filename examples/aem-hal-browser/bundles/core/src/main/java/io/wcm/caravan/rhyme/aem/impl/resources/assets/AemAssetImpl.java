@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.impl.resources;
+package io.wcm.caravan.rhyme.aem.impl.resources.assets;
 
 import java.util.Optional;
 
@@ -8,10 +8,10 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import com.day.cq.dam.api.Asset;
 
-import io.wcm.caravan.rhyme.aem.api.AemAsset;
-import io.wcm.caravan.rhyme.aem.api.AemAssetProperties;
-import io.wcm.caravan.rhyme.aem.api.AemRendition;
-import io.wcm.caravan.rhyme.aem.api.SlingResource;
+import io.wcm.caravan.rhyme.aem.api.assets.AemAsset;
+import io.wcm.caravan.rhyme.aem.api.assets.AemAssetProperties;
+import io.wcm.caravan.rhyme.aem.api.assets.AemRendition;
+import io.wcm.caravan.rhyme.aem.api.generic.SlingResource;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.media.MediaHandler;

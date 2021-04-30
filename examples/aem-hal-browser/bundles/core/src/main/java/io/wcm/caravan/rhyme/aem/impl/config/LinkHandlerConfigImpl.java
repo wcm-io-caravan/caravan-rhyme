@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.examples.aemhalbrowser.config.impl;
+package io.wcm.caravan.rhyme.aem.impl.config;
 
 import java.util.List;
 

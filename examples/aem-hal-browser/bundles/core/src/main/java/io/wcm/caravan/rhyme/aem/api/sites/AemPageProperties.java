@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.api;
+package io.wcm.caravan.rhyme.aem.api.sites;
 
 
 public interface AemPageProperties {

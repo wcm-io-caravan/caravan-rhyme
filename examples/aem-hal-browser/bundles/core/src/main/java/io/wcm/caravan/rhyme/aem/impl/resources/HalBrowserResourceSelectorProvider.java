@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.integration.impl;
+package io.wcm.caravan.rhyme.aem.impl.resources;
 
 import java.util.Map;
 
@@ -6,10 +6,10 @@ import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.ImmutableMap;
 
-import io.wcm.caravan.rhyme.aem.impl.resources.AemAssetImpl;
-import io.wcm.caravan.rhyme.aem.impl.resources.AemPageImpl;
-import io.wcm.caravan.rhyme.aem.impl.resources.AemRenditionImpl;
-import io.wcm.caravan.rhyme.aem.impl.resources.SlingResourceImpl;
+import io.wcm.caravan.rhyme.aem.impl.resources.assets.AemAssetImpl;
+import io.wcm.caravan.rhyme.aem.impl.resources.assets.AemRenditionImpl;
+import io.wcm.caravan.rhyme.aem.impl.resources.generic.SlingResourceImpl;
+import io.wcm.caravan.rhyme.aem.impl.resources.sites.AemPageImpl;
 import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 

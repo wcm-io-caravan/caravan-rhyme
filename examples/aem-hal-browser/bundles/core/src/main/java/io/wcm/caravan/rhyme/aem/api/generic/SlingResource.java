@@ -1,10 +1,13 @@
-package io.wcm.caravan.rhyme.aem.api;
+package io.wcm.caravan.rhyme.aem.api.generic;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import io.wcm.caravan.rhyme.aem.api.AemRelations;
+import io.wcm.caravan.rhyme.aem.api.assets.AemAsset;
+import io.wcm.caravan.rhyme.aem.api.sites.AemPage;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;

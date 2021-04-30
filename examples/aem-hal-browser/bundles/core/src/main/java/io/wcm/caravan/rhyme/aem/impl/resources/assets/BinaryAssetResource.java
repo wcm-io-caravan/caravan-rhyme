@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.impl.resources;
+package io.wcm.caravan.rhyme.aem.impl.resources.assets;
 
 import org.apache.sling.api.resource.Resource;
 

@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.impl.resources;
+package io.wcm.caravan.rhyme.aem.impl.resources.generic;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.sling.api.resource.Resource;
@@ -8,7 +8,7 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.aem.api.InfinityJsonResource;
+import io.wcm.caravan.rhyme.aem.api.generic.InfinityJsonResource;
 import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = Resource.class, adapters = { InfinityJsonResource.class })

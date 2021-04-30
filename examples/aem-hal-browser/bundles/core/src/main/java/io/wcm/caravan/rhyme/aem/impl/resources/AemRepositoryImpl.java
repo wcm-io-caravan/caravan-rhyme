@@ -8,11 +8,12 @@ import org.apache.sling.models.annotations.Model;
 import com.day.cq.dam.api.Asset;
 import com.day.cq.wcm.api.Page;
 
-import io.wcm.caravan.rhyme.aem.api.AemAsset;
-import io.wcm.caravan.rhyme.aem.api.AemPage;
-import io.wcm.caravan.rhyme.aem.api.AemRendition;
 import io.wcm.caravan.rhyme.aem.api.AemRepository;
-import io.wcm.caravan.rhyme.aem.api.SlingResource;
+import io.wcm.caravan.rhyme.aem.api.assets.AemAsset;
+import io.wcm.caravan.rhyme.aem.api.assets.AemRendition;
+import io.wcm.caravan.rhyme.aem.api.generic.SlingResource;
+import io.wcm.caravan.rhyme.aem.api.sites.AemPage;
+import io.wcm.caravan.rhyme.aem.impl.resources.assets.AemRenditionImpl;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 

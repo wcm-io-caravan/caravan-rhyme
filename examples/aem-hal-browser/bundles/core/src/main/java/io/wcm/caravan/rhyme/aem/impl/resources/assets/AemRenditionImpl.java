@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.impl.resources;
+package io.wcm.caravan.rhyme.aem.impl.resources.assets;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +15,9 @@ import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 
 import com.day.cq.dam.api.Asset;
 
-import io.wcm.caravan.rhyme.aem.api.AemAsset;
-import io.wcm.caravan.rhyme.aem.api.AemRendition;
-import io.wcm.caravan.rhyme.aem.api.AemRenditionProperties;
+import io.wcm.caravan.rhyme.aem.api.assets.AemAsset;
+import io.wcm.caravan.rhyme.aem.api.assets.AemRendition;
+import io.wcm.caravan.rhyme.aem.api.assets.AemRenditionProperties;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.media.Media;
@@ -31,8 +31,8 @@ import io.wcm.handler.media.format.MediaFormatBuilder;
 @Model(adaptables = Resource.class, adapters = { AemRendition.class })
 public class AemRenditionImpl extends AbstractLinkableResource implements AemRendition {
 
-  static final String HEIGHT = "height";
-  static final String WIDTH = "width";
+  public static final String HEIGHT = "height";
+  public static final String WIDTH = "width";
 
   @Self
   private Asset asset;

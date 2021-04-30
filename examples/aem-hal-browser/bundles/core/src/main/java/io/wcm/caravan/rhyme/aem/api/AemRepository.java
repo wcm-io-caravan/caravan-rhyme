@@ -2,6 +2,10 @@ package io.wcm.caravan.rhyme.aem.api;
 
 import java.util.Optional;
 
+import io.wcm.caravan.rhyme.aem.api.assets.AemAsset;
+import io.wcm.caravan.rhyme.aem.api.assets.AemRendition;
+import io.wcm.caravan.rhyme.aem.api.generic.SlingResource;
+import io.wcm.caravan.rhyme.aem.api.sites.AemPage;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 
