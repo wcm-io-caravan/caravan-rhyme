@@ -23,10 +23,9 @@ import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingPropertiesConverter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, SlingResource.class })
+@Model(adaptables = Resource.class, adapters = { LinkableResource.class, SlingResource.class },
+    resourceType = { "sling:redirect", "nt:Folder" })
 public class SlingResourceImpl extends AbstractLinkableResource implements SlingResource {
-
-  public static final String SELECTOR = "slingresource";
 
   @Self
   private Resource resource;

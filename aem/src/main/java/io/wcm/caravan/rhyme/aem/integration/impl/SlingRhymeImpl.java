@@ -1,5 +1,6 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,18 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
       throw new HalApiDeveloperException("Cannot adapt null resource to " + modelClass.getSimpleName());
     }
 
+    Model modelAnnotation = modelClass.getAnnotation(Model.class);
+    if (modelAnnotation != null) {
+
+      if (modelAnnotation.adaptables() == null) {
+        throw new HalApiDeveloperException("The @" + Model.class.getSimpleName() + " annotation of " + modelClass + " does not define the adaptables");
+      }
+
+      if (!Arrays.asList(modelAnnotation.adaptables()).contains(Resource.class)) {
+        throw new HalApiDeveloperException(modelClass + " is not declared to be adaptable from " + Resource.class);
+      }
+    }
+
     T slingModel = resource.adaptTo(modelClass);
     if (slingModel == null) {
       throw new HalApiDeveloperException("Failed to adapt " + resource + " to " + modelClass.getSimpleName());
@@ -91,11 +104,17 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
 
       LinkableResource resourceImpl = adaptResource(requestedResource, slingModelClass);
 
-      return rhyme.renderResponse(resourceImpl);
+      return renderResource(resourceImpl);
     }
     catch (RuntimeException ex) {
       return rhyme.renderVndErrorResponse(ex);
     }
+  }
+
+  @Override
+  public HalResponse renderResource(LinkableResource resourceImpl) {
+
+    return rhyme.renderResponse(resourceImpl);
   }
 
   private Class<? extends LinkableResource> findSlingModelClass(Map<String, Class<? extends LinkableResource>> selectorModelClassMap) {
@@ -133,6 +152,16 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   Rhyme getCaravanRhyme() {
 
     return rhyme;
+  }
+
+  @Override
+  public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
+    return this.rhyme.getUpstreamEntryPoint(uri, halApiInterface);
+  }
+
+  @Override
+  public void setResponseMaxAge(Duration duration) {
+    this.rhyme.setResponseMaxAge(duration);
   }
 
 }

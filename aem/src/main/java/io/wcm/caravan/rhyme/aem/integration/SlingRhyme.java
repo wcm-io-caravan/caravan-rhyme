@@ -1,5 +1,6 @@
 package io.wcm.caravan.rhyme.aem.integration;
 
+import java.time.Duration;
 import java.util.Map;
 
 import org.apache.sling.api.adapter.Adaptable;
@@ -24,5 +25,10 @@ public interface SlingRhyme extends Adaptable {
 
   HalResponse renderRequestedResource(Map<String, Class<? extends LinkableResource>> selectorModelClassMap);
 
+  HalResponse renderResource(LinkableResource resource);
+
+  void setResponseMaxAge(Duration duration);
+
+  <T> T getRemoteResource(String uri, Class<T> halApiInterface);
 
 }

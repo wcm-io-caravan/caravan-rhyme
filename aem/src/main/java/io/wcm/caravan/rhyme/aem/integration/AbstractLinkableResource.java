@@ -9,6 +9,9 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 public abstract class AbstractLinkableResource implements LinkableResource, SlingLinkableResource {
 
   @RhymeObject
+  protected SlingRhyme rhyme;
+
+  @RhymeObject
   protected SlingResourceAdapter resourceAdapter;
 
   @RhymeObject
@@ -39,5 +42,4 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
   public Map<String, Object> getQueryParameters() {
     return Collections.emptyMap();
   }
-
 }

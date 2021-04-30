@@ -2,6 +2,8 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
@@ -12,7 +14,6 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingRhyme.class, adapters = SlingLinkBuilder.class)
@@ -25,6 +26,9 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
   @Self
   private UrlHandler urlHandler;
+
+  @Inject
+  private ResourceSelectorRegistry registry;
 
   @Override
   public Link createLinkToCurrentResource(SlingLinkableResource slingModel) {
@@ -40,11 +44,9 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
   private String buildResourceUrl(SlingLinkableResource slingModel) {
 
-    String classSpecificSelector = getClassSpecificSelector(slingModel);
-
     String url = urlHandler.get(targetResource)
-        .selectors("halapi" + "." + classSpecificSelector)
-        .extension("json")
+        .selectors(getClassSpecificSelector(slingModel))
+        .extension(HalApiServlet.EXTENSION)
         .buildExternalResourceUrl();
 
     return appendQueryWithTemplate(url, slingModel);
@@ -68,11 +70,8 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
   }
 
   private String getClassSpecificSelector(SlingLinkableResource slingModel) {
-    try {
-      return slingModel.getClass().getField(SELECTOR_CONSTANT).get(null).toString();
-    }
-    catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException ex) {
-      throw new HalApiDeveloperException("Failed to read value from static field " + SELECTOR_CONSTANT + " of class " + slingModel.getClass(), ex);
-    }
+
+    return registry.getSelectorForModelClass(slingModel.getClass())
+        .orElse(null);
   }
 }

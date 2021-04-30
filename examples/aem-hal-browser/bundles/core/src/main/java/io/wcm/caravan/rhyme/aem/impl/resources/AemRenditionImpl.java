@@ -34,8 +34,6 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
   private static final String HEIGHT = "height";
   private static final String WIDTH = "width";
 
-  public static final String SELECTOR = "aemrendition";
-
   @Self
   private Asset asset;
 

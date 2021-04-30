@@ -13,6 +13,7 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
 
+import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.base.Preconditions;
 
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
@@ -72,6 +73,48 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     return resourceSelector.add(ResourceUtils.getStreamOfChildren(currentResource),
         "children of " + currentResource.getPath());
   }
+
+
+  @Override
+  public SlingResourceAdapter selectContentOfChildPages() {
+
+    Resource page = getPageResource();
+
+    Stream<Resource> contentNodes = ResourceUtils.getStreamOfChildPages(page)
+        .map(child -> child.getChild(JcrConstants.JCR_CONTENT))
+        .filter(Objects::nonNull);
+
+
+    return resourceSelector.add(contentNodes, "content of child pages of " + page.getPath());
+  }
+
+  @Override
+  public SlingResourceAdapter selectContentOfChildPage(String name) {
+
+    Resource page = getPageResource();
+
+    Stream<Resource> contentNodes = ResourceUtils.getStreamOfChildPages(page)
+        .filter(child -> name.equals(child.getName()))
+        .map(child -> child.getChild(JcrConstants.JCR_CONTENT))
+        .filter(Objects::nonNull);
+
+    return resourceSelector.add(contentNodes, "content of child page named '" + name + "' of " + page.getPath());
+  }
+
+
+  @Override
+  public SlingResourceAdapter selectContentOfGrandChildPages() {
+
+    Resource page = getPageResource();
+
+    Stream<Resource> contentNodes = ResourceUtils.getStreamOfChildPages(page)
+        .flatMap(ResourceUtils::getStreamOfChildPages)
+        .map(child -> child.getChild(JcrConstants.JCR_CONTENT))
+        .filter(Objects::nonNull);
+
+    return resourceSelector.add(contentNodes, "content of grand child pages of " + page.getPath());
+  }
+
 
   @Override
   public SlingResourceAdapter selectChildResource(String name) {
@@ -231,6 +274,21 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   private interface LinkDecorator<ModelType> {
 
     String getLinkTitle(Resource resource, ModelType model);
+  }
+
+  private SlingResourceAdapterImpl fromCurrentPage() {
+    return new SlingResourceAdapterImpl(slingRhyme, getPageResource(), resourceSelector, resourceFilter);
+  }
+
+  private Resource getPageResource() {
+    Resource candidate = currentResource;
+    while (candidate != null && !ResourceUtils.isPage(candidate)) {
+      candidate = candidate.getParent();
+    }
+    if (candidate == null) {
+      throw new HalApiDeveloperException("Failed to find a parent cq:Page node from " + currentResource.getPath());
+    }
+    return candidate;
   }
 
   private final class ResourceFilter {

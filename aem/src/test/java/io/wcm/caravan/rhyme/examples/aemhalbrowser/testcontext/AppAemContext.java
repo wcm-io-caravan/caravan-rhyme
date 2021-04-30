@@ -13,6 +13,7 @@ import org.apache.sling.api.resource.Resource;
 import org.jetbrains.annotations.NotNull;
 
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.integration.impl.ResourceSelectorRegistry;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextCallback;
@@ -36,6 +37,8 @@ public final class AppAemContext {
         .afterSetUp(SETUP_CALLBACK)
         .registerSlingModelsFromClassPath(true)
         .build();
+
+    context.registerInjectActivateService(new ResourceSelectorRegistry());
 
     context.addModelsForPackage("io.wcm.caravan.rhyme.aem.integration.impl");
 

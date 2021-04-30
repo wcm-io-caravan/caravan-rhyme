@@ -20,8 +20,6 @@ import io.wcm.handler.media.MediaHandler;
 
 public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
 
-  public static final String SELECTOR = "aemasset";
-
   @Self
   private Asset asset;
 

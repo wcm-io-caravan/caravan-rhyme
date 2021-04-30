@@ -1,13 +1,14 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import static org.apache.sling.api.servlets.ServletResolverConstants.DEFAULT_RESOURCE_TYPE;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_EXTENSIONS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
-import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -18,50 +19,33 @@ import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableMap;
 
-import io.wcm.caravan.rhyme.aem.api.AemAsset;
-import io.wcm.caravan.rhyme.aem.api.AemPage;
-import io.wcm.caravan.rhyme.aem.api.AemRendition;
-import io.wcm.caravan.rhyme.aem.api.SlingResource;
-import io.wcm.caravan.rhyme.aem.impl.resources.AemAssetImpl;
-import io.wcm.caravan.rhyme.aem.impl.resources.AemPageImpl;
-import io.wcm.caravan.rhyme.aem.impl.resources.AemRenditionImpl;
-import io.wcm.caravan.rhyme.aem.impl.resources.SlingResourceImpl;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 
 @Component(service = Servlet.class, property = {
-    SERVICE_DESCRIPTION + "=JSON Servlet to read the data from the external webservice",
+    SERVICE_DESCRIPTION + "=Servlet to render HAL responses using the Rhyme framework",
     SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
     SLING_SERVLET_RESOURCE_TYPES + "=" + DEFAULT_RESOURCE_TYPE,
-    SLING_SERVLET_SELECTORS + "=" + HalApiServlet.HAL_API_SELECTOR })
+    SLING_SERVLET_EXTENSIONS + "=" + HalApiServlet.EXTENSION })
 public class HalApiServlet extends SlingSafeMethodsServlet {
 
   private static final long serialVersionUID = -7540592969300324670L;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  static final String HAL_API_SELECTOR = "halapi";
+  static final String EXTENSION = "rhyme";
 
-
-  protected Map<String, Class<? extends LinkableResource>> getSelectorModelClassMap() {
-
-    return new ImmutableMap.Builder<String, Class<? extends LinkableResource>>()
-        .put(AemPageImpl.SELECTOR, AemPage.class)
-        .put(SlingResourceImpl.SELECTOR, SlingResource.class)
-        .put(AemAssetImpl.SELECTOR, AemAsset.class)
-        .put(AemRenditionImpl.SELECTOR, AemRendition.class)
-        .build();
-  }
-
+  @Reference
+  private ResourceSelectorRegistry registry;
 
   @Override
   protected void doGet(@NotNull SlingHttpServletRequest request, @NotNull SlingHttpServletResponse response)
@@ -69,12 +53,18 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
 
     SlingRhyme rhyme = request.adaptTo(SlingRhyme.class);
     if (rhyme == null) {
-      throw new RuntimeException("request could not be adapted to " + SlingRhymeImpl.class);
+      throw new RuntimeException("request could not be adapted to " + SlingRhyme.class);
     }
 
-    Map<String, Class<? extends LinkableResource>> selectorModelClassMap = getSelectorModelClassMap();
+    List<String> selectors = Arrays.asList(request.getRequestPathInfo().getSelectors());
+    Class<? extends LinkableResource> modelClass = registry.getModelClassForSelectors(selectors);
 
-    HalResponse halResponse = rhyme.renderRequestedResource(selectorModelClassMap);
+    LinkableResource linkableResource = rhyme.adaptResource(request.getResource(), modelClass);
+    if (linkableResource == null) {
+      throw new RuntimeException("requested resource " + request.getResource().getResourceType() + " could not be adapted");
+    }
+
+    HalResponse halResponse = rhyme.renderResource(linkableResource);
 
     writeHalResponse(halResponse, response);
   }

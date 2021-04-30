@@ -16,6 +16,12 @@ public interface SlingResourceAdapter {
 
   SlingResourceAdapter selectChildResource(String name);
 
+  SlingResourceAdapter selectContentOfChildPages();
+
+  SlingResourceAdapter selectContentOfChildPage(String name);
+
+  SlingResourceAdapter selectContentOfGrandChildPages();
+
   SlingResourceAdapter selectLinkedResources();
 
   SlingResourceAdapter selectResourceAt(String path);

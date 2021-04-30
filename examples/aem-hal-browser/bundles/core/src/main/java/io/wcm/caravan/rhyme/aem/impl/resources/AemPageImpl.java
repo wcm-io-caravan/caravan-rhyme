@@ -17,10 +17,9 @@ import io.wcm.caravan.rhyme.aem.api.SlingResource;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemPage.class }, resourceType = "wcm/foundation/components/basicpage/v1/basicpage")
+@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemPage.class })
 public class AemPageImpl extends AbstractLinkableResource implements AemPage {
 
-  public static final String SELECTOR = "aempage";
 
   @Self
   private Page page;
