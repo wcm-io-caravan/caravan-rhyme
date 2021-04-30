@@ -64,4 +64,16 @@ public class ResourceSelectorRegistry {
         .filter(Objects::nonNull)
         .findFirst();
   }
+
+  public Optional<String> getSelectorForHalApiInterface(Class<?> halApiInterface) {
+
+    Optional<Class<? extends LinkableResource>> modelClass = providers.stream()
+        .flatMap(provider -> provider.getModelClassesWithSelectors().keySet().stream())
+        .filter(clazz -> halApiInterface.isAssignableFrom(clazz))
+        .findFirst();
+
+    return modelClass
+        .flatMap(this::getSelectorForModelClass);
+  }
+
 }

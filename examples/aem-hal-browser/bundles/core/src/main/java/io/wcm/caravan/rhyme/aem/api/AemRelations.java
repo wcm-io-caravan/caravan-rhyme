@@ -15,6 +15,8 @@ public class AemRelations {
 
   public static final String SLING_RESOURCE = "sling:resource";
 
+  public static final String SLING_ROOT = "sling:root";
+
   public static final String JCR_CONTENT = "jcr:content";
 
   public static final String INFINITY_JSON = "infinity:json";
@@ -26,4 +28,5 @@ public class AemRelations {
   public static final String BINARY = "aem:binary";
 
   public static final String RENDITION = "aem:rendition";
+
 }

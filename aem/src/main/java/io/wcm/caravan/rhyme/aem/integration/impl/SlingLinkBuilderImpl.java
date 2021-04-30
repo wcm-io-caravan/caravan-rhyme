@@ -1,6 +1,7 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -9,17 +10,17 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import com.damnhandy.uri.template.UriTemplate;
+import com.damnhandy.uri.template.UriTemplateBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingRhyme.class, adapters = SlingLinkBuilder.class)
 public class SlingLinkBuilderImpl implements SlingLinkBuilder {
-
-  private static final String SELECTOR_CONSTANT = "SELECTOR";
 
   @Self
   private Resource targetResource;
@@ -73,5 +74,79 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
     return registry.getSelectorForModelClass(slingModel.getClass())
         .orElse(null);
+  }
+
+  @Override
+  public <T extends LinkableResource> TemplateBuilder<T> buildTemplateTo(Class<T> halApiInterface) {
+
+    return new TemplateBuilderImpl<T>(halApiInterface);
+  }
+
+  class TemplateBuilderImpl<T extends LinkableResource> implements TemplateBuilder<T> {
+
+    private static final String PATH_PLACEHOLDER = "/letsassumethisisunlikelytoexist";
+    private final Class<T> halApiInterface;
+
+    private String linkTitle;
+    private String[] queryParameters;
+
+    TemplateBuilderImpl(Class<T> halApiInterface) {
+      this.halApiInterface = halApiInterface;
+    }
+
+    @Override
+    public Optional<T> buildOptional() {
+      return Optional.of(createResource());
+    }
+
+    @Override
+    public TemplateBuilder<T> withTitle(String title) {
+
+      linkTitle = title;
+
+      return this;
+    }
+
+    @Override
+    public TemplateBuilder<T> withQueryParameters(String... parameters) {
+
+      queryParameters = parameters;
+
+      return this;
+    }
+
+    private <T extends LinkableResource> T createResource() {
+      return (T)new LinkableResource() {
+
+        @Override
+        public Link createLink() {
+
+          String baseTemplate = getResourceUrl().replace(PATH_PLACEHOLDER, "{+path}");
+
+          UriTemplateBuilder builder = UriTemplate.buildFromTemplate(baseTemplate);
+
+          if (queryParameters != null) {
+            builder.query(queryParameters);
+          }
+          String uriTemplate = builder.build()
+              .getTemplate();
+
+          return new Link(uriTemplate)
+              .setTitle(linkTitle);
+        }
+
+        private String getResourceUrl() {
+
+          String selector = registry.getSelectorForHalApiInterface(halApiInterface).orElse(null);
+
+          return urlHandler.get(PATH_PLACEHOLDER)
+              .selectors(selector)
+              .extension(HalApiServlet.EXTENSION)
+              .buildExternalLinkUrl();
+        }
+      };
+    }
+
+
   }
 }

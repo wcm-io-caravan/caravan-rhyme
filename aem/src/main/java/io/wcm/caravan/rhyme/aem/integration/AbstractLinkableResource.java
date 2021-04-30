@@ -15,7 +15,7 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
   protected SlingResourceAdapter resourceAdapter;
 
   @RhymeObject
-  private SlingLinkBuilder linkBuilder;
+  protected SlingLinkBuilder linkBuilder;
 
   private String contextLinkTitle;
 

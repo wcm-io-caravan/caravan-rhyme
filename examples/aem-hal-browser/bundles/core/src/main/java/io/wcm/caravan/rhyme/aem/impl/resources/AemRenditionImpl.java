@@ -31,8 +31,8 @@ import io.wcm.handler.media.format.MediaFormatBuilder;
 @Model(adaptables = Resource.class, adapters = { AemRendition.class })
 public class AemRenditionImpl extends AbstractLinkableResource implements AemRendition {
 
-  private static final String HEIGHT = "height";
-  private static final String WIDTH = "width";
+  static final String HEIGHT = "height";
+  static final String WIDTH = "width";
 
   @Self
   private Asset asset;
