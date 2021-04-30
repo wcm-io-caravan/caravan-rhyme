@@ -14,7 +14,7 @@ import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Component
-public class HalBrowserResourceSelectorProvider implements ResourceSelectorProvider {
+public class AemHalBrowserSelectors implements ResourceSelectorProvider {
 
   @Override
   public Map<Class<? extends LinkableResource>, String> getModelClassesWithSelectors() {
