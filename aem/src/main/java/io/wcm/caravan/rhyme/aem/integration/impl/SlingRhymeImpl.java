@@ -2,9 +2,8 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -14,7 +13,6 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -31,6 +29,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   private final Resource currentResource;
   private final Rhyme rhyme;
 
+  @Inject
   public SlingRhymeImpl(@Self SlingHttpServletRequest request) {
 
     this.request = request;
@@ -49,11 +48,30 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   }
 
   @Override
-  public <@Nullable T> T adaptResource(Resource resource, @NotNull Class<T> modelClass) {
+  public <@NotNull T> T adaptResource(Resource resource, @NotNull Class<T> modelClass) {
 
     if (resource == null) {
       throw new HalApiDeveloperException("Cannot adapt null resource to " + modelClass.getSimpleName());
     }
+
+    verifyModelAnnotationIfPresent(modelClass);
+
+    try {
+      T slingModel = resource.adaptTo(modelClass);
+      if (slingModel == null) {
+        throw new HalApiDeveloperException("Failed to adapt " + resource + " to " + modelClass.getSimpleName());
+      }
+
+      RhymeObjects.injectIntoSlingModel(slingModel, () -> new SlingRhymeImpl(this, resource));
+
+      return slingModel;
+    }
+    catch (RuntimeException ex) {
+      throw new HalApiDeveloperException("Failed to adapt " + resource + " to " + modelClass.getSimpleName(), ex);
+    }
+  }
+
+  private void verifyModelAnnotationIfPresent(Class<?> modelClass) {
 
     Model modelAnnotation = modelClass.getAnnotation(Model.class);
     if (modelAnnotation != null) {
@@ -66,15 +84,6 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
         throw new HalApiDeveloperException(modelClass + " is not declared to be adaptable from " + Resource.class);
       }
     }
-
-    T slingModel = resource.adaptTo(modelClass);
-    if (slingModel == null) {
-      throw new HalApiDeveloperException("Failed to adapt " + resource + " to " + modelClass.getSimpleName());
-    }
-
-    RhymeObjects.injectIntoSlingModel(slingModel, () -> new SlingRhymeImpl(this, resource));
-
-    return slingModel;
   }
 
   @Override
@@ -93,42 +102,10 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     return super.adaptTo(type);
   }
 
-
-  @Override
-  public HalResponse renderRequestedResource(Map<String, Class<? extends LinkableResource>> selectorModelClassMap) {
-
-    try {
-      Resource requestedResource = getRequestedResource();
-
-      Class<? extends LinkableResource> slingModelClass = findSlingModelClass(selectorModelClassMap);
-
-      LinkableResource resourceImpl = adaptResource(requestedResource, slingModelClass);
-
-      return renderResource(resourceImpl);
-    }
-    catch (RuntimeException ex) {
-      return rhyme.renderVndErrorResponse(ex);
-    }
-  }
-
   @Override
   public HalResponse renderResource(LinkableResource resourceImpl) {
 
     return rhyme.renderResponse(resourceImpl);
-  }
-
-  private Class<? extends LinkableResource> findSlingModelClass(Map<String, Class<? extends LinkableResource>> selectorModelClassMap) {
-
-    List<String> selectors = Arrays.asList(request.getRequestPathInfo().getSelectors());
-
-    for (String selector : selectors) {
-      Class<? extends LinkableResource> modelClass = selectorModelClassMap.get(selector);
-      if (modelClass != null) {
-        return modelClass;
-      }
-    }
-
-    return LinkableResource.class;
   }
 
   @Override

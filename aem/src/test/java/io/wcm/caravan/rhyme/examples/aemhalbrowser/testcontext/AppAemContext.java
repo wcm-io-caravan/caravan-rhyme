@@ -40,8 +40,6 @@ public final class AppAemContext {
 
     context.registerInjectActivateService(new ResourceSelectorRegistry());
 
-    context.addModelsForPackage("io.wcm.caravan.rhyme.aem.integration.impl");
-
     return context;
   }
 

@@ -74,18 +74,42 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
         "children of " + currentResource.getPath());
   }
 
+  @Override
+  public SlingResourceAdapter selectContentOfCurrentPage() {
+
+    Resource page = getPageResource();
+
+    return resourceSelector.add(getContentResources(Stream.of(page)), "content " + page.getPath());
+  }
+
+  @Override
+  public SlingResourceAdapter selectContentOfParentPage() {
+
+    Resource page = getPageResource();
+
+    Stream<Resource> parentPage = Stream.of(page.getParent());
+
+    return resourceSelector.add(getContentResources(parentPage), "content of parent page of " + page.getPath());
+  }
+
+  @Override
+  public SlingResourceAdapter selectContentOfGrandParentPage() {
+
+    Resource page = getPageResource();
+
+    Stream<Resource> grandParentPage = Stream.of(page.getParent()).filter(Objects::nonNull).map(Resource::getParent);
+
+    return resourceSelector.add(getContentResources(grandParentPage), "content of grand parent page of " + page.getPath());
+  }
 
   @Override
   public SlingResourceAdapter selectContentOfChildPages() {
 
     Resource page = getPageResource();
 
-    Stream<Resource> contentNodes = ResourceUtils.getStreamOfChildPages(page)
-        .map(child -> child.getChild(JcrConstants.JCR_CONTENT))
-        .filter(Objects::nonNull);
+    Stream<Resource> childPages = ResourceUtils.getStreamOfChildPages(page);
 
-
-    return resourceSelector.add(contentNodes, "content of child pages of " + page.getPath());
+    return resourceSelector.add(getContentResources(childPages), "content of child pages of " + page.getPath());
   }
 
   @Override
@@ -93,26 +117,29 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
     Resource page = getPageResource();
 
-    Stream<Resource> contentNodes = ResourceUtils.getStreamOfChildPages(page)
-        .filter(child -> name.equals(child.getName()))
-        .map(child -> child.getChild(JcrConstants.JCR_CONTENT))
-        .filter(Objects::nonNull);
+    Stream<Resource> childPage = ResourceUtils.getStreamOfChildPages(page)
+        .filter(child -> name.equals(child.getName()));
 
-    return resourceSelector.add(contentNodes, "content of child page named '" + name + "' of " + page.getPath());
+    return resourceSelector.add(getContentResources(childPage), "content of child page named '" + name + "' of " + page.getPath());
   }
-
 
   @Override
   public SlingResourceAdapter selectContentOfGrandChildPages() {
 
     Resource page = getPageResource();
 
-    Stream<Resource> contentNodes = ResourceUtils.getStreamOfChildPages(page)
-        .flatMap(ResourceUtils::getStreamOfChildPages)
+    Stream<Resource> grandChildPages = ResourceUtils.getStreamOfChildPages(page)
+        .flatMap(ResourceUtils::getStreamOfChildPages);
+
+    return resourceSelector.add(getContentResources(grandChildPages), "content of grand child pages of " + page.getPath());
+  }
+
+  private Stream<Resource> getContentResources(Stream<Resource> pageResources) {
+
+    return pageResources
+        .filter(Objects::nonNull)
         .map(child -> child.getChild(JcrConstants.JCR_CONTENT))
         .filter(Objects::nonNull);
-
-    return resourceSelector.add(contentNodes, "content of grand child pages of " + page.getPath());
   }
 
 

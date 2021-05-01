@@ -3,22 +3,15 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import org.apache.http.HttpStatus;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.google.common.collect.ImmutableMap;
-
-import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
-import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
-import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -27,8 +20,6 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 public class SlingRhymeImplTest {
 
   private AemContext context = AppAemContext.newAemContext();
-
-  private ImmutableMap<String, Class<? extends LinkableResource>> selectorModelClassMap = ImmutableMap.of("testresource", TestResource.class);
 
   @Test
   public void can_be_adapted_from_SlingHttpServletRequest_to_impl_class() throws Exception {
@@ -144,35 +135,6 @@ public class SlingRhymeImplTest {
   }
 
   static class NotAnAdaptableClass {
-
-  }
-
-  @Test
-  public void renderRequestedResource() throws Exception {
-
-    SlingRhyme rhyme = createRhymeInstance();
-
-    HalResponse response = rhyme.renderRequestedResource(selectorModelClassMap);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getStatus()).isEqualTo(HttpStatus.SC_OK);
-    assertThat(response.getBody().getLink().getHref()).isEqualTo(TestLinkableResource.TEST_PATH);
-  }
-
-  @HalApiInterface
-  public interface TestResource extends LinkableResource {
-
-  }
-
-  @Model(adaptables = Resource.class, adapters = LinkableResource.class, resourceType = "nt:unstructured")
-  public static class TestLinkableResource implements TestResource {
-
-    private static final String TEST_PATH = "/foo/bar.json";
-
-    @Override
-    public Link createLink() {
-      return new Link(TEST_PATH);
-    }
 
   }
 }

@@ -13,8 +13,10 @@ import java.util.List;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.jetbrains.annotations.NotNull;
@@ -26,8 +28,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
-import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 
@@ -51,30 +53,49 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
   protected void doGet(@NotNull SlingHttpServletRequest request, @NotNull SlingHttpServletResponse response)
       throws ServletException, IOException {
 
-    SlingRhyme rhyme = request.adaptTo(SlingRhyme.class);
-    if (rhyme == null) {
-      throw new RuntimeException("request could not be adapted to " + SlingRhyme.class);
+    SlingRhymeImpl rhyme = request.adaptTo(SlingRhymeImpl.class);
+
+    try {
+      ensureThatRequestIsValid(request);
+
+      LinkableResource requestedResource = adaptRequestedResourceToSlingModel(request, rhyme);
+
+      HalResponse halResponse = rhyme.renderResource(requestedResource);
+
+      writeHalResponse(halResponse, response);
     }
+    catch (RuntimeException ex) {
 
-    List<String> selectors = Arrays.asList(request.getRequestPathInfo().getSelectors());
-    Class<? extends LinkableResource> modelClass = registry.getModelClassForSelectors(selectors);
+      HalResponse errorResponse = rhyme.getCaravanRhyme().renderVndErrorResponse(ex);
 
-    LinkableResource linkableResource = rhyme.adaptResource(request.getResource(), modelClass);
-    if (linkableResource == null) {
-      throw new RuntimeException("requested resource " + request.getResource().getResourceType() + " could not be adapted");
+      writeHalResponse(errorResponse, response);
     }
-
-    HalResponse halResponse = rhyme.renderResource(linkableResource);
-
-    writeHalResponse(halResponse, response);
   }
 
+  private void ensureThatRequestIsValid(SlingHttpServletRequest request) {
+
+    Resource resource = request.getResource();
+
+    if (Resource.RESOURCE_TYPE_NON_EXISTING.equals(resource.getResourceType())) {
+      throw new HalApiServerException(HttpStatus.SC_NOT_FOUND,
+          "There does not exist any resource at " + resource.getPath());
+    }
+  }
+
+  private LinkableResource adaptRequestedResourceToSlingModel(SlingHttpServletRequest request, SlingRhymeImpl rhyme) {
+
+    List<String> selectors = Arrays.asList(request.getRequestPathInfo().getSelectors());
+
+    Class<? extends LinkableResource> modelClass = registry.getModelClassForSelectors(selectors);
+
+    return rhyme.adaptResource(request.getResource(), modelClass);
+  }
 
   private void writeHalResponse(HalResponse halResponse, SlingHttpServletResponse servletResponse)
       throws IOException, JsonGenerationException, JsonMappingException {
 
-    servletResponse.setCharacterEncoding(Charsets.UTF_8.name());
     servletResponse.setContentType(halResponse.getContentType());
+    servletResponse.setCharacterEncoding(Charsets.UTF_8.name());
     servletResponse.setStatus(halResponse.getStatus());
     if (halResponse.getMaxAge() != null) {
       servletResponse.setHeader("cache-control", "max-age=" + halResponse.getMaxAge());
