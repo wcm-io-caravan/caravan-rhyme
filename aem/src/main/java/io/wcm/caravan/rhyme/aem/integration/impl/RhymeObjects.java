@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 class RhymeObjects {
 
@@ -28,7 +29,8 @@ class RhymeObjects {
         else {
           Object adapted = slingRhyme.adaptTo(field.getType());
           if (adapted == null) {
-            throw new RuntimeException("Failed to adapt " + slingRhyme.getClass().getName() + " instance to " + field.getType());
+            throw new HalApiDeveloperException(
+                "Cannot inject " + field.getName() + " field, as " + field.getType() + " couldn't be adapted from " + slingRhyme.getClass().getSimpleName());
           }
           writeFieldUnchecked(slingModel, field, adapted);
         }

@@ -2,16 +2,24 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -111,6 +119,46 @@ public class SlingRhymeImplTest {
   }
 
   @Test
+  public void adaptResource_should_inject_SlingHttpServletRequest_instance() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    ModelWithSlingRequestField model = rhyme.adaptResource(context.currentResource(), ModelWithSlingRequestField.class);
+
+    assertThat(model).isNotNull();
+    assertThat(model.request).isNotNull();
+  }
+
+  @Model(adaptables = Resource.class)
+  public static class ModelWithSlingRequestField {
+
+    @RhymeObject
+    private SlingHttpServletRequest request;
+  }
+
+  @Test
+  public void adaptResource_should_fail_to_inject_field_that_isnt_adaptable() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    Throwable ex = catchThrowable(() -> rhyme.adaptResource(context.currentResource(), ModelWithInvalidField.class));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("Failed to adapt")
+        .hasCauseInstanceOf(HalApiDeveloperException.class);
+
+    assertThat(ex.getCause())
+        .hasMessageStartingWith("Cannot inject servlet field");
+  }
+
+  @Model(adaptables = Resource.class)
+  public static class ModelWithInvalidField {
+
+    @RhymeObject
+    private HalApiServlet servlet;
+  }
+
+  @Test
   public void adaptResource_should_fail_for_null_resource() throws Exception {
 
     SlingRhyme rhyme = createRhymeInstance();
@@ -123,7 +171,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_fail_if_adaption_not_possible() throws Exception {
+  public void adaptResource_should_fail_if_class_is_not_a_sling_model() throws Exception {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -136,5 +184,56 @@ public class SlingRhymeImplTest {
 
   static class NotAnAdaptableClass {
 
+  }
+
+  @Test
+  public void adaptResource_should_fail_if_model_is_not_adaptable_from_request() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    Throwable ex = catchThrowable(() -> rhyme.adaptResource(context.currentResource(), ModelAdaptablesFromRequest.class));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageEndingWith("is not declared to be adaptable from " + Resource.class);
+  }
+
+  @Model(adaptables = SlingHttpServletRequest.class)
+  static class ModelAdaptablesFromRequest {
+
+  }
+
+  @Test
+  public void getRemoteResource_should_fail_if_no_JsonResourceLoader_has_been_registered() {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    // obtaining the client proxy will still work
+    SlingTestResource resource = rhyme.getRemoteResource("http://localhost/foo", SlingTestResource.class);
+
+    // but as soon as a method that triggers an HTTP request is called things will fall apart
+    Throwable ex = catchThrowable(() -> resource.getState());
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("No OSGi services implementing " + JsonResourceLoader.class + " are running");
+  }
+
+  @Test
+  public void getRemoteResource_should_use_registered_JsonResourceLoader_instance() {
+
+    HalApiClientException clientException = new HalApiClientException("Simulated client failure", 403, null, null);
+
+    JsonResourceLoader jsonLoader = mock(JsonResourceLoader.class);
+    Mockito.when(jsonLoader.loadJsonResource(anyString()))
+        .thenReturn(Single.error(clientException));
+    context.registerService(JsonResourceLoader.class, jsonLoader);
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    SlingTestResource resource = rhyme.getRemoteResource("http://localhost/foo", SlingTestResource.class);
+
+    Throwable ex = catchThrowable(() -> resource.getState());
+
+    assertThat(ex).isInstanceOf(HalApiClientException.class)
+        .hasCause(clientException);
   }
 }

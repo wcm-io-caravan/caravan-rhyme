@@ -1,22 +1,19 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
 
-import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.base.Preconditions;
 
-import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
+import io.wcm.caravan.rhyme.aem.integration.ResourceStreams;
+import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
@@ -49,144 +46,79 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter select(Stream<Resource> resources) {
 
-    return resourceSelector.add(resources,
-        "custom stream of resourcs");
+    return resourceSelector.add(resources, "custom stream of resourcs");
   }
 
   @Override
   public SlingResourceAdapter selectCurrentResource() {
 
-    return resourceSelector.add(Stream.of(currentResource),
-        "current resource at " + currentResource.getPath());
+    return resourceSelector.add(currentResource, Stream::of, "current resource at {}");
   }
 
   @Override
   public SlingResourceAdapter selectParentResource() {
 
-    return resourceSelector.add(Stream.of(currentResource.getParent()).filter(Objects::nonNull),
-        "parent of " + currentResource.getPath());
+    return resourceSelector.add(currentResource, ResourceStreams::getParent, "parent of {}");
   }
 
   @Override
   public SlingResourceAdapter selectChildResources() {
 
-    return resourceSelector.add(ResourceUtils.getStreamOfChildren(currentResource),
-        "children of " + currentResource.getPath());
+    return resourceSelector.add(currentResource, ResourceStreams::getChildren, "children of {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentOfCurrentPage() {
 
-    Resource page = getPageResource();
-
-    return resourceSelector.add(getContentResources(Stream.of(page)), "content " + page.getPath());
+    return resourceSelector.add(currentResource, ResourceStreams::getContentOfContainingPage, "content of {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentOfParentPage() {
 
-    Resource page = getPageResource();
-
-    Stream<Resource> parentPage = Stream.of(page.getParent());
-
-    return resourceSelector.add(getContentResources(parentPage), "content of parent page of " + page.getPath());
+    return resourceSelector.add(currentResource, ResourceStreams::getContentOfParentPage, "content of parent page of {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentOfGrandParentPage() {
 
-    Resource page = getPageResource();
-
-    Stream<Resource> grandParentPage = Stream.of(page.getParent()).filter(Objects::nonNull).map(Resource::getParent);
-
-    return resourceSelector.add(getContentResources(grandParentPage), "content of grand parent page of " + page.getPath());
+    return resourceSelector.add(currentResource, ResourceStreams::getContentOfGrandParentPage, "content of grand parent page of {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentOfChildPages() {
 
-    Resource page = getPageResource();
-
-    Stream<Resource> childPages = ResourceUtils.getStreamOfChildPages(page);
-
-    return resourceSelector.add(getContentResources(childPages), "content of child pages of " + page.getPath());
+    return resourceSelector.add(currentResource, ResourceStreams::getContentOfChildPages, "content of child pages of {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentOfChildPage(String name) {
 
-    Resource page = getPageResource();
-
-    Stream<Resource> childPage = ResourceUtils.getStreamOfChildPages(page)
-        .filter(child -> name.equals(child.getName()));
-
-    return resourceSelector.add(getContentResources(childPage), "content of child page named '" + name + "' of " + page.getPath());
+    return resourceSelector.add(currentResource, res -> ResourceStreams.getContentOfNamedChildPage(res, name),
+        "content of child page named '" + name + "' of {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentOfGrandChildPages() {
 
-    Resource page = getPageResource();
-
-    Stream<Resource> grandChildPages = ResourceUtils.getStreamOfChildPages(page)
-        .flatMap(ResourceUtils::getStreamOfChildPages);
-
-    return resourceSelector.add(getContentResources(grandChildPages), "content of grand child pages of " + page.getPath());
+    return resourceSelector.add(currentResource, ResourceStreams::getContentOfGrandChildPages, "content of grand child pages of {}");
   }
-
-  private Stream<Resource> getContentResources(Stream<Resource> pageResources) {
-
-    return pageResources
-        .filter(Objects::nonNull)
-        .map(child -> child.getChild(JcrConstants.JCR_CONTENT))
-        .filter(Objects::nonNull);
-  }
-
 
   @Override
   public SlingResourceAdapter selectChildResource(String name) {
 
-    return resourceSelector.add(ResourceUtils.getStreamOfChildren(currentResource).filter(r -> name.equals(r.getName())),
-        "child named '" + name + "' of " + currentResource.getPath());
+    return resourceSelector.add(currentResource, res -> ResourceStreams.getNamedChild(res, name), "child named '" + name + "' of {}");
   }
-
-  @Override
-  public SlingResourceAdapter selectLinkedResources() {
-
-    return resourceSelector.add(findLinkedResourcesIn(currentResource),
-        "resources that are linked from " + currentResource.getPath());
-  }
-
-  private Stream<Resource> findLinkedResourcesIn(Resource contentResource) {
-
-    ValueMap properties = contentResource.getValueMap();
-
-    ResourceResolver resolver = currentResource.getResourceResolver();
-
-    Stream<Resource> linkedInThisResource = properties.entrySet().stream()
-        .filter(entry -> entry.getValue() instanceof String)
-        .map(entry -> (String)entry.getValue())
-        .filter(value -> value.startsWith("/"))
-        .map(contentRef -> resolver.getResource(contentRef))
-        .filter(Objects::nonNull);
-
-    Stream<Resource> linkedInChildResources = StreamSupport.stream(contentResource.getChildren().spliterator(), false)
-        .flatMap(this::findLinkedResourcesIn);
-
-    return Stream.concat(linkedInThisResource, linkedInChildResources);
-  }
-
 
   @Override
   public SlingResourceAdapter selectResourceAt(String path) {
 
     Resource resource = currentResource.getResourceResolver().getResource(path);
     if (resource == null) {
-      return resourceSelector.add(Stream.empty(), "non-existant resource at " + path);
+      return resourceSelector.add(Stream.empty(), "non-existent resource at " + path);
     }
 
-    return resourceSelector.add(Stream.of(resource),
-        "different resource at " + resource.getPath());
+    return resourceSelector.add(Stream.of(resource), "different resource at " + resource.getPath());
   }
 
 
@@ -230,11 +162,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     private TypedResourceAdapterImpl(Class<ModelType> clazz, LinkDecorator<ModelType> decorator) {
       this.clazz = clazz;
       this.linkDecorator = decorator;
-
-      if (AbstractLinkableResource.class.isAssignableFrom(clazz)) {
-        throw new HalApiDeveloperException(
-            "Your model class must implement " + AbstractLinkableResource.class.getName() + " if you want to decorate your links");
-      }
     }
 
     private TypedResourceAdapterImpl<ModelType> withLinkDecorator(LinkDecorator<ModelType> decorator) {
@@ -250,7 +177,8 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     @Override
     public ModelType getInstance() {
 
-      return getOptional().orElseThrow(() -> new HalApiDeveloperException("No elements were found"));
+      return getOptional()
+          .orElseThrow(() -> new HalApiDeveloperException("No resources were found after selecting " + resourceSelector.description));
     }
 
     @Override
@@ -287,12 +215,13 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
     private void decorateLinks(Resource resource, ModelType model) {
 
-      if (!(model instanceof AbstractLinkableResource)) {
+      if (!(model instanceof SlingLinkableResource)) {
         throw new HalApiDeveloperException(
-            "model class " + model.getClass().getSimpleName() + " does not implement " + AbstractLinkableResource.class.getName());
+            "Your model class " + model.getClass().getSimpleName() + " does not implement " + SlingLinkableResource.class.getName()
+                + " (which is required if you want to override link names and titles via SlingResourceAdapter)");
       }
 
-      AbstractLinkableResource linkable = (AbstractLinkableResource)model;
+      SlingLinkableResource linkable = (SlingLinkableResource)model;
 
       linkable.setLinkTitle(linkDecorator.getLinkTitle(resource, model));
     }
@@ -301,21 +230,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   private interface LinkDecorator<ModelType> {
 
     String getLinkTitle(Resource resource, ModelType model);
-  }
-
-  private SlingResourceAdapterImpl fromCurrentPage() {
-    return new SlingResourceAdapterImpl(slingRhyme, getPageResource(), resourceSelector, resourceFilter);
-  }
-
-  private Resource getPageResource() {
-    Resource candidate = currentResource;
-    while (candidate != null && !ResourceUtils.isPage(candidate)) {
-      candidate = candidate.getParent();
-    }
-    if (candidate == null) {
-      throw new HalApiDeveloperException("Failed to find a parent cq:Page node from " + currentResource.getPath());
-    }
-    return candidate;
   }
 
   private final class ResourceFilter {
@@ -357,6 +271,13 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     private ResourceSelector(String description, Stream<Resource> resources) {
       this.description = description;
       this.resources = resources;
+    }
+
+    private SlingResourceAdapterImpl add(Resource contextResource, Function<Resource, Stream<Resource>> streamFunc, String newDescription) {
+
+      Stream<Resource> stream = streamFunc.apply(contextResource);
+
+      return add(stream, newDescription.replace("{}", contextResource.getPath()));
     }
 
     private SlingResourceAdapterImpl add(@NotNull Stream<Resource> newResources, String newDescription) {

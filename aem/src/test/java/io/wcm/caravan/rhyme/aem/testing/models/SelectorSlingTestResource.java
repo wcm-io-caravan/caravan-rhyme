@@ -28,9 +28,8 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestState;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-@Model(adaptables = Resource.class, adapters = LinkableResource.class)
+@Model(adaptables = Resource.class, adapters = SlingTestResource.class)
 public class SelectorSlingTestResource extends AbstractLinkableResource implements SlingTestResource {
 
   public static final String SELECTOR = "selectortest";
@@ -60,4 +59,12 @@ public class SelectorSlingTestResource extends AbstractLinkableResource implemen
   protected String getDefaultLinkTitle() {
     return DEFAULT_TITLE;
   }
+
+  @Override
+  public String toString() {
+
+    return getClass().getSimpleName() + " at " + resource.getPath();
+  }
+
+
 }

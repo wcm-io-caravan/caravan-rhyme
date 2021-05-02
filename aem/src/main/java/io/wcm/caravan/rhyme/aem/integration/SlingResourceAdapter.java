@@ -28,8 +28,6 @@ public interface SlingResourceAdapter {
 
   SlingResourceAdapter selectContentOfGrandChildPages();
 
-  SlingResourceAdapter selectLinkedResources();
-
   SlingResourceAdapter selectResourceAt(String path);
 
   SlingResourceAdapter select(Stream<Resource> resources);

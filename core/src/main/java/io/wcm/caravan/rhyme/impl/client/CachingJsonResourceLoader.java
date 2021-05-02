@@ -111,6 +111,9 @@ class CachingJsonResourceLoader implements JsonResourceLoader {
     if (ex instanceof HalApiClientException) {
       return Single.error(ex);
     }
+    if (ex instanceof HalApiDeveloperException) {
+      return Single.error(ex);
+    }
 
     RuntimeException re = new HalApiDeveloperException("An unexpected exception was emitted by " + delegate.getClass().getName() + " when requesting " + uri
         + ". Please make sure that your implementation rethrows all exceptions as HalApiClientException, to provide status code information whenever possible ",

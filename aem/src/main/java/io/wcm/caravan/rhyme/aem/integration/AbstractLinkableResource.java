@@ -1,8 +1,5 @@
 package io.wcm.caravan.rhyme.aem.integration;
 
-import java.util.Collections;
-import java.util.Map;
-
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
@@ -31,6 +28,7 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
     return contextLinkTitle != null ? contextLinkTitle : getDefaultLinkTitle();
   }
 
+  @Override
   public void setLinkTitle(String linkTitle) {
 
     this.contextLinkTitle = linkTitle;
@@ -38,8 +36,4 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
 
   protected abstract String getDefaultLinkTitle();
 
-  @Override
-  public Map<String, Object> getQueryParameters() {
-    return Collections.emptyMap();
-  }
 }

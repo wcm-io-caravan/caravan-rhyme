@@ -18,6 +18,8 @@ public interface SlingLinkBuilder {
 
     TemplateBuilder<T> withQueryParameters(String... parameters);
 
+    T buildRequired();
+
     Optional<T> buildOptional();
   }
 }

@@ -13,6 +13,8 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.dam.api.Asset;
 import com.day.cq.wcm.api.Page;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.wcm.caravan.rhyme.aem.api.assets.AemAsset;
@@ -20,23 +22,23 @@ import io.wcm.caravan.rhyme.aem.api.generic.InfinityJsonResource;
 import io.wcm.caravan.rhyme.aem.api.generic.SlingResource;
 import io.wcm.caravan.rhyme.aem.api.sites.AemPage;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.aem.integration.SlingPropertiesConverter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Model(adaptables = Resource.class, adapters = { LinkableResource.class, SlingResource.class },
     resourceType = { "sling:redirect", "nt:Folder" })
 public class SlingResourceImpl extends AbstractLinkableResource implements SlingResource {
 
-  @Self
-  private Resource resource;
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+      .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
   @Self
-  private SlingPropertiesConverter properties;
+  private Resource resource;
 
   @Override
   public ObjectNode getProperties() {
 
-    return properties.getPropertiesAs(ObjectNode.class);
+    return OBJECT_MAPPER.convertValue(resource.getValueMap(), ObjectNode.class);
   }
 
   @Override

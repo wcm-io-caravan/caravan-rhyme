@@ -1,10 +1,15 @@
 package io.wcm.caravan.rhyme.aem.impl.resources.sites;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import com.day.cq.dam.api.Asset;
 import com.day.cq.wcm.api.Page;
@@ -24,6 +29,9 @@ public class AemLinkedContentImpl implements AemLinkedContent {
 
   private static final Predicate<Resource> IS_OTHER = IS_ASSET.or(IS_PAGE).negate();
 
+  @Self
+  private Resource currentResource;
+
   @RhymeObject
   private SlingResourceAdapter resourceAdapter;
 
@@ -31,7 +39,7 @@ public class AemLinkedContentImpl implements AemLinkedContent {
   public Stream<AemPage> getLinkedPages() {
 
     return resourceAdapter
-        .selectLinkedResources()
+        .select(findLinkedResourcesIn(currentResource))
         .filter(IS_PAGE)
         .adaptTo(AemPage.class)
         .getStream();
@@ -41,7 +49,7 @@ public class AemLinkedContentImpl implements AemLinkedContent {
   public Stream<AemAsset> getLinkedAssets() {
 
     return resourceAdapter
-        .selectLinkedResources()
+        .select(findLinkedResourcesIn(currentResource))
         .filter(IS_ASSET)
         .adaptTo(AemAsset.class)
         .getStream();
@@ -51,10 +59,31 @@ public class AemLinkedContentImpl implements AemLinkedContent {
   public Stream<SlingResource> getOtherLinkedResources() {
 
     return resourceAdapter
-        .selectLinkedResources()
+        .select(findLinkedResourcesIn(currentResource))
         .filter(IS_OTHER)
         .adaptTo(SlingResource.class)
         .getStream();
   }
+
+
+  private Stream<Resource> findLinkedResourcesIn(Resource contentResource) {
+
+    ValueMap properties = contentResource.getValueMap();
+
+    ResourceResolver resolver = currentResource.getResourceResolver();
+
+    Stream<Resource> linkedInThisResource = properties.entrySet().stream()
+        .filter(entry -> entry.getValue() instanceof String)
+        .map(entry -> (String)entry.getValue())
+        .filter(value -> value.startsWith("/"))
+        .map(contentRef -> resolver.getResource(contentRef))
+        .filter(Objects::nonNull);
+
+    Stream<Resource> linkedInChildResources = StreamSupport.stream(contentResource.getChildren().spliterator(), false)
+        .flatMap(this::findLinkedResourcesIn);
+
+    return Stream.concat(linkedInThisResource, linkedInChildResources);
+  }
+
 
 }

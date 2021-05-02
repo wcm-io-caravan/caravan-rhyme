@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
     resourceType = ResourceTypeSlingTestResource.RESOURCE_TYPE)
 public class ResourceTypeSlingTestResource extends AbstractLinkableResource implements SlingTestResource {
 
-  public static final String RESOURCE_TYPE = "/apps/rhyme_aem/test_resource";
+  public static final String RESOURCE_TYPE = "rhyme_aem/test_resource";
 
   public static final String DEFAULT_TITLE = "the default title of the test resource that is registered to a resource type";
 

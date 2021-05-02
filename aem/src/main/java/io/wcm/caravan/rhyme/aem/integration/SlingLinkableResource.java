@@ -8,8 +8,10 @@ public interface SlingLinkableResource {
 
   String getLinkTitle();
 
+  void setLinkTitle(String linkTitle);
+
   default Map<String, Object> getQueryParameters() {
     return Collections.emptyMap();
-  };
+  }
 
 }

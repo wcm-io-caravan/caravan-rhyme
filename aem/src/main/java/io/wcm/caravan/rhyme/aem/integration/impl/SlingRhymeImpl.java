@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.adapter.SlingAdaptable;
-import org.apache.sling.api.request.RequestParameterMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
@@ -30,13 +29,13 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   private final Rhyme rhyme;
 
   @Inject
-  public SlingRhymeImpl(@Self SlingHttpServletRequest request) {
+  public SlingRhymeImpl(@Self SlingHttpServletRequest request, JsonResourceLoaderPicker picker) {
 
     this.request = request;
 
     this.currentResource = request.getResource();
 
-    this.rhyme = RhymeBuilder.withoutResourceLoader()
+    this.rhyme = RhymeBuilder.withResourceLoader(picker.getResourceLoader())
         .buildForRequestTo(request.getRequestURL().toString());
   }
 
@@ -76,10 +75,6 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     Model modelAnnotation = modelClass.getAnnotation(Model.class);
     if (modelAnnotation != null) {
 
-      if (modelAnnotation.adaptables() == null) {
-        throw new HalApiDeveloperException("The @" + Model.class.getSimpleName() + " annotation of " + modelClass + " does not define the adaptables");
-      }
-
       if (!Arrays.asList(modelAnnotation.adaptables()).contains(Resource.class)) {
         throw new HalApiDeveloperException(modelClass + " is not declared to be adaptable from " + Resource.class);
       }
@@ -103,18 +98,6 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   }
 
   @Override
-  public HalResponse renderResource(LinkableResource resourceImpl) {
-
-    return rhyme.renderResponse(resourceImpl);
-  }
-
-  @Override
-  public RequestParameterMap getRequestParameters() {
-
-    return request.getRequestParameterMap();
-  }
-
-  @Override
   public Resource getRequestedResource() {
 
     return request.getResource();
@@ -127,18 +110,25 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   }
 
   Rhyme getCaravanRhyme() {
-
     return rhyme;
   }
 
   @Override
   public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
-    return this.rhyme.getUpstreamEntryPoint(uri, halApiInterface);
+    return rhyme.getUpstreamEntryPoint(uri, halApiInterface);
   }
 
   @Override
   public void setResponseMaxAge(Duration duration) {
-    this.rhyme.setResponseMaxAge(duration);
+    rhyme.setResponseMaxAge(duration);
+  }
+
+  HalResponse renderResource(LinkableResource resourceImpl) {
+    return rhyme.renderResponse(resourceImpl);
+  }
+
+  HalResponse renderVndErrorResponse(Throwable error) {
+    return rhyme.renderVndErrorResponse(error);
   }
 
 }

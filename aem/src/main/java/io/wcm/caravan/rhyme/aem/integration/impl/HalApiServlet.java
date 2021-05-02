@@ -66,7 +66,7 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
     }
     catch (RuntimeException ex) {
 
-      HalResponse errorResponse = rhyme.getCaravanRhyme().renderVndErrorResponse(ex);
+      HalResponse errorResponse = rhyme.renderVndErrorResponse(ex);
 
       writeHalResponse(errorResponse, response);
     }

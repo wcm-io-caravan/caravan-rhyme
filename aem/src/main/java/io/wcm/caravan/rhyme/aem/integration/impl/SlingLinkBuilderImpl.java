@@ -1,5 +1,8 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,6 +19,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.url.UrlHandler;
 
@@ -55,19 +59,19 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
   private String appendQueryWithTemplate(String baseUrl, SlingLinkableResource slingModel) {
 
-    Map<String, Object> suffixParts = slingModel.getQueryParameters();
-    if (suffixParts.isEmpty()) {
+    Map<String, Object> queryParams = slingModel.getQueryParameters();
+    if (queryParams.isEmpty()) {
       return baseUrl;
     }
-    String[] names = suffixParts.keySet().toArray(new String[suffixParts.size()]);
+    String[] names = queryParams.keySet().toArray(new String[queryParams.size()]);
 
     UriTemplate template = UriTemplate.buildFromTemplate(baseUrl).query(names).build();
 
-    suffixParts.entrySet().stream()
+    queryParams.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
         .forEach(entry -> template.set(entry.getKey(), entry.getValue()));
 
-    return template.expandPartial();
+    return template.expand();
   }
 
   private String getClassSpecificSelector(SlingLinkableResource slingModel) {
@@ -100,6 +104,11 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     }
 
     @Override
+    public T buildRequired() {
+      return createResource();
+    }
+
+    @Override
     public TemplateBuilder<T> withTitle(String title) {
 
       linkTitle = title;
@@ -116,35 +125,47 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     }
 
     private <T extends LinkableResource> T createResource() {
-      return (T)new LinkableResource() {
+
+      return (T)Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { halApiInterface }, new InvocationHandler() {
 
         @Override
-        public Link createLink() {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-          String baseTemplate = getResourceUrl().replace(PATH_PLACEHOLDER, "{+path}");
-
-          UriTemplateBuilder builder = UriTemplate.buildFromTemplate(baseTemplate);
-
-          if (queryParameters != null) {
-            builder.query(queryParameters);
+          if (method.getName().equals("createLink")) {
+            return createLink();
           }
-          String uriTemplate = builder.build()
-              .getTemplate();
 
-          return new Link(uriTemplate)
-              .setTitle(linkTitle);
+          throw new HalApiDeveloperException("Unsupported call to " + method.getName() + " method on "
+              + halApiInterface.getName() + " proxy instance. "
+              + "Any instances created with SlingLinkBuilder#buildTemplateTo can only be used to create link templates for these resources");
         }
+      });
+    }
 
-        private String getResourceUrl() {
+    private Link createLink() {
 
-          String selector = registry.getSelectorForHalApiInterface(halApiInterface).orElse(null);
+      String baseTemplate = getResourceUrl().replace(PATH_PLACEHOLDER, "{+path}");
 
-          return urlHandler.get(PATH_PLACEHOLDER)
-              .selectors(selector)
-              .extension(HalApiServlet.EXTENSION)
-              .buildExternalLinkUrl();
-        }
-      };
+      UriTemplateBuilder builder = UriTemplate.buildFromTemplate(baseTemplate);
+
+      if (queryParameters != null) {
+        builder.query(queryParameters);
+      }
+      String uriTemplate = builder.build()
+          .getTemplate();
+
+      return new Link(uriTemplate)
+          .setTitle(linkTitle);
+    }
+
+    private String getResourceUrl() {
+
+      String selector = registry.getSelectorForHalApiInterface(halApiInterface).orElse(null);
+
+      return urlHandler.get(PATH_PLACEHOLDER)
+          .selectors(selector)
+          .extension(HalApiServlet.EXTENSION)
+          .buildExternalLinkUrl();
     }
 
 
