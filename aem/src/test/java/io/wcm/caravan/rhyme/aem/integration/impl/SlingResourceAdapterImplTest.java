@@ -84,7 +84,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void should_adapt_single_instance_that_exists() throws Exception {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     SlingTestResource resource = adapter.selectCurrentResource()
         .adaptTo(SlingTestResource.class)
@@ -96,7 +96,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void should_fail_to_adapt_single_instance_that_does_not_exist() throws Exception {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     Throwable ex = catchThrowable(() -> adapter.selectResourceAt("/content/foo/bar")
         .adaptTo(SlingTestResource.class)
@@ -110,7 +110,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void should_adapt_optional_instance_that_exists() throws Exception {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     Optional<SlingTestResource> resource = adapter.selectCurrentResource()
         .adaptTo(SlingTestResource.class)
@@ -123,7 +123,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void should_return_empty_optional_instance_for_resource_that_does_not_exist() throws Exception {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     Optional<SlingTestResource> resource = adapter.selectResourceAt("/content/foo/bar")
         .adaptTo(SlingTestResource.class)
@@ -148,7 +148,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void should_fail_to_adapt_if_class_is_not_adaptable() {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     Throwable ex = catchThrowable(() -> adapter.selectCurrentResource()
         .adaptTo(NotAnAdaptableClass.class)
@@ -188,6 +188,144 @@ public class SlingResourceAdapterImplTest {
     }
   }
 
+
+  @Test
+  public void fromCurrentPage_should_work_from_page_resource() throws Exception {
+
+    setUpPages("/content/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    List<SlingTestResource> resources = applySelection(adapter.fromCurrentPage().selectCurrentResource());
+
+    assertThatResourcesMatch(resources, "/content/foo");
+  }
+
+  @Test
+  public void fromCurrentPage_should_work_from_page_content_resource() throws Exception {
+
+    setUpPages("/content/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content");
+
+    List<SlingTestResource> resources = applySelection(adapter.fromCurrentPage().selectCurrentResource());
+
+    assertThatResourcesMatch(resources, "/content/foo");
+  }
+
+  @Test
+  public void fromCurrentPage_should_work_from_below_page_content_resource() throws Exception {
+
+    setUpPages("/content/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content/bar");
+
+    List<SlingTestResource> resources = applySelection(adapter.fromCurrentPage().selectCurrentResource());
+
+    assertThatResourcesMatch(resources, "/content/foo");
+  }
+
+  @Test
+  public void fromCurrentPage_should_fail_if_there_is_no_page() throws Exception {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
+
+    Throwable ex = catchThrowable(() -> applySelection(adapter.fromCurrentPage().selectCurrentResource()));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageEndingWith("is not a page, and not located within a page");
+  }
+
+  @Test
+  public void fromParentPage_should_work_from_page_resource() throws Exception {
+
+    setUpPages("/content/foo", "/content/foo/bar");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
+
+    List<SlingTestResource> resources = applySelection(adapter.fromParentPage().selectCurrentResource());
+
+    assertThatResourcesMatch(resources, "/content/foo");
+  }
+
+  @Test
+  public void fromParentPage_should_work_from_page_content_resource() throws Exception {
+
+    setUpPages("/content/foo", "/content/foo/bar");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar/jcr:content");
+
+    List<SlingTestResource> resources = applySelection(adapter.fromParentPage().selectCurrentResource());
+
+    assertThatResourcesMatch(resources, "/content/foo");
+  }
+
+  @Test
+  public void fromParentPage_should_fail_if_there_is_no_parent_page() throws Exception {
+
+    setUpPages("/content/foo/bar");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
+
+    Throwable ex = catchThrowable(() -> applySelection(adapter.fromParentPage().selectCurrentResource()));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("The parent resource")
+        .hasMessageEndingWith("is not a page");
+  }
+
+  @Test
+  public void fromGrandParentPage_should_work_from_page_resource() throws Exception {
+
+    setUpPages("/content/foo", "/content/foo/bar", "/content/foo/bar/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar/foo");
+
+    List<SlingTestResource> resources = applySelection(adapter.fromGrandParentPage().selectCurrentResource());
+
+    assertThatResourcesMatch(resources, "/content/foo");
+  }
+
+  @Test
+  public void fromGrandParentPage_should_work_from_page_content_resource() throws Exception {
+
+    setUpPages("/content/foo", "/content/foo/bar", "/content/foo/bar/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar/foo/jcr:content");
+
+    List<SlingTestResource> resources = applySelection(adapter.fromGrandParentPage().selectCurrentResource());
+
+    assertThatResourcesMatch(resources, "/content/foo");
+  }
+
+  @Test
+  public void fromGrandParentPage_should_fail_if_there_is_no_parent_page() throws Exception {
+
+    setUpPages("/content/foo", "/content/foo/bar");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
+
+    Throwable ex = catchThrowable(() -> applySelection(adapter.fromGrandParentPage().selectCurrentResource()));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("The parent resource")
+        .hasMessageEndingWith("is not a page");
+  }
+
+  @Test
+  public void fromParentPage_should_fail_if_called_after_select() throws Exception {
+
+    setUpPages("/content/foo", "/content/foo/bar");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
+
+    Throwable ex = catchThrowable(() -> applySelection(adapter.selectCurrentResource().fromCurrentPage()));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("The SlingResourceAdapterImpl#fromXyz methods must be called *before* any of the selectXyz methods");
+  }
+
+
   @Test
   public void should_allow_multiple_selections() throws Exception {
 
@@ -206,7 +344,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void select_should_allow_using_custom_Stream() {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     Stream<Resource> stream = Stream.of(
         context.create().resource("/content/foo/1"),
@@ -237,6 +375,28 @@ public class SlingResourceAdapterImplTest {
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/");
 
     List<SlingTestResource> resources = applySelection(adapter.selectParentResource());
+
+    assertThat(resources).isEmpty();
+  }
+
+  @Test
+  public void selectContentResource_should_find_content() {
+
+    setUpPages("/content/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectContentResource());
+
+    assertThatResourcesMatch(resources, "/content/foo/_jcr_content");
+  }
+
+  @Test
+  public void selectContentResource_should_handle_missing_content() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectContentResource());
 
     assertThat(resources).isEmpty();
   }
@@ -324,87 +484,15 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  public void selectContentOfCurrentPage_should_return_empty_stream_if_there_is_no_page() throws Exception {
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content/foo/bar");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfCurrentPage());
-
-    assertThat(resources).isEmpty();
-  }
-
-  @Test
-  public void selectContentOfParentPage_should_work_from_page_resource() throws Exception {
-
-    setUpPages("/content/foo", "/content/foo/bar");
+  public void selectContentOfCurrentPage_should_fail_if_there_is_no_page() throws Exception {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
 
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfParentPage());
+    Throwable ex = catchThrowable(() -> applySelection(adapter.selectContentOfCurrentPage()));
 
-    assertThatResourcesMatch(resources, "/content/foo/_jcr_content");
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageEndingWith("is not a page, and not located within a page");
   }
-
-  @Test
-  public void selectContentOfParentPage_should_work_from_page_content_resource() throws Exception {
-
-    setUpPages("/content/foo", "/content/foo/bar");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar/jcr:content");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfParentPage());
-
-    assertThatResourcesMatch(resources, "/content/foo/_jcr_content");
-  }
-
-  @Test
-  public void selectContentOfParentPage_should_return_empty_stream_if_there_is_no_parent_page() throws Exception {
-
-    setUpPages("/content/foo/bar");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandParentPage());
-
-    assertThat(resources).isEmpty();
-  }
-
-  @Test
-  public void selectContentOfGrandParentPage_should_work_from_page_resource() throws Exception {
-
-    setUpPages("/content/foo", "/content/foo/bar", "/content/foo/bar/foo");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar/foo");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandParentPage());
-
-    assertThatResourcesMatch(resources, "/content/foo/_jcr_content");
-  }
-
-  @Test
-  public void selectContentOfGrandParentPage_should_work_from_page_content_resource() throws Exception {
-
-    setUpPages("/content/foo", "/content/foo/bar", "/content/foo/bar/foo");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar/foo/jcr:content");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandParentPage());
-
-    assertThatResourcesMatch(resources, "/content/foo/_jcr_content");
-  }
-
-  @Test
-  public void selectContentOfGrandParentPage_should_return_empty_stream_if_there_is_no_grand_parent_page() throws Exception {
-
-    setUpPages("/content/foo", "/content/foo/bar");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandParentPage());
-
-    assertThat(resources).isEmpty();
-  }
-
 
   @Test
   public void selectContentOfChildPages_should_work_from_page_resource() throws Exception {
@@ -442,6 +530,41 @@ public class SlingResourceAdapterImplTest {
     assertThat(resources).isEmpty();
   }
 
+  @Test
+  public void selectContentOfGrandChildPages_should_work_from_page_resource() throws Exception {
+
+    setUpPages("/content", "/content/foo", "/content/foo/1", "/content/foo/2");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandChildPages());
+
+    assertThatResourcesMatch(resources, "/content/foo/1/_jcr_content", "/content/foo/2/_jcr_content");
+  }
+
+  @Test
+  public void selectContentOfGrandChildPages_should_work_from_page_content_resource() throws Exception {
+
+    setUpPages("/content", "/content/foo", "/content/foo/1", "/content/foo/2");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/jcr:content");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandChildPages());
+
+    assertThatResourcesMatch(resources, "/content/foo/1/_jcr_content", "/content/foo/2/_jcr_content");
+  }
+
+  @Test
+  public void selectContentOfGrandChildPages_should_return_empty_stream_if_there_are_no_child_pages() throws Exception {
+
+    setUpPages("/content", "/content/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandChildPages());
+
+    assertThat(resources).isEmpty();
+  }
 
   @Test
   public void selectContentOfChildPage_should_work_from_page_resource() throws Exception {
@@ -480,57 +603,9 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  public void selectContentOfGrandChildPages_should_work_from_page_resource() throws Exception {
-
-    setUpPages("/content/foo", "/content/foo/bar", "/content/foo/bar/1", "/content/foo/bar/2");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandChildPages());
-
-    assertThatResourcesMatch(resources, "/content/foo/bar/1/_jcr_content", "/content/foo/bar/2/_jcr_content");
-  }
-
-  @Test
-  public void selectContentOfGrandChildPages_should_work_from_page_content_resource() throws Exception {
-
-    setUpPages("/content/foo", "/content/foo/bar", "/content/foo/bar/1", "/content/foo/bar/2");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandChildPages());
-
-    assertThatResourcesMatch(resources, "/content/foo/bar/1/_jcr_content", "/content/foo/bar/2/_jcr_content");
-  }
-
-  @Test
-  public void selectContentOfGrandChildPages_should_return_empty_stream_if_there_are_no_child_pages() throws Exception {
-
-    setUpPages("/content/foo");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandChildPages());
-
-    assertThat(resources).isEmpty();
-  }
-
-  @Test
-  public void selectContentOfGrandChildPages_should_return_empty_stream_if_there_are_no_grand_child_pages() throws Exception {
-
-    setUpPages("/content/foo", "/content/foo/bar");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandChildPages());
-
-    assertThat(resources).isEmpty();
-  }
-
-  @Test
   public void filter_should_remove_non_matches() throws Exception {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     Predicate<Resource> predicate = (res) -> false;
 
@@ -545,7 +620,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void filter_should_keep_matches() throws Exception {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     Predicate<Resource> predicate = (res) -> true;
 
@@ -560,7 +635,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void filter_should_allow_multiple_filters() throws Exception {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     Predicate<Resource> predicate1 = (res) -> true;
     Predicate<Resource> predicate2 = (res) -> false;
@@ -578,7 +653,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void should_filter_by_name() throws Exception {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     Optional<SlingTestResource> resource = adapter.selectCurrentResource()
         .filterWithName("bar")
@@ -591,7 +666,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void should_filter_by_adaptability() throws Exception {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     context.create().page("/content/foo/page");
     context.create().resource("/content/foo/resource");
@@ -610,7 +685,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void withLinkTitle_allows_to_overide_title_for_SlingLinkableResource_instances() {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     String customTitle = "New Link Title";
 
@@ -625,7 +700,7 @@ public class SlingResourceAdapterImplTest {
   @Test
   public void withLinkTitle_fails_to_overide_title_if_model_class_does_not_implement_SlingLinkableResource() {
 
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
     String customTitle = "New Link Title";
 

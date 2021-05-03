@@ -27,6 +27,8 @@ import org.apache.sling.api.resource.Resource;
 
 import com.day.cq.commons.jcr.JcrConstants;
 
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+
 public final class ResourceStreams {
 
   private ResourceStreams() {
@@ -59,24 +61,6 @@ public final class ResourceStreams {
     return getContentResources(Stream.of(pageResource));
   }
 
-  public static Stream<Resource> getContentOfParentPage(Resource res) {
-
-    Resource pageResource = getPageResource(res);
-
-    return getContentResources(Stream.of(pageResource.getParent()));
-  }
-
-  public static Stream<Resource> getContentOfGrandParentPage(Resource res) {
-
-    Resource pageResource = getPageResource(res);
-
-    Stream<Resource> grandParentPage = Stream.of(pageResource.getParent())
-        .filter(Objects::nonNull)
-        .map(Resource::getParent);
-
-    return getContentResources(grandParentPage);
-  }
-
   public static Stream<Resource> getContentOfChildPages(Resource res) {
 
     Resource pageResource = getPageResource(res);
@@ -84,6 +68,16 @@ public final class ResourceStreams {
     Stream<Resource> childPages = getChildPages(pageResource);
 
     return getContentResources(childPages);
+  }
+
+  public static Stream<Resource> getContentOfGrandChildPages(Resource res) {
+
+    Resource pageResource = getPageResource(res);
+
+    Stream<Resource> grandChildPages = getChildPages(pageResource)
+        .flatMap(ResourceStreams::getChildPages);
+
+    return getContentResources(grandChildPages);
   }
 
   public static Stream<Resource> getContentOfNamedChildPage(Resource res, String name) {
@@ -96,17 +90,6 @@ public final class ResourceStreams {
     return getContentResources(childPage);
   }
 
-  public static Stream<Resource> getContentOfGrandChildPages(Resource res) {
-
-    Resource pageResource = getPageResource(res);
-
-    Stream<Resource> grandChildPages = getChildPages(pageResource)
-        .flatMap(ResourceStreams::getChildPages);
-
-    return ResourceStreams.getContentResources(grandChildPages);
-  }
-
-
   public static Stream<Resource> getParent(Resource res) {
 
     return Stream.of(res.getParent()).filter(Objects::nonNull);
@@ -117,11 +100,34 @@ public final class ResourceStreams {
     while (candidate != null && !isPage(candidate)) {
       candidate = candidate.getParent();
     }
+    if (candidate == null) {
+      throw new HalApiDeveloperException("The resource " + resource + " is not a page, and not located within a page");
+    }
     return candidate;
+  }
+
+  public static Resource getParentPageResource(Resource resource) {
+    Resource page = getPageResource(resource);
+    Resource parent = page.getParent();
+    if (!isPage(parent)) {
+      throw new HalApiDeveloperException("The parent resource " + parent + " is not a page");
+    }
+    return parent;
+  }
+
+  public static Resource getGrandParentPageResource(Resource resource) {
+    Resource parentPage = getParentPageResource(resource);
+    return getParentPageResource(parentPage);
   }
 
   public static boolean isPage(Resource page) {
     return "cq:Page".equals(page.getResourceType());
+  }
+
+  public static Stream<Resource> getContentResource(Resource pageResource) {
+
+    return Stream.of(pageResource.getChild(JcrConstants.JCR_CONTENT))
+        .filter(Objects::nonNull);
   }
 
 
@@ -129,8 +135,7 @@ public final class ResourceStreams {
 
     return pageResources
         .filter(Objects::nonNull)
-        .map(child -> child.getChild(JcrConstants.JCR_CONTENT))
-        .filter(Objects::nonNull);
+        .flatMap(ResourceStreams::getContentResource);
   }
 
 }

@@ -44,6 +44,34 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   }
 
   @Override
+  public SlingResourceAdapter fromResourceAt(Resource resource) {
+
+    if (resourceSelector.resources != null) {
+      throw new HalApiDeveloperException("The SlingResourceAdapterImpl#fromXyz methods must be called *before* any of the selectXyz methods are called");
+    }
+
+    return new SlingResourceAdapterImpl(slingRhyme, resource, resourceSelector, resourceFilter);
+  }
+
+  @Override
+  public SlingResourceAdapter fromCurrentPage() {
+
+    return fromResourceAt(ResourceStreams.getPageResource(currentResource));
+  }
+
+  @Override
+  public SlingResourceAdapter fromParentPage() {
+
+    return fromResourceAt(ResourceStreams.getParentPageResource(currentResource));
+  }
+
+  @Override
+  public SlingResourceAdapter fromGrandParentPage() {
+
+    return fromResourceAt(ResourceStreams.getGrandParentPageResource(currentResource));
+  }
+
+  @Override
   public SlingResourceAdapter select(Stream<Resource> resources) {
 
     return resourceSelector.add(resources, "custom stream of resourcs");
@@ -53,6 +81,11 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   public SlingResourceAdapter selectCurrentResource() {
 
     return resourceSelector.add(currentResource, Stream::of, "current resource at {}");
+  }
+
+  @Override
+  public SlingResourceAdapter selectContentResource() {
+    return resourceSelector.add(currentResource, ResourceStreams::getContentResource, "content resource of {}");
   }
 
   @Override
@@ -73,17 +106,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     return resourceSelector.add(currentResource, ResourceStreams::getContentOfContainingPage, "content of {}");
   }
 
-  @Override
-  public SlingResourceAdapter selectContentOfParentPage() {
-
-    return resourceSelector.add(currentResource, ResourceStreams::getContentOfParentPage, "content of parent page of {}");
-  }
-
-  @Override
-  public SlingResourceAdapter selectContentOfGrandParentPage() {
-
-    return resourceSelector.add(currentResource, ResourceStreams::getContentOfGrandParentPage, "content of grand parent page of {}");
-  }
 
   @Override
   public SlingResourceAdapter selectContentOfChildPages() {
@@ -242,7 +264,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       this.predicate = predicate;
     }
 
-    private SlingResourceAdapterImpl add(Predicate<Resource> newPredicate, String newDescription) {
+    private SlingResourceAdapter add(Predicate<Resource> newPredicate, String newDescription) {
 
       ResourceFilter newFilter;
       if (predicate != null) {
@@ -256,7 +278,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
         newFilter = new ResourceFilter(newDescription, newPredicate);
       }
 
-      SlingResourceAdapterImpl newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, resourceSelector, newFilter);
+      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, resourceSelector, newFilter);
 
       return newInstance;
     }
@@ -273,14 +295,14 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       this.resources = resources;
     }
 
-    private SlingResourceAdapterImpl add(Resource contextResource, Function<Resource, Stream<Resource>> streamFunc, String newDescription) {
+    private SlingResourceAdapter add(Resource contextResource, Function<Resource, Stream<Resource>> streamFunc, String newDescription) {
 
       Stream<Resource> stream = streamFunc.apply(contextResource);
 
       return add(stream, newDescription.replace("{}", contextResource.getPath()));
     }
 
-    private SlingResourceAdapterImpl add(@NotNull Stream<Resource> newResources, String newDescription) {
+    private SlingResourceAdapter add(@NotNull Stream<Resource> newResources, String newDescription) {
 
       Preconditions.checkNotNull(newResources, "the stream of resources must not be null");
 
@@ -297,7 +319,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       }
 
 
-      SlingResourceAdapterImpl newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, newSelector, resourceFilter);
+      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, newSelector, resourceFilter);
 
       return newInstance;
     }

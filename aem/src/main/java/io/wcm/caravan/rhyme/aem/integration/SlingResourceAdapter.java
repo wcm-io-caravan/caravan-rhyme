@@ -8,7 +8,20 @@ import org.apache.sling.api.resource.Resource;
 
 public interface SlingResourceAdapter {
 
+  SlingResourceAdapter fromCurrentPage();
+
+  SlingResourceAdapter fromParentPage();
+
+  SlingResourceAdapter fromGrandParentPage();
+
+  SlingResourceAdapter fromResourceAt(Resource resource);
+
+
+  SlingResourceAdapter select(Stream<Resource> resources);
+
   SlingResourceAdapter selectCurrentResource();
+
+  SlingResourceAdapter selectContentResource();
 
   SlingResourceAdapter selectParentResource();
 
@@ -18,10 +31,6 @@ public interface SlingResourceAdapter {
 
   SlingResourceAdapter selectContentOfCurrentPage();
 
-  SlingResourceAdapter selectContentOfParentPage();
-
-  SlingResourceAdapter selectContentOfGrandParentPage();
-
   SlingResourceAdapter selectContentOfChildPages();
 
   SlingResourceAdapter selectContentOfChildPage(String name);
@@ -30,7 +39,6 @@ public interface SlingResourceAdapter {
 
   SlingResourceAdapter selectResourceAt(String path);
 
-  SlingResourceAdapter select(Stream<Resource> resources);
 
   SlingResourceAdapter filter(Predicate<Resource> predicate);
 
