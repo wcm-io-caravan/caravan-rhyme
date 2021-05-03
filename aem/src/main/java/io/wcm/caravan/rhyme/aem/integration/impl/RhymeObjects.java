@@ -13,7 +13,11 @@ import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
-class RhymeObjects {
+final class RhymeObjects {
+
+  private RhymeObjects() {
+    // only static utility methods
+  }
 
   static void injectIntoSlingModel(@NotNull Object slingModel, Supplier<SlingRhyme> rhymeSupplier) {
 
@@ -50,12 +54,12 @@ class RhymeObjects {
         .collect(Collectors.toList());
   }
 
-  private static void writeFieldUnchecked(Object instance, Field field, Object value) {
+  static void writeFieldUnchecked(Object instance, Field field, Object value) {
     try {
       FieldUtils.writeField(field, instance, value, true);
     }
     catch (IllegalAccessException | RuntimeException ex) {
-      throw new RuntimeException(
+      throw new HalApiDeveloperException(
           "Failed to inject instance of " + value.getClass().getName() + " into field " + field.getName() + " of class " + instance.getClass().getName(),
           ex);
     }

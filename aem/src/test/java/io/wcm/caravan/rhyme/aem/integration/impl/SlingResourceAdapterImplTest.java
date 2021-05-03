@@ -144,6 +144,25 @@ public class SlingResourceAdapterImplTest {
         .hasMessageStartingWith("No resources have been selected with this adapter");
   }
 
+
+  @Test
+  public void should_fail_to_adapt_if_class_is_not_adaptable() {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
+
+    Throwable ex = catchThrowable(() -> adapter.selectCurrentResource()
+        .adaptTo(NotAnAdaptableClass.class)
+        .getInstance());
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("Failed to adapt");
+  }
+
+  public static class NotAnAdaptableClass {
+
+  }
+
+
   private void setUpPages(String... resourcePaths) {
 
     context.create().page(resourcePaths[0]);
@@ -604,7 +623,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  public void withLinkTitle_fails_overide_title_if_model_class_does_not_implement_SlingLinkableResource() {
+  public void withLinkTitle_fails_to_overide_title_if_model_class_does_not_implement_SlingLinkableResource() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
 

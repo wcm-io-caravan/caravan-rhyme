@@ -27,7 +27,11 @@ import org.apache.sling.api.resource.Resource;
 
 import com.day.cq.commons.jcr.JcrConstants;
 
-public class ResourceStreams {
+public final class ResourceStreams {
+
+  private ResourceStreams() {
+    // this class only contains static utility methods
+  }
 
   public static Stream<Resource> getChildren(Resource res) {
 

@@ -207,7 +207,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
       ModelType model = slingRhyme.adaptResource(res, this.clazz);
 
-      if (linkDecorator != null && model != null) {
+      if (linkDecorator != null) {
         decorateLinks(res, model);
       }
       return model;
