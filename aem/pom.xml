@@ -83,13 +83,13 @@
       <groupId>io.wcm</groupId>
       <artifactId>io.wcm.handler.url</artifactId>
       <scope>compile</scope>
-      <version>1.5.0</version>
+      <version>1.5.2</version>
     </dependency>
     <dependency>
       <groupId>io.wcm</groupId>
       <artifactId>io.wcm.handler.link</artifactId>
       <scope>compile</scope>
-      <version>1.6.0</version>
+      <version>1.6.2</version>
     </dependency>
 
     <dependency>
@@ -136,7 +136,7 @@
       <groupId>io.wcm</groupId>
       <artifactId>io.wcm.testing.aem-mock.junit5</artifactId>
       <scope>test</scope>
-      <version>4.0.0</version>
+      <version>4.0.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.sling</groupId>
