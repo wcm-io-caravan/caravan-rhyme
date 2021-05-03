@@ -1,13 +1,11 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,13 +19,9 @@ import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
-import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.ResourceTypeSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceSelectorProvider;
-import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -152,82 +146,4 @@ public class SlingLinkBuilderImplTest {
     assertThat(link.getTitle()).isEqualTo(linkTitle);
   }
 
-  @Test
-  public void buildTemplateTo_uses_selector_for_registered_class() throws Exception {
-
-    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
-
-    SlingTestResource resource = linkBuilder.buildTemplateTo(SlingTestResource.class)
-        .buildRequired();
-
-    assertThat(resource.createLink().getHref()).isEqualTo("{+path}.selectortest.rhyme");
-  }
-
-  @Test
-  public void buildTemplateTo_handles_unregistered_resources() throws Exception {
-
-    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
-
-    UnregisteredResource resource = linkBuilder.buildTemplateTo(UnregisteredResource.class)
-        .buildRequired();
-
-    assertThat(resource.createLink().getHref()).isEqualTo("{+path}.rhyme");
-  }
-
-  @HalApiInterface
-  interface UnregisteredResource extends LinkableResource {
-
-  }
-
-  @Test
-  public void buildTemplateTo_uses_link_title() throws Exception {
-
-    String linkTitle = "This is the link title for the template";
-
-    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
-
-    UnregisteredResource resource = linkBuilder.buildTemplateTo(UnregisteredResource.class)
-        .withTitle(linkTitle)
-        .buildRequired();
-
-    assertThat(resource.createLink().getTitle()).isEqualTo(linkTitle);
-  }
-
-  @Test
-  public void buildTemplateTo_appends_query_parameters_title() throws Exception {
-
-    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
-
-    UnregisteredResource resource = linkBuilder.buildTemplateTo(UnregisteredResource.class)
-        .withQueryParameters("foo", "bar")
-        .buildRequired();
-
-    assertThat(resource.createLink().getHref()).isEqualTo("{+path}.rhyme{?foo,bar}");
-  }
-
-  @Test
-  public void buildTemplateTo_can_return_optional() throws Exception {
-
-    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
-
-    Optional<UnregisteredResource> resource = linkBuilder.buildTemplateTo(UnregisteredResource.class)
-        .buildOptional();
-
-    assertThat(resource).isPresent();
-    assertThat(resource.get().createLink()).isNotNull();
-  }
-
-  @Test
-  public void buildTemplateTo_fails_if_any_other_method_is_called_on_proxy() throws Exception {
-
-    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
-
-    SlingTestResource resource = linkBuilder.buildTemplateTo(SlingTestResource.class)
-        .buildRequired();
-
-    Throwable ex = catchThrowable(() -> resource.getState());
-
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("Unsupported call to getState method");
-  }
 }

@@ -188,6 +188,27 @@ public class SlingResourceAdapterImplTest {
     }
   }
 
+  @Test
+  public void fromResourceAt_should_work_for_existing_resource() throws Exception {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    List<SlingTestResource> resources = applySelection(adapter.fromResourceAt("/content").selectCurrentResource());
+
+    assertThatResourcesMatch(resources, "/content");
+  }
+
+  @Test
+  public void fromResourceAt_should_fail_for_non_existing_resource() throws Exception {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    Throwable ex = catchThrowable(() -> applySelection(adapter.fromResourceAt("/content/foo").selectCurrentResource()));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("There does not exist a resource at");
+  }
+
 
   @Test
   public void fromCurrentPage_should_work_from_page_resource() throws Exception {
@@ -729,4 +750,20 @@ public class SlingResourceAdapterImplTest {
     assertThat(resource.createLink().getHref()).isEqualTo(expectedHref);
   }
 
+
+  @Test
+  public void withQueryParameters_fails_if_non_null_resource_path_was_selected() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+
+    Throwable ex = catchThrowable(() -> adapter.selectCurrentResource()
+        .adaptTo(ClassThatDoesNotImplementSlingLinkableResource.class)
+        .withQueryParameters("foo")
+        .getInstance());
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("#withQueryParameters can only be called if you selected a null resource path");
+
+  }
 }

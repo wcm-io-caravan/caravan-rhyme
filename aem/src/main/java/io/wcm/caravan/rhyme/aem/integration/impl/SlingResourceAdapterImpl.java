@@ -1,28 +1,44 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
 
+import com.damnhandy.uri.template.UriTemplate;
+import com.damnhandy.uri.template.UriTemplateBuilder;
 import com.google.common.base.Preconditions;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.ResourceStreams;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingRhyme.class, adapters = SlingResourceAdapter.class)
 public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
   @Self
   private SlingRhyme slingRhyme;
+
+  @Self
+  private UrlHandler urlHandler;
+
+  @Inject
+  private ResourceSelectorRegistry registry;
 
   @Self
   private Resource currentResource;
@@ -36,39 +52,52 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     resourceFilter = new ResourceFilter(null, null);
   }
 
-  private SlingResourceAdapterImpl(SlingRhyme rhyme, Resource resource, ResourceSelector selector, ResourceFilter filter) {
-    slingRhyme = rhyme;
+  private SlingResourceAdapterImpl(SlingResourceAdapterImpl adapter, Resource resource, ResourceSelector selector, ResourceFilter filter) {
+    slingRhyme = adapter.slingRhyme;
+    urlHandler = adapter.urlHandler;
+    registry = adapter.registry;
     currentResource = resource;
     resourceSelector = new ResourceSelector(selector.description, selector.resources);
     resourceFilter = new ResourceFilter(filter.description, filter.predicate);
   }
 
-  @Override
-  public SlingResourceAdapter fromResourceAt(Resource resource) {
+  private SlingResourceAdapter fromResource(Resource resource) {
 
     if (resourceSelector.resources != null) {
       throw new HalApiDeveloperException("The SlingResourceAdapterImpl#fromXyz methods must be called *before* any of the selectXyz methods are called");
     }
 
-    return new SlingResourceAdapterImpl(slingRhyme, resource, resourceSelector, resourceFilter);
+    return new SlingResourceAdapterImpl(this, resource, resourceSelector, resourceFilter);
+  }
+
+  @Override
+  public SlingResourceAdapter fromResourceAt(String path) {
+
+    Resource resource = currentResource.getResourceResolver().getResource(path);
+
+    if (resource == null) {
+      throw new HalApiDeveloperException("There does not exist a resource at " + path);
+    }
+
+    return fromResource(resource);
   }
 
   @Override
   public SlingResourceAdapter fromCurrentPage() {
 
-    return fromResourceAt(ResourceStreams.getPageResource(currentResource));
+    return fromResource(ResourceStreams.getPageResource(currentResource));
   }
 
   @Override
   public SlingResourceAdapter fromParentPage() {
 
-    return fromResourceAt(ResourceStreams.getParentPageResource(currentResource));
+    return fromResource(ResourceStreams.getParentPageResource(currentResource));
   }
 
   @Override
   public SlingResourceAdapter fromGrandParentPage() {
 
-    return fromResourceAt(ResourceStreams.getGrandParentPageResource(currentResource));
+    return fromResource(ResourceStreams.getGrandParentPageResource(currentResource));
   }
 
   @Override
@@ -135,6 +164,11 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter selectResourceAt(String path) {
 
+    if (path == null) {
+      currentResource = null;
+      return this;
+    }
+
     Resource resource = currentResource.getResourceResolver().getResource(path);
     if (resource == null) {
       return resourceSelector.add(Stream.empty(), "non-existent resource at " + path);
@@ -167,6 +201,10 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public <ModelType> TypedResourceAdapter<ModelType> adaptTo(Class<ModelType> clazz) {
 
+    if (currentResource == null) {
+      return new TemplateResourceAdapter<ModelType>(clazz);
+    }
+
     return new TypedResourceAdapterImpl<ModelType>(clazz);
   }
 
@@ -194,6 +232,11 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     public TypedResourceAdapter<ModelType> withLinkTitle(String title) {
 
       return withLinkDecorator((r, m) -> title);
+    }
+
+    @Override
+    public TypedResourceAdapter<ModelType> withQueryParameters(String... names) {
+      throw new HalApiDeveloperException("#withQueryParameters can only be called if you selected a null resource path");
     }
 
     @Override
@@ -247,6 +290,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
       linkable.setLinkTitle(linkDecorator.getLinkTitle(resource, model));
     }
+
   }
 
   private interface LinkDecorator<ModelType> {
@@ -278,7 +322,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
         newFilter = new ResourceFilter(newDescription, newPredicate);
       }
 
-      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, resourceSelector, newFilter);
+      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, currentResource, resourceSelector, newFilter);
 
       return newInstance;
     }
@@ -319,11 +363,97 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       }
 
 
-      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(slingRhyme, currentResource, newSelector, resourceFilter);
+      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, currentResource, newSelector, resourceFilter);
 
       return newInstance;
     }
   }
 
+    private final class TemplateResourceAdapter<T> implements TypedResourceAdapter<T> {
+
+      private static final String PATH_PLACEHOLDER = "/letsassumethisisunlikelytoexist";
+
+      private final Class<T> halApiInterface;
+
+      private String linkTitle;
+      private String[] queryParameters;
+
+      private TemplateResourceAdapter(Class<T> halApiInterface) {
+        this.halApiInterface = halApiInterface;
+      }
+
+      @Override
+      public TypedResourceAdapter<T> withLinkTitle(String title) {
+        this.linkTitle = title;
+        return this;
+      }
+
+      @Override
+      public TypedResourceAdapter<T> withQueryParameters(String... names) {
+        this.queryParameters = names;
+        return this;
+      }
+
+      @Override
+      public T getInstance() {
+        return createResource();
+      }
+
+      @Override
+      public Optional<T> getOptional() {
+        return Optional.of(createResource());
+      }
+
+      @Override
+      public Stream<T> getStream() {
+        return Stream.of(createResource());
+      }
+
+      private <T extends LinkableResource> T createResource() {
+
+        return (T)Proxy.newProxyInstance(halApiInterface.getClassLoader(), new Class[] { halApiInterface }, new InvocationHandler() {
+
+          @Override
+          public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+            if (method.getName().equals("createLink")) {
+              return createLink();
+            }
+
+            throw new HalApiDeveloperException("Unsupported call to " + method.getName() + " method on "
+                + halApiInterface.getName() + " proxy instance. "
+                + "Any instances created with SlingLinkBuilder#buildTemplateTo can only be used to create link templates for these resources");
+          }
+        });
+      }
+
+      private Link createLink() {
+
+        String baseTemplate = getResourceUrl().replace(PATH_PLACEHOLDER, "{+path}");
+
+        UriTemplateBuilder builder = UriTemplate.buildFromTemplate(baseTemplate);
+
+        if (queryParameters != null) {
+          builder.query(queryParameters);
+        }
+        String uriTemplate = builder.build()
+            .getTemplate();
+
+        return new Link(uriTemplate)
+            .setTitle(linkTitle);
+      }
+
+      private String getResourceUrl() {
+
+        String selector = registry.getSelectorForHalApiInterface(halApiInterface).orElse(null);
+
+        return urlHandler.get(PATH_PLACEHOLDER)
+            .selectors(selector)
+            .extension(HalApiServlet.EXTENSION)
+            .buildExternalLinkUrl();
+      }
+
+
+  }
 
 }

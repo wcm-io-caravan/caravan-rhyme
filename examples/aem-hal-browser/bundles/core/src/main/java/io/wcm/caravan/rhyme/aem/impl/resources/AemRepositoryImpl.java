@@ -34,44 +34,29 @@ public class AemRepositoryImpl extends AbstractLinkableResource implements AemRe
   @Override
   public Optional<SlingResource> getResource(String path) {
 
-    if (path == null) {
-      return linkBuilder.buildTemplateTo(SlingResource.class)
-          .withTitle("Get a generic view of the resource at the given path")
-          .buildOptional();
-    }
-
     return resourceAdapter.selectResourceAt(path)
         .adaptTo(SlingResource.class)
+        .withLinkTitle("Get a generic view of the resource at the given path")
         .getOptional();
   }
 
   @Override
   public Optional<AemPage> getPage(String path) {
 
-    if (path == null) {
-      return linkBuilder.buildTemplateTo(AemPage.class)
-          .withTitle("Get information on an AEM page at the given path")
-          .buildOptional();
-    }
-
     return resourceAdapter.selectResourceAt(path)
         .filterAdaptableTo(Page.class)
         .adaptTo(AemPage.class)
+        .withLinkTitle("Get information on an AEM page at the given path")
         .getOptional();
   }
 
   @Override
   public Optional<AemAsset> getAsset(String path) {
 
-    if (path == null) {
-      return linkBuilder.buildTemplateTo(AemAsset.class)
-          .withTitle("Get information on an asset at the given path")
-          .buildOptional();
-    }
-
     return resourceAdapter.selectResourceAt(path)
         .filterAdaptableTo(Asset.class)
         .adaptTo(AemAsset.class)
+        .withLinkTitle("Get information on an asset at the given path")
         .getOptional();
   }
 
@@ -79,10 +64,11 @@ public class AemRepositoryImpl extends AbstractLinkableResource implements AemRe
   public Optional<AemRendition> getRendition(String path, Integer width, Integer height) {
 
     if (path == null) {
-      return linkBuilder.buildTemplateTo(AemRendition.class)
-          .withTitle("Get a dynamic (cropped) rendition of an asset with the specified width and height")
+      return resourceAdapter.selectResourceAt(null)
+          .adaptTo(AemRendition.class)
+          .withLinkTitle("Get a dynamic (cropped) rendition of an asset with the specified width and height")
           .withQueryParameters(AemRenditionImpl.WIDTH, AemRenditionImpl.HEIGHT)
-          .buildOptional();
+          .getOptional();
     }
 
     return getAsset(path)

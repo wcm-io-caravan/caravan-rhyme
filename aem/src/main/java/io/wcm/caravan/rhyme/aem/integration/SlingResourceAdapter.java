@@ -14,7 +14,7 @@ public interface SlingResourceAdapter {
 
   SlingResourceAdapter fromGrandParentPage();
 
-  SlingResourceAdapter fromResourceAt(Resource resource);
+  SlingResourceAdapter fromResourceAt(String path);
 
 
   SlingResourceAdapter select(Stream<Resource> resources);
@@ -53,6 +53,8 @@ public interface SlingResourceAdapter {
   interface TypedResourceAdapter<T> {
 
     TypedResourceAdapter<T> withLinkTitle(String title);
+
+    TypedResourceAdapter<T> withQueryParameters(String... names);
 
     T getInstance();
 
