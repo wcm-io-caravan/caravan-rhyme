@@ -126,7 +126,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
     private <T extends LinkableResource> T createResource() {
 
-      return (T)Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { halApiInterface }, new InvocationHandler() {
+      return (T)Proxy.newProxyInstance(halApiInterface.getClassLoader(), new Class[] { halApiInterface }, new InvocationHandler() {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
