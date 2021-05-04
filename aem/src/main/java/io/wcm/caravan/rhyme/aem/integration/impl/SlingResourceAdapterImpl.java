@@ -61,13 +61,22 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     resourceFilter = new ResourceFilter(filter.description, filter.predicate);
   }
 
+  private SlingResourceAdapterImpl(SlingResourceAdapterImpl adapter, Resource resource) {
+    slingRhyme = adapter.slingRhyme;
+    urlHandler = adapter.urlHandler;
+    registry = adapter.registry;
+    currentResource = resource;
+    resourceSelector = new ResourceSelector(null, null);
+    resourceFilter = new ResourceFilter(null, null);
+  }
+
   private SlingResourceAdapter fromResource(Resource resource) {
 
     if (resourceSelector.resources != null) {
       throw new HalApiDeveloperException("The SlingResourceAdapterImpl#fromXyz methods must be called *before* any of the selectXyz methods are called");
     }
 
-    return new SlingResourceAdapterImpl(this, resource, resourceSelector, resourceFilter);
+    return new SlingResourceAdapterImpl(this, resource);
   }
 
   @Override
@@ -369,89 +378,89 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     }
   }
 
-    private final class TemplateResourceAdapter<T> implements TypedResourceAdapter<T> {
+  private final class TemplateResourceAdapter<T> implements TypedResourceAdapter<T> {
 
-      private static final String PATH_PLACEHOLDER = "/letsassumethisisunlikelytoexist";
+    private static final String PATH_PLACEHOLDER = "/letsassumethisisunlikelytoexist";
 
-      private final Class<T> halApiInterface;
+    private final Class<T> halApiInterface;
 
-      private String linkTitle;
-      private String[] queryParameters;
+    private String linkTitle;
+    private String[] queryParameters;
 
-      private TemplateResourceAdapter(Class<T> halApiInterface) {
-        this.halApiInterface = halApiInterface;
-      }
+    private TemplateResourceAdapter(Class<T> halApiInterface) {
+      this.halApiInterface = halApiInterface;
+    }
 
-      @Override
-      public TypedResourceAdapter<T> withLinkTitle(String title) {
-        this.linkTitle = title;
-        return this;
-      }
+    @Override
+    public TypedResourceAdapter<T> withLinkTitle(String title) {
+      this.linkTitle = title;
+      return this;
+    }
 
-      @Override
-      public TypedResourceAdapter<T> withQueryParameters(String... names) {
-        this.queryParameters = names;
-        return this;
-      }
+    @Override
+    public TypedResourceAdapter<T> withQueryParameters(String... names) {
+      this.queryParameters = names;
+      return this;
+    }
 
-      @Override
-      public T getInstance() {
-        return createResource();
-      }
+    @Override
+    public T getInstance() {
+      return createResource();
+    }
 
-      @Override
-      public Optional<T> getOptional() {
-        return Optional.of(createResource());
-      }
+    @Override
+    public Optional<T> getOptional() {
+      return Optional.of(createResource());
+    }
 
-      @Override
-      public Stream<T> getStream() {
-        return Stream.of(createResource());
-      }
+    @Override
+    public Stream<T> getStream() {
+      return Stream.of(createResource());
+    }
 
-      private <T extends LinkableResource> T createResource() {
+    private <T extends LinkableResource> T createResource() {
 
-        return (T)Proxy.newProxyInstance(halApiInterface.getClassLoader(), new Class[] { halApiInterface }, new InvocationHandler() {
+      return (T)Proxy.newProxyInstance(halApiInterface.getClassLoader(), new Class[] { halApiInterface }, new InvocationHandler() {
 
-          @Override
-          public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-            if (method.getName().equals("createLink")) {
-              return createLink();
-            }
-
-            throw new HalApiDeveloperException("Unsupported call to " + method.getName() + " method on "
-                + halApiInterface.getName() + " proxy instance. "
-                + "Any instances created with SlingLinkBuilder#buildTemplateTo can only be used to create link templates for these resources");
+          if (method.getName().equals("createLink")) {
+            return createLink();
           }
-        });
-      }
 
-      private Link createLink() {
-
-        String baseTemplate = getResourceUrl().replace(PATH_PLACEHOLDER, "{+path}");
-
-        UriTemplateBuilder builder = UriTemplate.buildFromTemplate(baseTemplate);
-
-        if (queryParameters != null) {
-          builder.query(queryParameters);
+          throw new HalApiDeveloperException("Unsupported call to " + method.getName() + " method on "
+              + halApiInterface.getName() + " proxy instance. "
+              + "Any instances created with SlingLinkBuilder#buildTemplateTo can only be used to create link templates for these resources");
         }
-        String uriTemplate = builder.build()
-            .getTemplate();
+      });
+    }
 
-        return new Link(uriTemplate)
-            .setTitle(linkTitle);
+    private Link createLink() {
+
+      String baseTemplate = getResourceUrl().replace(PATH_PLACEHOLDER, "{+path}");
+
+      UriTemplateBuilder builder = UriTemplate.buildFromTemplate(baseTemplate);
+
+      if (queryParameters != null) {
+        builder.query(queryParameters);
       }
+      String uriTemplate = builder.build()
+          .getTemplate();
 
-      private String getResourceUrl() {
+      return new Link(uriTemplate)
+          .setTitle(linkTitle);
+    }
 
-        String selector = registry.getSelectorForHalApiInterface(halApiInterface).orElse(null);
+    private String getResourceUrl() {
 
-        return urlHandler.get(PATH_PLACEHOLDER)
-            .selectors(selector)
-            .extension(HalApiServlet.EXTENSION)
-            .buildExternalLinkUrl();
-      }
+      String selector = registry.getSelectorForHalApiInterface(halApiInterface).orElse(null);
+
+      return urlHandler.get(PATH_PLACEHOLDER)
+          .selectors(selector)
+          .extension(HalApiServlet.EXTENSION)
+          .buildExternalLinkUrl();
+    }
 
 
   }
