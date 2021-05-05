@@ -35,7 +35,7 @@
   <packaging>pom</packaging>
 
   <name>Rhyme</name>
-  <description>TBD</description>
+  <description>Common parent POM for the Caravan Rhyme bundles</description>
 
   <scm>
     <connection>scm:git:https://github.com/wcm-io-caravan/caravan-rhyme.git</connection>
