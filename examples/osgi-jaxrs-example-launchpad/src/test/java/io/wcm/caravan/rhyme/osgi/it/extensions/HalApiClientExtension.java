@@ -98,7 +98,7 @@ public class HalApiClientExtension implements ParameterResolver {
 
         @Override
         public void cancelled() {
-
+          // no need to implement anything here
         }
       });
 

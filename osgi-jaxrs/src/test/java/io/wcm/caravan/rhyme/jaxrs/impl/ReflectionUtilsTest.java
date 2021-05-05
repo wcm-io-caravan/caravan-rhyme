@@ -80,6 +80,7 @@ public class ReflectionUtilsTest {
       return OtherClassWithPrivateField.class.getDeclaredField("stringField");
     }
 
+    @SuppressWarnings("unused")
     private String stringField;
   }
 }

@@ -82,14 +82,14 @@ final class HalApiInvocationHandler implements InvocationHandler {
       Observable rxReturnValue = getCachedObservableReturnValue(invocation);
       return RxJavaReflectionUtils.convertObservableTo(rxReturnValue, method.getReturnType(), typeSupport);
     }
-    catch (HalApiDeveloperException e) {
-      // these exceptions should just be re-thrown as they are expected errors by the developer (e.g. using invalid types in the signatures of the HAL API interface)
-      throw e;
+    // CHECKSTYLE:OFF
+    catch (HalApiDeveloperException | HalApiClientException ex) {
+      // these exceptions should just be re-thrown as they are implementation errors by the developer
+      // (e.g. using invalid types in the signatures of the HAL API interface),
+      //or contain important context information from failed HTTP request
+      throw ex;
     }
-    catch (HalApiClientException e) {
-      // these exceptions should just be re-thrown as they contain important context information
-      throw e;
-    }
+    // CHECKSTYLE:ON
     catch (NoSuchElementException ex) {
       // these exceptions should be re-thrown with a better error message
       throw new HalApiDeveloperException("The invocation of " + invocation + " has failed, "

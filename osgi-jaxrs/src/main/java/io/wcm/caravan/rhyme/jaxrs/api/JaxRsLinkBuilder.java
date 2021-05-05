@@ -52,6 +52,7 @@ public interface JaxRsLinkBuilder<JaxRsResourceType> {
    * @param baseUrl the base path of the JAX-RS {@link Application}
    * @param resourceClass the class of the {@link Component} annotated with {@link JaxrsResource}
    * @return the created instance
+   * @param <JaxRsResourceType> the type of the resource class
    */
   static <JaxRsResourceType> JaxRsLinkBuilder<JaxRsResourceType> create(String baseUrl, Class<JaxRsResourceType> resourceClass) {
 
