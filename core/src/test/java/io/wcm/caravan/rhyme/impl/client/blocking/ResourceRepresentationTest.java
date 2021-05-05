@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.ryhme.testing.resources.TestResource;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 
@@ -44,7 +44,7 @@ import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 public class ResourceRepresentationTest {
 
   private RequestMetricsCollector metrics;
-  private JsonResourceLoader jsonLoader;
+  private HalResourceLoader jsonLoader;
   private TestResource entryPoint;
 
   @BeforeEach

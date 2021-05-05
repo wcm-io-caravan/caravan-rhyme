@@ -46,7 +46,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -87,9 +87,9 @@ public class CaravanHalApiClientImplTest {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
-    JsonResourceLoader resourceLoader = clientImpl.getOrCreateJsonResourceLoader(SERVICE_ID);
+    HalResourceLoader resourceLoader = clientImpl.getOrCreateHalResourceLoader(SERVICE_ID);
 
-    assertThat(resourceLoader).isInstanceOf(CaravanGuavaJsonResourceLoader.class);
+    assertThat(resourceLoader).isInstanceOf(CaravanGuavaResourceLoader.class);
   }
 
   @Test
@@ -99,7 +99,7 @@ public class CaravanHalApiClientImplTest {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
-    JsonResourceLoader resourceLoader = clientImpl.getOrCreateJsonResourceLoader(SERVICE_ID);
+    HalResourceLoader resourceLoader = clientImpl.getOrCreateHalResourceLoader(SERVICE_ID);
 
     assertThat(resourceLoader).isInstanceOf(CaravanJsonPipelineResourceLoader.class);
   }

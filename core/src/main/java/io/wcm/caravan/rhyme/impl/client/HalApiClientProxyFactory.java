@@ -41,7 +41,7 @@ import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 
@@ -54,13 +54,13 @@ final class HalApiClientProxyFactory {
 
   private final Cache<String, Object> proxyCache = CacheBuilder.newBuilder().build();
 
-  private final JsonResourceLoader jsonLoader;
+  private final HalResourceLoader resourceLoader;
   private final RequestMetricsCollector metrics;
   private final HalApiTypeSupport typeSupport;
 
-  HalApiClientProxyFactory(JsonResourceLoader jsonLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
+  HalApiClientProxyFactory(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
     this.metrics = metrics;
-    this.jsonLoader = jsonLoader;
+    this.resourceLoader = resourceLoader;
     this.typeSupport = typeSupport;
   }
 
@@ -102,7 +102,7 @@ final class HalApiClientProxyFactory {
                 + ")");
           }
 
-          return jsonLoader.loadJsonResource(url)
+          return resourceLoader.getHalResource(url)
               .map(HalResponse::getBody);
         })
         .compose(EmissionStopwatch.collectMetrics("fetching " + relatedResourceType.getSimpleName() + " from upstream server", metrics));

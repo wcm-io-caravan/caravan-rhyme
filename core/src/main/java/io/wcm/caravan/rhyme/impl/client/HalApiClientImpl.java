@@ -23,12 +23,12 @@ import com.google.common.base.Preconditions;
 
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 
 /**
  * A full implementation of {@link HalApiClientImpl} that delegates the actual loading of resources via the
- * {@link JsonResourceLoader} interface
+ * {@link HalResourceLoader} interface
  */
 public class HalApiClientImpl implements HalApiClient {
 
@@ -42,12 +42,12 @@ public class HalApiClientImpl implements HalApiClient {
    *          incoming request
    * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
    */
-  public HalApiClientImpl(JsonResourceLoader jsonLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
+  public HalApiClientImpl(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
 
-    Preconditions.checkNotNull(jsonLoader, "A " + JsonResourceLoader.class.getName() + " instance must be provided");
-    CachingJsonResourceLoader cachingLoader = new CachingJsonResourceLoader(jsonLoader, metrics);
+    Preconditions.checkNotNull(resourceLoader, "A " + HalResourceLoader.class.getName() + " instance must be provided");
+    HalResourceLoaderWrapper wrapper = new HalResourceLoaderWrapper(resourceLoader, metrics);
 
-    factory = new HalApiClientProxyFactory(cachingLoader, metrics, typeSupport);
+    factory = new HalApiClientProxyFactory(wrapper, metrics, typeSupport);
 
     this.typeSupport = typeSupport;
   }

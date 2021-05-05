@@ -26,7 +26,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 /**
  * A facade interface that simplifies all interaction with the core framework to handle an incoming request for a
@@ -39,7 +39,7 @@ public interface Rhyme {
   /**
    * Create a dynamic client proxy to load HAL+JSON resources from an upstream service.
    * @param <T> an interface annotated with {@link HalApiInterface}
-   * @param uri the URI of the entry point, in any format that the {@link JsonResourceLoader} being used can understand
+   * @param uri the URI of the entry point, in any format that the {@link HalResourceLoader} being used can understand
    * @param halApiInterface an interface annotated with {@link HalApiInterface}
    * @return a dynamic proxy instance of the provided {@link HalApiInterface} that you can use to navigate through the
    *         resources of the service

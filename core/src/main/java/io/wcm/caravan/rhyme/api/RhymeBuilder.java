@@ -22,7 +22,7 @@ package io.wcm.caravan.rhyme.api;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.RhymeBuilderImpl;
 
 /**
@@ -41,12 +41,12 @@ public interface RhymeBuilder {
   }
 
   /**
-   * Create a {@link RhymeBuilder} to build {@link Rhyme} instances that use the given {@link JsonResourceLoader}
-   * @param jsonLoader to load resources from upstream services
+   * Create a {@link RhymeBuilder} to build {@link Rhyme} instances that use the given {@link HalResourceLoader}
+   * @param resourceLoader to load resources from upstream services
    * @return the new instance
    */
-  static RhymeBuilder withResourceLoader(JsonResourceLoader jsonLoader) {
-    return new RhymeBuilderImpl(jsonLoader);
+  static RhymeBuilder withResourceLoader(HalResourceLoader resourceLoader) {
+    return new RhymeBuilderImpl(resourceLoader);
   }
 
   /**

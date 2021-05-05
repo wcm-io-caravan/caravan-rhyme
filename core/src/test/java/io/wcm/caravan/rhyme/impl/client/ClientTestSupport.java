@@ -36,7 +36,7 @@ import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.ryhme.testing.ConversionFunctions;
 import io.wcm.caravan.ryhme.testing.resources.TestResource;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
@@ -47,11 +47,11 @@ public class ClientTestSupport {
 
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
-  protected final JsonResourceLoader jsonLoader;
+  protected final HalResourceLoader jsonLoader;
 
   protected final TestResourceTree testResourceTree;
 
-  protected ClientTestSupport(JsonResourceLoader jsonLoader) {
+  protected ClientTestSupport(HalResourceLoader jsonLoader) {
     this.jsonLoader = jsonLoader;
     this.testResourceTree = null;
   }
@@ -99,16 +99,16 @@ public class ClientTestSupport {
 
 
     MockClientTestSupport() {
-      super(Mockito.mock(JsonResourceLoader.class));
+      super(Mockito.mock(HalResourceLoader.class));
     }
 
-    JsonResourceLoader getMockJsonLoader() {
+    HalResourceLoader getMockJsonLoader() {
       return this.jsonLoader;
     }
 
     void mockResponseWithSupplier(String uri, Supplier<Single<HalResponse>> supplier) {
 
-      when(jsonLoader.loadJsonResource(uri))
+      when(jsonLoader.getHalResource(uri))
           .thenAnswer(new Answer<Single<HalResponse>>() {
 
             @Override
@@ -122,7 +122,7 @@ public class ClientTestSupport {
 
       SubscriberCounter counter = new SubscriberCounter(value);
 
-      when(jsonLoader.loadJsonResource(uri))
+      when(jsonLoader.getHalResource(uri))
           .thenReturn(counter.getCountingSingle());
 
       return counter;
