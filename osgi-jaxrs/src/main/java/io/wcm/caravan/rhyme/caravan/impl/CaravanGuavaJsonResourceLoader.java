@@ -107,7 +107,6 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
 
       HalResponse halResponse = new HalResponse()
           .withStatus(statusCode)
-          .withReason(response.reason())
           .withBody(jsonNode)
           .withMaxAge(maxAge);
 

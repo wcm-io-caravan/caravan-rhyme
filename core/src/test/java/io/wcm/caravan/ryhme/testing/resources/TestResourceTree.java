@@ -77,7 +77,6 @@ public class TestResourceTree implements JsonResourceLoader {
 
     HalResponse response = new HalResponse()
         .withStatus(status)
-        .withReason("")
         .withBody(requestedResource.asHalResource())
         .withMaxAge(requestedResource.getMaxAge());
 
