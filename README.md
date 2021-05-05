@@ -453,7 +453,7 @@ Then you can use the full range of RxJava operators to construct a chain of API 
     // all Observable provided by rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
 ```
 
-On the server-side, just use the `renderResponse` function from the `Rhyme` interface to ensure that your code is not blocking the main thread while rendering the HAL representation of your server-side resource implementations:
+On the server-side, just use the `renderResponse` function from the `Rhyme` interface, without calling `Single#blockingGet()`  to ensure that your code is not blocking the main thread while rendering the HAL representation of your server-side resource implementations:
 
 ```java
 Single<HalResponse> response = rhyme.renderResponse(resource);

@@ -23,9 +23,11 @@ import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-final class JaxRsReflectionUtils {
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
-  private JaxRsReflectionUtils() {
+final class ReflectionUtils {
+
+  private ReflectionUtils() {
     // static methods only
   }
 
@@ -33,11 +35,16 @@ final class JaxRsReflectionUtils {
     if (instance == null) {
       return null;
     }
+    if (field == null) {
+      throw new HalApiDeveloperException("Null field given when trying to extract field value from " + instance.getClass().getName() + " instance");
+    }
     try {
       return FieldUtils.readField(field, instance, true);
     }
-    catch (IllegalArgumentException | IllegalAccessException ex) {
-      throw new RuntimeException("Failed to access field " + field.getName() + " of class " + instance.getClass().getName() + " through reflection", ex);
+    catch (IllegalAccessException | RuntimeException ex) {
+
+      throw new HalApiDeveloperException("Failed to access field " + field.getName() + " of class " + instance.getClass().getName() + " through reflection",
+          ex);
     }
   }
 }

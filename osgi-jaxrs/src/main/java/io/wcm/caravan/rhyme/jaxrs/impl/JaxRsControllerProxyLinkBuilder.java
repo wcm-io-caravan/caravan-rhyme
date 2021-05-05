@@ -423,7 +423,7 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
         parameter.iterable = isOfIterableType(field);
         parameter.query = true;
         parameter.required = !field.isAnnotationPresent(DefaultValue.class);
-        parameter.valueProvider = (args -> JaxRsReflectionUtils.getFieldValue(field, args[index]));
+        parameter.valueProvider = (args -> ReflectionUtils.getFieldValue(field, args[index]));
 
         return parameter;
       }
@@ -436,7 +436,7 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
         parameter.iterable = isOfIterableType(field);
         parameter.query = false;
         parameter.required = true;
-        parameter.valueProvider = (args -> JaxRsReflectionUtils.getFieldValue(field, args[index]));
+        parameter.valueProvider = (args -> ReflectionUtils.getFieldValue(field, args[index]));
 
         return parameter;
       }
