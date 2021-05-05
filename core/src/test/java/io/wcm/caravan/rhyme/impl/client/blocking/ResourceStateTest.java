@@ -60,7 +60,7 @@ public class ResourceStateTest {
 
   private <T> T createClientProxy(Class<T> halApiInterface) {
     HalApiClient client = HalApiClient.create(jsonLoader, metrics);
-    T clientProxy = client.getEntryPoint(RESOURCE_URL, halApiInterface);
+    T clientProxy = client.getRemoteResource(RESOURCE_URL, halApiInterface);
     assertThat(clientProxy).isNotNull();
     return clientProxy;
   }

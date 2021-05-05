@@ -65,7 +65,7 @@ final class RhymeImpl implements Rhyme {
       return new HalApiClient() {
 
         @Override
-        public <T> T getEntryPoint(String uri, Class<T> halApiInterface) {
+        public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
           throw new HalApiDeveloperException("#getEntryPoint can only be used if you have provided a " + JsonResourceLoader.class.getSimpleName()
               + " when constructing your " + RhymeBuilder.class.getSimpleName());
         }
@@ -83,9 +83,9 @@ final class RhymeImpl implements Rhyme {
   }
 
   @Override
-  public <T> T getUpstreamEntryPoint(String uri, Class<T> halApiInterface) {
+  public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
 
-    return client.getEntryPoint(uri, halApiInterface);
+    return client.getRemoteResource(uri, halApiInterface);
   }
 
   @Override

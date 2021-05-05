@@ -94,7 +94,7 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
 
     HalApiClient client = HalApiClient.create(jsonLoader, metrics, annotationSupport, returnTypeSupport);
 
-    return client.getEntryPoint(uri, halApiInterface);
+    return client.getRemoteResource(uri, halApiInterface);
   }
 
   @SuppressWarnings("PMD.PreserveStackTrace")

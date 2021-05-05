@@ -208,7 +208,7 @@ public class RhymeBuilderImplTest {
 
     Rhyme rhyme = createRhymeWithStreamReturnTypeSupport();
 
-    ResourceWithStreamOfLinks entryPoint = rhyme.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithStreamOfLinks.class);
+    ResourceWithStreamOfLinks entryPoint = rhyme.getRemoteResource(UPSTREAM_ENTRY_POINT_URI, ResourceWithStreamOfLinks.class);
 
     List<LinkableTestResource> linked = entryPoint.getLinks().collect(Collectors.toList());
 
@@ -330,7 +330,7 @@ public class RhymeBuilderImplTest {
 
     Rhyme rhyme = createRhymeWithCustomAnnotationTypeSupport();
 
-    ResourceWithCustomAnnotation resource = rhyme.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, ResourceWithCustomAnnotation.class);
+    ResourceWithCustomAnnotation resource = rhyme.getRemoteResource(UPSTREAM_ENTRY_POINT_URI, ResourceWithCustomAnnotation.class);
 
     TestState state = resource.getState().get();
     assertThat(state).isNotNull();

@@ -46,7 +46,7 @@ public interface CaravanRhyme {
    * @return a dynamic proxy instance of the provided {@link HalApiInterface} that you can use to navigate through the
    *         resources of the service
    */
-  <T> T getUpstreamEntryPoint(String serviceId, String uri, Class<T> halApiInterface);
+  <T> T getRemoteResource(String serviceId, String uri, Class<T> halApiInterface);
 
   /**
    * Limit the maximum time for which the response should be cached by clients and downstream services. Note that
