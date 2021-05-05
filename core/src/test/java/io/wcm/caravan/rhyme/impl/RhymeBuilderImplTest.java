@@ -80,7 +80,7 @@ public class RhymeBuilderImplTest {
 
     NotImplementedException ex = new NotImplementedException("Foo");
 
-    HalResponse response = rhyme.renderResponse(new FailingResourceImpl(ex));
+    HalResponse response = rhyme.renderResponse(new FailingResourceImpl(ex)).blockingGet();
 
     assertThat(response.getStatus()).isEqualTo(501);
   }
@@ -92,7 +92,7 @@ public class RhymeBuilderImplTest {
 
     HalApiServerException ex = new HalApiServerException(404, "Not Found");
 
-    HalResponse response = rhyme.renderResponse(new FailingResourceImpl(ex));
+    HalResponse response = rhyme.renderResponse(new FailingResourceImpl(ex)).blockingGet();
 
     assertThat(response.getStatus()).isEqualTo(404);
   }
@@ -109,6 +109,10 @@ public class RhymeBuilderImplTest {
     }
   }
 
+  private HalResponse renderFailingResource(Rhyme rhyme, RuntimeException ex) {
+    return rhyme.renderResponse(new FailingResourceImpl(ex)).blockingGet();
+  }
+
   @Test
   public void withExceptionStrategy_should_allow_multiple_custom_strategies() {
 
@@ -117,13 +121,13 @@ public class RhymeBuilderImplTest {
         .withExceptionStrategy(new AdditionalExceptionStrategy())
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
-    HalResponse response404 = rhyme.renderResponse(new FailingResourceImpl(new HalApiServerException(404, "Not Found")));
+    HalResponse response404 = renderFailingResource(rhyme, new HalApiServerException(404, "Not Found"));
     assertThat(response404.getStatus()).isEqualTo(404);
 
-    HalResponse response400 = rhyme.renderResponse(new FailingResourceImpl(new IllegalArgumentException()));
+    HalResponse response400 = renderFailingResource(rhyme, new IllegalArgumentException());
     assertThat(response400.getStatus()).isEqualTo(400);
 
-    HalResponse response501 = rhyme.renderResponse(new FailingResourceImpl(new NotImplementedException("Foo")));
+    HalResponse response501 = renderFailingResource(rhyme, new NotImplementedException("Foo"));
     assertThat(response501.getStatus()).isEqualTo(501);
 
   }
@@ -193,7 +197,7 @@ public class RhymeBuilderImplTest {
 
     ResourceWithStreamOfLinks resourceImpl = new ResourcewithStreamOfLinksImpl();
 
-    HalResponse response = rhyme.renderResponse(resourceImpl);
+    HalResponse response = rhyme.renderResponse(resourceImpl).blockingGet();
     assertThat(response.getStatus()).isEqualTo(200);
 
     List<Link> links = response.getBody().getLinks(StandardRelations.ITEM);
@@ -313,7 +317,7 @@ public class RhymeBuilderImplTest {
     ResourceWithCustomAnnotation resourceImpl = new ResourceWithCustomAnnotationImpl()
         .withEmbedded(new TestState(123), new TestState(456));
 
-    HalResponse response = rhyme.renderResponse(resourceImpl);
+    HalResponse response = rhyme.renderResponse(resourceImpl).blockingGet();
 
     assertThat(response.getStatus()).isEqualTo(200);
     assertThat(response.getContentType()).isEqualTo(HalResource.CONTENT_TYPE);
