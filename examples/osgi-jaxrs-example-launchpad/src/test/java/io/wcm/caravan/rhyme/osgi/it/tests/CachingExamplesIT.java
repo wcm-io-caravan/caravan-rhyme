@@ -48,7 +48,7 @@ public class CachingExamplesIT {
   private final ExamplesEntryPointResource entryPoint;
 
   public CachingExamplesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getEntryPoint(SERVICE_ID, ExamplesEntryPointResource.class);
+    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
   }
 
   private List<ItemState> getItems(int numItems, int delayMs, Function<EvenOddItemsResource, SingleSource<ItemCollectionResource>> func) {

@@ -63,7 +63,7 @@ public class ClientTestSupport {
 
   <T> T createProxy(Class<T> halApiInterface) {
     HalApiClient client = getHalApiClient();
-    T clientProxy = client.getEntryPoint(ENTRY_POINT_URI, halApiInterface);
+    T clientProxy = client.getRemoteResource(ENTRY_POINT_URI, halApiInterface);
     assertThat(clientProxy).isNotNull();
     return clientProxy;
   }

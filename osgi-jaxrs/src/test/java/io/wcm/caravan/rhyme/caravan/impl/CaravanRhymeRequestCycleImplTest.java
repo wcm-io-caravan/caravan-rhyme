@@ -108,7 +108,7 @@ public class CaravanRhymeRequestCycleImplTest {
 
     CaravanRhyme rhyme = requestCycle.createRhymeInstance(uriInfo);
 
-    LinkableTestResource resource = rhyme.getUpstreamEntryPoint("/serviceId", REQUEST_URI, LinkableTestResource.class);
+    LinkableTestResource resource = rhyme.getRemoteResource("/serviceId", REQUEST_URI, LinkableTestResource.class);
 
     verifyZeroInteractions(httpClient);
 

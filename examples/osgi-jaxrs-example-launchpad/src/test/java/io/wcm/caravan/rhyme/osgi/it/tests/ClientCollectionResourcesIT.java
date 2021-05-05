@@ -28,7 +28,7 @@ public class ClientCollectionResourcesIT {
   private final ExamplesEntryPointResource entryPoint;
 
   public ClientCollectionResourcesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getEntryPoint(SERVICE_ID, ExamplesEntryPointResource.class);
+    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
   }
 
   private Single<ItemCollectionResource> getCollectionThroughClient(Integer numItems, Boolean embedItems, Integer delayMs) {

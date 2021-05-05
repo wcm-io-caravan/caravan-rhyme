@@ -45,7 +45,7 @@ public class HttpErrorResourcesIT {
   private final ExamplesEntryPointResource entryPoint;
 
   public HttpErrorResourcesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getEntryPoint(SERVICE_ID, ExamplesEntryPointResource.class);
+    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
   }
 
   private HalApiClientException executeRequestAndGetExpectedHalApiClientException(Integer statusCode, String message, Boolean withCause) {

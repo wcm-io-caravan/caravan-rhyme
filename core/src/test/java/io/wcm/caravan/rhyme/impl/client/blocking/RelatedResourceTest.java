@@ -68,7 +68,7 @@ public class RelatedResourceTest {
 
   private <T> T createClientProxy(Class<T> halApiInterface) {
     HalApiClient client = HalApiClient.create(jsonLoader, metrics);
-    T clientProxy = client.getEntryPoint(entryPoint.getUrl(), halApiInterface);
+    T clientProxy = client.getRemoteResource(entryPoint.getUrl(), halApiInterface);
     assertThat(clientProxy).isNotNull();
     return clientProxy;
   }

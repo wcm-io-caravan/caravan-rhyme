@@ -102,8 +102,8 @@ public class ProxyCachingTest {
 
     HalApiClient halApiClient = client.getHalApiClient();
 
-    EntryPoint proxy1 = halApiClient.getEntryPoint(ENTRY_POINT_URI, EntryPoint.class);
-    EntryPoint proxy2 = halApiClient.getEntryPoint(ENTRY_POINT_URI, EntryPoint.class);
+    EntryPoint proxy1 = halApiClient.getRemoteResource(ENTRY_POINT_URI, EntryPoint.class);
+    EntryPoint proxy2 = halApiClient.getRemoteResource(ENTRY_POINT_URI, EntryPoint.class);
 
     assertThat(proxy1).isSameAs(proxy2);
 
@@ -122,8 +122,8 @@ public class ProxyCachingTest {
 
     HalApiClient halApiClient = client.getHalApiClient();
 
-    EntryPoint proxy1 = halApiClient.getEntryPoint(ENTRY_POINT_URI, EntryPoint.class);
-    AltEntryPointInterface proxy2 = halApiClient.getEntryPoint(ENTRY_POINT_URI, AltEntryPointInterface.class);
+    EntryPoint proxy1 = halApiClient.getRemoteResource(ENTRY_POINT_URI, EntryPoint.class);
+    AltEntryPointInterface proxy2 = halApiClient.getRemoteResource(ENTRY_POINT_URI, AltEntryPointInterface.class);
 
     assertThat(proxy1).isNotSameAs(proxy2);
 

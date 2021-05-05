@@ -97,7 +97,7 @@ public class CaravanRhymeRequestCycleImpl implements CaravanRhymeRequestCycle {
     }
 
     @Override
-    public <T> T getUpstreamEntryPoint(String serviceId, String uri, Class<T> halApiInterface) {
+    public <T> T getRemoteResource(String serviceId, String uri, Class<T> halApiInterface) {
 
       return halApiClient.getEntryPoint(serviceId, uri, halApiInterface, metrics);
     }

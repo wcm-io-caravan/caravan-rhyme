@@ -53,7 +53,7 @@ public class HalApiClientImpl implements HalApiClient {
   }
 
   @Override
-  public <T> T getEntryPoint(String uri, Class<T> halApiInterface) {
+  public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
 
     // create a proxy instance that loads the entry point lazily when required by any method call on the proxy
     return factory.createProxyFromUrl(halApiInterface, uri);
