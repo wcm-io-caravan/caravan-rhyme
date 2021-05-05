@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ public interface JsonResourceLoader {
    * @param uri the URI of the resource to load. The exact format of the URI (i.e. whether it is fully qualified or not)
    *          depends on how the links are represented in the upstream resources
    * @return a {@link Single} that emits a {@link HalResponse} entity if the request was successful, or otherwise fails
-   *         with an{@link HalApiClientException}
+   *         with a {@link HalApiClientException}
    */
   Single<HalResponse> loadJsonResource(String uri);
 }
