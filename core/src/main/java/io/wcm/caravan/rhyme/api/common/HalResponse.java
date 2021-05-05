@@ -30,7 +30,6 @@ public class HalResponse {
 
   private final Integer status;
   private final String contentType;
-  private final String reason;
   private final HalResource body;
   private final Integer maxAge;
 
@@ -41,15 +40,13 @@ public class HalResponse {
   public HalResponse() {
     this.status = null;
     this.contentType = null;
-    this.reason = null;
     this.body = null;
     this.maxAge = null;
   }
 
-  private HalResponse(Integer status, String contentType, String reason, HalResource body, Integer maxAge) {
+  private HalResponse(Integer status, String contentType, HalResource body, Integer maxAge) {
     this.status = status;
     this.contentType = contentType;
-    this.reason = reason;
     this.body = body;
     this.maxAge = maxAge;
   }
@@ -66,7 +63,7 @@ public class HalResponse {
    * @return a new instance with the given status code
    */
   public HalResponse withStatus(Integer value) {
-    return new HalResponse(value, contentType, reason, body, maxAge);
+    return new HalResponse(value, contentType, body, maxAge);
   }
 
   /**
@@ -81,15 +78,7 @@ public class HalResponse {
    * @return a new instance with the given content type
    */
   public HalResponse withContentType(String value) {
-    return new HalResponse(status, value, reason, body, maxAge);
-  }
-
-  /**
-   * @param value the reason from the HTTP status line
-   * @return a new instance with the given reason
-   */
-  public HalResponse withReason(String value) {
-    return new HalResponse(status, contentType, value, body, maxAge);
+    return new HalResponse(status, value, body, maxAge);
   }
 
   /**
@@ -105,7 +94,7 @@ public class HalResponse {
    * @return a new instance with the given body
    */
   public HalResponse withBody(HalResource value) {
-    return new HalResponse(status, contentType, reason, value, maxAge);
+    return new HalResponse(status, contentType, value, maxAge);
   }
 
   /**
@@ -114,7 +103,7 @@ public class HalResponse {
    */
   public HalResponse withBody(JsonNode value) {
     HalResource hal = value != null ? new HalResource(value) : null;
-    return new HalResponse(status, contentType, reason, hal, maxAge);
+    return new HalResponse(status, contentType, hal, maxAge);
   }
 
   /**
@@ -129,6 +118,6 @@ public class HalResponse {
    * @return a new instance with the given max age
    */
   public HalResponse withMaxAge(Integer value) {
-    return new HalResponse(status, contentType, reason, body, value);
+    return new HalResponse(status, contentType, body, value);
   }
 }

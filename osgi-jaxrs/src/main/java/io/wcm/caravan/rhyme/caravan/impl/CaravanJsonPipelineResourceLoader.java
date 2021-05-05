@@ -100,8 +100,7 @@ class CaravanJsonPipelineResourceLoader implements JsonResourceLoader {
 
     HalResponse errorResponse = new HalResponse()
         .withStatus(jpie.getStatusCode())
-        .withBody(responseNode)
-        .withReason(jpie.getReason());
+        .withBody(responseNode);
 
     return Single.error(new HalApiClientException(errorResponse, uri, ex));
   }
