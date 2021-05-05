@@ -30,9 +30,9 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
-public class TestResourceTree implements JsonResourceLoader {
+public class TestResourceTree implements HalResourceLoader {
 
   static final String LINKED_URL_TEMPLATE = "/linked/{index}";
   private static final String ENTRY_POINT_URL = "/";
@@ -58,7 +58,7 @@ public class TestResourceTree implements JsonResourceLoader {
   }
 
   @Override
-  public Single<HalResponse> loadJsonResource(String uri) {
+  public Single<HalResponse> getHalResource(String uri) {
 
     Link link = new Link(uri);
     if (link.isTemplated()) {

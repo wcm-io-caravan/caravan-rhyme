@@ -95,7 +95,7 @@ public class RhymeImplTest {
         () -> rhymeWithoutResourceLoader.getRemoteResource(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageContaining("#getEntryPoint can only be used if you have provided a JsonResourceLoader");
+        .hasMessageContaining("#getRemoteResource can only be used if you have provided a HalResourceLoader");
   }
 
   @Test

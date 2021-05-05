@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
@@ -44,15 +44,15 @@ final class RhymeImpl implements Rhyme {
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
   private final String requestUri;
-  private final JsonResourceLoader jsonLoader;
+  private final HalResourceLoader resourceLoader;
   private final ExceptionStatusAndLoggingStrategy exceptionStrategy;
 
   private final HalApiClient client;
   private final AsyncHalResponseRenderer renderer;
 
-  RhymeImpl(String requestUri, JsonResourceLoader jsonLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport) {
+  RhymeImpl(String requestUri, HalResourceLoader resourceLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport) {
     this.requestUri = requestUri;
-    this.jsonLoader = jsonLoader;
+    this.resourceLoader = resourceLoader;
     this.exceptionStrategy = exceptionStrategy;
     this.client = createHalApiClient(typeSupport);
     this.renderer = createResponseRenderer(typeSupport);
@@ -60,18 +60,18 @@ final class RhymeImpl implements Rhyme {
 
   private HalApiClient createHalApiClient(HalApiTypeSupport typeSupport) {
 
-    if (jsonLoader == null) {
+    if (resourceLoader == null) {
       return new HalApiClient() {
 
         @Override
         public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
-          throw new HalApiDeveloperException("#getEntryPoint can only be used if you have provided a " + JsonResourceLoader.class.getSimpleName()
+          throw new HalApiDeveloperException("#getRemoteResource can only be used if you have provided a " + HalResourceLoader.class.getSimpleName()
               + " when constructing your " + RhymeBuilder.class.getSimpleName());
         }
       };
     }
 
-    return new HalApiClientImpl(jsonLoader, metrics, typeSupport);
+    return new HalApiClientImpl(resourceLoader, metrics, typeSupport);
   }
 
   private AsyncHalResponseRenderer createResponseRenderer(HalApiTypeSupport typeSupport) {

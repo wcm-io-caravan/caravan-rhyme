@@ -26,7 +26,7 @@ import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants;
 
 public class HalApiClientExtension implements ParameterResolver {
@@ -48,7 +48,7 @@ public class HalApiClientExtension implements ParameterResolver {
     return HalApiClient.create(loader, metrics);
   }
 
-  private static class ApacheAsyncJsonResourceLoader implements JsonResourceLoader {
+  private static class ApacheAsyncJsonResourceLoader implements HalResourceLoader {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final JsonFactory JSON_FACTORY = new JsonFactory(OBJECT_MAPPER);
@@ -60,7 +60,7 @@ public class HalApiClientExtension implements ParameterResolver {
     }
 
     @Override
-    public Single<HalResponse> loadJsonResource(String uri) {
+    public Single<HalResponse> getHalResource(String uri) {
 
       SingleSubject<HalResponse> responseSubject = SingleSubject.create();
 

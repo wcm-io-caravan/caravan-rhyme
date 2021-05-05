@@ -43,7 +43,7 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
@@ -56,7 +56,7 @@ public class CompositeHalApiTypeSupportTest {
   private final ExceptionStatusAndLoggingStrategy exceptionStrategy = null;
 
   @Mock
-  private JsonResourceLoader jsonLoader;
+  private HalResourceLoader jsonLoader;
 
   @Mock
   private HalApiReturnTypeSupport mockReturnTypeSupport;

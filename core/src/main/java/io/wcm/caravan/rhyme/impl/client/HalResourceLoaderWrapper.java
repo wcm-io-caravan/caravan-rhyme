@@ -37,33 +37,35 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.util.RxJavaTransformers;
 
+/**
+ * Extends another {@link HalResourceLoader} with common error handling and metrics collection functionality
+ */
+class HalResourceLoaderWrapper implements HalResourceLoader {
 
-class CachingJsonResourceLoader implements JsonResourceLoader {
-
-  private static final Logger log = LoggerFactory.getLogger(CachingJsonResourceLoader.class);
+  private static final Logger log = LoggerFactory.getLogger(HalResourceLoaderWrapper.class);
 
   private final Cache<String, Single<HalResponse>> cache = CacheBuilder.newBuilder().build();
 
-  private final JsonResourceLoader delegate;
+  private final HalResourceLoader delegate;
   private final RequestMetricsCollector metrics;
 
-  CachingJsonResourceLoader(JsonResourceLoader delegate, RequestMetricsCollector metrics) {
+  HalResourceLoaderWrapper(HalResourceLoader delegate, RequestMetricsCollector metrics) {
     this.delegate = delegate;
     this.metrics = metrics;
   }
 
   @Override
   @SuppressWarnings("PMD.PreserveStackTrace")
-  public Single<HalResponse> loadJsonResource(String uri) {
+  public Single<HalResponse> getHalResource(String uri) {
     try {
       return cache.get(uri, () -> {
 
         Stopwatch stopwatch = Stopwatch.createUnstarted();
 
-        Single<HalResponse> loadedResource = delegate.loadJsonResource(uri)
+        Single<HalResponse> loadedResource = delegate.getHalResource(uri)
             .doOnSubscribe(d -> startStopwatch(stopwatch))
             .doOnError(ex -> registerErrorMetrics(uri, ex, stopwatch))
             .doOnSuccess(jsonResponse -> registerResponseMetrics(uri, jsonResponse, stopwatch))
@@ -75,7 +77,7 @@ class CachingJsonResourceLoader implements JsonResourceLoader {
       });
     }
     catch (UncheckedExecutionException | ExecutionException ex) {
-      String msg = delegate.getClass() + "#loadJsonResource(String) returned null or threw an exception. "
+      String msg = delegate.getClass() + "#getHalResource(String) returned null or threw an exception. "
           + " Please make sure that your implementation will always return a Single instance during assembly time.";
       throw new HalApiDeveloperException(msg, ex.getCause());
     }

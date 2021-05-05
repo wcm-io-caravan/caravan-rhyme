@@ -38,10 +38,10 @@ import io.wcm.caravan.io.http.request.CaravanHttpRequestBuilder;
 import io.wcm.caravan.io.http.response.CaravanHttpResponse;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 
-class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
+class CaravanGuavaResourceLoader implements HalResourceLoader {
 
   private static final JsonFactory JSON_FACTORY = new JsonFactory(new ObjectMapper());
 
@@ -51,14 +51,14 @@ class CaravanGuavaJsonResourceLoader implements JsonResourceLoader {
   private final CaravanHttpClient client;
   private final Clock clock;
 
-  CaravanGuavaJsonResourceLoader(CaravanHttpClient client, String serviceId, Clock clock) {
+  CaravanGuavaResourceLoader(CaravanHttpClient client, String serviceId, Clock clock) {
     this.serviceId = serviceId;
     this.client = client;
     this.clock = clock;
   }
 
   @Override
-  public Single<HalResponse> loadJsonResource(String uri) {
+  public Single<HalResponse> getHalResource(String uri) {
 
     CacheEntry cached = cache.getIfPresent(uri);
 

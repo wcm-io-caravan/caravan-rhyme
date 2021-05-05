@@ -41,18 +41,18 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.caravan.api.CaravanHalApiClient;
 
 /**
  * Implementation of the {@link CaravanHalApiClient} OSGi service that will use the
  * {@link CaravanJsonPipelineResourceLoader} for caching if the caravan JSON pipeline bundles are available at runtime.
- * Otherwise, it will fall back to using the {@link CaravanGuavaJsonResourceLoader})
+ * Otherwise, it will fall back to using the {@link CaravanGuavaResourceLoader})
  */
 @Component
 public class CaravanHalApiClientImpl implements CaravanHalApiClient {
 
-  private LoadingCache<String, JsonResourceLoader> resourceLoaderCache;
+  private LoadingCache<String, HalResourceLoader> resourceLoaderCache;
 
   @Reference
   private CaravanHttpClient httpClient;
@@ -70,12 +70,12 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
   @Activate
   void setUp() {
 
-    CacheLoader<String, JsonResourceLoader> cacheLoader = createCacheLoaderWithBestAvailableCache();
+    CacheLoader<String, HalResourceLoader> cacheLoader = createCacheLoaderWithBestAvailableCache();
 
     resourceLoaderCache = CacheBuilder.newBuilder().build(cacheLoader);
   }
 
-  private CacheLoader<String, JsonResourceLoader> createCacheLoaderWithBestAvailableCache() {
+  private CacheLoader<String, HalResourceLoader> createCacheLoaderWithBestAvailableCache() {
 
     if (pipelineFactory != null) {
       // an implementation based on Caravan JsonPipeline caching, use it if it's available in the runtime
@@ -90,15 +90,15 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
   @Override
   public <T> T getEntryPoint(String serviceId, String uri, Class<T> halApiInterface, RequestMetricsCollector metrics) {
 
-    JsonResourceLoader jsonLoader = getOrCreateJsonResourceLoader(serviceId);
+    HalResourceLoader halLoader = getOrCreateHalResourceLoader(serviceId);
 
-    HalApiClient client = HalApiClient.create(jsonLoader, metrics, annotationSupport, returnTypeSupport);
+    HalApiClient client = HalApiClient.create(halLoader, metrics, annotationSupport, returnTypeSupport);
 
     return client.getRemoteResource(uri, halApiInterface);
   }
 
   @SuppressWarnings("PMD.PreserveStackTrace")
-  JsonResourceLoader getOrCreateJsonResourceLoader(String serviceId) {
+  HalResourceLoader getOrCreateHalResourceLoader(String serviceId) {
     try {
       return resourceLoaderCache.get(serviceId);
     }
@@ -107,18 +107,18 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
     }
   }
 
-  private final class GuavaCacheLoader extends CacheLoader<String, JsonResourceLoader> {
+  private final class GuavaCacheLoader extends CacheLoader<String, HalResourceLoader> {
 
     @Override
-    public JsonResourceLoader load(String serviceId) throws Exception {
-      return new CaravanGuavaJsonResourceLoader(httpClient, serviceId, Clock.systemUTC());
+    public HalResourceLoader load(String serviceId) throws Exception {
+      return new CaravanGuavaResourceLoader(httpClient, serviceId, Clock.systemUTC());
     }
   }
 
-  private final class JsonPipelineCacheLoader extends CacheLoader<String, JsonResourceLoader> {
+  private final class JsonPipelineCacheLoader extends CacheLoader<String, HalResourceLoader> {
 
     @Override
-    public JsonResourceLoader load(String serviceId) throws Exception {
+    public HalResourceLoader load(String serviceId) throws Exception {
       return new CaravanJsonPipelineResourceLoader(pipelineFactory, serviceId);
     }
   }

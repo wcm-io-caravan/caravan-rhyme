@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
  */
 @FunctionalInterface
 @ConsumerType
-public interface JsonResourceLoader {
+public interface HalResourceLoader {
 
   /**
    * @param uri the URI of the resource to load. The exact format of the URI (i.e. whether it is fully qualified or not)
@@ -40,5 +40,5 @@ public interface JsonResourceLoader {
    * @return a {@link Single} that emits a {@link HalResponse} entity if the request was successful, or otherwise fails
    *         with a {@link HalApiClientException}
    */
-  Single<HalResponse> loadJsonResource(String uri);
+  Single<HalResponse> getHalResource(String uri);
 }

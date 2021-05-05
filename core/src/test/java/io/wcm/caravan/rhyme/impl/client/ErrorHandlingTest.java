@@ -247,7 +247,7 @@ public class ErrorHandlingTest {
 
     assertThat(state).isNotNull();
 
-    verify(client.getMockJsonLoader()).loadJsonResource(ENTRY_POINT_URI);
+    verify(client.getMockJsonLoader()).getHalResource(ENTRY_POINT_URI);
   }
 
   @Test
@@ -271,7 +271,7 @@ public class ErrorHandlingTest {
     assertThat(ex.getCause())
         .hasMessageStartingWith("It's not there yet");
 
-    verify(client.getMockJsonLoader()).loadJsonResource(ENTRY_POINT_URI);
+    verify(client.getMockJsonLoader()).getHalResource(ENTRY_POINT_URI);
   }
 
   Single<HalResponse> createSingleThatEmitsOnFourthCall(HalResponse response) {
