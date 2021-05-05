@@ -29,7 +29,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   private final Rhyme rhyme;
 
   @Inject
-  public SlingRhymeImpl(@Self SlingHttpServletRequest request, JsonResourceLoaderPicker picker) {
+  public SlingRhymeImpl(@Self SlingHttpServletRequest request, HalResourceLoaderManager picker) {
 
     this.request = request;
 
@@ -115,7 +115,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
 
   @Override
   public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
-    return rhyme.getUpstreamEntryPoint(uri, halApiInterface);
+    return rhyme.getRemoteResource(uri, halApiInterface);
   }
 
   @Override
@@ -124,7 +124,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   }
 
   HalResponse renderResource(LinkableResource resourceImpl) {
-    return rhyme.renderResponse(resourceImpl);
+    return rhyme.renderResponse(resourceImpl).blockingGet();
   }
 
   HalResponse renderVndErrorResponse(Throwable error) {

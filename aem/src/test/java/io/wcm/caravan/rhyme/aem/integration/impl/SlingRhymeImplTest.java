@@ -19,7 +19,7 @@ import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -214,7 +214,7 @@ public class SlingRhymeImplTest {
     Throwable ex = catchThrowable(() -> resource.getState());
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("No OSGi services implementing " + JsonResourceLoader.class + " are running");
+        .hasMessageStartingWith("No OSGi services implementing " + HalResourceLoader.class + " are running");
   }
 
   @Test
@@ -222,10 +222,10 @@ public class SlingRhymeImplTest {
 
     HalApiClientException clientException = new HalApiClientException("Simulated client failure", 403, null, null);
 
-    JsonResourceLoader jsonLoader = mock(JsonResourceLoader.class);
-    Mockito.when(jsonLoader.loadJsonResource(anyString()))
+    HalResourceLoader resourceLoader = mock(HalResourceLoader.class);
+    Mockito.when(resourceLoader.getHalResource(anyString()))
         .thenReturn(Single.error(clientException));
-    context.registerService(JsonResourceLoader.class, jsonLoader);
+    context.registerService(HalResourceLoader.class, resourceLoader);
 
     SlingRhyme rhyme = createRhymeInstance();
 
