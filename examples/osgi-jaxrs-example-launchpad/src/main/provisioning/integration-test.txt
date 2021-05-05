@@ -17,7 +17,6 @@
   org.apache.httpcomponents/httpcore-osgi
   org.apache.httpcomponents/httpclient-osgi
   org.apache.httpcomponents/httpasyncclient-osgi
-  org.apache.httpcomponents/httpcore-nio
   org.codehaus.jackson/jackson-core-asl/1.9.13
   org.codehaus.jackson/jackson-mapper-asl/1.9.13
   io.wcm.osgi.wrapper/io.wcm.osgi.wrapper.hibernate-validator
