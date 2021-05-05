@@ -41,7 +41,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
-import io.wcm.caravan.rhyme.util.RxJavaTransformers;
+import io.wcm.caravan.rhyme.impl.util.RxJavaTransformers;
 
 /**
  * Internal utility methods to invoke methods returning reactive streams, and converting between various

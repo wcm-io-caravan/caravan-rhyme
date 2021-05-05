@@ -18,7 +18,7 @@
  * #L%
  */
 
-package io.wcm.caravan.rhyme.util;
+package io.wcm.caravan.rhyme.impl.util;
 
 import java.util.function.Function;
 
