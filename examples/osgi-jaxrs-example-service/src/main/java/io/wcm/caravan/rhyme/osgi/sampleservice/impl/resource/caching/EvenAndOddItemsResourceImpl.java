@@ -19,7 +19,6 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.caching;
 
-import static io.wcm.caravan.rhyme.util.RxJavaTransformers.filterWith;
 
 import java.util.function.Function;
 
@@ -38,6 +37,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceReques
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.util.RxJavaTransformers;
 
 public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, LinkableResource {
 
@@ -87,7 +87,7 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
   private Observable<ItemResource> fetchAndFilter(Function<ItemResource, Single<Boolean>> filterFunc) {
 
     return fetchAllItems()
-        .compose(filterWith(filterFunc));
+        .compose(RxJavaTransformers.filterWith(filterFunc));
   }
 
   @Override

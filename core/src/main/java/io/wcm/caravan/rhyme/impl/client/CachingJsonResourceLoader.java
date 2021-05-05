@@ -38,7 +38,7 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
-import io.wcm.caravan.rhyme.util.RxJavaTransformers;
+import io.wcm.caravan.rhyme.impl.util.RxJavaTransformers;
 
 
 class CachingJsonResourceLoader implements JsonResourceLoader {

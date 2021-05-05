@@ -17,9 +17,9 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.util;
+package io.wcm.caravan.rhyme.impl.util;
 
-import static io.wcm.caravan.rhyme.util.RxJavaTransformers.filterWith;
+import static io.wcm.caravan.rhyme.impl.util.RxJavaTransformers.filterWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
