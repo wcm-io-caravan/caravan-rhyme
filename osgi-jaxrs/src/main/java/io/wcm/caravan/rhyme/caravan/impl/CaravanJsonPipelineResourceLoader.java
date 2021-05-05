@@ -39,10 +39,10 @@ import io.wcm.caravan.pipeline.JsonPipelineOutput;
 import io.wcm.caravan.pipeline.cache.CacheStrategies;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 
-class CaravanJsonPipelineResourceLoader implements JsonResourceLoader {
+class CaravanJsonPipelineResourceLoader implements HalResourceLoader {
 
   private final JsonPipelineFactory pipelineFactory;
   private final String serviceId;
@@ -53,7 +53,7 @@ class CaravanJsonPipelineResourceLoader implements JsonResourceLoader {
   }
 
   @Override
-  public Single<HalResponse> loadJsonResource(String uri) {
+  public Single<HalResponse> getHalResource(String uri) {
 
     CaravanHttpRequest request = createRequest(uri);
 

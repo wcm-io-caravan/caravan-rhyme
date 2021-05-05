@@ -40,23 +40,23 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 @ExtendWith(MockitoExtension.class)
-public class CaravanGuavaJsonResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
+public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
 
-  private JsonResourceLoader resourceLoader;
+  private HalResourceLoader resourceLoader;
 
   private MutableClock clock = new MutableClock();
 
   @Override
-  protected JsonResourceLoader getResourceLoader() {
+  protected HalResourceLoader getResourceLoader() {
     return resourceLoader;
   }
 
   @BeforeEach
   void setUp() {
-    resourceLoader = new CaravanGuavaJsonResourceLoader(httpClient, EXTERNAL_SERVICE_ID, clock);
+    resourceLoader = new CaravanGuavaResourceLoader(httpClient, EXTERNAL_SERVICE_ID, clock);
   }
 
   void assertOkResponseWithMaxAge(Integer maxAge) {
@@ -69,7 +69,7 @@ public class CaravanGuavaJsonResourceLoaderTest extends AbstractCaravanJsonResou
 
 
   @Test
-  public void loadJsonResource_should_use_cached_responses_if_not_stale() throws Exception {
+  public void getHalResource_should_use_cached_responses_if_not_stale() throws Exception {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode();
     mockHttpResponse(200, body, Duration.ofSeconds(30));
@@ -86,7 +86,7 @@ public class CaravanGuavaJsonResourceLoaderTest extends AbstractCaravanJsonResou
   }
 
   @Test
-  public void loadJsonResource_should_discard_cached_responses_if_stale() throws Exception {
+  public void getHalResource_should_discard_cached_responses_if_stale() throws Exception {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode();
     mockHttpResponse(200, body, Duration.ofSeconds(30));
@@ -103,7 +103,7 @@ public class CaravanGuavaJsonResourceLoaderTest extends AbstractCaravanJsonResou
   }
 
   @Test
-  public void loadJsonResource_should_not_cache_responses_without_max_age() throws Exception {
+  public void getHalResource_should_not_cache_responses_without_max_age() throws Exception {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode();
     mockHttpResponse(200, body, null);
@@ -119,7 +119,7 @@ public class CaravanGuavaJsonResourceLoaderTest extends AbstractCaravanJsonResou
   }
 
   @Test
-  public void loadJsonResource_should_handle_invalid_json() throws Exception {
+  public void getHalResource_should_handle_invalid_json() throws Exception {
 
     CaravanHttpMockUtils.mockHttpResponse(httpClient, 200, "<body>Foo</body>", null);
 

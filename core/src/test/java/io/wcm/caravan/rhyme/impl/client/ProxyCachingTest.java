@@ -180,9 +180,9 @@ public class ProxyCachingTest {
     assertThat(list1).containsExactlyElementsOf(list2);
 
     // verify that json for each item was only loaded once
-    verify(client.getMockJsonLoader()).loadJsonResource(ENTRY_POINT_URI);
-    verify(client.getMockJsonLoader()).loadJsonResource(ITEM_1_URL);
-    verify(client.getMockJsonLoader()).loadJsonResource(ITEM_2_URL);
+    verify(client.getMockJsonLoader()).getHalResource(ENTRY_POINT_URI);
+    verify(client.getMockJsonLoader()).getHalResource(ITEM_1_URL);
+    verify(client.getMockJsonLoader()).getHalResource(ITEM_2_URL);
     verifyNoMoreInteractions(client.getMockJsonLoader());
 
     assertThat(entryPointCounter.getCount()).isEqualTo(1);
@@ -203,7 +203,7 @@ public class ProxyCachingTest {
     assertThat(linked).isNotSameAs(alternate);
 
     // verify that entrypoint was only loaded once
-    verify(client.getMockJsonLoader()).loadJsonResource(ENTRY_POINT_URI);
+    verify(client.getMockJsonLoader()).getHalResource(ENTRY_POINT_URI);
     assertThat(entryPointCounter.getCount()).isEqualTo(1);
   }
 

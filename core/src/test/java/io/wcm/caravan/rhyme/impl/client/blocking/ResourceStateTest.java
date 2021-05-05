@@ -37,7 +37,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.ryhme.testing.ConversionFunctions;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
 
@@ -50,12 +50,12 @@ public class ResourceStateTest {
   private static final String RESOURCE_URL = "/";
 
   private RequestMetricsCollector metrics;
-  private JsonResourceLoader jsonLoader;
+  private HalResourceLoader jsonLoader;
 
   @BeforeEach
   public void setUp() {
     metrics = RequestMetricsCollector.create();
-    jsonLoader = Mockito.mock(JsonResourceLoader.class);
+    jsonLoader = Mockito.mock(HalResourceLoader.class);
   }
 
   private <T> T createClientProxy(Class<T> halApiInterface) {
@@ -69,7 +69,7 @@ public class ResourceStateTest {
 
     HalResource hal = new HalResource(state, RESOURCE_URL);
 
-    when(jsonLoader.loadJsonResource(eq(RESOURCE_URL)))
+    when(jsonLoader.getHalResource(eq(RESOURCE_URL)))
         .thenReturn(Single.just(ConversionFunctions.toJsonResponse(hal)));
   }
 

@@ -156,21 +156,21 @@ But especially as long as you (or your team) are the sole consumers of your API 
 
 Now that you have a set of interfaces that represent your HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example no URL patterns are being exposed in the interfaces).
 
-To be able to retrieve HAL+JSON resources through HTTP you must first create an implementation of the [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) SPI interface. This is intentionally out of scope of the core framework, as the choice of HTTP client library should be entirely up to you.
+To be able to retrieve HAL+JSON resources through HTTP you must first create an implementation of the [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) SPI interface. This is intentionally out of scope of the core framework, as the choice of HTTP client library should be entirely up to you.
 
 The interface however just consists of a single method that will load a HAL resource from a given URL, and emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
 
 ```java
-Single<HalResponse> loadJsonResource(String uri);
+Single<HalResponse> getHalResource(String uri);
 ```
 
-Once you have a `JsonResourceLoader` instance, it just requires a few lines of code to create a client implementation of your HAL API's entry point interface: 
+Once you have a `HalResourceLoader` instance, it just requires a few lines of code to create a client implementation of your HAL API's entry point interface: 
 
 ```java
   private ApiEntryPoint getApiEntryPoint() {
 
     // create a Rhyme instance that knows how to load any external JSON resource
-    Rhyme rhyme = RhymeBuilder.withResourceLoader(jsonLoader)
+    Rhyme rhyme = RhymeBuilder.withResourceLoader(resourceLoader)
         .buildForRequestTo(incomingRequest.getUrl());
 
     // create a dynamic proxy that knows how to fetch the entry point from the given URL
@@ -363,7 +363,7 @@ Within your server-side implementation, you can call `Rhyme#setResponseMaxAge(Du
 
 If you are building a service that is also fetching HAL+JSON responses from other services (which is the main use case for **Rhyme**), the `max-age` headers from these upstream responses should also be taken into account: If any of those responses are only to be cached for a short time, the derived response that you are creating must also not be cached any longer than that. Otherwise you'll run into issues that changes to these upstream resources won't become effective for your consumers. This will all happen automatically if you make sure to re-use the same `Rhyme` instance to fetch upstream resources and render your own response.
 
-The **Rhyme** core framework does not implement any client-side caching layer itself. If you need such a cache layer, it can be added to your [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) implementation. But you should make sure to respect and update the max-age information from the Hal Response being cached.
+The **Rhyme** core framework does not implement any client-side caching layer itself. If you need such a cache layer, it can be added to your [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) implementation. But you should make sure to respect and update the max-age information from the Hal Response being cached.
 
 ## Data debugging and performance analysis
 
@@ -437,7 +437,7 @@ If you want to keep your client and server-side code completely asynchronous and
 
 If you rather want to use [Spring Reactor](https://projectreactor.io/) types (or types from othe RxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the additional types to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java).
 
-On the client side, you'll have to implement [JsonResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/JsonResourceLoader.java) using a fully asynchronous HTTP client library. 
+On the client side, you'll have to implement [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) using a fully asynchronous HTTP client library. 
 
 Then you can use the full range of RxJava operators to construct a chain of API operations that are all executed lazily and asynchronously (and in parallel where possible):
 

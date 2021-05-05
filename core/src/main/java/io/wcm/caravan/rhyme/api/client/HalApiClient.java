@@ -27,7 +27,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 
@@ -48,19 +48,19 @@ public interface HalApiClient {
   <T> T getRemoteResource(String uri, Class<T> halApiInterface);
 
   /**
-   * @param jsonLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
+   * @param resourceLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance relevant data for the current
    *          incoming request
    * @return an instance of {@link HalApiClient} that should be re-used for all upstream requests required by the
    *         current incoming request
    */
-  static HalApiClient create(JsonResourceLoader jsonLoader, RequestMetricsCollector metrics) {
+  static HalApiClient create(HalResourceLoader resourceLoader, RequestMetricsCollector metrics) {
 
-    return new HalApiClientImpl(jsonLoader, metrics, new DefaultHalApiTypeSupport());
+    return new HalApiClientImpl(resourceLoader, metrics, new DefaultHalApiTypeSupport());
   }
 
   /**
-   * @param jsonLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
+   * @param resourceLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance relevant data for the current
    *          incoming request
    * @param annotationSupport an (optional) strategy to identify HAL API interfaces and methods that use different
@@ -70,9 +70,9 @@ public interface HalApiClient {
    * @return an instance of {@link HalApiClient} that should be re-used for all upstream requests required by the
    *         current incoming request
    */
-  static HalApiClient create(JsonResourceLoader jsonLoader, RequestMetricsCollector metrics,
+  static HalApiClient create(HalResourceLoader resourceLoader, RequestMetricsCollector metrics,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
 
-    return new HalApiClientImpl(jsonLoader, metrics, DefaultHalApiTypeSupport.extendWith(annotationSupport, returnTypeSupport));
+    return new HalApiClientImpl(resourceLoader, metrics, DefaultHalApiTypeSupport.extendWith(annotationSupport, returnTypeSupport));
   }
 }

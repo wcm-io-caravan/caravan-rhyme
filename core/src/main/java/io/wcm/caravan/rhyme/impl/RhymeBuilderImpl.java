@@ -27,7 +27,7 @@ import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.reflection.CompositeHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
@@ -39,17 +39,17 @@ import io.wcm.caravan.rhyme.impl.renderer.CompositeExceptionStatusAndLoggingStra
  */
 public class RhymeBuilderImpl implements RhymeBuilder {
 
-  private final JsonResourceLoader jsonLoader;
+  private final HalResourceLoader resourceLoader;
   private final List<HalApiTypeSupport> registeredTypeSupports = new ArrayList<>();
 
   private final List<ExceptionStatusAndLoggingStrategy> exceptionStrategies = new ArrayList<>();
 
   /**
-   * @param jsonLoader to be used to load upstream-resource (or null if not needed)
+   * @param resourceLoader to be used to load upstream-resource (or null if not needed)
    */
-  public RhymeBuilderImpl(JsonResourceLoader jsonLoader) {
+  public RhymeBuilderImpl(HalResourceLoader resourceLoader) {
 
-    this.jsonLoader = jsonLoader;
+    this.resourceLoader = resourceLoader;
 
     this.registeredTypeSupports.add(new DefaultHalApiTypeSupport());
   }
@@ -102,6 +102,6 @@ public class RhymeBuilderImpl implements RhymeBuilder {
     HalApiTypeSupport typeSupport = getEffectiveTypeSupport();
     ExceptionStatusAndLoggingStrategy exceptionStrategy = getEffectiveExceptionStrategy();
 
-    return new RhymeImpl(incomingRequestUri, jsonLoader, exceptionStrategy, typeSupport);
+    return new RhymeImpl(incomingRequestUri, resourceLoader, exceptionStrategy, typeSupport);
   }
 }

@@ -38,7 +38,7 @@ import io.wcm.caravan.io.http.request.CaravanHttpRequest;
 import io.wcm.caravan.io.http.request.CaravanHttpRequestBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import rx.Observable;
 
 abstract class AbstractCaravanJsonResourceLoaderTest {
@@ -49,7 +49,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   @Mock
   protected CaravanHttpClient httpClient;
 
-  protected abstract JsonResourceLoader getResourceLoader();
+  protected abstract HalResourceLoader getResourceLoader();
 
   protected void mockHttpResponse(int status, ObjectNode body, Duration maxAge) {
 
@@ -67,11 +67,11 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   protected HalResponse getHalResponse() {
-    return getResourceLoader().loadJsonResource(REQUEST_URL).blockingGet();
+    return getResourceLoader().getHalResource(REQUEST_URL).blockingGet();
   }
 
   @Test
-  public void loadJsonResource_should_return_pipeline_output() throws Exception {
+  public void getHalResource_should_return_pipeline_output() throws Exception {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode().put("foo", "bar");
 
@@ -84,7 +84,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  public void loadJsonResource_should_forward_max_age() throws Exception {
+  public void getHalResource_should_forward_max_age() throws Exception {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode();
 
@@ -97,7 +97,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  public void loadJsonResource_should_throw_HalApiClientException_for_404_responses() throws Exception {
+  public void getHalResource_should_throw_HalApiClientException_for_404_responses() throws Exception {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode();
 
@@ -110,7 +110,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  public void loadJsonResource_should_throw_HalApiClientException_for_501_responses_without_body() throws Exception {
+  public void getHalResource_should_throw_HalApiClientException_for_501_responses_without_body() throws Exception {
 
     mockIllegalResponseRuntimeException(502, null);
 
@@ -121,7 +121,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  public void loadJsonResource_should_throw_HalApiClientException_for_501_responses_with_json_body() throws Exception {
+  public void getHalResource_should_throw_HalApiClientException_for_501_responses_with_json_body() throws Exception {
 
     mockIllegalResponseRuntimeException(501, "{\"foo\": \"bar\"}");
 
@@ -132,7 +132,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  public void loadJsonResource_should_throw_HalApiClientException_for_500_responses_with_non_json_body() throws Exception {
+  public void getHalResource_should_throw_HalApiClientException_for_500_responses_with_non_json_body() throws Exception {
 
     mockIllegalResponseRuntimeException(500, "foo");
 
@@ -143,7 +143,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  public void loadJsonResource_should_throw_HalApiClientException_for_unexpected_exceptions() throws Exception {
+  public void getHalResource_should_throw_HalApiClientException_for_unexpected_exceptions() throws Exception {
 
     // trigger a runtime exception within JsonPipeline by having the http client return an unexpected empty observable
     when(httpClient.execute(ArgumentMatchers.any()))

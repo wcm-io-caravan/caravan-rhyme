@@ -44,11 +44,11 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.api.spi.JsonResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 public class ReadMeExamples {
 
-  JsonResourceLoader jsonLoader;
+  HalResourceLoader resourceLoader;
 
   Request incomingRequest = new Request() {
 
@@ -116,7 +116,7 @@ public class ReadMeExamples {
 
   private Rhyme createRhymeForIncomingRequest() {
 
-    return RhymeBuilder.withResourceLoader(jsonLoader)
+    return RhymeBuilder.withResourceLoader(resourceLoader)
         .buildForRequestTo(incomingRequest.getUrl());
   }
 
@@ -132,7 +132,7 @@ public class ReadMeExamples {
   private ApiEntryPoint getApiEntryPoint() {
 
     // create a Rhyme instance that knows how to load any external JSON resource
-    Rhyme rhyme = RhymeBuilder.withResourceLoader(jsonLoader)
+    Rhyme rhyme = RhymeBuilder.withResourceLoader(resourceLoader)
         .buildForRequestTo(incomingRequest.getUrl());
 
     // create a dynamic proxy that knows how to fetch the entry point from the given URL
@@ -227,7 +227,7 @@ public class ReadMeExamples {
 
   void reactiveExample() {
 
-    Rhyme rhyme = RhymeBuilder.withResourceLoader(jsonLoader)
+    Rhyme rhyme = RhymeBuilder.withResourceLoader(resourceLoader)
         .buildForRequestTo(incomingRequest.getUrl());
 
     ReactiveResource resource = rhyme.getRemoteResource("https://foo.bar", ReactiveResource.class);
