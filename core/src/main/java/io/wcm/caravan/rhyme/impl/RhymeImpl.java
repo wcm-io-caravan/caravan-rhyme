@@ -20,7 +20,6 @@
 package io.wcm.caravan.rhyme.impl;
 
 import java.time.Duration;
-import java.util.concurrent.CompletionStage;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -95,15 +94,9 @@ final class RhymeImpl implements Rhyme {
   }
 
   @Override
-  public CompletionStage<HalResponse> renderResponseAsync(LinkableResource resourceImpl) {
+  public Single<HalResponse> renderResponse(LinkableResource resourceImpl) {
 
-    return respondWith(resourceImpl).toCompletionStage();
-  }
-
-  @Override
-  public HalResponse renderResponse(LinkableResource resourceImpl) {
-
-    return respondWith(resourceImpl).blockingGet();
+    return renderer.renderResponse(requestUri, resourceImpl);
   }
 
   @Override
@@ -114,8 +107,5 @@ final class RhymeImpl implements Rhyme {
     return errorRenderer.renderError(requestUri, null, error, metrics);
   }
 
-  private Single<HalResponse> respondWith(LinkableResource resourceImpl) {
-    return renderer.renderResponse(requestUri, resourceImpl);
-  }
 
 }

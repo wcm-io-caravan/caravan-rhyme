@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -196,7 +195,7 @@ public class ReadMeExamples {
     ApiEntryPoint entryPoint = new ApiEntryPointImpl(database);
 
     // create the HAL+JSON representation (and response headers) for this resource
-    HalResponse response = rhyme.renderResponse(entryPoint);
+    HalResponse response = rhyme.renderResponse(entryPoint).blockingGet();
 
     // finally convert that response to your framework's representation of a web/JSON response...
     convertToFrameworkResponse(response);
@@ -209,7 +208,7 @@ public class ReadMeExamples {
 
     ItemResource resource = new ItemResourceImpl(database, "2");
 
-    HalResponse response = rhyme.renderResponse(resource);
+    HalResponse response = rhyme.renderResponse(resource).blockingGet();
 
     convertToFrameworkResponse(response);
   }
@@ -221,7 +220,7 @@ public class ReadMeExamples {
 
     PageResource resource = new PageResourceImpl(database, 0);
 
-    HalResponse response = rhyme.renderResponse(resource);
+    HalResponse response = rhyme.renderResponse(resource).blockingGet();
 
     convertToFrameworkResponse(response);
   }
@@ -241,7 +240,7 @@ public class ReadMeExamples {
 
     // all Observable provided by rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
 
-    CompletionStage<HalResponse> response = rhyme.renderResponseAsync(resource);
+    Single<HalResponse> response = rhyme.renderResponse(resource);
   }
 
   class ApiEntryPointImpl implements ApiEntryPoint {

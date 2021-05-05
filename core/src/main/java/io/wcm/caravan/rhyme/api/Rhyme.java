@@ -20,8 +20,8 @@
 package io.wcm.caravan.rhyme.api;
 
 import java.time.Duration;
-import java.util.concurrent.CompletionStage;
 
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -60,20 +60,10 @@ public interface Rhyme {
    * response will be rendered instead (using the status code obtained from the
    * {@link ExceptionStatusAndLoggingStrategy})
    * @param resourceImpl a server-side implementation of an interface annotated with {@link HalApiInterface}
-   * @return a {@link CompletionStage} that will provide a {@link HalResponse} instance with status code, content type
+   * @return a {@link Single} that will emit a {@link HalResponse} instance with status code, content type
    *         and body already set
    */
-  CompletionStage<HalResponse> renderResponseAsync(LinkableResource resourceImpl);
-
-  /**
-   * Synchronously render the given resource as a {@link HalResponse} instance. If rendering is successful, that
-   * instance will have a 200 status code and a HAL+JSON media type. If any errors were thrown and handled, a vnd.error
-   * response will be rendered instead (using the status code obtained from the
-   * {@link ExceptionStatusAndLoggingStrategy})
-   * @param resourceImpl a server-side implementation of an interface annotated with {@link HalApiInterface}
-   * @return a {@link HalResponse} instance with status code, content type and body already set
-   */
-  HalResponse renderResponse(LinkableResource resourceImpl);
+  Single<HalResponse> renderResponse(LinkableResource resourceImpl);
 
   /**
    * Render a vnd.error response for an error that happened before the {@link LinkableResource} instance was created
