@@ -26,12 +26,12 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -103,7 +103,7 @@ public class RhymeImplTest {
 
     rhyme.setResponseMaxAge(Duration.ofMinutes(2));
 
-    HalResponse response = rhyme.renderResponse(new LinkableTestResourceImpl());
+    HalResponse response = rhyme.renderResponse(new LinkableTestResourceImpl()).blockingGet();
 
     assertThat(response.getMaxAge()).isEqualTo(120);
   }
@@ -125,19 +125,19 @@ public class RhymeImplTest {
 
     LinkableTestResourceImpl resourceImpl = new LinkableTestResourceWithDelayedState();
 
-    HalResponse response = rhyme.renderResponse(resourceImpl);
+    HalResponse response = rhyme.renderResponse(resourceImpl).blockingGet();
 
     verifyResponse(response);
   }
 
   @Test
-  public void renderResponseAsync_should_not_wait_for_delayed_state_to_be_emitted() throws Exception {
+  public void renderResponse_should_not_wait_for_delayed_state_to_be_emitted() throws Exception {
 
     LinkableTestResourceImpl resourceImpl = new LinkableTestResourceWithDelayedState();
 
-    CompletionStage<HalResponse> response = rhyme.renderResponseAsync(resourceImpl);
+    Single<HalResponse> response = rhyme.renderResponse(resourceImpl);
 
-    CompletableFuture<HalResponse> future = response.toCompletableFuture();
+    CompletableFuture<HalResponse> future = response.toCompletionStage().toCompletableFuture();
     assertThat(future).isNotCompleted();
 
     verifyResponse(future.get());
