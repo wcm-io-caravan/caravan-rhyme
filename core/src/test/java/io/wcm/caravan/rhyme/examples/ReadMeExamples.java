@@ -137,7 +137,7 @@ public class ReadMeExamples {
         .buildForRequestTo(incomingRequest.getUrl());
 
     // create a dynamic proxy that knows how to fetch the entry point from the given URL
-    return rhyme.getUpstreamEntryPoint("https://hal-api.example.org", ApiEntryPoint.class);
+    return rhyme.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
   }
 
   void fetchItems() {
@@ -231,7 +231,7 @@ public class ReadMeExamples {
     Rhyme rhyme = RhymeBuilder.withResourceLoader(jsonLoader)
         .buildForRequestTo(incomingRequest.getUrl());
 
-    ReactiveResource resource = rhyme.getUpstreamEntryPoint("https://foo.bar", ReactiveResource.class);
+    ReactiveResource resource = rhyme.getRemoteResource("https://foo.bar", ReactiveResource.class);
 
     Observable<Item> parentsOfRelated = resource.getRelatedItems()
         .concatMapEager(ReactiveResource::getRelatedItems)

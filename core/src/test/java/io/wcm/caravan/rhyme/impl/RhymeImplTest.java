@@ -64,7 +64,7 @@ public class RhymeImplTest {
 
     upstreamResourceTree.getEntryPoint().setNumber(123);
 
-    TestResourceWithRequiredState entryPoint = rhyme.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class);
+    TestResourceWithRequiredState entryPoint = rhyme.getRemoteResource(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class);
 
     assertThat(entryPoint.getState()).isNotNull();
     assertThat(entryPoint.getState().number).isEqualTo(123);
@@ -73,7 +73,7 @@ public class RhymeImplTest {
   @Test
   public void getEntryPoint_should_fail_if_state_of_non_existing_resource_is_requested() throws Exception {
 
-    TestResourceWithRequiredState entryPoint = rhyme.getUpstreamEntryPoint(NON_EXISTING_PATH, TestResourceWithRequiredState.class);
+    TestResourceWithRequiredState entryPoint = rhyme.getRemoteResource(NON_EXISTING_PATH, TestResourceWithRequiredState.class);
 
     HalApiClientException ex = catchThrowableOfType(entryPoint::getState, HalApiClientException.class);
 
@@ -92,7 +92,7 @@ public class RhymeImplTest {
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
     Throwable ex = catchThrowable(
-        () -> rhymeWithoutResourceLoader.getUpstreamEntryPoint(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class));
+        () -> rhymeWithoutResourceLoader.getRemoteResource(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageContaining("#getEntryPoint can only be used if you have provided a JsonResourceLoader");

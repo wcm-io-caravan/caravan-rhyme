@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,12 +40,12 @@ import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 public interface HalApiClient {
 
   /**
-   * @param uri the absolute path (and query parameters) of the entry point
+   * @param uri the absolute URI of the resource to load (usually the entry point of the HAL API)
    * @param halApiInterface the HAL API interface class of a service's entry point resource
    * @return a proxy implementation of the specified entry point interface
    * @param <T> the HAL API interface type
    */
-  <T> T getEntryPoint(String uri, Class<T> halApiInterface);
+  <T> T getRemoteResource(String uri, Class<T> halApiInterface);
 
   /**
    * @param jsonLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library

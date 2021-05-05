@@ -235,7 +235,7 @@ public class ErrorHandlingTest {
         .withReturnTypeSupport(typeSupport)
         .buildForRequestTo(ENTRY_POINT_URI);
 
-    ResourceWithCustomReturnType entryPoint = rhyme.getUpstreamEntryPoint(ENTRY_POINT_URI, ResourceWithCustomReturnType.class);
+    ResourceWithCustomReturnType entryPoint = rhyme.getRemoteResource(ENTRY_POINT_URI, ResourceWithCustomReturnType.class);
 
     Throwable ex = catchThrowable(() -> entryPoint.getStream());
 

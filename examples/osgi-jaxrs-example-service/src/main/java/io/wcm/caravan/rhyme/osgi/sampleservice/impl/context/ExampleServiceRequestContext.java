@@ -78,7 +78,7 @@ public class ExampleServiceRequestContext {
   public ExamplesEntryPointResource getUpstreamEntryPoint() {
     if (upstreamEntryPoint == null) {
       String serviceId = getServiceId();
-      upstreamEntryPoint = rhyme.getUpstreamEntryPoint(serviceId, serviceId, ExamplesEntryPointResource.class);
+      upstreamEntryPoint = rhyme.getRemoteResource(serviceId, serviceId, ExamplesEntryPointResource.class);
     }
     return upstreamEntryPoint;
   }

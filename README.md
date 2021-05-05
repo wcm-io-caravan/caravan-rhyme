@@ -174,7 +174,7 @@ Once you have a `JsonResourceLoader` instance, it just requires a few lines of c
         .buildForRequestTo(incomingRequest.getUrl());
 
     // create a dynamic proxy that knows how to fetch the entry point from the given URL
-    return rhyme.getUpstreamEntryPoint("https://hal-api.example.org", ApiEntryPoint.class);
+    return rhyme.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
   }
 ```
 
@@ -442,7 +442,7 @@ On the client side, you'll have to implement [JsonResourceLoader](core/src/main/
 Then you can use the full range of RxJava operators to construct a chain of API operations that are all executed lazily and asynchronously (and in parallel where possible):
 
 ```java
-    ReactiveResource resource = rhyme.getUpstreamEntryPoint("https://foo.bar", ReactiveResource.class);
+    ReactiveResource resource = rhyme.getRemoteResource("https://foo.bar", ReactiveResource.class);
 
     Observable<Item> parentsOfRelated = resource.getRelatedItems()
         .concatMapEager(ReactiveResource::getRelatedItems)
