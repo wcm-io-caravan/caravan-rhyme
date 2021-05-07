@@ -80,7 +80,7 @@ public class CachingExamplesIT {
     List<ItemState> oddItems = getItemsWithoutDelay(5, EvenOddItemsResource::getOddItems);
 
     assertThat(oddItems).hasSize(2);
-    assertThat(oddItems).extracting(s -> s.index).allMatch(i -> i % 2 == 1);
+    assertThat(oddItems).extracting(s -> s.index).allMatch(i -> i % 2 != 0);
   }
 
   @Test

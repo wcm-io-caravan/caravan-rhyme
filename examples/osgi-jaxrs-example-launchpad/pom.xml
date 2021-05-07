@@ -137,11 +137,6 @@
 
     <!-- Apache HTTP Client -->
     <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-      <version>1.9.2</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.5.10</version>
@@ -166,11 +161,6 @@
       <artifactId>httpasyncclient-osgi</artifactId>
       <version>4.1.4</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore-nio</artifactId>
-      <version>4.4.12</version>
-    </dependency>
     
     <!-- actual dependencies -->
     <dependency>
@@ -183,7 +173,6 @@
     <dependency>
       <groupId>io.wcm.osgi.wrapper</groupId>
       <artifactId>io.wcm.osgi.wrapper.hibernate-validator</artifactId>
-      <version>5.4.2-0000</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

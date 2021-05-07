@@ -37,9 +37,9 @@
   <description>Implementation support classes to build reactive HAL web services based on the OSGi JAX-RS Whiteboard and wcm.io.Caravan Pipeline projects</description>
 
   <scm>
-    <connection>scm:git:https://github.com/wcm-io-caravan/caravan-hal.git</connection>
-    <developerConnection>scm:git:https://github.com/wcm-io-caravan/caravan-hal.git</developerConnection>
-    <url>https://github.com/wcm-io-caravan/caravan-hal</url>
+    <connection>scm:git:https://github.com/wcm-io-caravan/caravan-rhyme.git</connection>
+    <developerConnection>scm:git:https://github.com/wcm-io-caravan/caravan-rhyme.git</developerConnection>
+    <url>https://github.com/wcm-io-caravan/caravan-rhyme</url>
     <tag>HEAD</tag>
   </scm>
 

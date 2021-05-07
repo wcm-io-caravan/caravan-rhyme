@@ -41,7 +41,9 @@ final class ReflectionUtils {
     try {
       return FieldUtils.readField(field, instance, true);
     }
+    // CHECKSTYLE:OFF - we really want to catch any possible runtime exception that might be thrown here
     catch (IllegalAccessException | RuntimeException ex) {
+      // CHECKSTYLE:ON
 
       throw new HalApiDeveloperException("Failed to access field " + field.getName() + " of class " + instance.getClass().getName() + " through reflection",
           ex);

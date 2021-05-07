@@ -19,7 +19,11 @@
  */
 package io.wcm.caravan.rhyme.osgi.it;
 
-public class TestEnvironmentConstants {
+public final class TestEnvironmentConstants {
+
+  private TestEnvironmentConstants() {
+    // this class contains only constants
+  }
 
   public static final String SERVER_URL = "http://localhost:8080"; // System.getProperty("launchpad.http.server.url");
   public static final String SERVICE_ID = "/caravan/hal/sample-service";

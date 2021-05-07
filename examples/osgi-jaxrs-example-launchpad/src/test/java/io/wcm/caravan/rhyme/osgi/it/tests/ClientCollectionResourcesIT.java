@@ -90,7 +90,7 @@ public class ClientCollectionResourcesIT {
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
     assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(2 * delayMs);
+    assertThat(responseTime).isLessThan(5 * delayMs);
   }
 
   @Test
@@ -105,7 +105,7 @@ public class ClientCollectionResourcesIT {
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
     assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(2 * delayMs);
+    assertThat(responseTime).isLessThan(numItems * (long)delayMs);
   }
 
   @Test
@@ -146,6 +146,6 @@ public class ClientCollectionResourcesIT {
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
     assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(2 * delayMs);
+    assertThat(responseTime).isLessThan(5 * delayMs);
   }
 }

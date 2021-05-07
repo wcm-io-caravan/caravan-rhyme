@@ -277,7 +277,7 @@ public class ReadMeExamples {
     private int numItemsPerPage = 10;
     private int startIndex;
 
-    public PageResourceImpl(ItemDatabase database, int startIndex) {
+    PageResourceImpl(ItemDatabase database, int startIndex) {
       this.database = database;
       this.startIndex = startIndex;
     }

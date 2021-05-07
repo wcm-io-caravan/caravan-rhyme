@@ -37,9 +37,9 @@
   <description>A platform-agnostic framework to build reactive HAL web services based on annotated HAL API interfaces</description>
 
   <scm>
-    <connection>scm:git:https://github.com/wcm-io-caravan/caravan-hal.git</connection>
-    <developerConnection>scm:git:https://github.com/wcm-io-caravan/caravan-hal.git</developerConnection>
-    <url>https://github.com/wcm-io-caravan/caravan-hal</url>
+    <connection>scm:git:https://github.com/wcm-io-caravan/caravan-rhyme.git</connection>
+    <developerConnection>scm:git:https://github.com/wcm-io-caravan/caravan-rhyme.git</developerConnection>
+    <url>https://github.com/wcm-io-caravan/caravan-rhyme</url>
     <tag>HEAD</tag>
   </scm>
 
