@@ -71,7 +71,10 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
             .doOnSuccess(jsonResponse -> registerResponseMetrics(uri, jsonResponse, stopwatch))
             .onErrorResumeNext(ex -> rethrowUnexpectedExceptions(uri, ex));
 
-        Single<HalResponse> cachedResource = loadedResource.compose(RxJavaTransformers.cacheSingleIfCompleted());
+        LinkRewriting rewriting = new LinkRewriting(uri);
+        Single<HalResponse> processedResource = loadedResource.map(rewriting::resolveRelativeLinks);
+
+        Single<HalResponse> cachedResource = processedResource.compose(RxJavaTransformers.cacheSingleIfCompleted());
 
         return cachedResource;
       });
@@ -138,5 +141,6 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
 
     return title;
   }
+
 
 }
