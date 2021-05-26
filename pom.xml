@@ -35,11 +35,16 @@
   <version>1</version>
   <packaging>pom</packaging>
 
-  <name>Caravan Rhyme Root</name>
-  <description>TBD</description>
+  <name>Rhyme Root</name>
+  <description>A framework to build reactive HAL web services</description>
 
   <modules>
+    <module>api-interfaces</module>
+    <module>core</module>
+    <module>examples/osgi-jaxrs-example-launchpad</module>
+    <module>examples/osgi-jaxrs-example-service</module>
     <module>parent</module>
+    <module>osgi-jaxrs</module>
   </modules>
 
   <build>
@@ -54,32 +59,32 @@
         </configuration>
       </plugin>
 
-      <!-- do not generate site for this project -->
+      <!-- do generate site for this project, but push it into a separate staging directory because we are not using it -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
           <skipDeploy>true</skipDeploy>
+          <stagingDirectory>${project.build.directory}/staging-not-used</stagingDirectory>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <configuration>
+          <skipDeletedFiles>true</skipDeletedFiles>
         </configuration>
       </plugin>
 
     </plugins>
-    <pluginManagement>
-      <plugins>
-
-        <!-- license check -->
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>license-maven-plugin</artifactId>
-          <configuration>
-            <licenseName>apache_v2</licenseName>
-            <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-            <projectName>wcm.io</projectName>
-          </configuration>
-        </plugin>
-
-      </plugins>
-    </pluginManagement>
   </build>
+
+  <distributionManagement>
+    <site>
+      <id>${site.deploy.id}</id>
+      <url>${site.deploy.url}</url>
+    </site>
+  </distributionManagement>
 
 </project>
