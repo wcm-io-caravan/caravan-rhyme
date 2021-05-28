@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 @Component(service = HalResourceLoaderManager.class)
@@ -57,7 +57,8 @@ public class HalResourceLoaderManager {
     public Single<HalResponse> getHalResource(String uri) {
 
       if (resourceLoaders.isEmpty()) {
-        return Single.error(new HalApiDeveloperException("No OSGi services implementing " + HalResourceLoader.class + " are running in this container"));
+        String msg = "No OSGi services implementing " + HalResourceLoader.class + " are running in this container";
+        return Single.error(new HalApiClientException(msg, null, uri, null));
       }
 
       return resourceLoaders.get(0).getHalResource(uri);

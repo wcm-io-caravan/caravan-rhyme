@@ -210,10 +210,14 @@ public class SlingRhymeImplTest {
     // obtaining the client proxy will still work
     SlingTestResource resource = rhyme.getRemoteResource("http://localhost/foo", SlingTestResource.class);
 
-    // but as soon as a method that triggers an HTTP request is called things will fall apart
+    // but as soon as a method that triggers an HTTP request is called, things will fall apart
     Throwable ex = catchThrowable(() -> resource.getState());
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+    assertThat(ex).isInstanceOf(HalApiClientException.class)
+        .hasMessageStartingWith("Failed to load an upstream resource that was requested by calling SlingTestResource#getState()")
+        .hasCauseInstanceOf(HalApiClientException.class);
+
+    assertThat(ex.getCause())
         .hasMessageStartingWith("No OSGi services implementing " + HalResourceLoader.class + " are running");
   }
 
