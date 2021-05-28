@@ -164,21 +164,6 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void fails_if_json_resource_loader_emits_HalApiDeveloperException() {
-
-    HalApiDeveloperException cause = new HalApiDeveloperException("Something is not coded as expected");
-
-    client.mockResponseWithSingle(ENTRY_POINT_URI, Single.error(cause));
-
-    Throwable ex = catchThrowable(
-        () -> client.createProxy(EntryPoint.class)
-            .getState()
-            .blockingGet());
-
-    assertThat(ex).isSameAs(cause);
-  }
-
-  @Test
   public void fails_if_json_resource_loader_emits_unexpected_exception() {
 
     IllegalStateException cause = new IllegalStateException();
