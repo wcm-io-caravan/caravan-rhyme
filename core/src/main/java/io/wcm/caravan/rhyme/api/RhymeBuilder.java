@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.api;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
@@ -29,6 +31,7 @@ import io.wcm.caravan.rhyme.impl.RhymeBuilderImpl;
  * A builder to configure and create a {@link Rhyme} instance to be used throughout the lifecycle of the incoming
  * request.
  */
+@ProviderType
 public interface RhymeBuilder {
 
   /**

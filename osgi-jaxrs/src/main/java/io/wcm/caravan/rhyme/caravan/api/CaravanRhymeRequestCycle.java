@@ -24,6 +24,8 @@ import java.util.function.Function;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.UriInfo;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
@@ -31,6 +33,7 @@ import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 /**
  * An OSGI service that will handle an incoming request to a server-side {@link HalApiInterface} implementation
  */
+@ProviderType
 public interface CaravanRhymeRequestCycle {
 
   /**

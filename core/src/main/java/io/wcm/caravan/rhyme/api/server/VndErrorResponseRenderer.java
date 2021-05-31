@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.api.server;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -30,6 +32,7 @@ import io.wcm.caravan.rhyme.impl.renderer.VndErrorResponseRendererImpl;
  * Creates an error response according to the "application/vnd.error+json" media type for any
  * exception thrown when rendering HAL
  */
+@ProviderType
 public interface VndErrorResponseRenderer {
 
   /** the ContentType header used for error responses */

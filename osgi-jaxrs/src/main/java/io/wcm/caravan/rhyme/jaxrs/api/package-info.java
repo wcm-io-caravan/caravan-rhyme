@@ -20,5 +20,5 @@
 /**
  * Interfaces for usage of the Rhyme framework in an OSGI R7 container
  */
-@org.osgi.annotation.versioning.Version("1.0.0")
+@org.osgi.annotation.versioning.Version("1.0.1")
 package io.wcm.caravan.rhyme.jaxrs.api;

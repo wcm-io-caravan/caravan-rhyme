@@ -21,5 +21,5 @@
  * Interfaces for usage of the Rhyme framework with other wcm.io.Caravan projects (e.g. JSON Pipeline)
  * @see <a href="https://caravan.wcm.io/">wcm.io.Caravan</a>
  */
-@org.osgi.annotation.versioning.Version("1.0.0")
+@org.osgi.annotation.versioning.Version("1.0.1")
 package io.wcm.caravan.rhyme.caravan.api;

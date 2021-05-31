@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.api.exceptions;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 
@@ -26,6 +28,7 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
  * Thrown whenever the {@link HalApiClient} implementation fails to load a HAL resource, and provides
  * access to the status code and URL of the failed HTTP request.
  */
+@ProviderType
 public class HalApiClientException extends RuntimeException {
 
   private static final long serialVersionUID = -2265405683402689209L;
