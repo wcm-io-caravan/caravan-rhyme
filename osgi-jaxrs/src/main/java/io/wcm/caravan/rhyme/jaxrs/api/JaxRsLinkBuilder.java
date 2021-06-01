@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import javax.ws.rs.core.Application;
 
+import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
@@ -33,6 +34,7 @@ import io.wcm.caravan.rhyme.jaxrs.impl.JaxRsControllerProxyLinkBuilder;
 /**
  * @param <JaxRsResourceType> the class of the {@link Component} annotated with {@link JaxrsResource}
  */
+@ProviderType
 public interface JaxRsLinkBuilder<JaxRsResourceType> {
 
   /**

@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.api.server;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -41,6 +43,7 @@ import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
  * @see AsyncHalResourceRenderer
  * @see VndErrorResponseRenderer
  */
+@ProviderType
 public interface AsyncHalResponseRenderer {
 
   /**

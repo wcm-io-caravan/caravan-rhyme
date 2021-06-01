@@ -21,7 +21,7 @@ package io.wcm.caravan.rhyme.api.common;
 
 import java.time.Duration;
 
-import org.osgi.annotation.versioning.ProviderType;
+import org.osgi.annotation.versioning.ConsumerType;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -31,7 +31,7 @@ import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator;
  * Keeps track of all upstream resource that have been fetched while handling the current-request, and collects
  * additional data for performance analyze and caching.
  */
-@ProviderType
+@ConsumerType
 public interface RequestMetricsCollector {
 
   /**

@@ -19,10 +19,13 @@
  */
 package io.wcm.caravan.rhyme.api.exceptions;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 /**
  * A server-side exception that you can throw in your resource implementations if you want to send a response with a
  * specific status code
  */
+@ProviderType
 public class HalApiServerException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;

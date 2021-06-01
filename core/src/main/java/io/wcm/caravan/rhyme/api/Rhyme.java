@@ -21,6 +21,8 @@ package io.wcm.caravan.rhyme.api;
 
 import java.time.Duration;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
@@ -34,6 +36,7 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
  * accepting an incoming request (using a {@link RhymeBuilder}) and then use this single instance to fetch all upstream
  * resource and render the response.
  */
+@ProviderType
 public interface Rhyme {
 
   /**

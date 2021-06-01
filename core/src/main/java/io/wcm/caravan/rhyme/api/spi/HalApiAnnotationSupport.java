@@ -21,10 +21,13 @@ package io.wcm.caravan.rhyme.api.spi;
 
 import java.lang.reflect.Method;
 
+import org.osgi.annotation.versioning.ConsumerType;
+
 /**
  * An SPI interface that allows the core framework to support additional annotations in your HAL-API interfaces. Using
  * this extension point is only required if you are using interfaces with legacy annotations.
  */
+@ConsumerType
 public interface HalApiAnnotationSupport {
 
   /**

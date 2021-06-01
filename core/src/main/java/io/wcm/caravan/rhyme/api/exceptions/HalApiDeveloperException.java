@@ -19,11 +19,13 @@
  */
 package io.wcm.caravan.rhyme.api.exceptions;
 
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * Thrown by the framework whenever an error condition is likely to be caused by invalid code (rather than network or
  * data issues)
  */
+@ProviderType
 public class HalApiDeveloperException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;

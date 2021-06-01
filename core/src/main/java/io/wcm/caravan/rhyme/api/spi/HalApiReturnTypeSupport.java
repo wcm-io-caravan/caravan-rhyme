@@ -21,12 +21,15 @@ package io.wcm.caravan.rhyme.api.spi;
 
 import java.util.function.Function;
 
+import org.osgi.annotation.versioning.ConsumerType;
+
 import io.reactivex.rxjava3.core.Observable;
 
 /**
  * An SPI interface that allows to use additional return types (e.g. RxJava 1 observables, or Spring Reactor Flux or
  * Mono) in your HAL API interfaces
  */
+@ConsumerType
 public interface HalApiReturnTypeSupport {
 
   /**

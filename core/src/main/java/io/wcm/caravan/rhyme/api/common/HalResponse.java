@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.api.common;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.wcm.caravan.hal.resource.HalResource;
@@ -26,6 +28,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 /**
  * A response to a successful or failed HTTP request to retrieve a {@link HalResource}
  */
+@ProviderType
 public class HalResponse {
 
   private final Integer status;
