@@ -3,6 +3,7 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -240,12 +241,31 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     @Override
     public TypedResourceAdapter<ModelType> withLinkTitle(String title) {
 
-      return withLinkDecorator((r, m) -> title);
+      return withLinkDecorator(new LinkDecorator<ModelType>() {
+
+        @Override
+        public String getLinkTitle(Resource resource, ModelType model) {
+          return title;
+        }
+
+      });
+    }
+
+    @Override
+    public TypedResourceAdapter<ModelType> withQueryParameters(Map<String, Object> parameters) {
+
+      return withLinkDecorator(new LinkDecorator<ModelType>() {
+
+        @Override
+        public Map<String, Object> getQueryParameters() {
+          return parameters;
+        }
+      });
     }
 
     @Override
     public TypedResourceAdapter<ModelType> withQueryParameters(String... names) {
-      throw new HalApiDeveloperException("#withQueryParameters can only be called if you selected a null resource path");
+      throw new HalApiDeveloperException("#withQueryParameters(String...) can only be called if you selected a null resource path to create a template");
     }
 
     @Override
@@ -297,14 +317,29 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
       SlingLinkableResource linkable = (SlingLinkableResource)model;
 
-      linkable.setLinkTitle(linkDecorator.getLinkTitle(resource, model));
+      String title = linkDecorator.getLinkTitle(resource, model);
+      if (title != null) {
+        linkable.setLinkTitle(title);
+      }
+
+      Map<String, Object> parameters = linkDecorator.getQueryParameters();
+      if (parameters != null) {
+        linkable.setQueryParameters(parameters);
+      }
     }
+
 
   }
 
   private interface LinkDecorator<ModelType> {
 
-    String getLinkTitle(Resource resource, ModelType model);
+    default String getLinkTitle(Resource resource, ModelType model) {
+      return null;
+    }
+
+    default Map<String, Object> getQueryParameters() {
+      return null;
+    }
   }
 
   private final class ResourceFilter {
@@ -402,6 +437,12 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       this.queryParameters = names;
       return this;
     }
+
+    @Override
+    public TypedResourceAdapter<T> withQueryParameters(Map<String, Object> parameters) {
+      throw new HalApiDeveloperException("#withQueryParameters(Map) can not be called if you selected a null resource path to build a template");
+    }
+
 
     @Override
     public T getInstance() {

@@ -763,7 +763,7 @@ public class SlingResourceAdapterImplTest {
         .getInstance());
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("#withQueryParameters can only be called if you selected a null resource path");
+        .hasMessageStartingWith("#withQueryParameters(String...) can only be called if you selected a null resource path to create a template");
 
   }
 }

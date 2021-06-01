@@ -14,4 +14,6 @@ public interface SlingLinkableResource {
     return Collections.emptyMap();
   }
 
+  void setQueryParameters(Map<String, Object> parameters);
+
 }

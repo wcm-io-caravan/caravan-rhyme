@@ -1,5 +1,6 @@
 package io.wcm.caravan.rhyme.aem.integration;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -55,6 +56,8 @@ public interface SlingResourceAdapter {
     TypedResourceAdapter<T> withLinkTitle(String title);
 
     TypedResourceAdapter<T> withQueryParameters(String... names);
+
+    TypedResourceAdapter<T> withQueryParameters(Map<String, Object> parameters);
 
     T getInstance();
 

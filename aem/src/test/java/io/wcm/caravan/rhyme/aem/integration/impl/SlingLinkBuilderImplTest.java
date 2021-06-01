@@ -59,9 +59,11 @@ public class SlingLinkBuilderImplTest {
   @Test
   public void createLinkToCurrentResource_uses_registered_selector() throws Exception {
 
-    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+    SlingRhyme slingRhyme = createRhymeInstance("/content");
 
-    SelectorSlingTestResource resource = context.currentResource().adaptTo(SelectorSlingTestResource.class);
+    SlingLinkBuilder linkBuilder = slingRhyme.adaptTo(SlingLinkBuilder.class);
+
+    SelectorSlingTestResource resource = slingRhyme.adaptResource(context.currentResource(), SelectorSlingTestResource.class);
 
     Link link = linkBuilder.createLinkToCurrentResource(resource);
 
@@ -71,9 +73,11 @@ public class SlingLinkBuilderImplTest {
   @Test
   public void createLinkToCurrentResource_handles_unregistered_resources() throws Exception {
 
-    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+    SlingRhyme slingRhyme = createRhymeInstance("/content");
 
-    ResourceTypeSlingTestResource resource = context.currentResource().adaptTo(ResourceTypeSlingTestResource.class);
+    SlingLinkBuilder linkBuilder = slingRhyme.adaptTo(SlingLinkBuilder.class);
+
+    ResourceTypeSlingTestResource resource = slingRhyme.adaptResource(context.currentResource(), ResourceTypeSlingTestResource.class);
 
     Link link = linkBuilder.createLinkToCurrentResource(resource);
 
