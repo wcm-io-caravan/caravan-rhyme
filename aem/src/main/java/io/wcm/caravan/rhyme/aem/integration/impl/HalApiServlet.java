@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
+import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -62,13 +63,13 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
 
       HalResponse halResponse = rhyme.renderResource(requestedResource);
 
-      writeHalResponse(halResponse, response);
+      writeHalResponse(request, halResponse, response);
     }
     catch (RuntimeException ex) {
 
       HalResponse errorResponse = rhyme.renderVndErrorResponse(ex);
 
-      writeHalResponse(errorResponse, response);
+      writeHalResponse(request, errorResponse, response);
     }
   }
 
@@ -91,7 +92,7 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
     return rhyme.adaptResource(request.getResource(), modelClass);
   }
 
-  private void writeHalResponse(HalResponse halResponse, SlingHttpServletResponse servletResponse)
+  private void writeHalResponse(SlingHttpServletRequest request, HalResponse halResponse, SlingHttpServletResponse servletResponse)
       throws IOException, JsonGenerationException, JsonMappingException {
 
     servletResponse.setContentType(halResponse.getContentType());
@@ -101,7 +102,17 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
       servletResponse.setHeader("cache-control", "max-age=" + halResponse.getMaxAge());
     }
 
-    OBJECT_MAPPER.writeValue(servletResponse.getWriter(), halResponse.getBody().getModel());
+    HalResource responseBody = halResponse.getBody();
+
+    if (shouldMetadataBeRemoved(request)) {
+      responseBody.removeEmbedded("caravan:metadata");
+    }
+
+    OBJECT_MAPPER.writeValue(servletResponse.getWriter(), responseBody.getModel());
+  }
+
+  private boolean shouldMetadataBeRemoved(SlingHttpServletRequest request) {
+    return !request.getParameterMap().containsKey("embedMetadata");
   }
 
 }
