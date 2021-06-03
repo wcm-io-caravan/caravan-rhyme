@@ -21,6 +21,7 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
   protected SlingLinkBuilder linkBuilder;
 
   private String contextLinkTitle;
+  private String linkName;
 
   private boolean useParametersFromRequest = true;
   private Map<String, Object> queryParameters = new LinkedHashMap<>();
@@ -45,6 +46,26 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
   public void setLinkTitle(String linkTitle) {
 
     this.contextLinkTitle = linkTitle;
+  }
+
+  @Override
+  public String getLinkName() {
+
+    if (linkName != null) {
+      return linkName;
+    }
+
+    if (rhyme != null) {
+      return rhyme.getCurrentResource().getName();
+    }
+
+    return null;
+  }
+
+  @Override
+  public void setLinkName(String name) {
+
+    this.linkName = name;
   }
 
   protected abstract String getDefaultLinkTitle();

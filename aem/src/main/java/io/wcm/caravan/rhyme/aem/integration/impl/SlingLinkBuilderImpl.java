@@ -34,7 +34,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     String url = buildResourceUrl(slingModel);
 
     Link link = new Link(url)
-        .setName(targetResource.getName())
+        .setName(slingModel.getLinkName())
         .setTitle(slingModel.getLinkTitle());
 
     return link;

@@ -739,6 +739,42 @@ public class SlingResourceAdapterImplTest {
 
   }
 
+  @Test
+  public void withLinkName_allows_to_overide_name_for_SlingLinkableResource_instances() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    String customName = "custom-name";
+
+    Link link = adapter.selectCurrentResource()
+        .adaptTo(SlingTestResource.class)
+        .withLinkName(customName)
+        .getInstance()
+        .createLink();
+
+    assertThat(link.getName()).isEqualTo(customName);
+  }
+
+  @Test
+  public void withLinkName_and_withLinkTitle_can_be_combined() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    String customName = "custom-name";
+    String customTitle = "Custom Title";
+
+    Link link = adapter.selectCurrentResource()
+        .adaptTo(SlingTestResource.class)
+        .withLinkName(customName)
+        .withLinkTitle(customTitle)
+        .getInstance()
+        .createLink();
+
+    assertThat(link.getName()).isEqualTo(customName);
+    assertThat(link.getTitle()).isEqualTo(customTitle);
+  }
+
+
   @Model(adaptables = Resource.class, adapters = ClassThatDoesNotImplementSlingLinkableResource.class)
   public static class ClassThatDoesNotImplementSlingLinkableResource implements EmbeddableResource {
 

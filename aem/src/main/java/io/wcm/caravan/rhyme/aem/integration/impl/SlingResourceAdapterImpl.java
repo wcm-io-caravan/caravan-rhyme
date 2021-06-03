@@ -3,7 +3,10 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -222,20 +225,20 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
     private final Class<ModelType> clazz;
 
-    private final LinkDecorator<ModelType> linkDecorator;
+    private final CompositeLinkDecorator<ModelType> linkDecorator;
 
     private TypedResourceAdapterImpl(Class<ModelType> clazz) {
       this.clazz = clazz;
-      this.linkDecorator = null;
+      this.linkDecorator = new CompositeLinkDecorator<ModelType>();
     }
 
-    private TypedResourceAdapterImpl(Class<ModelType> clazz, LinkDecorator<ModelType> decorator) {
+    private TypedResourceAdapterImpl(Class<ModelType> clazz, CompositeLinkDecorator<ModelType> decorator) {
       this.clazz = clazz;
       this.linkDecorator = decorator;
     }
 
     private TypedResourceAdapterImpl<ModelType> withLinkDecorator(LinkDecorator<ModelType> decorator) {
-      return new TypedResourceAdapterImpl<ModelType>(clazz, decorator);
+      return new TypedResourceAdapterImpl<ModelType>(clazz, linkDecorator.withAdditionalDecorator(decorator));
     }
 
     @Override
@@ -246,6 +249,19 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
         @Override
         public String getLinkTitle(Resource resource, ModelType model) {
           return title;
+        }
+
+      });
+    }
+
+    @Override
+    public TypedResourceAdapter<ModelType> withLinkName(String name) {
+
+      return withLinkDecorator(new LinkDecorator<ModelType>() {
+
+        @Override
+        public String getLinkName(Resource resource, ModelType model) {
+          return name;
         }
 
       });
@@ -301,9 +317,8 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
       ModelType model = slingRhyme.adaptResource(res, this.clazz);
 
-      if (linkDecorator != null) {
-        decorateLinks(res, model);
-      }
+      decorateLinks(res, model);
+
       return model;
     }
 
@@ -322,6 +337,11 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
         linkable.setLinkTitle(title);
       }
 
+      String name = linkDecorator.getLinkName(resource, model);
+      if (name != null) {
+        linkable.setLinkName(name);
+      }
+
       Map<String, Object> parameters = linkDecorator.getQueryParameters();
       if (parameters != null) {
         linkable.setQueryParameters(parameters);
@@ -337,9 +357,54 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       return null;
     }
 
+    default String getLinkName(Resource resource, ModelType model) {
+      return null;
+    }
+
     default Map<String, Object> getQueryParameters() {
       return null;
     }
+  }
+
+  private class CompositeLinkDecorator<ModelType> implements LinkDecorator<ModelType> {
+
+    private final List<LinkDecorator<ModelType>> delegates = new ArrayList<>();
+
+    CompositeLinkDecorator<ModelType> withAdditionalDecorator(LinkDecorator<ModelType> decorator) {
+      CompositeLinkDecorator<ModelType> newInstance = new CompositeLinkDecorator<>();
+
+      newInstance.delegates.addAll(this.delegates);
+      newInstance.delegates.add(decorator);
+      return newInstance;
+    }
+
+    private <T> T findFirstNonNull(Function<LinkDecorator<ModelType>, T> func) {
+
+      return delegates.stream()
+          .map(func)
+          .filter(Objects::nonNull)
+          .findFirst()
+          .orElse(null);
+    }
+
+    @Override
+    public String getLinkTitle(Resource resource, ModelType model) {
+
+      return findFirstNonNull(dec -> dec.getLinkTitle(resource, model));
+    }
+
+    @Override
+    public String getLinkName(Resource resource, ModelType model) {
+
+      return findFirstNonNull(dec -> dec.getLinkName(resource, model));
+    }
+
+    @Override
+    public Map<String, Object> getQueryParameters() {
+
+      return findFirstNonNull(dec -> dec.getQueryParameters());
+    }
+
   }
 
   private final class ResourceFilter {
@@ -420,6 +485,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     private final Class<T> halApiInterface;
 
     private String linkTitle;
+    private String linkName;
     private String[] queryParameters;
 
     private TemplateResourceAdapter(Class<T> halApiInterface) {
@@ -429,6 +495,12 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     @Override
     public TypedResourceAdapter<T> withLinkTitle(String title) {
       this.linkTitle = title;
+      return this;
+    }
+
+    @Override
+    public TypedResourceAdapter<T> withLinkName(String name) {
+      this.linkName = name;
       return this;
     }
 
@@ -490,7 +562,8 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
           .getTemplate();
 
       return new Link(uriTemplate)
-          .setTitle(linkTitle);
+          .setTitle(linkTitle)
+          .setName(linkName);
     }
 
     private String getResourceUrl() {

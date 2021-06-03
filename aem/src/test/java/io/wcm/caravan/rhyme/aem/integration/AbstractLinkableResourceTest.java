@@ -54,7 +54,7 @@ public class AbstractLinkableResourceTest {
     ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
 
     assertThat(resource).isNotNull();
-    assertThat(resource).hasNoNullFieldsOrPropertiesExcept("contextLinkTitle");
+    assertThat(resource).hasNoNullFieldsOrPropertiesExcept("contextLinkTitle", "linkName");
   }
 
   @Test
@@ -77,6 +77,28 @@ public class AbstractLinkableResourceTest {
     resource.setLinkTitle("Custom Title");
 
     assertThat(resource.createLink().getTitle()).isEqualTo("Custom Title");
+  }
+
+  @Test
+  public void createLink_should_use_default_link_name_from_resource() {
+
+    SlingRhyme rhyme = createRhymeInstance("/foo");
+
+    ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
+
+    assertThat(resource.createLink().getName()).isEqualTo("foo");
+  }
+
+  @Test
+  public void createLink_should_use_link_name_specified_with_setLinkName() {
+
+    SlingRhyme rhyme = createRhymeInstance("/foo");
+
+    ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
+
+    resource.setLinkName("bar");
+
+    assertThat(resource.createLink().getName()).isEqualTo("bar");
   }
 
   @Test

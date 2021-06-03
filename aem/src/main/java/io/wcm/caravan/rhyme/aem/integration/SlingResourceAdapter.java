@@ -55,6 +55,8 @@ public interface SlingResourceAdapter {
 
     TypedResourceAdapter<T> withLinkTitle(String title);
 
+    TypedResourceAdapter<T> withLinkName(String name);
+
     TypedResourceAdapter<T> withQueryParameterTemplate(String... names);
 
     TypedResourceAdapter<T> withQueryParameters(Map<String, Object> parameters);

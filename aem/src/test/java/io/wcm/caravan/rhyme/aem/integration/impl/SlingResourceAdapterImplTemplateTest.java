@@ -32,7 +32,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.google.common.collect.ImmutableMap;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceSelectorProvider;
@@ -111,12 +113,48 @@ public class SlingResourceAdapterImplTemplateTest {
 
     String linkTitle = "A title for the template";
 
-    SlingTestResource resource = adapter.selectResourceAt(null)
+    Link link = adapter.selectResourceAt(null)
         .adaptTo(SlingTestResource.class)
         .withLinkTitle(linkTitle)
-        .getInstance();
+        .getInstance()
+        .createLink();
 
-    assertThat(resource.createLink().getTitle()).isEqualTo(linkTitle);
+    assertThat(link.getTitle()).isEqualTo(linkTitle);
+  }
+
+  @Test
+  public void withLinkName_works_if_null_path_is_given() {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    String linkName = "custom-name";
+
+    Link link = adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .withLinkName(linkName)
+        .getInstance()
+        .createLink();
+
+    assertThat(link.getName()).isEqualTo(linkName);
+  }
+
+  @Test
+  public void withLinkName_and_withLinkTitle_can_be_combined() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/");
+
+    String customName = "custom-name";
+    String customTitle = "Custom Title";
+
+    Link link = adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .withLinkName(customName)
+        .withLinkTitle(customTitle)
+        .getInstance()
+        .createLink();
+
+    assertThat(link.getName()).isEqualTo(customName);
+    assertThat(link.getTitle()).isEqualTo(customTitle);
   }
 
   @Test

@@ -9,6 +9,10 @@ public interface SlingLinkableResource {
 
   void setLinkTitle(String linkTitle);
 
+  String getLinkName();
+
+  void setLinkName(String linkName);
+
   Map<String, Object> getQueryParameters();
 
   void setQueryParameters(Map<String, Object> parameters);
