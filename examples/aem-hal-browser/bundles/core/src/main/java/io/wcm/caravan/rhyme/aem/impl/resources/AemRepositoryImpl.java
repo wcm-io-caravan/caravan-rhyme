@@ -67,7 +67,7 @@ public class AemRepositoryImpl extends AbstractLinkableResource implements AemRe
       return resourceAdapter.selectResourceAt(null)
           .adaptTo(AemRendition.class)
           .withLinkTitle("Get a dynamic (cropped) rendition of an asset with the specified width and height")
-          .withQueryParameters(AemRenditionImpl.WIDTH, AemRenditionImpl.HEIGHT)
+          .withQueryParameterTemplate(AemRenditionImpl.WIDTH, AemRenditionImpl.HEIGHT)
           .getOptional();
     }
 
