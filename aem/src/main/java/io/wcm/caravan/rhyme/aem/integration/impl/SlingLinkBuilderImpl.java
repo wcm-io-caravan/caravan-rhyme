@@ -45,7 +45,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     String url = urlHandler.get(targetResource)
         .selectors(getClassSpecificSelector(slingModel))
         .extension(HalApiServlet.EXTENSION)
-        .buildExternalResourceUrl();
+        .build();
 
     return appendQueryWithTemplate(url, slingModel);
   }

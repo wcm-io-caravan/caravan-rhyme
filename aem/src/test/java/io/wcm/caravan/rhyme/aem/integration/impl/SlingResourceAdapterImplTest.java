@@ -411,7 +411,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentResource());
 
-    assertThatResourcesMatch(resources, "/content/foo/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/jcr:content");
   }
 
   @Test
@@ -479,7 +479,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfCurrentPage());
 
-    assertThatResourcesMatch(resources, "/content/foo/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/jcr:content");
   }
 
   @Test
@@ -491,7 +491,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfCurrentPage());
 
-    assertThatResourcesMatch(resources, "/content/foo/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/jcr:content");
   }
 
   @Test
@@ -503,7 +503,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfCurrentPage());
 
-    assertThatResourcesMatch(resources, "/content/foo/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/jcr:content");
   }
 
   @Test
@@ -526,7 +526,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfChildPages());
 
-    assertThatResourcesMatch(resources, "/content/foo/1/_jcr_content", "/content/foo/2/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/1/jcr:content", "/content/foo/2/jcr:content");
   }
 
   @Test
@@ -538,7 +538,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfChildPages());
 
-    assertThatResourcesMatch(resources, "/content/foo/1/_jcr_content", "/content/foo/2/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/1/jcr:content", "/content/foo/2/jcr:content");
   }
 
   @Test
@@ -562,7 +562,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandChildPages());
 
-    assertThatResourcesMatch(resources, "/content/foo/1/_jcr_content", "/content/foo/2/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/1/jcr:content", "/content/foo/2/jcr:content");
   }
 
   @Test
@@ -574,7 +574,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfGrandChildPages());
 
-    assertThatResourcesMatch(resources, "/content/foo/1/_jcr_content", "/content/foo/2/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/1/jcr:content", "/content/foo/2/jcr:content");
   }
 
   @Test
@@ -598,7 +598,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfChildPage("2"));
 
-    assertThatResourcesMatch(resources, "/content/foo/2/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/2/jcr:content");
   }
 
   @Test
@@ -610,7 +610,7 @@ public class SlingResourceAdapterImplTest {
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfChildPage("2"));
 
-    assertThatResourcesMatch(resources, "/content/foo/2/_jcr_content");
+    assertThatResourcesMatch(resources, "/content/foo/2/jcr:content");
   }
 
   @Test
