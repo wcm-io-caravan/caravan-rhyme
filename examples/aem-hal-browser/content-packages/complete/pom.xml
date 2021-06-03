@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.wcm.caravan</groupId>
+    <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../../parent/pom.xml</relativePath>
+  </parent>
+
+  <groupId>io.wcm.caravan</groupId>
+  <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.complete</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>content-package</packaging>
+
+  <name>aem-hal-browser Package complete</name>
+  <description>AEM content package with all application bundles and dependencies.</description>
+
+  <properties>
+    <contentPackage.name>aem-hal-browser-complete</contentPackage.name>
+    <contentPackage.group>aem-hal-browser</contentPackage.group>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.core</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.rhyme.core</artifactId>
+      <version>1.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.rhyme.aem</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.hal.browser</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.models.impl</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.caconfig.api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.caconfig.spi</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.caconfig.impl</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm</groupId>
+      <artifactId>io.wcm.caconfig.extensions</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.wcm</groupId>
+      <artifactId>io.wcm.caconfig.editor</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <finalName>${contentPackage.name}-${project.version}</finalName>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>filevault-package-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <name>${contentPackage.name}</name>
+          <group>${contentPackage.group}</group>
+          <packageType>container</packageType>
+          <validatorsSettings>
+            <jackrabbit-filter>
+              <options>
+                <validRoots>
+                  /apps/aem-hal-browser
+                </validRoots>
+              </options>
+            </jackrabbit-filter>
+          </validatorsSettings>
+
+          <filters>
+            <filter>
+              <root>/apps/aem-hal-browser/install</root>
+            </filter>
+          </filters>
+
+          <embeddedTarget>/apps/aem-hal-browser/install</embeddedTarget>
+          <embeddeds>
+            <!-- Include application bundles and their dependencies -->
+            <embedded>
+              <groupId>
+                io.wcm,
+                io.wcm.caravan,
+                org.reactivestreams,
+                io.reactivex.rxjava3,
+                com.damnhandy
+              </groupId>
+              <type>jar</type>
+            </embedded>
+            <!-- Include some Apache Sling bundles newer than those shipped with AEM -->
+            <embedded>
+              <groupId>
+                org.apache.sling
+              </groupId>
+              <artifactId>
+                <!-- Latest Sling Models -->
+                org.apache.sling.models.impl,
+                <!-- Latest Sling Context-Aware Configuration -->
+                org.apache.sling.caconfig.api,
+                org.apache.sling.caconfig.spi,
+                org.apache.sling.caconfig.impl,
+              </artifactId>
+              <type>jar</type>
+            </embedded>
+          </embeddeds>
+
+        </configuration>
+      </plugin>
+
+      <!-- Do not generate eclipse project files -->
+      <plugin>
+        <groupId>io.wcm.devops.maven.plugins</groupId>
+        <artifactId>eclipse-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <!-- Do not generate sources JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <configuration>
+          <skipSource>true</skipSource>
+        </configuration>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+</project>

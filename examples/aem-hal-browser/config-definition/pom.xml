@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.wcm.caravan</groupId>
+    <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../parent/pom.xml</relativePath>
+  </parent>
+
+  <groupId>io.wcm.caravan</groupId>
+  <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.config-definition</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>config-definition</packaging>
+
+  <name>aem-hal-browser config-definition</name>
+  <description>CONGA roles and template definitions</description>
+
+  <dependencies>
+
+    <!-- Use generic AEM CMS and Dispatcher roles -->
+    <dependency>
+      <groupId>io.wcm.devops.conga.definitions</groupId>
+      <artifactId>io.wcm.devops.conga.definitions.aem</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Application packages -->
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.complete</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>zip</type>
+      <scope>compile</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>io.wcm.devops.conga</groupId>
+        <artifactId>conga-maven-plugin</artifactId>
+        <executions>
+
+          <!-- Generate configuration for environments defined in this application code repository -->
+          <execution>
+            <id>dev-environment-config</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <environmentDir>${basedir}/src/main/dev-environments</environmentDir>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+
+      <!-- Do not generate eclipse project files -->
+      <plugin>
+        <groupId>io.wcm.devops.maven.plugins</groupId>
+        <artifactId>eclipse-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

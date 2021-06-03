@@ -42,9 +42,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # Build & verify
-      - name: Build and verify
-        run: mvn -s ./.maven-settings.xml -Pcontinuous-integration -B -U clean verify
+      # Build & install (install target is used rather than verify to ensure that modules from the main build are available for the examples builds)
+      - name: Build and install
+        run: mvn -s ./.maven-settings.xml -Pcontinuous-integration -B -U clean install
 
       # Run code coverage check
       - name: Run code coverage check

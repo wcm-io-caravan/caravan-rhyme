@@ -145,7 +145,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void fails_if_json_resource_loader_throws_exception() {
+  public void fails_if_json_resource_loader_throws_unexpected_exception() {
 
     IllegalStateException cause = new IllegalStateException();
 
