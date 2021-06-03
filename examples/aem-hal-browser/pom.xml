@@ -36,6 +36,5 @@
     <module>bundles/core</module>
     <module>content-packages/complete</module>
     <module>config-definition</module>
-    <module>tests/integration</module>
   </modules>
 </project>
