@@ -133,6 +133,32 @@ public class HalApiServletTest {
     assertThat(aboutLink.getHref()).isEqualTo("http://localhost/does/not/exist.rhyme");
   }
 
+  @Test
+  public void caravan_metadata_should_be_removed_by_default() throws Exception {
+
+    Resource resource = createResourceWithResourceType(TEST_RESOURCE_PATH, ResourceTypeSlingTestResource.RESOURCE_TYPE);
+
+    MockSlingHttpServletResponse response = requestResource(resource, null);
+
+    HalResource halResource = assertStatusIsOkAndParse(response);
+
+    assertThat(halResource.getEmbedded("caravan:metadata")).isEmpty();
+  }
+
+  @Test
+  public void caravan_metadata_should_be_maintained_if_query_parameter_is_present() throws Exception {
+
+    Resource resource = createResourceWithResourceType(TEST_RESOURCE_PATH, ResourceTypeSlingTestResource.RESOURCE_TYPE);
+
+    context.request().setQueryString(HalApiServlet.QUERY_PARAM_EMBED_METADATA);
+
+    MockSlingHttpServletResponse response = requestResource(resource, null);
+
+    HalResource halResource = assertStatusIsOkAndParse(response);
+
+    assertThat(halResource.getEmbedded("caravan:metadata")).hasSize(1);
+  }
+
   private void assertThatSelfLinkHasHrefAndTitle(HalResource halResource, String href, String title) {
     assertThat(halResource.getLink()).isNotNull();
 

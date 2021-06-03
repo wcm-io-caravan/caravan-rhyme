@@ -35,7 +35,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.day.cq.wcm.api.Page;
+import com.google.common.collect.ImmutableMap;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
@@ -710,12 +712,13 @@ public class SlingResourceAdapterImplTest {
 
     String customTitle = "New Link Title";
 
-    SlingTestResource resource = adapter.selectCurrentResource()
+    Link link = adapter.selectCurrentResource()
         .adaptTo(SlingTestResource.class)
         .withLinkTitle(customTitle)
-        .getInstance();
+        .getInstance()
+        .createLink();
 
-    assertThat(resource.createLink().getTitle()).isEqualTo(customTitle);
+    assertThat(link.getTitle()).isEqualTo(customTitle);
   }
 
   @Test
@@ -750,20 +753,47 @@ public class SlingResourceAdapterImplTest {
     assertThat(resource.createLink().getHref()).isEqualTo(expectedHref);
   }
 
+  @Test
+  public void withQueryParameters_should_append_encoded_query_parameter() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    Link link = adapter.selectCurrentResource()
+        .adaptTo(SlingTestResource.class)
+        .withQueryParameters(ImmutableMap.of("foo", "?/"))
+        .getInstance()
+        .createLink();
+
+    assertThat(link.getHref()).isEqualTo("/content.selectortest.rhyme?foo=%3F%2F");
+  }
 
   @Test
-  public void withQueryParameters_fails_if_non_null_resource_path_was_selected() {
+  public void withQueryParameters_should_append_muliple_query_parameters() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    Link link = adapter.selectCurrentResource()
+        .adaptTo(SlingTestResource.class)
+        .withQueryParameters(ImmutableMap.of("foo", "123", "bar", "456"))
+        .getInstance()
+        .createLink();
+
+    assertThat(link.getHref()).isEqualTo("/content.selectortest.rhyme?foo=123&bar=456");
+  }
+
+  @Test
+  public void withQueryParameterTemplate_fails_if_non_null_resource_path_was_selected() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
 
     Throwable ex = catchThrowable(() -> adapter.selectCurrentResource()
         .adaptTo(ClassThatDoesNotImplementSlingLinkableResource.class)
-        .withQueryParameters("foo")
+        .withQueryParameterTemplate("foo")
         .getInstance());
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("#withQueryParameters(String...) can only be called if you selected a null resource path to create a template");
+        .hasMessageStartingWith("#withQueryParameterTemplatecan only be called if you selected a null resource path to create a template");
 
   }
 }

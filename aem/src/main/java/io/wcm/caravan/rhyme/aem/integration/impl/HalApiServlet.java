@@ -47,6 +47,8 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
 
   static final String EXTENSION = "rhyme";
 
+  static final String QUERY_PARAM_EMBED_METADATA = "embedMetadata";
+
   @Reference
   private ResourceSelectorRegistry registry;
 
@@ -112,7 +114,7 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
   }
 
   private boolean shouldMetadataBeRemoved(SlingHttpServletRequest request) {
-    return !request.getParameterMap().containsKey("embedMetadata");
+    return !request.getParameterMap().containsKey(QUERY_PARAM_EMBED_METADATA);
   }
 
 }

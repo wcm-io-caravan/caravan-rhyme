@@ -30,6 +30,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import com.google.common.collect.ImmutableMap;
+
 import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
@@ -103,7 +105,7 @@ public class SlingResourceAdapterImplTemplateTest {
   }
 
   @Test
-  public void selectResourceAt_uses_link_title_if_null_path_is_given() {
+  public void withLinkTitle_works_if_null_path_is_given() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -118,18 +120,31 @@ public class SlingResourceAdapterImplTemplateTest {
   }
 
   @Test
-  public void selectResourceAt_appends_query_parameters_if_null_path_is_given() {
+  public void withQueryParameterTemplate_appends_query_parameter_template_if_null_path_is_given() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
     SlingTestResource resource = adapter.selectResourceAt(null)
         .adaptTo(SlingTestResource.class)
-        .withQueryParameters("foo", "bar")
+        .withQueryParameterTemplate("foo", "bar")
         .getInstance();
 
     assertThat(resource.createLink().getHref()).isEqualTo("{+path}.selectortest.rhyme{?foo,bar}");
   }
 
+  @Test
+  public void withQueryParameters_fails_if_null_path_is_given() {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    Throwable ex = catchThrowable(() -> adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .withQueryParameters(ImmutableMap.of("foo", "bar"))
+        .getInstance());
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessage("#withQueryParameters cannot be called if you selected a null resource path to build a template");
+  }
 
   @Test
   public void selectResourceAt_can_be_used_to_build_templates_for_unregistered_resources() throws Exception {

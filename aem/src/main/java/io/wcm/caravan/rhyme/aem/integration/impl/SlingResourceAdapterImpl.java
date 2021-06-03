@@ -264,8 +264,8 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     }
 
     @Override
-    public TypedResourceAdapter<ModelType> withQueryParameters(String... names) {
-      throw new HalApiDeveloperException("#withQueryParameters(String...) can only be called if you selected a null resource path to create a template");
+    public TypedResourceAdapter<ModelType> withQueryParameterTemplate(String... names) {
+      throw new HalApiDeveloperException("#withQueryParameterTemplatecan only be called if you selected a null resource path to create a template");
     }
 
     @Override
@@ -433,14 +433,14 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     }
 
     @Override
-    public TypedResourceAdapter<T> withQueryParameters(String... names) {
+    public TypedResourceAdapter<T> withQueryParameterTemplate(String... names) {
       this.queryParameters = names;
       return this;
     }
 
     @Override
     public TypedResourceAdapter<T> withQueryParameters(Map<String, Object> parameters) {
-      throw new HalApiDeveloperException("#withQueryParameters(Map) can not be called if you selected a null resource path to build a template");
+      throw new HalApiDeveloperException("#withQueryParameters cannot be called if you selected a null resource path to build a template");
     }
 
 
