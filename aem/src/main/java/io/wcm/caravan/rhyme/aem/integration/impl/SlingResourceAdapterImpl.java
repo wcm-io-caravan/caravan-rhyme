@@ -204,6 +204,22 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
         "if resource can be adapted to " + adapterClazz.getSimpleName());
   }
 
+
+  @Override
+  public <T> SlingResourceAdapter filterAdaptableTo(Class<T> adapterClazz, Predicate<T> predicate) {
+
+    Predicate<Resource> isAdaptableAndAcceptedByPredicated = (res) -> {
+      T adapted = res.adaptTo(adapterClazz);
+      if (adapted == null) {
+        return false;
+      }
+      return predicate.test(adapted);
+    };
+
+    return resourceFilter.add(isAdaptableAndAcceptedByPredicated,
+        "if resource can be adapted to " + adapterClazz.getSimpleName() + " and is accepted by predicate " + predicate);
+  }
+
   @Override
   public SlingResourceAdapter filterWithName(String resourceName) {
 
@@ -578,5 +594,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
 
   }
+
 
 }

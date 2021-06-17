@@ -45,6 +45,8 @@ public interface SlingResourceAdapter {
 
   SlingResourceAdapter filterAdaptableTo(Class<?> adapterClazz);
 
+  <T> SlingResourceAdapter filterAdaptableTo(Class<T> adapterClazz, Predicate<T> predicate);
+
   SlingResourceAdapter filterWithName(String resourceName);
 
 

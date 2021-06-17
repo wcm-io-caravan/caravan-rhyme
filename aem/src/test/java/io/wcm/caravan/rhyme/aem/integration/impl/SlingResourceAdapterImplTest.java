@@ -706,6 +706,26 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
+  public void should_filter_by_adaptability_and_predicate() throws Exception {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    context.create().page("/content/foo/page1");
+    context.create().resource("/content/foo/resource");
+    context.create().page("/content/foo/page2");
+
+    Stream<SlingTestResource> filtered = adapter.selectChildResources()
+        .filterAdaptableTo(Page.class, page -> page.getName().equals("page2"))
+        .adaptTo(SlingTestResource.class)
+        .getStream();
+
+    List<SlingTestResource> resources = filtered.collect(Collectors.toList());
+
+    assertThat(resources).hasSize(1);
+    assertThatResourceIsSelectorSlingTestResourceAt("/content/foo/page2", resources.get(0));
+  }
+
+  @Test
   public void withLinkTitle_allows_to_overide_title_for_SlingLinkableResource_instances() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
