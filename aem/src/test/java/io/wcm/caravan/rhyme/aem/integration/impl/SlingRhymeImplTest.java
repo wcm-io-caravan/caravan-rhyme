@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -134,6 +135,32 @@ public class SlingRhymeImplTest {
 
     @RhymeObject
     private SlingHttpServletRequest request;
+  }
+
+  @Test
+  public void adaptResource_should_inject_instance_adaptable_from_SlingHttpServletRequest() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    ModelWithFieldThatIsAdaptableFromRequest model = rhyme.adaptResource(context.currentResource(), ModelWithFieldThatIsAdaptableFromRequest.class);
+
+    assertThat(model).isNotNull();
+    assertThat(model.field).isNotNull();
+    assertThat(model.field.request).isNotNull();
+  }
+
+  @Model(adaptables = SlingHttpServletRequest.class)
+  public static class ModelThatIsAdaptableFromRequest {
+
+    @Self
+    private SlingHttpServletRequest request;
+  }
+
+  @Model(adaptables = Resource.class)
+  public static class ModelWithFieldThatIsAdaptableFromRequest {
+
+    @RhymeObject
+    private ModelThatIsAdaptableFromRequest field;
   }
 
   @Test

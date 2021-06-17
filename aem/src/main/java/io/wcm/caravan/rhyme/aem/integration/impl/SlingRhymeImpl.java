@@ -2,6 +2,7 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -93,8 +94,22 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     if (HttpServletRequest.class.isAssignableFrom(type)) {
       return (AdapterType)request;
     }
+    if (isAdaptableFromRequest(type)) {
+      return request.adaptTo(type);
+    }
 
     return super.adaptTo(type);
+  }
+
+  private <AdapterType> boolean isAdaptableFromRequest(Class<AdapterType> type) {
+
+    Model annotation = type.getAnnotation(Model.class);
+    if (annotation == null) {
+      return false;
+    }
+
+    return Stream.of(annotation.adaptables())
+        .anyMatch(adaptableClass -> HttpServletRequest.class.isAssignableFrom(adaptableClass));
   }
 
   @Override
