@@ -1,0 +1,33 @@
+{{#partial "title" ~}}
+API documentation for {{resourceTitle}}
+{{~/partial}}
+
+{{#partial "content" }}
+<h1>{{title}}</h1>
+<p>{{description}}</p>
+
+<section>
+   <h2>Resource State</h3>
+   <p>Documentation of resource property doesn't exist yet.</p>
+</section>
+
+<section>
+  <h2>Link Relations</h3>
+
+  {{#each relations}}
+  <section id="{{relation}}">
+    <h3>{{relation}}  
+        <small class="text-muted">
+        <span class="badge rounded-pill bg-secondary">{{cardinality}}</span>
+         links to <a href="{{relatedResourceHref}}">{{relatedResourceTitle}}</a>
+        </small>
+</h3>
+    <p>{{description}}</p>
+  </section>
+  {{/each}}
+  </section>
+
+
+{{/partial}}
+
+{{> templates/base-template}}

@@ -41,6 +41,7 @@
   <modules>
     <module>api-interfaces</module>
     <module>core</module>
+    <module>docs-maven-plugin</module>
     <module>aem</module>
     <module>osgi-jaxrs</module>
     <module>examples/aem-hal-browser</module>
