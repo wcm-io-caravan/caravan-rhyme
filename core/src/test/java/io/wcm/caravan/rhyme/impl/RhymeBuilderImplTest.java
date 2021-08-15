@@ -247,6 +247,11 @@ public class RhymeBuilderImplTest {
       return false;
     }
 
+    @Override
+    public boolean isProviderOfOptionalValue(Class<?> returnType) {
+      return false;
+    }
+
   }
 
   @MyApiInterface

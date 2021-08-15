@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.rhyme.api.spi;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.osgi.annotation.versioning.ConsumerType;
@@ -50,5 +51,11 @@ public interface HalApiReturnTypeSupport {
    * @return true if the type is a collection or a reactive type that can emit multiple values
    */
   boolean isProviderOfMultiplerValues(Class<?> returnType);
+
+  /**
+   * @param returnType the return type of an annotated method
+   * @return true if the type is an {@link Optional} or a reactive type that can emit zero or one values
+   */
+  boolean isProviderOfOptionalValue(Class<?> returnType);
 
 }
