@@ -42,6 +42,7 @@ import org.apache.maven.project.MavenProject;
 
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocs;
 import io.wcm.caravan.maven.plugins.rhymedocs.templating.RhymeDocsHtmlRenderer;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 
 @Mojo(name = "generate-rhyme-docs", defaultPhase = LifecyclePhase.PROCESS_CLASSES,
@@ -56,21 +57,6 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
    */
   @Parameter(defaultValue = "${basedir}/src/main/java")
   private String source;
-
-  /**
-   * Path containing the resources files.
-   */
-  @Parameter(defaultValue = "${basedir}/src/main/resources")
-  private String resources;
-
-  /**
-   * Relative target path for the generated resources.
-   */
-  @Parameter(defaultValue = "RHYME-DOCS-INF")
-  private String target;
-
-  @Parameter(defaultValue = "generated-rhyme-docs")
-  private String generatedResourcesDirectory;
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
@@ -114,7 +100,12 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
 
   private Path createOutputDirectory() throws IOException {
 
-    Path outputDirectory = Paths.get(project.getBuild().getDirectory(), generatedResourcesDirectory);
+    // generate the .html files directly into a folder within the target/classes directory
+
+    // it would be better to generate them in a temporary folder right below target, but this
+    // was the easiest way to ensure they are also picked up by the spring-boot-maven-plugin when
+    // it builds the fat jar with all dependencies
+    Path outputDirectory = Paths.get(project.getBuild().getDirectory(), "classes", RhymeDocsSupport.FOLDER);
 
     Files.createDirectories(outputDirectory);
 
@@ -126,7 +117,7 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
     // construct resource
     Resource resource = new Resource();
     resource.setDirectory(outputDirectory.toString());
-    resource.setTargetPath(target);
+    resource.setTargetPath(RhymeDocsSupport.FOLDER);
 
     // add to build
     Build build = project.getBuild();
