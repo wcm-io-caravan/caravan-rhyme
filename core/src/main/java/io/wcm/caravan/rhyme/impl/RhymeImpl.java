@@ -27,6 +27,7 @@ import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.documenation.DocumentationLoader;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
@@ -34,6 +35,7 @@ import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
+import io.wcm.caravan.rhyme.impl.documentation.ClasspathDocumentationLoader;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
@@ -49,6 +51,8 @@ final class RhymeImpl implements Rhyme {
 
   private final HalApiClient client;
   private final AsyncHalResponseRenderer renderer;
+
+  private final DocumentationLoader docLoader = new ClasspathDocumentationLoader();
 
   RhymeImpl(String requestUri, HalResourceLoader resourceLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport) {
     this.requestUri = requestUri;
@@ -78,7 +82,7 @@ final class RhymeImpl implements Rhyme {
 
     AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
 
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport);
+    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, null);
   }
 
   @Override
@@ -107,5 +111,10 @@ final class RhymeImpl implements Rhyme {
     return errorRenderer.renderError(requestUri, null, error, metrics);
   }
 
+  @Override
+  public String getHtmlApiDocs(String fileName) {
+
+    return docLoader.loadFrom(fileName);
+  }
 
 }

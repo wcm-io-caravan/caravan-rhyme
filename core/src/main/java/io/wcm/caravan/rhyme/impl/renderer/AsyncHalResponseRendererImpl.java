@@ -25,11 +25,13 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.documenation.DocumentationLoader;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.rhyme.impl.documentation.RhymeDocsIntegration;
 import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 
@@ -47,19 +49,46 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
 
   private final HalApiAnnotationSupport annotationSupport;
 
+  private final RhymeDocsIntegration rhymeDocs;
+
   /**
    * @param renderer used to asynchronously render a {@link HalResource}
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance and caching information for
    *          the current incoming request
    * @param exceptionStrategy allows to control the status code and logging of exceptions being thrown during rendering
    * @param annotationSupport the strategy to detect HAL API annotations
+   * @deprecated Use
+   *             {@link #AsyncHalResponseRendererImpl(AsyncHalResourceRenderer,RequestMetricsCollector,ExceptionStatusAndLoggingStrategy,HalApiAnnotationSupport,DocumentationLoader)}
+   *             instead
    */
+  @Deprecated
   public AsyncHalResponseRendererImpl(AsyncHalResourceRenderer renderer, RequestMetricsCollector metrics,
       ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiAnnotationSupport annotationSupport) {
+    this(renderer, metrics, exceptionStrategy, annotationSupport, null);
+  }
+
+  /**
+   * @param renderer used to asynchronously render a {@link HalResource}
+   * @param metrics an instance of {@link RequestMetricsCollector} to collect performance and caching information for
+   *          the current incoming request
+   * @param exceptionStrategy allows to control the status code and logging of exceptions being thrown during rendering
+   * @param annotationSupport the strategy to detect HAL API annotations
+   * @param rhymeDocLoader to determine the base URL where documentation is mounted. Can be null, but then no curies
+   *          will generated
+   */
+  public AsyncHalResponseRendererImpl(AsyncHalResourceRenderer renderer, RequestMetricsCollector metrics,
+      ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiAnnotationSupport annotationSupport, DocumentationLoader rhymeDocLoader) {
     this.renderer = renderer;
     this.metrics = metrics;
     this.errorRenderer = VndErrorResponseRenderer.create(exceptionStrategy);
     this.annotationSupport = annotationSupport;
+
+    if (rhymeDocLoader != null) {
+      this.rhymeDocs = new RhymeDocsIntegration(rhymeDocLoader.getRhymeDocsBaseUrl());
+    }
+    else {
+      this.rhymeDocs = null;
+    }
   }
 
   @Override
@@ -80,9 +109,15 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
 
   HalResponse createResponse(LinkableResource resourceImpl, HalResource halResource) {
 
+    Class<?> halApiInterface = HalApiReflectionUtils.findHalApiInterface(resourceImpl, annotationSupport);
+
+    if (rhymeDocs != null) {
+      rhymeDocs.addCuriesTo(halResource, halApiInterface);
+    }
+
     addMetadata(metrics, halResource, resourceImpl);
 
-    String contentType = getContentTypeFromAnnotation(resourceImpl);
+    String contentType = getContentTypeFromAnnotation(halApiInterface);
 
     HalResponse response = new HalResponse()
         .withStatus(200)
@@ -93,9 +128,8 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
     return response;
   }
 
-  private String getContentTypeFromAnnotation(LinkableResource resourceImpl) {
+  private String getContentTypeFromAnnotation(Class<?> halApiInterface) {
 
-    Class<?> halApiInterface = HalApiReflectionUtils.findHalApiInterface(resourceImpl, annotationSupport);
     String contentType = annotationSupport.getContentType(halApiInterface);
 
     if (StringUtils.isNotBlank(contentType)) {

@@ -132,7 +132,7 @@ public class CompositeHalApiTypeSupportTest {
   @Test
   public void response_renderer_should_use_custom_annotations() throws Exception {
 
-    AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy, mockAnnotationSupport, null);
+    AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy, mockAnnotationSupport, null, null);
 
     assertThatMockAnnotationSupportIsEffective(((AsyncHalResponseRendererImpl)renderer).getAnnotationSupport());
   }

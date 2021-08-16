@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,7 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
+import io.wcm.caravan.rhyme.jaxrs.impl.docs.OsgiDocumentationLoader;
 
 /**
  * OSGI DS component that implements the {@link JaxRsAsyncHalResponseRenderer} interface using the
@@ -52,13 +54,16 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRe
 
   private final JaxRsExceptionStrategy exceptionStrategy = new JaxRsExceptionStrategy();
 
+  @Reference
+  private OsgiDocumentationLoader rhymeDocsLoader;
+
   @Override
   public void respondWith(LinkableResource resourceImpl, UriInfo uriInfo, AsyncResponse suspended, RequestMetricsCollector metrics) {
 
     try {
       // create a response renderer with a strategy that is able to extract the status code
       // from any JAX-RS WebApplicationException that might be thrown in the resource implementations
-      AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy);
+      AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy, null, null, rhymeDocsLoader);
 
       // asynchronously render the given resource (or create a vnd.error response if any exceptions are thrown)
       String requestUri = getRequestUri(uriInfo);

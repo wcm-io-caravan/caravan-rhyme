@@ -70,7 +70,7 @@ public class AsyncHalResponseRendererImplTest {
 
   private HalResponse renderResponse() {
 
-    AsyncHalResponseRenderer responseRenderer = new AsyncHalResponseRendererImpl(renderer, metrics, exceptionStrategy, new DefaultHalApiTypeSupport());
+    AsyncHalResponseRenderer responseRenderer = new AsyncHalResponseRendererImpl(renderer, metrics, exceptionStrategy, new DefaultHalApiTypeSupport(), null);
 
     return responseRenderer.renderResponse(REQUEST_URI, resource).blockingGet();
   }
