@@ -50,13 +50,13 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 public class GenerateRhymeDocsMojo extends AbstractMojo {
 
   @Parameter(property = "project", required = true, readonly = true)
-  private MavenProject project;
+  protected MavenProject project;
 
   /**
    * Path containing the java source files.
    */
   @Parameter(defaultValue = "${basedir}/src/main/java")
-  private String source;
+  protected String source;
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
@@ -92,8 +92,8 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
     try {
       return new File(path).toURI().toURL();
     }
-    catch (MalformedURLException ex) {
-      throw new RuntimeException(ex);
+    catch (MalformedURLException | RuntimeException ex) {
+      throw new RuntimeException("Failed to create URL from path " + path, ex);
     }
   }
 

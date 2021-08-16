@@ -54,7 +54,7 @@ public class RhymeResourceDocs {
   private List<RhymeRelatedMethodDocs> createRelatedMethodDocs(JavaClass apiInterface) {
 
     return apiInterface.getMethods(true).stream()
-        .filter(method -> AnnotationUtils.hasAnnotation(method, Related.class))
+        .filter(method -> DocumentationUtils.hasAnnotation(method, Related.class))
         .map(RhymeRelatedMethodDocs::new)
         .sorted(Ordering.natural().onResultOf(RhymeRelatedMethodDocs::getRelation))
         .collect(Collectors.toList());
@@ -90,7 +90,7 @@ public class RhymeResourceDocs {
 
     private RhymeRelatedMethodDocs(JavaMethod javaMethod) {
 
-      Method method = AnnotationUtils.getMethod(apiInterface, javaMethod, projectClassLoader);
+      Method method = DocumentationUtils.getMethod(apiInterface, javaMethod, projectClassLoader);
 
       this.relation = method.getAnnotation(Related.class).value();
       this.description = javaMethod.getComment();

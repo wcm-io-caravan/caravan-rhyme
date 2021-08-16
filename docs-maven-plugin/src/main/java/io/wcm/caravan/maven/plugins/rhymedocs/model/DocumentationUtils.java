@@ -27,7 +27,11 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaType;
 
-public class AnnotationUtils {
+final class DocumentationUtils {
+
+  private DocumentationUtils() {
+    // only static methods
+  }
 
   static boolean hasAnnotation(JavaAnnotatedElement element, Class<? extends Annotation> annotationClazz) {
 
@@ -58,6 +62,4 @@ public class AnnotationUtils {
       throw new RuntimeException("Failed to load class " + javaType.getFullyQualifiedName(), ex);
     }
   }
-
-
 }

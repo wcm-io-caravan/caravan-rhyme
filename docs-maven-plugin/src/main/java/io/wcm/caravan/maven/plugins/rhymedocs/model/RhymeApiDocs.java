@@ -45,7 +45,7 @@ public class RhymeApiDocs {
 
     return builder.getSources().stream()
         .flatMap(javaSource -> javaSource.getClasses().stream())
-        .filter(javaClass -> AnnotationUtils.hasAnnotation(javaClass, HalApiInterface.class))
+        .filter(javaClass -> DocumentationUtils.hasAnnotation(javaClass, HalApiInterface.class))
         .collect(Collectors.toList());
   }
 

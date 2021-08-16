@@ -48,7 +48,7 @@
   <properties>
     <site.url.module.prefix>rhyme/docs-maven-plugin</site.url.module.prefix>
 
-    <maven.version>3.0.5</maven.version>
+    <maven.version>3.2.5</maven.version>
 
     <build.compiler.source>1.8</build.compiler.source>
     <build.compiler.target>1.8</build.compiler.target>
@@ -125,6 +125,34 @@
       <artifactId>qdox</artifactId>
       <version>2.0.0</version>
       <scope>compile</scope>
+    </dependency>
+
+    <!-- Testing dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.8.0</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
