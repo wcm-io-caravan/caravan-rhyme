@@ -83,7 +83,6 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
 
     URL[] classPathElementUrls = project.getCompileClasspathElements().stream()
         .map(this::createFileUrl)
-        .peek(url -> getLog().info("using classpath element " + url))
         .toArray(URL[]::new);
 
     return URLClassLoader.newInstance(classPathElementUrls, getClass().getClassLoader());
