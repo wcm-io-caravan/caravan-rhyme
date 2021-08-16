@@ -23,8 +23,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
+import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionExamplesResource;
@@ -44,4 +46,7 @@ public interface ExamplesEntryPointResource {
 
   @Related("examples:errors")
   Single<ErrorExamplesResource> getErrorExamples();
+
+  @ResourceRepresentation
+  HalResource asHalResource();
 }

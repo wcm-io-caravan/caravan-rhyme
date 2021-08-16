@@ -25,7 +25,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.caching.CachingExamplesResource;
@@ -66,6 +68,12 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
   public Single<ErrorExamplesResource> getErrorExamples() {
 
     return Single.just(new ErrorsExamplesResourceImpl(context));
+  }
+
+  @Override
+  public HalResource asHalResource() {
+
+    throw new HalApiDeveloperException("This method isn't implemented server-side, and only available through the Rhyme HTTP clients");
   }
 
   @Override
