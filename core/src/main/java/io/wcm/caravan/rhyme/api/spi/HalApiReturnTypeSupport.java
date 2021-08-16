@@ -56,6 +56,8 @@ public interface HalApiReturnTypeSupport {
    * @param returnType the return type of an annotated method
    * @return true if the type is an {@link Optional} or a reactive type that can emit zero or one values
    */
-  boolean isProviderOfOptionalValue(Class<?> returnType);
+  default boolean isProviderOfOptionalValue(Class<?> returnType) {
+    return false;
+  }
 
 }
