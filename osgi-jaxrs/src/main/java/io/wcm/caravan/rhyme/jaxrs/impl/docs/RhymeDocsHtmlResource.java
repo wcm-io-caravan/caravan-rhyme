@@ -23,26 +23,42 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
+import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 
-@Component(service = RhymeDocsResource.class)
+
+@Component(service = RhymeDocsHtmlResource.class)
 @JaxrsResource
-@JaxrsApplicationSelect(RhymeDocsServingApplication.SELECTOR)
-public class RhymeDocsResource {
+@JaxrsApplicationSelect(RhymeDocsJaxRsApplication.SELECTOR)
+public class RhymeDocsHtmlResource {
 
   @Reference
-  private OsgiDocumentationLoader rhymeDocs;
+  private RhymeDocsOsgiBundleSupport rhymeDocs;
 
   @GET
   @Path("{fileName}")
   @Produces("text/html; charset=UTF-8")
-  public String getEntryPoint(@PathParam("fileName") String fileName) {
+  public String getHtmlDocumentation(@Context UriInfo uriInfo, @PathParam("fileName") String fileName) {
 
-    return rhymeDocs.loadFrom(fileName);
+    try {
+      Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
+          .withRhymeDocsSupport(rhymeDocs)
+          .buildForRequestTo(uriInfo.getRequestUri().toString());
+
+      return rhyme.getHtmlApiDocs(fileName);
+    }
+    catch (HalApiServerException ex) {
+      throw new WebApplicationException(ex, ex.getStatusCode());
+    }
   }
 }

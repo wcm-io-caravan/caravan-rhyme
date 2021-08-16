@@ -40,7 +40,7 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
-import io.wcm.caravan.rhyme.jaxrs.impl.docs.OsgiDocumentationLoader;
+import io.wcm.caravan.rhyme.jaxrs.impl.docs.RhymeDocsOsgiBundleSupport;
 
 /**
  * OSGI DS component that implements the {@link JaxRsAsyncHalResponseRenderer} interface using the
@@ -55,7 +55,7 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRe
   private final JaxRsExceptionStrategy exceptionStrategy = new JaxRsExceptionStrategy();
 
   @Reference
-  private OsgiDocumentationLoader rhymeDocsLoader;
+  private RhymeDocsOsgiBundleSupport rhymeDocsLoader;
 
   @Override
   public void respondWith(LinkableResource resourceImpl, UriInfo uriInfo, AsyncResponse suspended, RequestMetricsCollector metrics) {

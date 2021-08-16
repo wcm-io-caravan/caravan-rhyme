@@ -30,14 +30,14 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.wcm.caravan.rhyme.api.documenation.DocumentationLoader;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
-@Component(service = { OsgiDocumentationLoader.class })
-public class OsgiDocumentationLoader implements DocumentationLoader {
+@Component(service = { RhymeDocsOsgiBundleSupport.class })
+public class RhymeDocsOsgiBundleSupport implements RhymeDocsSupport {
 
-  private static final Logger log = LoggerFactory.getLogger(OsgiDocumentationLoader.class);
+  private static final Logger log = LoggerFactory.getLogger(RhymeDocsOsgiBundleSupport.class);
 
-  private static final String BASE_URL = RhymeDocsServingApplication.BASE_PATH + "/";
+  private static final String BASE_URL = RhymeDocsJaxRsApplication.BASE_PATH + "/";
 
   private List<Bundle> bundlesWithRhymeDocs = new ArrayList<>();
 
@@ -48,14 +48,14 @@ public class OsgiDocumentationLoader implements DocumentationLoader {
   }
 
   @Override
-  public InputStream createInputStream(String resourcePath) throws IOException {
+  public InputStream openResourceStream(String resourcePath) throws IOException {
 
     for (Bundle bundle : bundlesWithRhymeDocs) {
 
-      log.info("Checking if bundle {} contains documentation file at {}", bundle.getSymbolicName(), resourcePath);
+      log.debug("Checking if bundle {} contains documentation file at {}", bundle.getSymbolicName(), resourcePath);
       URL resourceUrl = bundle.getResource(resourcePath);
       if (resourceUrl != null) {
-        log.info("Documentation file {} was found in bundle {}", resourcePath, bundle.getSymbolicName());
+        log.debug("Documentation file {} was found in bundle {}", resourcePath, bundle.getSymbolicName());
         return resourceUrl.openStream();
       }
     }
@@ -63,12 +63,12 @@ public class OsgiDocumentationLoader implements DocumentationLoader {
     return null;
   }
 
-  public void registerBundle(Bundle bundle) {
+  void registerBundle(Bundle bundle) {
 
     bundlesWithRhymeDocs.add(bundle);
   }
 
-  public void unregisterBundle(Bundle bundle) {
+  void unregisterBundle(Bundle bundle) {
 
     bundlesWithRhymeDocs.remove(bundle);
   }

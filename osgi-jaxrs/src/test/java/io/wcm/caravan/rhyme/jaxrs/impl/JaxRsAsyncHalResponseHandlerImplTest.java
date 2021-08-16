@@ -54,7 +54,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
-import io.wcm.caravan.rhyme.jaxrs.impl.docs.OsgiDocumentationLoader;
+import io.wcm.caravan.rhyme.jaxrs.impl.docs.RhymeDocsOsgiBundleSupport;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -79,7 +79,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   void setUp() {
     lenient().when(uriInfo.getRequestUri()).thenReturn(URI.create(REQUEST_URL));
 
-    context.registerInjectActivateService(new OsgiDocumentationLoader());
+    context.registerInjectActivateService(new RhymeDocsOsgiBundleSupport());
 
     handler = context.registerInjectActivateService(new JaxRsAsyncHalResponseHandlerImpl());
   }

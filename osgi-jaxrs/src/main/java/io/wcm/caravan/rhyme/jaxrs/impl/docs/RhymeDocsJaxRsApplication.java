@@ -27,9 +27,9 @@ import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationBase;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsName;
 
 @Component(service = Application.class, scope = ServiceScope.BUNDLE)
-@JaxrsApplicationBase(RhymeDocsServingApplication.BASE_PATH)
-@JaxrsName(RhymeDocsServingApplication.JAXRS_NAME)
-public class RhymeDocsServingApplication extends Application {
+@JaxrsApplicationBase(RhymeDocsJaxRsApplication.BASE_PATH)
+@JaxrsName(RhymeDocsJaxRsApplication.JAXRS_NAME)
+public class RhymeDocsJaxRsApplication extends Application {
 
   public static final String BASE_PATH = "/docs/rhyme/api";
 

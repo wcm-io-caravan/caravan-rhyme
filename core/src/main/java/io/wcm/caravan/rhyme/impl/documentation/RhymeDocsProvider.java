@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.api.documenation;
+package io.wcm.caravan.rhyme.impl.documentation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,27 +26,27 @@ import org.apache.commons.io.IOUtils;
 
 import com.google.common.base.Charsets;
 
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
-import io.wcm.caravan.rhyme.impl.documentation.ClasspathDocumentationLoader;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
-public interface DocumentationLoader {
+public class RhymeDocsProvider {
 
-  String FOLDER = "RHYME-DOCS-INF";
+  private final RhymeDocsSupport support;
 
-  String getRhymeDocsBaseUrl();
-
-  InputStream createInputStream(String resourcePath) throws IOException;
-
-  static DocumentationLoader fromClassPath(ClassLoader classLoader, String docUrlPrefix) {
-
-    return new ClasspathDocumentationLoader(classLoader, docUrlPrefix);
+  public RhymeDocsProvider(RhymeDocsSupport support) {
+    this.support = support;
   }
 
-  default String loadFrom(String fileName) {
+  public String loadGeneratedHtmlFrom(String fileName) {
 
-    String resourcePath = "/" + DocumentationLoader.FOLDER + "/" + fileName;
+    if (support == null) {
+      throw new HalApiDeveloperException("HTML documentation can only be served if rhyme docs support was activated through the RhymeBuilder interface");
+    }
 
-    try (InputStream is = createInputStream(resourcePath)) {
+    String resourcePath = "/" + RhymeDocsSupport.FOLDER + "/" + fileName;
+
+    try (InputStream is = support.openResourceStream(resourcePath)) {
       if (is == null) {
         throw new HalApiServerException(404, "No HTML documentation was generated for " + fileName);
       }
@@ -56,8 +56,7 @@ public interface DocumentationLoader {
       throw ex;
     }
     catch (IOException | RuntimeException ex) {
-      throw new RuntimeException("Failed to load documentation from " + fileName, ex);
+      throw new HalApiServerException(500, "Failed to load documentation from " + fileName, ex);
     }
   }
-
 }

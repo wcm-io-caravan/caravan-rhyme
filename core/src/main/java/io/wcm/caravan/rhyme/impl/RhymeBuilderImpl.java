@@ -28,6 +28,8 @@ import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
+import io.wcm.caravan.rhyme.impl.documentation.DefaultRhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.reflection.CompositeHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
@@ -40,6 +42,9 @@ import io.wcm.caravan.rhyme.impl.renderer.CompositeExceptionStatusAndLoggingStra
 public class RhymeBuilderImpl implements RhymeBuilder {
 
   private final HalResourceLoader resourceLoader;
+
+  private RhymeDocsSupport rhymeDocsSupport;
+
   private final List<HalApiTypeSupport> registeredTypeSupports = new ArrayList<>();
 
   private final List<ExceptionStatusAndLoggingStrategy> exceptionStrategies = new ArrayList<>();
@@ -52,6 +57,23 @@ public class RhymeBuilderImpl implements RhymeBuilder {
     this.resourceLoader = resourceLoader;
 
     this.registeredTypeSupports.add(new DefaultHalApiTypeSupport());
+  }
+
+
+  @Override
+  public RhymeBuilder withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport) {
+
+    this.rhymeDocsSupport = rhymeDocsSupport;
+
+    return this;
+  }
+
+  @Override
+  public RhymeBuilder withRhymeDocsMountedAt(String baseUrl) {
+
+    this.rhymeDocsSupport = new DefaultRhymeDocsSupport(baseUrl);
+
+    return this;
   }
 
   @Override
@@ -102,6 +124,7 @@ public class RhymeBuilderImpl implements RhymeBuilder {
     HalApiTypeSupport typeSupport = getEffectiveTypeSupport();
     ExceptionStatusAndLoggingStrategy exceptionStrategy = getEffectiveExceptionStrategy();
 
-    return new RhymeImpl(incomingRequestUri, resourceLoader, exceptionStrategy, typeSupport);
+    return new RhymeImpl(incomingRequestUri, resourceLoader, exceptionStrategy, typeSupport, rhymeDocsSupport);
   }
+
 }

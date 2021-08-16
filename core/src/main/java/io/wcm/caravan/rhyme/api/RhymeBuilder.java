@@ -25,6 +25,7 @@ import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.RhymeBuilderImpl;
 
 /**
@@ -51,6 +52,24 @@ public interface RhymeBuilder {
   static RhymeBuilder withResourceLoader(HalResourceLoader resourceLoader) {
     return new RhymeBuilderImpl(resourceLoader);
   }
+
+  /**
+   * Enable generation of curie links to HTML documentation generated with the rhyme-docs-maven-plugin.
+   * If you call this, you must ensure that you will actually serve the HTML documentation (via
+   * {@link Rhyme#getHtmlApiDocs(String)} at that base URL.
+   * @param baseUrl the URL where the documentation will be mounted
+   * @return this
+   */
+  RhymeBuilder withRhymeDocsMountedAt(String baseUrl);
+
+  /**
+   * Enable generation of curie links to HTML documentation generated with the rhyme-docs-maven-plugin.
+   * This overload is only required if you need special logic for loading the HTML from the classpath
+   * (e.g. in an OSGI container), otherwise use {@link #withRhymeDocsMountedAt(String)} instead.
+   * @param rhymeDocsSupport the SPI instance that handles loading of the generated HTML
+   * @return this
+   */
+  RhymeBuilder withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport);
 
   /**
    * Extend the core framework to support additional return types in your annotated HAL API interfaces.

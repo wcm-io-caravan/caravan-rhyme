@@ -30,11 +30,11 @@ import com.google.common.collect.Ordering;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 
-public class RhymeDocsIntegration {
+public class RhymeDocsCurieGenerator {
 
   private final String baseUrl;
 
-  public RhymeDocsIntegration(String baseUrl) {
+  public RhymeDocsCurieGenerator(String baseUrl) {
     this.baseUrl = baseUrl;
   }
 
@@ -78,6 +78,4 @@ public class RhymeDocsIntegration {
     return new Link(href)
         .setName(curieName);
   }
-
-
 }

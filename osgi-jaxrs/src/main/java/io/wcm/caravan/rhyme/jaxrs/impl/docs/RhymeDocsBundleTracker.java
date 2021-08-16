@@ -35,7 +35,8 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.wcm.caravan.rhyme.api.documenation.DocumentationLoader;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
+
 
 @Component(immediate = true)
 public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<ComponentInstance> {
@@ -43,7 +44,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<Component
   private static final Logger log = LoggerFactory.getLogger(RhymeDocsBundleTracker.class);
 
   @Reference
-  private OsgiDocumentationLoader rhymeDocsLoader;
+  private RhymeDocsOsgiBundleSupport rhymeDocsSupport;
 
   private BundleContext bundleContext;
   private BundleTracker bundleTracker;
@@ -59,6 +60,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<Component
 
   @Deactivate
   void deactivate(@SuppressWarnings("unused") ComponentContext componentContext) {
+
     bundleTracker.close();
   }
 
@@ -67,19 +69,16 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<Component
 
     log.debug("Bundle {} was added", bundle.getSymbolicName());
 
-    if (!hasRhymeDocs(bundle)) {
-      return null;
+    if (hasRhymeDocs(bundle)) {
+      rhymeDocsSupport.registerBundle(bundle);
     }
-
-    rhymeDocsLoader.registerBundle(bundle);
 
     return null;
   }
 
+  private static boolean hasRhymeDocs(Bundle bundle) {
 
-  static boolean hasRhymeDocs(Bundle bundle) {
-
-    String rhymeDocsPath = "/" + DocumentationLoader.FOLDER;
+    String rhymeDocsPath = "/" + RhymeDocsSupport.FOLDER;
 
     URL rhymeDocsUrl = bundle.getResource(rhymeDocsPath);
 
@@ -106,7 +105,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<Component
       return;
     }
 
-    rhymeDocsLoader.unregisterBundle(bundle);
+    rhymeDocsSupport.unregisterBundle(bundle);
 
     componentInstance.dispose();
   }

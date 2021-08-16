@@ -22,20 +22,14 @@ package io.wcm.caravan.rhyme.impl.documentation;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.wcm.caravan.rhyme.api.documenation.DocumentationLoader;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
-public class ClasspathDocumentationLoader implements DocumentationLoader {
 
-  private final ClassLoader classLoader;
+public class DefaultRhymeDocsSupport implements RhymeDocsSupport {
+
   private final String rhymeDocsBaseUrl;
 
-  public ClasspathDocumentationLoader() {
-    this.classLoader = getClass().getClassLoader();
-    this.rhymeDocsBaseUrl = "";
-  }
-
-  public ClasspathDocumentationLoader(ClassLoader classLoader, String rhymeDocsBaseUrl) {
-    this.classLoader = classLoader;
+  public DefaultRhymeDocsSupport(String rhymeDocsBaseUrl) {
     this.rhymeDocsBaseUrl = rhymeDocsBaseUrl;
   }
 
@@ -46,8 +40,9 @@ public class ClasspathDocumentationLoader implements DocumentationLoader {
   }
 
   @Override
-  public InputStream createInputStream(String resourcePath) throws IOException {
+  public InputStream openResourceStream(String resourcePath) throws IOException {
 
-    return classLoader.getResourceAsStream(resourcePath);
+    return getClass().getResourceAsStream(resourcePath);
   }
+
 }
