@@ -21,6 +21,8 @@ package io.wcm.caravan.rhyme.jaxrs.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,10 +39,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
+
+import com.google.common.collect.ImmutableList;
+
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 @ExtendWith(MockitoExtension.class)
 public class JaxRsBundleInfoImplTest {
@@ -69,8 +76,9 @@ public class JaxRsBundleInfoImplTest {
     return bundleInfo;
   }
 
-  private void mockPresenceOfApplicationService(String basePath) {
-    when(bundleCtx.getServiceReference(Application.class)).thenReturn(serviceRef);
+  private void mockPresenceOfApplicationService(String basePath) throws InvalidSyntaxException {
+    when(bundleCtx.getServiceReferences(eq(Application.class), anyString()))
+        .thenReturn(ImmutableList.of(serviceRef));
     lenient().when(bundleCtx.getService(serviceRef)).thenReturn(mock(Application.class));
     when(serviceRef.getProperty(JaxrsWhiteboardConstants.JAX_RS_APPLICATION_BASE)).thenReturn(basePath);
   }
@@ -93,7 +101,9 @@ public class JaxRsBundleInfoImplTest {
 
     Throwable ex = catchThrowable(this::createAndActivateBundle);
 
-    assertThat(ex).hasMessageStartingWith("No component extending JAX-RS Application was found in the bundle " + BUNDLE_NAME);
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("No component extending JAX-RS Application was found in the bundle " + BUNDLE_NAME);
   }
 
   @Test
@@ -103,7 +113,9 @@ public class JaxRsBundleInfoImplTest {
 
     Throwable ex = catchThrowable(this::createAndActivateBundle);
 
-    assertThat(ex).hasMessageStartingWith("No @JaxrsApplicationBase annotation present");
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("No @JaxrsApplicationBase annotation present");
   }
 
   @Test

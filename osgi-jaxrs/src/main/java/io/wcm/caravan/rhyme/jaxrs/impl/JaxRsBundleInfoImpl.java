@@ -22,13 +22,18 @@ package io.wcm.caravan.rhyme.jaxrs.impl;
 import javax.ws.rs.core.Application;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsBundleInfo;
 
 /**
@@ -36,6 +41,8 @@ import io.wcm.caravan.rhyme.jaxrs.api.JaxRsBundleInfo;
  */
 @Component(service = JaxRsBundleInfo.class, scope = ServiceScope.BUNDLE)
 public class JaxRsBundleInfoImpl implements JaxRsBundleInfo {
+
+  private static final Logger log = LoggerFactory.getLogger(JaxRsBundleInfoImpl.class);
 
   private String applicationPath;
   private String bundleVersion;
@@ -45,28 +52,45 @@ public class JaxRsBundleInfoImpl implements JaxRsBundleInfo {
 
     Bundle usingBundle = componentCtx.getUsingBundle();
 
+    log.debug("Activating {} service for using bundle {} with id {}", getClass().getSimpleName(), usingBundle.getSymbolicName(), usingBundle.getBundleId());
+
     applicationPath = findApplicationBasePath(usingBundle);
 
     bundleVersion = findBundleVersion(usingBundle);
   }
 
-  private String findApplicationBasePath(Bundle bundle) {
+  private static String findApplicationBasePath(Bundle bundle) {
 
-    ServiceReference<Application> serviceRef = bundle.getBundleContext().getServiceReference(Application.class);
-    if (serviceRef == null) {
-      throw new RuntimeException("No component extending JAX-RS Application was found in the bundle " + bundle.getSymbolicName());
-    }
+    ServiceReference<Application> serviceRef = findJaxRsApplicationServiceInBundle(bundle);
 
     Object applicationBaseProperty = serviceRef.getProperty(JaxrsWhiteboardConstants.JAX_RS_APPLICATION_BASE);
     if (applicationBaseProperty == null) {
       Application app = bundle.getBundleContext().getService(serviceRef);
-      throw new RuntimeException("No @JaxrsApplicationBase annotation present on the " + app.getClass().getName() + " class");
+      throw new HalApiDeveloperException("No @JaxrsApplicationBase annotation present on the " + app.getClass().getName() + " class");
     }
+
+    log.info("Found application base path {} in bundle {}", applicationBaseProperty, bundle.getSymbolicName());
 
     return applicationBaseProperty.toString();
   }
 
-  private String findBundleVersion(Bundle bundle) {
+  private static ServiceReference<Application> findJaxRsApplicationServiceInBundle(Bundle bundle) {
+
+    try {
+      // there can be multiple Application service registered, so we filter the one that is defined
+      // in the bundle that is referencing this service
+      String filter = "(&(" + Constants.SERVICE_BUNDLEID + "=" + bundle.getBundleId() + "))";
+
+      return bundle.getBundleContext().getServiceReferences(Application.class, filter).stream()
+          .findFirst()
+          .orElseThrow(() -> new HalApiDeveloperException("No component extending JAX-RS Application was found in the bundle " + bundle.getSymbolicName()));
+    }
+    catch (InvalidSyntaxException ex) {
+      throw new RuntimeException("Failed to filter JAX-RS Application service for bundle", ex);
+    }
+  }
+
+  private static String findBundleVersion(Bundle bundle) {
 
     String version = bundle.getVersion().toString();
 
