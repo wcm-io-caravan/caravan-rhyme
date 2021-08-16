@@ -29,19 +29,29 @@ import com.google.common.collect.Ordering;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 
+/**
+ * A class that generates links with the "curies" relation which point to the
+ * location where the generated HTML documentation is served
+ */
 public class RhymeDocsCurieGenerator {
 
   private final String baseUrl;
 
+  /**
+   * @param baseUrl to be prepended to the HTML file name
+   */
   public RhymeDocsCurieGenerator(String baseUrl) {
     this.baseUrl = baseUrl;
   }
 
-  public boolean isEnabled() {
-    return baseUrl != null;
-  }
-
+  /**
+   * Adds a documentation link with "curies" relation for all custom relations present in the given resource.
+   * The link will point to the HTML documentation of the given {@link HalApiInterface}.
+   * @param halResource where the links should be added
+   * @param halApiInterface used to generate the file name of the documentation URL
+   */
   public void addCuriesTo(HalResource halResource, Class<?> halApiInterface) {
 
     List<Link> curieLinks = createCurieLinks(halResource, halApiInterface);
@@ -49,7 +59,7 @@ public class RhymeDocsCurieGenerator {
     halResource.addLinks("curies", curieLinks);
   }
 
-  List<Link> createCurieLinks(HalResource halResource, Class<?> halApiInterface) {
+  private List<Link> createCurieLinks(HalResource halResource, Class<?> halApiInterface) {
 
     String fileName = halApiInterface.getName() + ".html";
 

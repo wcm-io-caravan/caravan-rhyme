@@ -24,11 +24,17 @@ import java.io.InputStream;
 
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
-
+/**
+ * Default implementation of the {@link RhymeDocsSupport} SPI interface that loads
+ * the documentation using the global class loader
+ */
 public class DefaultRhymeDocsSupport implements RhymeDocsSupport {
 
   private final String rhymeDocsBaseUrl;
 
+  /**
+   * @param rhymeDocsBaseUrl the URL where the documentation will be served
+   */
   public DefaultRhymeDocsSupport(String rhymeDocsBaseUrl) {
     this.rhymeDocsBaseUrl = rhymeDocsBaseUrl;
   }

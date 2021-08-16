@@ -26,6 +26,10 @@ import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationBase;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsName;
 
+/**
+ * Defines the base path and other constants used to register the
+ * {@link RhymeDocsHtmlResource} to the JAX-RS Whiteboard
+ */
 @Component(service = Application.class, scope = ServiceScope.BUNDLE)
 @JaxrsApplicationBase(RhymeDocsJaxRsApplication.BASE_PATH)
 @JaxrsName(RhymeDocsJaxRsApplication.JAXRS_NAME)

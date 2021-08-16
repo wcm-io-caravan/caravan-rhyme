@@ -37,6 +37,9 @@ import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 
 
+/**
+ * A Jax-RS resource that serves the HTML documentation generated with the rhyme-docs-maven-plugin
+ */
 @Component(service = RhymeDocsHtmlResource.class)
 @JaxrsResource
 @JaxrsApplicationSelect(RhymeDocsJaxRsApplication.SELECTOR)
@@ -45,6 +48,11 @@ public class RhymeDocsHtmlResource {
   @Reference
   private RhymeDocsOsgiBundleSupport rhymeDocs;
 
+  /**
+   * @param uriInfo of the incoming request
+   * @param fileName of a documentation file in the bundle resources
+   * @return the content of the file
+   */
   @GET
   @Path("{fileName}")
   @Produces("text/html; charset=UTF-8")

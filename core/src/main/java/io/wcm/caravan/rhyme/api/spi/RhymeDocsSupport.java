@@ -22,10 +22,13 @@ package io.wcm.caravan.rhyme.api.spi;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.osgi.annotation.versioning.ConsumerType;
+
 /**
  * SPI interface to customize the integration of HTML documentation generated with
  * the rhyme-docs-maven-plugin
  */
+@ConsumerType
 public interface RhymeDocsSupport {
 
   /** the folder in the classpath where the generated HTML files are located */

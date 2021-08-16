@@ -32,6 +32,10 @@ import org.slf4j.LoggerFactory;
 
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
+/**
+ * OSGI specific implementation of {@link RhymeDocsSupport} that will load HTML documentation
+ * generated with the rhyme-docs-maven-plugin from the bundle resources.
+ */
 @Component(service = { RhymeDocsOsgiBundleSupport.class })
 public class RhymeDocsOsgiBundleSupport implements RhymeDocsSupport {
 
@@ -63,11 +67,19 @@ public class RhymeDocsOsgiBundleSupport implements RhymeDocsSupport {
     return null;
   }
 
+  /**
+   * Called by the {@link RhymeDocsBundleTracker} if relevant documentation was found in a bundle
+   * @param bundle a bundle known to contain a {@link RhymeDocsSupport#FOLDER} folder
+   */
   void registerBundle(Bundle bundle) {
 
     bundlesWithRhymeDocs.add(bundle);
   }
 
+  /**
+   * Call by the {@link RhymeDocsBundleTracker} if a bundle has been de-activated
+   * @param bundle any OSGI bundle
+   */
   void unregisterBundle(Bundle bundle) {
 
     bundlesWithRhymeDocs.remove(bundle);

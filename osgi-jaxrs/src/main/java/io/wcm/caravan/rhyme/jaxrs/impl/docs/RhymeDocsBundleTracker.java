@@ -37,7 +37,11 @@ import org.slf4j.LoggerFactory;
 
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
-
+/**
+ * Tracks all bundle activations to check if a bundle contains HTML documentation resources
+ * generated with the rhyme-docs-maven-plugin, so that the {@link RhymeDocsOsgiBundleSupport}
+ * knows in which bundles to look for these documentation files
+ */
 @Component(immediate = true)
 public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<ComponentInstance> {
 
