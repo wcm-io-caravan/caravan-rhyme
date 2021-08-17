@@ -21,6 +21,7 @@ package io.wcm.caravan.rhyme.api;
 
 import org.osgi.annotation.versioning.ProviderType;
 
+import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
@@ -54,9 +55,10 @@ public interface RhymeBuilder {
   }
 
   /**
-   * Enable generation of curie links to HTML documentation generated with the rhyme-docs-maven-plugin.
-   * This overload is only required if you need special logic for loading the HTML from the classpath
-   * (e.g. in an OSGI container), otherwise use {@link #withRhymeDocsMountedAt(String)} instead.
+   * Enable generation of curie links (to HTML documentation generated with the rhyme-docs-maven-plugin)
+   * when rendering {@link HalResponse}s with
+   * {@link Rhyme#renderResponse(io.wcm.caravan.rhyme.api.resources.LinkableResource)},
+   * and extraction of those docs with {@link Rhyme#getHtmlApiDocs(String)}
    * @param rhymeDocsSupport the SPI instance that handles loading of the generated HTML
    * @return this
    */
