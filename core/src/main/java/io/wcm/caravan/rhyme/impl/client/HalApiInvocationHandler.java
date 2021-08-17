@@ -72,6 +72,10 @@ final class HalApiInvocationHandler implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
+    if (method.getName().equals("hashCode")) {
+      throw new HalApiDeveloperException("You cannot call hashCode() on dynamic client proxies. Avoid using collections like LinkedHashSet.");
+    }
+
     // we want to measure how much time is spent for reflection magic in this proxy
     Stopwatch stopwatch = Stopwatch.createStarted();
 
