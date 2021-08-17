@@ -29,7 +29,6 @@ import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
-import io.wcm.caravan.rhyme.impl.documentation.DefaultRhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.reflection.CompositeHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
@@ -64,14 +63,6 @@ public class RhymeBuilderImpl implements RhymeBuilder {
   public RhymeBuilder withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport) {
 
     this.rhymeDocsSupport = rhymeDocsSupport;
-
-    return this;
-  }
-
-  @Override
-  public RhymeBuilder withRhymeDocsMountedAt(String baseUrl) {
-
-    this.rhymeDocsSupport = new DefaultRhymeDocsSupport(baseUrl);
 
     return this;
   }
