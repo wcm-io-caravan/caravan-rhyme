@@ -19,32 +19,22 @@
  */
 package io.wcm.caravan.rhyme.impl.reflection;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.reflect.FieldUtils;
 
 import com.google.common.collect.Lists;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
-import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 
@@ -157,58 +147,6 @@ public final class HalApiReflectionUtils {
         .filter(annotationSupport::isRelatedResourceMethod)
         .sorted(comparator)
         .collect(Collectors.toList());
-  }
-
-  /**
-   * @param dto the DTO objet from which to extract the template variables
-   * @param dtoClass the type of the object that was used in the parameter definition
-   * @return a map with the names and values of all fields in the given object
-   */
-  public static Map<String, Object> getTemplateVariablesFrom(Object dto, Class dtoClass) {
-
-    if (dtoClass.isInterface()) {
-      return getPublicGetterValuesAsMap(dto, dtoClass);
-    }
-
-    return getFieldValuesAsMap(dto, dtoClass);
-  }
-
-  private static Map<String, Object> getPublicGetterValuesAsMap(Object instance, Class dtoClass) {
-    try {
-      Map<String, Object> map = new LinkedHashMap<>();
-      for (PropertyDescriptor property : Introspector.getBeanInfo(dtoClass).getPropertyDescriptors()) {
-        Object value = instance != null ? property.getReadMethod().invoke(instance, new Object[0]) : null;
-        map.put(property.getName(), value);
-      }
-      return map;
-    }
-    catch (IntrospectionException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-      throw new HalApiDeveloperException("Failed to extract template variables from class " + dtoClass.getName() + " through reflection", ex);
-    }
-  }
-
-  private static Map<String, Object> getFieldValuesAsMap(Object instance, Class dtoClass) {
-
-    Map<String, Object> map = new LinkedHashMap<>();
-
-    for (Field field : FieldUtils.getAllFields(dtoClass)) {
-      if (!field.isSynthetic()) {
-        Object value = instance != null ? getFieldValue(field, instance) : null;
-        map.put(field.getName(), value);
-      }
-    }
-
-    return map;
-  }
-
-  private static Object getFieldValue(Field field, Object instance) {
-    try {
-      return FieldUtils.readField(field, instance, false);
-    }
-    catch (IllegalArgumentException | IllegalAccessException ex) {
-      throw new HalApiDeveloperException("Failed to read value of field " + field.getName() + " from class " + instance.getClass().getSimpleName()
-          + ". Make sure that all fields in your classes used as parameters annotated with @" + TemplateVariables.class.getSimpleName() + " are public", ex);
-    }
   }
 
   /**

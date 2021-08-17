@@ -24,7 +24,6 @@ import static io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ENTRY_POINT_URI
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -209,8 +208,9 @@ public class TemplateVariablesTest {
         () -> client.createProxy(ResourceWithTemplateVariablesDtoWithPrivateFields.class).getItem(dto));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageContaining("Make sure that all fields in your classes used as parameters annotated with @TemplateVariables are public")
-        .hasCauseInstanceOf(IllegalAccessException.class);
+        .hasMessageStartingWith("Failed to extract template variables from class ")
+        .hasCauseInstanceOf(HalApiDeveloperException.class)
+        .hasRootCauseInstanceOf(IllegalAccessException.class);
   }
 
   public interface VariablesInterface {
@@ -281,8 +281,9 @@ public class TemplateVariablesTest {
         () -> client.createProxy(ResourceWithTemplateVariablesInterface.class).getItem(variables));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("Failed to extract template variables")
-        .hasCauseInstanceOf(InvocationTargetException.class);
+        .hasMessageStartingWith("Failed to extract template variables from interface")
+        .hasCauseInstanceOf(HalApiDeveloperException.class)
+        .hasRootCauseInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
