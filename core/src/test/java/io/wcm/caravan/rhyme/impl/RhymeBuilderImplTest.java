@@ -21,7 +21,12 @@ package io.wcm.caravan.rhyme.impl;
 
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ITEM;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
@@ -31,9 +36,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,6 +66,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.ryhme.testing.LinkableTestResource;
 import io.wcm.caravan.ryhme.testing.TestState;
 import io.wcm.caravan.ryhme.testing.resources.TestResource;
@@ -259,10 +265,12 @@ public class RhymeBuilderImplTest {
       return false;
     }
 
+    /* disabled as long as (in version 1.1.0) there is a default implementation available
     @Override
     public boolean isProviderOfOptionalValue(Class<?> returnType) {
       return false;
     }
+    */
 
   }
 
@@ -418,5 +426,101 @@ public class RhymeBuilderImplTest {
     }
 
   }
+
+  @Test
+  public void no_curies_are_rendered_if_withRhymeDocsSupport_is_not_called() {
+
+    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    Link curieLink = renderResourceAndGetCuriesLink(rhyme);
+
+    assertThat(curieLink).isNull();
+  }
+
+  @Test
+  public void curies_are_rendered_if_withRhymeDocsSupport_is_called() {
+
+    String baseUrl = "/docs/";
+
+    RhymeDocsSupport docsSupport = mock(RhymeDocsSupport.class);
+
+    when(docsSupport.getRhymeDocsBaseUrl())
+        .thenReturn(baseUrl);
+
+    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
+        .withRhymeDocsSupport(docsSupport)
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    Link curieLink = renderResourceAndGetCuriesLink(rhyme);
+
+    assertThat(curieLink).isNotNull();
+
+    assertThat(curieLink.getHref())
+        .startsWith(baseUrl);
+  }
+
+  @Test
+  public void generateApiDocs_fails_if_withRhymeDocsSupport_is_not_called() {
+
+    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    Throwable ex = catchThrowable(() -> rhyme.getHtmlApiDocs("Foo.html"));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessage("HTML documentation can only be served if rhyme docs support was activated through the RhymeBuilder interface");
+  }
+
+  @Test
+  public void generateApiDocs_uses_stream_from_support() throws IOException {
+
+    String expectedHtml = "<html>Foo!</html>";
+
+    RhymeDocsSupport docsSupport = mock(RhymeDocsSupport.class);
+
+    when(docsSupport.openResourceStream(anyString()))
+        .thenReturn(IOUtils.toInputStream(expectedHtml, Charsets.UTF_8));
+
+    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
+        .withRhymeDocsSupport(docsSupport)
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    String actualHtml = rhyme.getHtmlApiDocs("Foo.html");
+
+    assertThat(actualHtml)
+        .isEqualTo(expectedHtml);
+  }
+
+  private Link renderResourceAndGetCuriesLink(Rhyme rhyme) {
+
+    HalResponse response = rhyme.renderResponse(new ResourceWithCustomRelationImpl()).blockingGet();
+
+    assertThat(response.getStatus()).isEqualTo(200);
+
+    return response.getBody().getLink("curies");
+  }
+
+  @HalApiInterface
+  public interface ResourceWithCustomRelation extends LinkableResource {
+
+    @Related("foo:bar")
+    ResourceWithCustomRelation getBar();
+  }
+
+  class ResourceWithCustomRelationImpl implements ResourceWithCustomRelation {
+
+    @Override
+    public ResourceWithCustomRelation getBar() {
+      return new ResourceWithCustomRelationImpl();
+    }
+
+    @Override
+    public Link createLink() {
+      return new Link(INCOMING_REQUEST_URI);
+    }
+  }
+
 
 }

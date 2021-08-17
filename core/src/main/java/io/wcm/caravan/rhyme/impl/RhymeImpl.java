@@ -54,7 +54,8 @@ final class RhymeImpl implements Rhyme {
   private final AsyncHalResponseRenderer renderer;
 
 
-  RhymeImpl(String requestUri, HalResourceLoader resourceLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport, RhymeDocsSupport rhymeDocsSupport) {
+  RhymeImpl(String requestUri, HalResourceLoader resourceLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport,
+      RhymeDocsSupport rhymeDocsSupport) {
     this.requestUri = requestUri;
     this.resourceLoader = resourceLoader;
     this.exceptionStrategy = exceptionStrategy;

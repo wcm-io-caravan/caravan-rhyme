@@ -246,4 +246,10 @@ public class CompositeHalApiTypeSupportTest {
     assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfMultiplerValues(Set.class));
   }
 
+  @Test
+  public void isProviderOptionalValues_should_return_first_true_value() throws Exception {
+
+    assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfOptionalValue(Set.class));
+  }
+
 }

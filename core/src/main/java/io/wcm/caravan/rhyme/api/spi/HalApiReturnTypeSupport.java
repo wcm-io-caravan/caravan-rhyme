@@ -35,14 +35,16 @@ public interface HalApiReturnTypeSupport {
 
   /**
    * @param targetType the type to convert to
-   * @return a function that will create an instance of the given type from an {@link Observable}
+   * @return a function that will create an instance of the given type from an {@link Observable},
+   *         or null if this is not possible
    * @param <T> the type to covert to
    */
   <T> Function<Observable, T> convertFromObservable(Class<T> targetType);
 
   /**
    * @param sourceType the type to convert from
-   * @return a function that will create an {@link Observable} from an instance of the given type
+   * @return a function that will create an {@link Observable} from an instance of the given type,
+   *         or null if this is not possible
    */
   Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType);
 

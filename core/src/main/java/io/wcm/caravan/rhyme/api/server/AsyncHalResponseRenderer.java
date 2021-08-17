@@ -86,8 +86,8 @@ public interface AsyncHalResponseRenderer {
   @Deprecated
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
-        return create(metrics, exceptionStrategy, annotationSupport, returnTypeSupport, null);
-      }
+    return create(metrics, exceptionStrategy, annotationSupport, returnTypeSupport, null);
+  }
 
   /**
    * Alternative factory method that allows to support different HAL API annotations or method return types

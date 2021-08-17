@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.collect.Ordering;
-
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -76,16 +74,20 @@ public class RhymeDocsCurieGenerator {
         .distinct()
         .filter(rel -> rel.contains(":"))
         .map(rel -> StringUtils.substringBefore(rel, ":"))
-        .distinct()
-        .sorted(Ordering.natural())
         .collect(Collectors.toSet());
   }
 
   private Link createCurieLink(String curieName, String fileName) {
 
-    String href = baseUrl + fileName + "#" + curieName + ":{rel}";
+    String prefix = baseUrl;
+    if (!prefix.endsWith("/")) {
+      prefix += "/";
+    }
+
+    String href = prefix + fileName + "#" + curieName + ":{rel}";
 
     return new Link(href)
-        .setName(curieName);
+        .setName(curieName)
+        .setTitle("Documentation for relations with " + curieName + " prefix");
   }
 }

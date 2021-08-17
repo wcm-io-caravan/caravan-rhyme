@@ -88,4 +88,16 @@ public class AsyncHalResponseRendererTest {
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().hasEmbedded(CARAVAN_METADATA_RELATION));
   }
+
+
+  @Test
+  public void deprecated_method_without_RhymeDocsSupport_should_not_throw_exception() throws Exception {
+
+    RequestMetricsCollector metrics = RequestMetricsCollector.create();
+    ExceptionStatusAndLoggingStrategy strategy = new ExceptionStatusAndLoggingStrategy() {
+      // we want to cover the default implementation here, so we don't override anything
+    };
+
+    AsyncHalResponseRenderer.create(metrics, strategy, null, null);
+  }
 }
