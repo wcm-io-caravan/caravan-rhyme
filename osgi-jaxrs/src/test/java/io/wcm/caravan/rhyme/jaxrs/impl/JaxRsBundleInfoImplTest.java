@@ -21,6 +21,7 @@ package io.wcm.caravan.rhyme.jaxrs.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
@@ -150,5 +151,19 @@ public class JaxRsBundleInfoImplTest {
     JaxRsBundleInfoImpl bundleInfo = createAndActivateBundle();
 
     assertThat(bundleInfo.getBundleVersion()).isEqualTo("1.2.3.SNAPSHOT-123456");
+  }
+
+
+  @Test
+  public void findJaxRsApplicationServiceInBundle_should_handle_exceptions() throws Exception {
+
+    when(bundleCtx.getServiceReferences(any(Class.class), anyString()))
+        .thenThrow(new RuntimeException());
+
+    Throwable ex = catchThrowable(() -> createAndActivateBundle());
+
+    assertThat(ex)
+        .isInstanceOf(RuntimeException.class)
+        .hasMessageStartingWith("Failed to find JAX-RS Application service for bundle");
   }
 }

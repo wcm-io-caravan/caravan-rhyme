@@ -74,7 +74,8 @@ public class JaxRsBundleInfoImpl implements JaxRsBundleInfo {
     return applicationBaseProperty.toString();
   }
 
-  private static ServiceReference<Application> findJaxRsApplicationServiceInBundle(Bundle bundle) {
+  @SuppressWarnings("PMD.AvoidRethrowingException")
+  static ServiceReference<Application> findJaxRsApplicationServiceInBundle(Bundle bundle) {
 
     try {
       // there can be multiple Application service registered, so we filter the one that is defined
@@ -85,8 +86,11 @@ public class JaxRsBundleInfoImpl implements JaxRsBundleInfo {
           .findFirst()
           .orElseThrow(() -> new HalApiDeveloperException("No component extending JAX-RS Application was found in the bundle " + bundle.getSymbolicName()));
     }
-    catch (InvalidSyntaxException ex) {
-      throw new RuntimeException("Failed to filter JAX-RS Application service for bundle", ex);
+    catch (HalApiDeveloperException ex) {
+      throw ex;
+    }
+    catch (InvalidSyntaxException | RuntimeException ex) {
+      throw new RuntimeException("Failed to find JAX-RS Application service for bundle " + bundle.getSymbolicName(), ex);
     }
   }
 

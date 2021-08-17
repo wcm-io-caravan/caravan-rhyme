@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.osgi.framework.Bundle;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,12 @@ public class RhymeDocsOsgiBundleSupport implements RhymeDocsSupport {
 
   private static final String BASE_URL = RhymeDocsJaxRsApplication.BASE_PATH + "/";
 
-  private List<Bundle> bundlesWithRhymeDocs = new ArrayList<>();
+  private List<Bundle> bundlesWithRhymeDocs;
+
+  @Activate
+  void activate() {
+    bundlesWithRhymeDocs = new ArrayList<>();
+  }
 
   @Override
   public String getRhymeDocsBaseUrl() {

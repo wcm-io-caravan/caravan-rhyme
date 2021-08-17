@@ -25,7 +25,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.ComponentInstance;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -43,22 +42,21 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
  * knows in which bundles to look for these documentation files
  */
 @Component(immediate = true)
-public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<ComponentInstance> {
+public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
 
   private static final Logger log = LoggerFactory.getLogger(RhymeDocsBundleTracker.class);
 
   @Reference
   private RhymeDocsOsgiBundleSupport rhymeDocsSupport;
 
-  private BundleContext bundleContext;
   private BundleTracker bundleTracker;
 
   @Activate
   void activate(ComponentContext componentContext) {
 
-    bundleContext = componentContext.getBundleContext();
+    BundleContext bundleContext = componentContext.getBundleContext();
 
-    bundleTracker = new BundleTracker<ComponentInstance>(bundleContext, Bundle.ACTIVE, this);
+    bundleTracker = new BundleTracker<String>(bundleContext, Bundle.ACTIVE, this);
     bundleTracker.open();
   }
 
@@ -69,12 +67,13 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<Component
   }
 
   @Override
-  public ComponentInstance addingBundle(Bundle bundle, BundleEvent event) {
+  public String addingBundle(Bundle bundle, BundleEvent event) {
 
     log.debug("Bundle {} was added", bundle.getSymbolicName());
 
     if (hasRhymeDocs(bundle)) {
       rhymeDocsSupport.registerBundle(bundle);
+      return bundle.getSymbolicName();
     }
 
     return null;
@@ -96,22 +95,18 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<Component
   }
 
   @Override
-  public void modifiedBundle(Bundle bundle, BundleEvent event, ComponentInstance componentInstance) {
+  public void modifiedBundle(Bundle bundle, BundleEvent event, String symbolicName) {
     // nothing to do
   }
 
   @Override
-  public void removedBundle(Bundle bundle, BundleEvent event, ComponentInstance componentInstance) {
-    if (componentInstance == null) {
-      return;
-    }
+  public void removedBundle(Bundle bundle, BundleEvent event, String symbolicName) {
+
     if (!hasRhymeDocs(bundle)) {
       return;
     }
 
     rhymeDocsSupport.unregisterBundle(bundle);
-
-    componentInstance.dispose();
   }
 
 }
