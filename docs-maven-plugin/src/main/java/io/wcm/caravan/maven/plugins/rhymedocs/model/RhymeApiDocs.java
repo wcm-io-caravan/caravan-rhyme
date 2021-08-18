@@ -54,7 +54,7 @@ public class RhymeApiDocs {
   public List<RhymeResourceDocs> getResourceDocs() {
 
     return apiInterfaces.stream()
-        .map(apiInterface -> new RhymeResourceDocs(builder, apiInterface, projectClassLoader))
+        .map(apiInterface -> new RhymeResourceDocs(apiInterface, builder, projectClassLoader))
         .collect(Collectors.toList());
   }
 }

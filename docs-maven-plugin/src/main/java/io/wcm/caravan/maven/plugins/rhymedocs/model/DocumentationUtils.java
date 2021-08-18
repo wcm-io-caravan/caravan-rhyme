@@ -19,11 +19,26 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.model;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.google.common.collect.ImmutableList;
+import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaAnnotatedElement;
 import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaType;
 
@@ -31,6 +46,12 @@ final class DocumentationUtils {
 
   private DocumentationUtils() {
     // only static methods
+  }
+
+  static Stream<JavaMethod> getMethodsWithAnnotation(JavaClass apiInterface, Class<? extends Annotation> annotationClazz) {
+
+    return apiInterface.getMethods(true).stream()
+        .filter(method -> hasAnnotation(method, annotationClazz));
   }
 
   static boolean hasAnnotation(JavaAnnotatedElement element, Class<? extends Annotation> annotationClazz) {
@@ -62,4 +83,94 @@ final class DocumentationUtils {
       throw new RuntimeException("Failed to load class " + javaType.getFullyQualifiedName(), ex);
     }
   }
+
+  static String findJavaDocForMethod(JavaProjectBuilder builder, Class dtoClass, Method dtoMethod) {
+
+    JavaClass javaClass = builder.getClassByName(dtoClass.getName());
+    if (javaClass == null) {
+      return null;
+    }
+
+    JavaMethod javaMethod = javaClass.getMethods().stream()
+        .filter(m -> m.getName().equals(dtoMethod.getName()))
+        .findFirst()
+        .orElse(null);
+
+    if (javaMethod == null) {
+      JsonPropertyDescription propertyDesc = dtoMethod.getAnnotation(JsonPropertyDescription.class);
+      if (propertyDesc != null) {
+        return propertyDesc.value();
+      }
+    }
+    else {
+
+      String javaDoc = getJavaDocCommentOrReturnTag(javaMethod);
+      if (StringUtils.isNotBlank(javaDoc)) {
+        return javaDoc;
+      }
+
+      JsonPropertyDescription propertyDesc = dtoMethod.getAnnotation(JsonPropertyDescription.class);
+      if (propertyDesc != null) {
+        return propertyDesc.value();
+      }
+    }
+
+    return "";
+  }
+
+  private static String getJavaDocCommentOrReturnTag(JavaMethod javaMethod) {
+
+    String comment = javaMethod.getComment();
+    if (StringUtils.isNotBlank(comment)) {
+      return comment;
+    }
+
+    DocletTag returnTag = javaMethod.getTagByName("return", true);
+    if (returnTag != null) {
+      return returnTag.getValue();
+    }
+
+    return "";
+  }
+
+  static String findJavaDocForField(JavaProjectBuilder builder, Class dtoClass, Field dtoField) {
+
+    JavaClass javaClass = builder.getClassByName(dtoClass.getName());
+    if (javaClass == null) {
+      return "";
+    }
+
+    JavaField javaField = javaClass.getFieldByName(dtoField.getName());
+    if (javaField == null) {
+      return "";
+    }
+
+    return StringUtils.trimToEmpty(javaField.getComment());
+  }
+
+  static Stream<PropertyDescriptor> getBeanProperties(Class<?> type) {
+
+    List<String> propertyDenyList = ImmutableList.of("class", "declaringClass");
+
+    try {
+      return Stream.of(Introspector.getBeanInfo(type).getPropertyDescriptors())
+          .filter(property -> property.getReadMethod() != null)
+          .filter(property -> !propertyDenyList.contains(property.getName()));
+    }
+    catch (IntrospectionException ex) {
+      throw new RuntimeException("Failed to lookup bean properties for " + type, ex);
+    }
+  }
+
+  static Stream<Field> getPublicFields(Class<?> type) {
+    try {
+      return Stream.of(FieldUtils.getAllFields(type))
+          .filter(field -> Modifier.isPublic(field.getModifiers()))
+          .filter(field -> !Modifier.isStatic(field.getModifiers()));
+    }
+    catch (RuntimeException ex) {
+      throw new RuntimeException("Failed to lookup fields for " + type, ex);
+    }
+  }
+
 }
