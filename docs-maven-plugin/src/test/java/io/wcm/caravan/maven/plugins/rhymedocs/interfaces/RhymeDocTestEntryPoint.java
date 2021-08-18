@@ -49,6 +49,10 @@ public interface RhymeDocTestEntryPoint {
   @Related(TestRelations.EXTERNAL)
   LinkableResource getExternal();
 
+  /**
+   * @param foo Javadoc for foo parameter
+   * @return
+   */
   @Related(TestRelations.TEMPLATE)
   RhymeDocTestResource getTemplate(@TemplateVariable("foo") String foo);
 

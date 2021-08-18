@@ -96,6 +96,10 @@ public class TemplateVariableDetection {
     private final Class type;
     private final Object value;
 
+    private Class dtoClass;
+    private Method dtoMethod;
+    private Field dtoField;
+
     private boolean collection;
 
     private Variable(String name, Class type, Object value) {
@@ -115,6 +119,18 @@ public class TemplateVariableDetection {
     public Object getValue() {
       return this.value;
     }
+
+    public Class getDtoClass() {
+      return this.dtoClass;
+    }
+
+    public Method getDtoMethod() {
+      return this.dtoMethod;
+    }
+
+    public Field getDtoField() {
+      return this.dtoField;
+    }
   }
 
   private static List<Variable> getVariableInfos(Object instance, Class dtoClass) {
@@ -130,8 +146,12 @@ public class TemplateVariableDetection {
     try {
       return Stream.of(Introspector.getBeanInfo(dtoClass).getPropertyDescriptors())
           .map(property -> {
-            Object value = invokeMethod(property.getReadMethod(), instance);
-            return new Variable(property.getName(), property.getReadMethod().getReturnType(), value);
+            Method readMethod = property.getReadMethod();
+            Object value = invokeMethod(readMethod, instance);
+            Variable variable = new Variable(property.getName(), readMethod.getReturnType(), value);
+            variable.dtoClass = dtoClass;
+            variable.dtoMethod = readMethod;
+            return variable;
           })
           .collect(Collectors.toList());
     }
@@ -161,8 +181,10 @@ public class TemplateVariableDetection {
           .filter(field -> !field.isSynthetic())
           .map(field -> {
             Object value = getFieldValue(field, instance);
-
-            return new Variable(field.getName(), field.getType(), value);
+            Variable variable = new Variable(field.getName(), field.getType(), value);
+            variable.dtoClass = dtoClass;
+            variable.dtoField = field;
+            return variable;
           })
           .collect(Collectors.toList());
     }

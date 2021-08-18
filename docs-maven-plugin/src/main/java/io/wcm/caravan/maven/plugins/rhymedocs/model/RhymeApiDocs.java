@@ -30,18 +30,20 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 
 public class RhymeApiDocs {
 
+  private final JavaProjectBuilder builder = new JavaProjectBuilder();
+
   private final List<JavaClass> apiInterfaces;
   private final ClassLoader projectClassLoader;
 
   public RhymeApiDocs(Path sourcePath, ClassLoader projectClassLoader) {
-    this.apiInterfaces = findHalApiInterfaces(sourcePath);
+
+    this.builder.addSourceTree(sourcePath.toFile());
+
+    this.apiInterfaces = findHalApiInterfaces();
     this.projectClassLoader = projectClassLoader;
   }
 
-  private List<JavaClass> findHalApiInterfaces(Path sourcePath) {
-
-    JavaProjectBuilder builder = new JavaProjectBuilder();
-    builder.addSourceTree(sourcePath.toFile());
+  private List<JavaClass> findHalApiInterfaces() {
 
     return builder.getSources().stream()
         .flatMap(javaSource -> javaSource.getClasses().stream())
@@ -52,7 +54,7 @@ public class RhymeApiDocs {
   public List<RhymeResourceDocs> getResourceDocs() {
 
     return apiInterfaces.stream()
-        .map(apiInterface -> new RhymeResourceDocs(apiInterface, projectClassLoader))
+        .map(apiInterface -> new RhymeResourceDocs(builder, apiInterface, projectClassLoader))
         .collect(Collectors.toList());
   }
 }

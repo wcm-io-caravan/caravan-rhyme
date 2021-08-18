@@ -19,29 +19,20 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.interfaces;
 
+import java.util.List;
 
-public final class TestRelations {
+public interface VariableInterface {
 
-  public static final String MULTIPLE = "test:multiple";
+  /**
+   * @return Javadoc comment for integer
+   */
+  Integer getInteger();
 
-  public static final String OPTIONAL = "test:optional";
+  /**
+   * Javadoc comment for collection
+   * @return
+   */
+  List<String> getCollection();
 
-  public static final String SINGLE = "test:single";
-
-  public static final String EXTERNAL = "test:external";
-
-  public static final String TEMPLATE = "test:template";
-
-
-  public static final String MULTI_VAR_TEMPLATE = "test:multiVarTemplate";
-
-  public static final String INTERFACE_TEMPLATE = "test:interfaceTemplate";
-
-  public static final String CLASS_TEMPLATE = "test:classTemplate";
-
-  private TestRelations() {
-
-  }
-
-
+  Boolean getBooleanWithoutJavadocs();
 }

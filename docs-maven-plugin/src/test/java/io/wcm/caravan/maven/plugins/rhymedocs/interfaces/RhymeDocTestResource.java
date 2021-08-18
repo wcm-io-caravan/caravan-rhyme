@@ -19,9 +19,30 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.interfaces;
 
+import java.util.List;
+
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.annotations.Related;
+import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
+import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 
 @HalApiInterface
 public interface RhymeDocTestResource {
 
+  /**
+   * @param collection Javadoc comment for collection
+   * @param integer Javadoc comment for integer
+   * @return
+   */
+  @Related(TestRelations.MULTI_VAR_TEMPLATE)
+  RhymeDocTestResource multiVarTemplate(
+      @TemplateVariable("integer") Integer integer,
+      @TemplateVariable("collection") List<String> collection,
+      @TemplateVariable("booleanWithoutJavadocs") Boolean booleanWithoutJavaDocs);
+
+  @Related(TestRelations.INTERFACE_TEMPLATE)
+  RhymeDocTestResource interfaceTemplate(@TemplateVariables VariableInterface variables);
+
+  @Related(TestRelations.CLASS_TEMPLATE)
+  RhymeDocTestResource classTemplate(@TemplateVariables VariableClass variables);
 }

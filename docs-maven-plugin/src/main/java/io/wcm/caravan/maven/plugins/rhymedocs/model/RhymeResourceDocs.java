@@ -19,12 +19,19 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.model;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.collect.Ordering;
+import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -32,10 +39,14 @@ import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
+import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection;
+import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection.Variable;
 
 public class RhymeResourceDocs {
 
   private static final HalApiTypeSupport TYPE_SUPPORT = new DefaultHalApiTypeSupport();
+
+  private final JavaProjectBuilder builder;
 
   private final JavaClass apiInterface;
 
@@ -43,7 +54,9 @@ public class RhymeResourceDocs {
 
   private final List<RhymeRelatedMethodDocs> relations;
 
-  public RhymeResourceDocs(JavaClass apiInterface, ClassLoader projectClassLoader) {
+  public RhymeResourceDocs(JavaProjectBuilder builder, JavaClass apiInterface, ClassLoader projectClassLoader) {
+
+    this.builder = builder;
 
     this.apiInterface = apiInterface;
     this.projectClassLoader = projectClassLoader;
@@ -88,6 +101,8 @@ public class RhymeResourceDocs {
     private final Class<?> relatedResourceType;
     private final String cardinality;
 
+    private final List<RhymeVariableDocs> variables;
+
     private RhymeRelatedMethodDocs(JavaMethod javaMethod) {
 
       Method method = DocumentationUtils.getMethod(apiInterface, javaMethod, projectClassLoader);
@@ -97,6 +112,8 @@ public class RhymeResourceDocs {
 
       this.relatedResourceType = getRelatedResourceType(method);
       this.cardinality = getCardinality(method);
+
+      this.variables = findVariables(javaMethod, method);
     }
 
     private Class<?> getRelatedResourceType(Method method) {
@@ -122,6 +139,15 @@ public class RhymeResourceDocs {
       }
 
       return "1";
+    }
+
+    private List<RhymeVariableDocs> findVariables(JavaMethod javaMethod, Method method) {
+
+      List<Variable> variables = TemplateVariableDetection.findVariables(method, Optional.empty());
+
+      return variables.stream()
+          .map(var -> new RhymeVariableDocs(var, javaMethod))
+          .collect(Collectors.toList());
     }
 
     public String getRelation() {
@@ -155,6 +181,102 @@ public class RhymeResourceDocs {
     public String getDescription() {
 
       return description;
+    }
+
+    public List<RhymeVariableDocs> getVariables() {
+
+      return variables;
+    }
+  }
+
+  public class RhymeVariableDocs {
+
+
+    private final String name;
+    private final String type;
+    private final String description;
+
+    public RhymeVariableDocs(String name, String type, String description) {
+      this.name = name;
+      this.type = type;
+      this.description = description;
+    }
+
+    public RhymeVariableDocs(Variable var, JavaMethod javaMethod) {
+
+      this.name = var.getName();
+      this.type = var.getType().getSimpleName();
+
+      if (var.getDtoClass() == null) {
+        this.description = findJavaDocForNamedParameter(javaMethod, name);
+      }
+      else if (var.getDtoMethod() != null) {
+        this.description = findJavaDocForDtoMethod(var.getDtoClass(), var.getDtoMethod());
+      }
+      else if (var.getDtoField() != null) {
+        this.description = findJavaDocForDtoField(var.getDtoClass(), var.getDtoField());
+      }
+      else {
+        this.description = null;
+      }
+    }
+
+    private String findJavaDocForNamedParameter(JavaMethod javaMethod, String paramName) {
+
+      return javaMethod.getTagsByName("param", true).stream()
+          .filter(tag -> !tag.getParameters().isEmpty())
+          .filter(tag -> paramName.equals(tag.getParameters().get(0)))
+          .flatMap(tag -> tag.getParameters().stream().skip(1))
+          .collect(Collectors.joining(" "));
+    }
+
+    private String findJavaDocForDtoMethod(Class dtoClass, Method dtoMethod) {
+
+      JavaClass javaClass = builder.getClassByName(dtoClass.getName());
+      if (javaClass == null) {
+        return null;
+      }
+
+      JavaMethod javaMethod = javaClass.getMethods().stream()
+          .filter(m -> m.getName().equals(dtoMethod.getName()))
+          .findFirst()
+          .orElse(null);
+
+      String comment = javaMethod.getComment();
+      if (StringUtils.isNotBlank(comment)) {
+        return comment;
+      }
+
+      DocletTag returnTag = javaMethod.getTagByName("return");
+      if (returnTag != null) {
+        return returnTag.getValue();
+      }
+
+      return "";
+    }
+
+    private String findJavaDocForDtoField(Class dtoClass, Field dtoField) {
+
+      JavaClass javaClass = builder.getClassByName(dtoClass.getName());
+      if (javaClass == null) {
+        return null;
+      }
+
+      JavaField javaField = javaClass.getFieldByName(dtoField.getName());
+
+      return StringUtils.trimToEmpty(javaField.getComment());
+    }
+
+    public String getName() {
+      return this.name;
+    }
+
+    public String getType() {
+      return this.type;
+    }
+
+    public String getDescription() {
+      return this.description;
     }
   }
 }

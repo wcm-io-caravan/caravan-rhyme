@@ -32,6 +32,7 @@ import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestEntryPoint;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestResource;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.TestRelations;
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeResourceDocs.RhymeRelatedMethodDocs;
+import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeResourceDocs.RhymeVariableDocs;
 
 
 public class RhymeApiDocsTest {
@@ -85,11 +86,23 @@ public class RhymeApiDocsTest {
         .isEqualTo("Javadoc for entrypoint interface");
   }
 
-  private RhymeRelatedMethodDocs getRelatedDocs(String relation) {
+  private RhymeRelatedMethodDocs getEntryPointDocsForRelation(String relation) {
 
     RhymeResourceDocs entryPointDocs = getDocsFor(RhymeDocTestEntryPoint.class);
 
-    return entryPointDocs.getRelations().stream()
+    return findDocsForRelation(relation, entryPointDocs);
+  }
+
+  private RhymeRelatedMethodDocs getTestResourceDocsForRelation(String relation) {
+
+    RhymeResourceDocs resourceDocs = getDocsFor(RhymeDocTestResource.class);
+
+    return findDocsForRelation(relation, resourceDocs);
+  }
+
+  private RhymeRelatedMethodDocs findDocsForRelation(String relation, RhymeResourceDocs resourceDocs) {
+
+    return resourceDocs.getRelations().stream()
         .filter(docs -> relation.equals(docs.getRelation()))
         .findFirst()
         .orElseThrow(() -> new NoSuchElementException("No documentation found for relation " + relation));
@@ -98,7 +111,7 @@ public class RhymeApiDocsTest {
   @Test
   public void RhymeResourceDocs_getRelations_should_contain_javadoc_comment() {
 
-    RhymeRelatedMethodDocs multipleDocs = getRelatedDocs(TestRelations.MULTIPLE);
+    RhymeRelatedMethodDocs multipleDocs = getEntryPointDocsForRelation(TestRelations.MULTIPLE);
 
     assertThat(multipleDocs.getDescription())
         .isEqualTo("Javadoc for getMultiple");
@@ -107,7 +120,7 @@ public class RhymeApiDocsTest {
   @Test
   public void RhymeResourceDocs_getRelations_should_contain_related_resource_title() {
 
-    RhymeRelatedMethodDocs multipleDocs = getRelatedDocs(TestRelations.MULTIPLE);
+    RhymeRelatedMethodDocs multipleDocs = getEntryPointDocsForRelation(TestRelations.MULTIPLE);
 
     assertThat(multipleDocs.getRelatedResourceTitle())
         .isEqualTo(RhymeDocTestResource.class.getSimpleName());
@@ -116,7 +129,7 @@ public class RhymeApiDocsTest {
   @Test
   public void RhymeResourceDocs_getRelations_should_have_null_related_resource_title_for_LinkableResource() {
 
-    RhymeRelatedMethodDocs externalDocs = getRelatedDocs(TestRelations.EXTERNAL);
+    RhymeRelatedMethodDocs externalDocs = getEntryPointDocsForRelation(TestRelations.EXTERNAL);
 
     assertThat(externalDocs.getRelatedResourceTitle())
         .isNull();
@@ -125,7 +138,7 @@ public class RhymeApiDocsTest {
   @Test
   public void RhymeResourceDocs_getRelations_should_contain_related_resource_href() {
 
-    RhymeRelatedMethodDocs multipleDocs = getRelatedDocs(TestRelations.MULTIPLE);
+    RhymeRelatedMethodDocs multipleDocs = getEntryPointDocsForRelation(TestRelations.MULTIPLE);
 
     assertThat(multipleDocs.getRelatedResourceHref())
         .isEqualTo(RhymeDocTestResource.class.getName() + ".html");
@@ -134,7 +147,7 @@ public class RhymeApiDocsTest {
   @Test
   public void RhymeResourceDocs_getRelations_should_have_null_related_resource_href_for_LinkableResource() {
 
-    RhymeRelatedMethodDocs externalDocs = getRelatedDocs(TestRelations.EXTERNAL);
+    RhymeRelatedMethodDocs externalDocs = getEntryPointDocsForRelation(TestRelations.EXTERNAL);
 
     assertThat(externalDocs.getRelatedResourceHref())
         .isNull();
@@ -143,7 +156,7 @@ public class RhymeApiDocsTest {
   @Test
   public void RhymeResourceDocs_getRelations_should_contain_cardinality_for_multiple() {
 
-    RhymeRelatedMethodDocs multipleDocs = getRelatedDocs(TestRelations.MULTIPLE);
+    RhymeRelatedMethodDocs multipleDocs = getEntryPointDocsForRelation(TestRelations.MULTIPLE);
 
     assertThat(multipleDocs.getCardinality())
         .isEqualTo("0..n");
@@ -152,7 +165,7 @@ public class RhymeApiDocsTest {
   @Test
   public void RhymeResourceDocs_getRelations_should_contain_cardinality_for_optional() {
 
-    RhymeRelatedMethodDocs optionalDocs = getRelatedDocs(TestRelations.OPTIONAL);
+    RhymeRelatedMethodDocs optionalDocs = getEntryPointDocsForRelation(TestRelations.OPTIONAL);
 
     assertThat(optionalDocs.getCardinality())
         .isEqualTo("0..1");
@@ -161,7 +174,7 @@ public class RhymeApiDocsTest {
   @Test
   public void RhymeResourceDocs_getRelations_should_contain_cardinality_for_single() {
 
-    RhymeRelatedMethodDocs singleDocs = getRelatedDocs(TestRelations.SINGLE);
+    RhymeRelatedMethodDocs singleDocs = getEntryPointDocsForRelation(TestRelations.SINGLE);
 
     assertThat(singleDocs.getCardinality())
         .isEqualTo("1");
@@ -170,9 +183,113 @@ public class RhymeApiDocsTest {
   @Test
   public void RhymeResourceDocs_getRelations_should_handle_methods_with_template() {
 
-    RhymeRelatedMethodDocs singleDocs = getRelatedDocs(TestRelations.TEMPLATE);
+    RhymeRelatedMethodDocs singleDocs = getEntryPointDocsForRelation(TestRelations.TEMPLATE);
 
     assertThat(singleDocs.getRelation())
         .isEqualTo(TestRelations.TEMPLATE);
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_handle_simple_template() {
+
+    RhymeRelatedMethodDocs templateDocs = getEntryPointDocsForRelation(TestRelations.TEMPLATE);
+
+    assertThat(templateDocs.getVariables()).hasSize(1);
+
+    RhymeVariableDocs variable = templateDocs.getVariables().get(0);
+
+    assertThat(variable.getName()).isEqualTo("foo");
+    assertThat(variable.getType()).isEqualTo("String");
+    assertThat(variable.getDescription()).isEqualTo("Javadoc for foo parameter");
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_keep_order_of_multiple_vars() {
+
+    RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.MULTI_VAR_TEMPLATE);
+
+    assertThat(templateDocs.getVariables())
+        .extracting(RhymeVariableDocs::getName)
+        .containsExactly("integer", "collection", "booleanWithoutJavadocs");
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_handle_missing_javadocs_of_multiple_vars() {
+
+    RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.MULTI_VAR_TEMPLATE);
+
+    assertThat(templateDocs.getVariables())
+        .extracting(RhymeVariableDocs::getDescription)
+        .containsExactly("Javadoc comment for integer", "Javadoc comment for collection", "");
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_extract_types_of_multiple_vars() {
+
+    RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.MULTI_VAR_TEMPLATE);
+
+    assertThat(templateDocs.getVariables())
+        .extracting(RhymeVariableDocs::getType)
+        .containsExactly("Integer", "List", "Boolean");
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_use_alphabetical_order_of_interface_vars() {
+
+    RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.INTERFACE_TEMPLATE);
+
+    assertThat(templateDocs.getVariables())
+        .extracting(RhymeVariableDocs::getName)
+        .containsExactly("booleanWithoutJavadocs", "collection", "integer");
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_handle_missing_javadocs_of_interface_vars() {
+
+    RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.INTERFACE_TEMPLATE);
+
+    assertThat(templateDocs.getVariables())
+        .extracting(RhymeVariableDocs::getDescription)
+        .containsExactly("", "Javadoc comment for collection", "Javadoc comment for integer");
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_extract_types_of_interface_vars() {
+
+    RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.INTERFACE_TEMPLATE);
+
+    assertThat(templateDocs.getVariables())
+        .extracting(RhymeVariableDocs::getType)
+        .containsExactly("Boolean", "List", "Integer");
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_use_original_order_of_class_vars() {
+
+    RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.CLASS_TEMPLATE);
+
+    assertThat(templateDocs.getVariables())
+        .extracting(RhymeVariableDocs::getName)
+        .containsExactly("integer", "collection", "booleanWithoutJavadocs");
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_handle_missing_javadocs_of_class_vars() {
+
+    RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.CLASS_TEMPLATE);
+
+    assertThat(templateDocs.getVariables())
+        .extracting(RhymeVariableDocs::getDescription)
+        .containsExactly("Javadoc comment for integer", "Javadoc comment for collection", "");
+  }
+
+  @Test
+  public void RhymeRelationDocs_getVariables_should_extract_types_of_class_vars() {
+
+    RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.CLASS_TEMPLATE);
+
+    assertThat(templateDocs.getVariables())
+        .extracting(RhymeVariableDocs::getType)
+        .containsExactly("Integer", "List", "Boolean");
   }
 }
