@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.model;
 
+import static io.wcm.caravan.maven.plugins.rhymedocs.model.DocumentationUtils.getJavaDocCommentOrReturnTag;
 import static io.wcm.caravan.maven.plugins.rhymedocs.model.DocumentationUtils.getMethodsWithAnnotation;
 
 import java.lang.reflect.Method;
@@ -59,7 +60,7 @@ public final class RhymeRelatedMethodDocs {
     Method method = DocumentationUtils.getMethod(apiInterface, javaMethod, projectClassLoader);
 
     this.relation = method.getAnnotation(Related.class).value();
-    this.description = javaMethod.getComment();
+    this.description = getJavaDocCommentOrReturnTag(javaMethod);
 
     this.relatedResourceType = getRelatedResourceType(method);
     this.cardinality = getCardinality(method);

@@ -115,7 +115,7 @@ final class DocumentationUtils {
     return "";
   }
 
-  private static String getJavaDocCommentOrReturnTag(JavaMethod javaMethod) {
+  static String getJavaDocCommentOrReturnTag(JavaMethod javaMethod) {
 
     String comment = javaMethod.getComment();
     if (StringUtils.isNotBlank(comment)) {
