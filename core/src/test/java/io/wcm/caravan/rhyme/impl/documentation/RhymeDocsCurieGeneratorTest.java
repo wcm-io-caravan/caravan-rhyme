@@ -80,6 +80,29 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
+  public void addCuriesTo_should_add_curies_for_embedded_relations() throws Exception {
+
+    testResource.createEmbedded("test:foo");
+
+    List<Link> curies = addAndGetCuries(DOCS);
+
+    assertThat(curies).extracting(Link::getName)
+        .containsExactly("test");
+  }
+
+  @Test
+  public void addCuriesTo_should_add_curies_for_nested_embedded_relations() throws Exception {
+
+    testResource.createEmbedded("foo:test")
+        .createEmbedded("bar:test");
+
+    List<Link> curies = addAndGetCuries(DOCS);
+
+    assertThat(curies).extracting(Link::getName)
+        .containsExactly("bar", "foo");
+  }
+
+  @Test
   public void addCuriesTo_should_not_repeat_curies_for_multiple_relations_with_same_prefix() throws Exception {
 
     testResource.createLinked("test:foo");

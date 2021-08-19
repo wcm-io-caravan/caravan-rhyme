@@ -22,6 +22,7 @@ package io.wcm.caravan.rhyme.impl.documentation;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -73,11 +74,25 @@ public class RhymeDocsCurieGenerator {
 
   private Set<String> collectCurieNames(HalResource hal) {
 
-    return hal.getLinks().keys().stream()
+    return collectRelationsRecursively(hal)
         .distinct()
         .filter(rel -> rel.contains(":"))
         .map(rel -> StringUtils.substringBefore(rel, ":"))
         .collect(Collectors.toSet());
+  }
+
+  private Stream<String> collectRelationsRecursively(HalResource hal) {
+
+    Stream<String> relationsInThisResource = Stream.concat(
+        hal.getLinks().keys().stream(),
+        hal.getEmbedded().keys().stream())
+        .distinct();
+
+    Stream<String> relationsInEmbeddedResources = hal.getEmbedded().values().stream()
+        .flatMap(this::collectRelationsRecursively)
+        .distinct();
+
+    return Stream.concat(relationsInThisResource, relationsInEmbeddedResources);
   }
 
   private Link createCurieLink(String curieName, String fileName) {
