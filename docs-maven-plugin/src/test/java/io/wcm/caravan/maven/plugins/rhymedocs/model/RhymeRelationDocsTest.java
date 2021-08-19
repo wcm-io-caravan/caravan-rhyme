@@ -212,7 +212,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_use_original_order_of_class_vars() {
+  public void getVariables_should_use_original_order_of_class_vars_and_ignore_constants() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.CLASS_TEMPLATE);
 
@@ -240,4 +240,5 @@ public class RhymeRelationDocsTest {
         .extracting(RhymeVariableDocs::getType)
         .containsExactly("Integer", "List", "Boolean");
   }
+
 }

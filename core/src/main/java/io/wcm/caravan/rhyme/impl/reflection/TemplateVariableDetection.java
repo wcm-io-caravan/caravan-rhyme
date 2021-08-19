@@ -24,6 +24,7 @@ import java.beans.Introspector;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -230,6 +231,7 @@ public final class TemplateVariableDetection {
     try {
       return Stream.of(FieldUtils.getAllFields(dtoClass))
           .filter(field -> !field.isSynthetic())
+          .filter(field -> !Modifier.isStatic(field.getModifiers()))
           .map(field -> {
             Object value = getFieldValue(field, instance);
             TemplateVariableWithTypeInfo variable = new TemplateVariableWithTypeInfo(field.getName(), field.getType(), value);

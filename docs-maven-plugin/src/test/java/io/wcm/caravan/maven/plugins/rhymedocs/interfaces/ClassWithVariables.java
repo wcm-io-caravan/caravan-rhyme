@@ -23,6 +23,8 @@ import java.util.List;
 
 public class ClassWithVariables {
 
+  public static final String CONSTANT = "constant";
+
   /**
    * Javadoc comment for integer
    */
