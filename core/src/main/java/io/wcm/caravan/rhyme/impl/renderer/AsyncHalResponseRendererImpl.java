@@ -49,7 +49,7 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
 
   private final HalApiAnnotationSupport annotationSupport;
 
-  private final RhymeDocsCurieGenerator rhymeDocs;
+  private final RhymeDocsCurieGenerator curieGenerator;
 
   /**
    * @param renderer used to asynchronously render a {@link HalResource}
@@ -68,10 +68,10 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
     this.annotationSupport = annotationSupport;
 
     if (rhymeDocsSupport != null) {
-      this.rhymeDocs = new RhymeDocsCurieGenerator(rhymeDocsSupport.getRhymeDocsBaseUrl());
+      this.curieGenerator = new RhymeDocsCurieGenerator(rhymeDocsSupport);
     }
     else {
-      this.rhymeDocs = null;
+      this.curieGenerator = null;
     }
   }
 
@@ -95,8 +95,8 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
 
     Class<?> halApiInterface = HalApiReflectionUtils.findHalApiInterface(resourceImpl, annotationSupport);
 
-    if (rhymeDocs != null) {
-      rhymeDocs.addCuriesTo(halResource, halApiInterface);
+    if (curieGenerator != null) {
+      curieGenerator.addCuriesTo(halResource, halApiInterface);
     }
 
     addMetadata(metrics, halResource, resourceImpl);

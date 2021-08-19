@@ -67,6 +67,11 @@ public class RhymeDocsSupportTest {
       public String getRhymeDocsBaseUrl() {
         return mock.getRhymeDocsBaseUrl();
       }
+
+      @Override
+      public boolean isFragmentAppendedToCuriesLink() {
+        return true;
+      }
     };
   }
 

@@ -56,6 +56,15 @@ public interface RhymeDocsSupport {
   InputStream openResourceStream(String resourcePath) throws IOException;
 
   /**
+   * Determines whether a fragment should be included in the documentation link (e.g.
+   * /api/docs/YourResource.html#prefix:relation), which immediately opens up the
+   * documentation for a given relation. While this does make sense, some tools (e.g. HAL browser)
+   * are struggling with this, so it can be disabled
+   * @return true if you want the generated links to contain a fragment
+   */
+  boolean isFragmentAppendedToCuriesLink();
+
+  /**
    * Extract the HTML documentation that was generated with the rhyme-docs-maven-plugin from the classpath.
    * This default implementation contains additional logic for constructing the full resource path,
    * and some error handling code (to ensure that a {@link HalApiServerException} with a reasonable

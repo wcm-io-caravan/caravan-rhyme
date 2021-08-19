@@ -73,6 +73,14 @@ public class RhymeDocsOsgiBundleSupport implements RhymeDocsSupport {
     return null;
   }
 
+  @Override
+  public boolean isFragmentAppendedToCuriesLink() {
+    // do not use fragments in documentation URL since the HAL browser frontend,
+    // as opening those links prevents scrolling of the HAL browser application content in the browser
+    return false;
+  }
+
+
   /**
    * Called by the {@link RhymeDocsBundleTracker} if relevant documentation was found in a bundle
    * @param bundle a bundle known to contain a {@link RhymeDocsSupport#FOLDER} folder

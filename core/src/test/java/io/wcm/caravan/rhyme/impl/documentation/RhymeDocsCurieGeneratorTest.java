@@ -20,26 +20,38 @@
 package io.wcm.caravan.rhyme.impl.documentation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.ryhme.testing.resources.TestResource;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 
 
+@ExtendWith(MockitoExtension.class)
 public class RhymeDocsCurieGeneratorTest {
 
   private static final String DOCS = "/docs/";
 
   private TestResource testResource = new TestResourceTree().getEntryPoint();
 
+  @Mock
+  private RhymeDocsSupport docsSupport;
+
   private List<Link> addAndGetCuries(String baseUrl) {
 
-    RhymeDocsCurieGenerator curies = new RhymeDocsCurieGenerator(baseUrl);
+    when(docsSupport.getRhymeDocsBaseUrl())
+        .thenReturn(baseUrl);
+
+    RhymeDocsCurieGenerator curies = new RhymeDocsCurieGenerator(docsSupport);
 
     curies.addCuriesTo(testResource.asHalResource(), RhymeDocsTestResource.class);
 
@@ -104,14 +116,31 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  public void addCuriesTo_should_add_relation_fragment_template() throws Exception {
+  public void addCuriesTo_should_add_relation_fragment_template_if_enabled() throws Exception {
 
     testResource.createLinked("test:foo");
+
+    when(docsSupport.isFragmentAppendedToCuriesLink())
+        .thenReturn(true);
 
     List<Link> curies = addAndGetCuries(DOCS);
 
     assertThat(curies.get(0).getHref())
-        .endsWith("#test:{rel}");
+        .endsWith(".html#test:{rel}");
+  }
+
+  @Test
+  public void addCuriesTo_should_not_add_relation_fragment_template_if_disabled() throws Exception {
+
+    testResource.createLinked("test:foo");
+
+    when(docsSupport.isFragmentAppendedToCuriesLink())
+        .thenReturn(false);
+
+    List<Link> curies = addAndGetCuries(DOCS);
+
+    assertThat(curies.get(0).getHref())
+        .endsWith(".html");
   }
 
   @Test

@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 /**
  * A class that generates links with the "curies" relation which point to the
@@ -36,12 +37,14 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 public class RhymeDocsCurieGenerator {
 
   private final String baseUrl;
+  private final boolean includeFragment;
 
   /**
-   * @param baseUrl to be prepended to the HTML file name
+   * @param docsSupport documentation integration configuration
    */
-  public RhymeDocsCurieGenerator(String baseUrl) {
-    this.baseUrl = baseUrl;
+  public RhymeDocsCurieGenerator(RhymeDocsSupport docsSupport) {
+    this.baseUrl = docsSupport.getRhymeDocsBaseUrl();
+    this.includeFragment = docsSupport.isFragmentAppendedToCuriesLink();
   }
 
   /**
@@ -84,7 +87,10 @@ public class RhymeDocsCurieGenerator {
       prefix += "/";
     }
 
-    String href = prefix + fileName + "#" + curieName + ":{rel}";
+    String href = prefix + fileName;
+    if (includeFragment) {
+      href += "#" + curieName + ":{rel}";
+    }
 
     return new Link(href)
         .setName(curieName)
