@@ -32,7 +32,7 @@ public interface RhymeDocTestResource {
   /**
    * @param collection Javadoc comment for collection
    * @param integer Javadoc comment for integer
-   * @return
+   * @return the target resource
    */
   @Related(TestRelations.MULTI_VAR_TEMPLATE)
   RhymeDocTestResource multiVarTemplate(
@@ -41,8 +41,8 @@ public interface RhymeDocTestResource {
       @TemplateVariable("booleanWithoutJavadocs") Boolean booleanWithoutJavaDocs);
 
   @Related(TestRelations.INTERFACE_TEMPLATE)
-  RhymeDocTestResource interfaceTemplate(@TemplateVariables VariableInterface variables);
+  RhymeDocTestResource interfaceTemplate(@TemplateVariables InterfaceWithVariables variables);
 
   @Related(TestRelations.CLASS_TEMPLATE)
-  RhymeDocTestResource classTemplate(@TemplateVariables VariableClass variables);
+  RhymeDocTestResource classTemplate(@TemplateVariables ClassWithVariables variables);
 }

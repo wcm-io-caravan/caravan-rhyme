@@ -21,7 +21,7 @@ package io.wcm.caravan.maven.plugins.rhymedocs.interfaces;
 
 import java.util.List;
 
-public interface VariableInterface {
+public interface InterfaceWithVariables {
 
   /**
    * @return Javadoc comment for integer
@@ -30,7 +30,7 @@ public interface VariableInterface {
 
   /**
    * Javadoc comment for collection
-   * @return
+   * @return the collection
    */
   List<String> getCollection();
 

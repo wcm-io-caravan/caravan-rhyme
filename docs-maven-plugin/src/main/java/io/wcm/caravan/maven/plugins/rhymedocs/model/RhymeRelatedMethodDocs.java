@@ -37,7 +37,10 @@ import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
 import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection;
 import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection.Variable;
 
-public class RhymeRelatedMethodDocs {
+/**
+ * provides documentation a method annotated with {@link Related} that corresponds to a ling relation
+ */
+public final class RhymeRelatedMethodDocs {
 
   private final JavaProjectBuilder builder;
 

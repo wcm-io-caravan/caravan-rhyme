@@ -35,7 +35,7 @@ public interface RhymeDocTestEntryPoint {
 
   /**
    * Javadoc for getMultiple
-   * @return
+   * @return the target resources
    */
   @Related(TestRelations.MULTIPLE)
   List<RhymeDocTestResource> getMultiple();
@@ -51,7 +51,7 @@ public interface RhymeDocTestEntryPoint {
 
   /**
    * @param foo Javadoc for foo parameter
-   * @return
+   * @return the target resource
    */
   @Related(TestRelations.TEMPLATE)
   RhymeDocTestResource getTemplate(@TemplateVariable("foo") String foo);

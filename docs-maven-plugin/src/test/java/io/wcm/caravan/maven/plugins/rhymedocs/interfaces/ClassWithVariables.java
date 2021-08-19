@@ -21,7 +21,7 @@ package io.wcm.caravan.maven.plugins.rhymedocs.interfaces;
 
 import java.util.List;
 
-public class VariableClass {
+public class ClassWithVariables {
 
   /**
    * Javadoc comment for integer

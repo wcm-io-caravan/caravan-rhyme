@@ -508,7 +508,7 @@ public class RhymePropertiesDocsTest {
 
       public List<?> untypedList;
 
-      public void setFoo(String foo) {
+      public void setFoo(@SuppressWarnings("unused") String foo) {
         // just to check that bean properties without getters are ignored
       }
 

@@ -43,7 +43,7 @@ public interface ResourceWithRxBeanProperties {
 
     /**
      * Javadoc for #getBar()
-     * @return
+     * @return value of bar
      */
     public Integer getBar() {
       return this.bar;
