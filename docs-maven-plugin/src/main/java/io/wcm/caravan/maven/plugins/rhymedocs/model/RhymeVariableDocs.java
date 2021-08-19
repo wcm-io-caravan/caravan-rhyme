@@ -58,7 +58,6 @@ public class RhymeVariableDocs {
   private String findJavaDocForNamedParameter(JavaMethod javaMethod, String paramName) {
 
     return javaMethod.getTagsByName("param", true).stream()
-        .filter(tag -> !tag.getParameters().isEmpty())
         .filter(tag -> paramName.equals(tag.getParameters().get(0)))
         .flatMap(tag -> tag.getParameters().stream().skip(1))
         .collect(Collectors.joining(" "));

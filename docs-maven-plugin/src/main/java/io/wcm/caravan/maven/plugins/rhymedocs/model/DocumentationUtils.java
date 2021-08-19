@@ -87,9 +87,6 @@ final class DocumentationUtils {
   static String findJavaDocForMethod(JavaProjectBuilder builder, Class dtoClass, Method dtoMethod) {
 
     JavaClass javaClass = builder.getClassByName(dtoClass.getName());
-    if (javaClass == null) {
-      return "";
-    }
 
     JavaMethod javaMethod = javaClass.getMethods().stream()
         .filter(m -> m.getName().equals(dtoMethod.getName()))
@@ -136,9 +133,6 @@ final class DocumentationUtils {
   static String findJavaDocForField(JavaProjectBuilder builder, Class dtoClass, Field dtoField) {
 
     JavaClass javaClass = builder.getClassByName(dtoClass.getName());
-    if (javaClass == null) {
-      return "";
-    }
 
     JavaField javaField = javaClass.getFieldByName(dtoField.getName());
     if (javaField == null) {
