@@ -28,7 +28,7 @@ import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaMethod;
 
 import io.wcm.caravan.rhyme.api.annotations.Related;
-import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection.Variable;
+import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection.TemplateVariableWithTypeInfo;
 
 /**
  * provides information about a template variable from a {@link Related} method definition
@@ -39,7 +39,7 @@ public class RhymeVariableDocs {
   private final String type;
   private final String description;
 
-  public RhymeVariableDocs(JavaProjectBuilder builder, Variable var, JavaMethod javaMethod) {
+  public RhymeVariableDocs(JavaProjectBuilder builder, TemplateVariableWithTypeInfo var, JavaMethod javaMethod) {
 
     this.name = var.getName();
     this.type = var.getType().getSimpleName();

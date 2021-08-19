@@ -35,7 +35,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
 import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection;
-import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection.Variable;
+import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection.TemplateVariableWithTypeInfo;
 
 /**
  * provides documentation a method annotated with {@link Related} that corresponds to a ling relation
@@ -102,7 +102,7 @@ public final class RhymeRelatedMethodDocs {
 
   private List<RhymeVariableDocs> findVariables(JavaMethod javaMethod, Method method) {
 
-    List<Variable> variables = TemplateVariableDetection.findVariables(method, Optional.empty());
+    List<TemplateVariableWithTypeInfo> variables = TemplateVariableDetection.findVariables(method, Optional.empty());
 
     return variables.stream()
         .map(var -> new RhymeVariableDocs(builder, var, javaMethod))

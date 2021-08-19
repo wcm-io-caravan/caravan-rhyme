@@ -35,36 +35,61 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
-public class TemplateVariableDetection {
+/**
+ * implements the logic of discovering the names (and values) of all template variables in the signature
+ * of a method annotated with {@link Related}. This is used for the implementation of the dynamic client
+ * proxies, and for documentation generation with the rhyme-docs-maven-plugin
+ */
+public final class TemplateVariableDetection {
 
-  public static Map<String, Object> getVariablesNameValueMap(Method method, Optional<Object[]> args) {
+  private TemplateVariableDetection() {
+    // this class contains only static methods
+  }
+
+  /**
+   * Collect the names of all template variables in the signature of a {@link Related} method,
+   * and populates the values from the corresponding arguments to the method call.
+   * These arguments can be empty, e.g. if the method
+   * doesn't have any parameters or the actual parameters weren't available because it wasn't invoked.
+   * @param method annotated with {@link Related}
+   * @param methodArgs the values of each argument provided in the method call (can be empty)
+   * @return an object with the variable names and keys, and the corresponding values (which can be null)
+   */
+  public static Map<String, Object> getVariablesNameValueMap(Method method, Optional<Object[]> methodArgs) {
 
     Map<String, Object> map = new LinkedHashMap<>();
 
-    findVariables(method, args)
+    findVariables(method, methodArgs)
         .forEach(def -> map.put(def.getName(), def.getValue()));
 
     return map;
   }
 
-  public static List<Variable> findVariables(Method relatedMethod, Optional<Object[]> methodArgs) {
+  /**
+   * Collect all template variables from the signature of a {@link Related} method
+   * @param method annotated with {@link Related}
+   * @param methodArgs the values of each argument provided in the method call (can be empty)
+   * @return a list with one {@link TemplateVariableWithTypeInfo} for each variable in the signature
+   */
+  public static List<TemplateVariableWithTypeInfo> findVariables(Method method, Optional<Object[]> methodArgs) {
 
     Object[] args;
     if (methodArgs.isPresent()) {
       args = methodArgs.get();
     }
     else {
-      args = new Object[relatedMethod.getParameterCount()];
+      args = new Object[method.getParameterCount()];
     }
 
-    List<Variable> definitions = new ArrayList<>();
+    List<TemplateVariableWithTypeInfo> definitions = new ArrayList<>();
 
-    for (int i = 0; i < relatedMethod.getParameterCount(); i++) {
-      Parameter parameter = relatedMethod.getParameters()[i];
+    for (int i = 0; i < method.getParameterCount(); i++) {
+      Parameter parameter = method.getParameters()[i];
 
       TemplateVariables variables = parameter.getAnnotation(TemplateVariables.class);
       TemplateVariable variable = parameter.getAnnotation(TemplateVariable.class);
@@ -72,15 +97,15 @@ public class TemplateVariableDetection {
         definitions.addAll(getVariableInfos(args[i], parameter.getType()));
       }
       else if (variable != null) {
-        definitions.add(new Variable(variable.value(), parameter.getType(), args[i]));
+        definitions.add(new TemplateVariableWithTypeInfo(variable.value(), parameter.getType(), args[i]));
       }
       // if no annotation was used, we can try to extract the parameter name from the method.
       // these arguments will be called "arg0", "arg1" etc if this information was stripped from the compiler
       else if (!("arg" + i).equals(parameter.getName())) {
-        definitions.add(new Variable(parameter.getName(), parameter.getType(), args[i]));
+        definitions.add(new TemplateVariableWithTypeInfo(parameter.getName(), parameter.getType(), args[i]));
       }
       else {
-        throw new HalApiDeveloperException("method parameter names have been stripped for  " + relatedMethod + ", so they do need to be annotated with either"
+        throw new HalApiDeveloperException("method parameter names have been stripped for  " + method + ", so they do need to be annotated with either"
             + " @" + TemplateVariable.class.getSimpleName()
             + " or @" + TemplateVariables.class.getSimpleName());
       }
@@ -90,7 +115,11 @@ public class TemplateVariableDetection {
     return definitions;
   }
 
-  public static class Variable {
+  /**
+   * Contains name, value (if present) and type information for a template variable in a call to a {@link Related}
+   * method
+   */
+  public static class TemplateVariableWithTypeInfo {
 
     private final String name;
     private final Class type;
@@ -100,40 +129,62 @@ public class TemplateVariableDetection {
     private Method dtoMethod;
     private Field dtoField;
 
-    private boolean collection;
-
-    private Variable(String name, Class type, Object value) {
+    private TemplateVariableWithTypeInfo(String name, Class type, Object value) {
       this.name = name;
       this.type = type;
       this.value = value;
     }
 
+    /**
+     * @return the name of the template variable
+     */
     public String getName() {
       return this.name;
     }
 
+    /**
+     * @return the java type of the template variable
+     */
     public Class getType() {
       return this.type;
     }
 
+    /**
+     * @return the value of the template variable (can be null)
+     */
     public Object getValue() {
       return this.value;
     }
 
+    /**
+     * If this variable is defined by a {@link TemplateVariables} parameter, this method will return
+     * the class where the corresponding method or field is defined.
+     * @return the class/interface of the {@link TemplateVariable} parameter (can be null)
+     */
     public Class getDtoClass() {
       return this.dtoClass;
     }
 
+    /**
+     * Only if this variable is defined by a get method of a {@link TemplateVariable} class/interface,
+     * this method will return the method that needs to be called to get the parameter value
+     * @return the method (can be null)
+     */
     public Method getDtoMethod() {
       return this.dtoMethod;
     }
 
+    /**
+     * Only if this variable is defined by a public field of a {@link TemplateVariable} class/interface,
+     * this method will return the field containing the parameter value
+     * @return the field (can be null)
+     */
     public Field getDtoField() {
       return this.dtoField;
     }
   }
 
-  private static List<Variable> getVariableInfos(Object instance, Class dtoClass) {
+  private static List<TemplateVariableWithTypeInfo> getVariableInfos(Object instance, Class dtoClass) {
 
     if (dtoClass.isInterface()) {
       return getVariableInfosFromPublicGetter(instance, dtoClass);
@@ -142,13 +193,13 @@ public class TemplateVariableDetection {
     return getVariablesInfosFromFields(instance, dtoClass);
   }
 
-  private static <T> List<Variable> getVariableInfosFromPublicGetter(Object instance, Class dtoClass) {
+  private static <T> List<TemplateVariableWithTypeInfo> getVariableInfosFromPublicGetter(Object instance, Class dtoClass) {
     try {
       return Stream.of(Introspector.getBeanInfo(dtoClass).getPropertyDescriptors())
           .map(property -> {
             Method readMethod = property.getReadMethod();
             Object value = invokeMethod(readMethod, instance);
-            Variable variable = new Variable(property.getName(), readMethod.getReturnType(), value);
+            TemplateVariableWithTypeInfo variable = new TemplateVariableWithTypeInfo(property.getName(), readMethod.getReturnType(), value);
             variable.dtoClass = dtoClass;
             variable.dtoMethod = readMethod;
             return variable;
@@ -174,14 +225,14 @@ public class TemplateVariableDetection {
     }
   }
 
-  private static <T> List<Variable> getVariablesInfosFromFields(Object instance, Class dtoClass) {
+  private static <T> List<TemplateVariableWithTypeInfo> getVariablesInfosFromFields(Object instance, Class dtoClass) {
 
     try {
       return Stream.of(FieldUtils.getAllFields(dtoClass))
           .filter(field -> !field.isSynthetic())
           .map(field -> {
             Object value = getFieldValue(field, instance);
-            Variable variable = new Variable(field.getName(), field.getType(), value);
+            TemplateVariableWithTypeInfo variable = new TemplateVariableWithTypeInfo(field.getName(), field.getType(), value);
             variable.dtoClass = dtoClass;
             variable.dtoField = field;
             return variable;
