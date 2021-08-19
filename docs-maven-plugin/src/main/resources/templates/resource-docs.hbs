@@ -39,14 +39,14 @@ HAL API documentation for {{title}}
 
  {{#each relations}}
   <section class="border-top pt-2" id="{{relation}}">
-    <h3>
+    <h3 class="h4">
       {{relation}}  
-      <small class="text-muted">
+      <small class="text-muted h6">
         <span class="badge rounded-pill bg-secondary">{{cardinality}}</span>
         links to <a href="{{relatedResourceHref}}">{{relatedResourceTitle}}</a>
       </small>
     </h3>
-    <p>{{description}}</p>
+    <p>{{{description}}}</p>
     
  {{#if variables}}
     <table class="table table-striped table-sm ">
