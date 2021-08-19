@@ -22,7 +22,13 @@ package io.wcm.caravan.rhyme.api.spi;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.osgi.annotation.versioning.ConsumerType;
+
+import com.google.common.base.Charsets;
+
+import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 
 /**
  * SPI interface to customize the integration of HTML documentation generated with
@@ -48,4 +54,33 @@ public interface RhymeDocsSupport {
    * @throws IOException if loading of the file fails
    */
   InputStream openResourceStream(String resourcePath) throws IOException;
+
+  /**
+   * Extract the HTML documentation that was generated with the rhyme-docs-maven-plugin from the classpath.
+   * This default implementation contains additional logic for constructing the full resource path,
+   * and some error handling code (to ensure that a {@link HalApiServerException} with a reasonable
+   * status code will be thrown if HTML could not be loaded)
+   * @param docsSupport the instance that implements the {@link #openResourceStream(String)} function
+   * @param fileName the name of the generated file, usually the fully qualified class name of a
+   *          {@link HalApiInterface}, followed by ".html"
+   * @return the content of the HTML documentation file (with UTF-8 encoding)
+   * @throws HalApiServerException if the documentation could not be found (404 status) or failed to load (500 status)
+   */
+  static String loadGeneratedHtml(RhymeDocsSupport docsSupport, String fileName) {
+
+    String resourcePath = "/" + RhymeDocsSupport.FOLDER + "/" + fileName;
+
+    try (InputStream is = docsSupport.openResourceStream(resourcePath)) {
+      if (is == null) {
+        throw new HalApiServerException(404, "No HTML documentation was generated for " + fileName);
+      }
+      return IOUtils.toString(is, Charsets.UTF_8);
+    }
+    catch (HalApiServerException ex) {
+      throw ex;
+    }
+    catch (IOException | RuntimeException ex) {
+      throw new HalApiServerException(500, "Failed to load documentation from " + fileName, ex);
+    }
+  }
 }

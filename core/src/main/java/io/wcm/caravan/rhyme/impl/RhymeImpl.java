@@ -35,7 +35,6 @@ import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
-import io.wcm.caravan.rhyme.impl.documentation.RhymeDocsProvider;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
@@ -48,18 +47,15 @@ final class RhymeImpl implements Rhyme {
   private final String requestUri;
   private final HalResourceLoader resourceLoader;
   private final ExceptionStatusAndLoggingStrategy exceptionStrategy;
-  private final RhymeDocsProvider rhymeDocs;
 
   private final HalApiClient client;
   private final AsyncHalResponseRenderer renderer;
-
 
   RhymeImpl(String requestUri, HalResourceLoader resourceLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport,
       RhymeDocsSupport rhymeDocsSupport) {
     this.requestUri = requestUri;
     this.resourceLoader = resourceLoader;
     this.exceptionStrategy = exceptionStrategy;
-    this.rhymeDocs = new RhymeDocsProvider(rhymeDocsSupport);
     this.client = createHalApiClient(typeSupport);
     this.renderer = createResponseRenderer(typeSupport, rhymeDocsSupport);
   }
@@ -112,11 +108,4 @@ final class RhymeImpl implements Rhyme {
 
     return errorRenderer.renderError(requestUri, null, error, metrics);
   }
-
-  @Override
-  public String getHtmlApiDocs(String fileName) {
-
-    return rhymeDocs.loadGeneratedHtmlFrom(fileName);
-  }
-
 }

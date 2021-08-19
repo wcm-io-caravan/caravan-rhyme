@@ -21,12 +21,9 @@ package io.wcm.caravan.rhyme.impl;
 
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ITEM;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
@@ -38,13 +35,11 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
@@ -58,7 +53,6 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
@@ -458,39 +452,6 @@ public class RhymeBuilderImplTest {
 
     assertThat(curieLink.getHref())
         .startsWith(baseUrl);
-  }
-
-  @Test
-  public void generateApiDocs_fails_if_withRhymeDocsSupport_is_not_called() {
-
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
-        .buildForRequestTo(INCOMING_REQUEST_URI);
-
-    Throwable ex = catchThrowable(() -> rhyme.getHtmlApiDocs("Foo.html"));
-
-    assertThat(ex)
-        .isInstanceOf(HalApiDeveloperException.class)
-        .hasMessage("HTML documentation can only be served if rhyme docs support was activated through the RhymeBuilder interface");
-  }
-
-  @Test
-  public void generateApiDocs_uses_stream_from_support() throws IOException {
-
-    String expectedHtml = "<html>Foo!</html>";
-
-    RhymeDocsSupport docsSupport = mock(RhymeDocsSupport.class);
-
-    when(docsSupport.openResourceStream(anyString()))
-        .thenReturn(IOUtils.toInputStream(expectedHtml, Charsets.UTF_8));
-
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
-        .withRhymeDocsSupport(docsSupport)
-        .buildForRequestTo(INCOMING_REQUEST_URI);
-
-    String actualHtml = rhyme.getHtmlApiDocs("Foo.html");
-
-    assertThat(actualHtml)
-        .isEqualTo(expectedHtml);
   }
 
   private Link renderResourceAndGetCuriesLink(Rhyme rhyme) {

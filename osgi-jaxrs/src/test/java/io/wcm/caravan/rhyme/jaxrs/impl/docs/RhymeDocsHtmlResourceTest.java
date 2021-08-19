@@ -24,8 +24,6 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.net.URI;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.UriInfo;
 
@@ -67,10 +65,7 @@ public class RhymeDocsHtmlResourceTest {
 
   private String getHtmlDocumentation(String fileName) {
 
-    when(uriInfo.getRequestUri())
-        .thenReturn(URI.create("/docs/" + fileName));
-
-    return resource.getHtmlDocumentation(uriInfo, fileName);
+    return resource.getHtmlDocumentation(fileName);
   }
 
 

@@ -57,8 +57,9 @@ public interface RhymeBuilder {
   /**
    * Enable generation of curie links (to HTML documentation generated with the rhyme-docs-maven-plugin)
    * when rendering {@link HalResponse}s with
-   * {@link Rhyme#renderResponse(io.wcm.caravan.rhyme.api.resources.LinkableResource)},
-   * and extraction of those docs with {@link Rhyme#getHtmlApiDocs(String)}
+   * {@link Rhyme#renderResponse(io.wcm.caravan.rhyme.api.resources.LinkableResource)}.
+   * If you call this method, you also have to ensure that you actually serve the generated HTML files using
+   * {@link RhymeDocsSupport#loadGeneratedHtml(RhymeDocsSupport, String)}
    * @param rhymeDocsSupport the SPI instance that handles loading of the generated HTML
    * @return this
    */

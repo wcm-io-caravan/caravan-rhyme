@@ -47,16 +47,27 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsProviderTest {
+public class RhymeDocsSupportTest {
 
   @Mock
-  private RhymeDocsSupport support;
+  private RhymeDocsSupport mock;
 
-  private RhymeDocsProvider provider;
+  private RhymeDocsSupport docsSupport;
 
   @BeforeEach
   void setUp() {
-    provider = new RhymeDocsProvider(support);
+    docsSupport = new RhymeDocsSupport() {
+
+      @Override
+      public InputStream openResourceStream(String resourcePath) throws IOException {
+        return mock.openResourceStream(resourcePath);
+      }
+
+      @Override
+      public String getRhymeDocsBaseUrl() {
+        return mock.getRhymeDocsBaseUrl();
+      }
+    };
   }
 
   private static InputStream inputStreamWith(String string) {
@@ -69,10 +80,10 @@ public class RhymeDocsProviderTest {
 
     ArgumentCaptor<String> resourcePath = ArgumentCaptor.forClass(String.class);
 
-    when(support.openResourceStream(resourcePath.capture()))
+    when(mock.openResourceStream(resourcePath.capture()))
         .thenReturn(inputStreamWith("<html />"));
 
-    provider.loadGeneratedHtmlFrom("Foo.html");
+    RhymeDocsSupport.loadGeneratedHtml(docsSupport, "Foo.html");
 
     assertThat(resourcePath.getValue())
         .isEqualTo("/" + RhymeDocsSupport.FOLDER + "/Foo.html");
@@ -83,10 +94,10 @@ public class RhymeDocsProviderTest {
 
     String expectedHtml = "<föö />";
 
-    when(support.openResourceStream(anyString()))
+    when(mock.openResourceStream(anyString()))
         .thenReturn(inputStreamWith(expectedHtml));
 
-    String actualHtml = provider.loadGeneratedHtmlFrom("Foo.html");
+    String actualHtml = RhymeDocsSupport.loadGeneratedHtml(docsSupport, "Foo.html");
 
     assertThat(actualHtml)
         .isEqualTo(expectedHtml);
@@ -97,10 +108,10 @@ public class RhymeDocsProviderTest {
 
     InputStream stream = spy(inputStreamWith("<föö />"));
 
-    when(support.openResourceStream(anyString()))
+    when(mock.openResourceStream(anyString()))
         .thenReturn(stream);
 
-    provider.loadGeneratedHtmlFrom("Foo.html");
+    RhymeDocsSupport.loadGeneratedHtml(docsSupport, "Foo.html");
 
     verify(stream).close();
   }
@@ -108,10 +119,10 @@ public class RhymeDocsProviderTest {
   @Test
   public void loadGeneratedHtmlFrom_should_throw_404_exception_if_no_docs_were_found() throws Exception {
 
-    when(support.openResourceStream(anyString()))
+    when(mock.openResourceStream(anyString()))
         .thenReturn(null);
 
-    Throwable ex = catchThrowable(() -> provider.loadGeneratedHtmlFrom("Foo.html"));
+    Throwable ex = catchThrowable(() -> RhymeDocsSupport.loadGeneratedHtml(docsSupport, "Foo.html"));
 
     assertThat(ex)
         .isInstanceOf(HalApiServerException.class)
@@ -129,10 +140,10 @@ public class RhymeDocsProviderTest {
     when(stream.read(any(), anyInt(), anyInt()))
         .thenThrow(IOException.class);
 
-    when(support.openResourceStream(anyString()))
+    when(mock.openResourceStream(anyString()))
         .thenReturn(stream);
 
-    Throwable ex = catchThrowable(() -> provider.loadGeneratedHtmlFrom("Foo.html"));
+    Throwable ex = catchThrowable(() -> RhymeDocsSupport.loadGeneratedHtml(docsSupport, "Foo.html"));
 
     assertThat(ex)
         .isInstanceOf(HalApiServerException.class)

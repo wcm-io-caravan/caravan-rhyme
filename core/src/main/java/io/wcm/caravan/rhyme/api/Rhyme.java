@@ -26,7 +26,6 @@ import org.osgi.annotation.versioning.ProviderType;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
@@ -77,12 +76,4 @@ public interface Rhyme {
    */
   HalResponse renderVndErrorResponse(Throwable error);
 
-  /**
-   * Extract the HTML documentation that was generated with the rhyme-docs-maven-plugin from the classpath
-   * @param fileName the name of the generated file, usually the fully qualified class name of a
-   *          {@link HalApiInterface}, followed by ".html"
-   * @return the content of the HTML documentation file
-   * @throws HalApiServerException if the documentation could not be loaded
-   */
-  String getHtmlApiDocs(String fileName);
 }
