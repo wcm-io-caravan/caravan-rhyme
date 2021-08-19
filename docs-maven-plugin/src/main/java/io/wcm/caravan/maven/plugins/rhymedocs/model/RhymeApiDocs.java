@@ -22,6 +22,7 @@ package io.wcm.caravan.maven.plugins.rhymedocs.model;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -47,8 +48,14 @@ public class RhymeApiDocs {
 
     return builder.getSources().stream()
         .flatMap(javaSource -> javaSource.getClasses().stream())
+        .flatMap(this::includeNestedClasses)
         .filter(javaClass -> DocumentationUtils.hasAnnotation(javaClass, HalApiInterface.class))
         .collect(Collectors.toList());
+  }
+
+  private Stream<JavaClass> includeNestedClasses(JavaClass javaClass) {
+
+    return Stream.concat(Stream.of(javaClass), javaClass.getNestedClasses().stream());
   }
 
   public List<RhymeResourceDocs> getResourceDocs() {

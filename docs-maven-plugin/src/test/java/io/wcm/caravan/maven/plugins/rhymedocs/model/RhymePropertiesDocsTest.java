@@ -22,17 +22,24 @@ package io.wcm.caravan.maven.plugins.rhymedocs.model;
 import static io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocsTest.getDocsFor;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithFieldProperties;
-import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithNestedProperties;
-import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRecursiveObjectTypes;
-import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRepeatedLists;
-import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRepeatedObjectTypes;
+import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithFieldProperties.FieldProperties;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRxBeanProperties;
+import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRxBeanProperties.BeanProperties;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestEntryPoint;
+import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 
 public class RhymePropertiesDocsTest {
 
@@ -182,6 +189,53 @@ public class RhymePropertiesDocsTest {
             "/field");
   }
 
+  @HalApiInterface
+  public interface ResourceWithNestedProperties {
+
+    @ResourceState
+    Optional<NestedProperties> getState();
+
+    class NestedProperties {
+
+      public InnerBeanProperties bean;
+
+      public InnerFieldProperties field;
+
+      public List<InnerBeanProperties> beanList;
+
+    }
+
+    class InnerBeanProperties {
+
+      private InnerFieldProperties innerField;
+
+      private List<InnerFieldProperties> fieldList;
+
+      public InnerFieldProperties getInnerField() {
+        return this.innerField;
+      }
+
+      public void setInnerField(InnerFieldProperties innerField) {
+        this.innerField = innerField;
+      }
+
+      public List<InnerFieldProperties> getFieldList() {
+        return this.fieldList;
+      }
+
+      public void setFieldList(List<InnerFieldProperties> fieldList) {
+        this.fieldList = fieldList;
+      }
+    }
+
+    class InnerFieldProperties {
+
+      public String foo;
+    }
+
+  }
+
+
   @Test
   public void getProperties_should_skip_repeated_properties_of_same_object_class() {
 
@@ -194,6 +248,26 @@ public class RhymePropertiesDocsTest {
     assertThat(findDocsForProperty("/field2", docs).getDescription())
         .startsWith("Javadoc for field2")
         .endsWith("(with same properties as /field1)");
+  }
+
+  @HalApiInterface
+  public interface ResourceWithRepeatedObjectTypes {
+
+    @ResourceState
+    Properties getState();
+
+    class Properties {
+
+      /**
+       * Javadoc for field1
+       */
+      public FieldProperties field1;
+
+      /**
+       * Javadoc for field2
+       */
+      public FieldProperties field2;
+    }
   }
 
   @Test
@@ -213,6 +287,26 @@ public class RhymePropertiesDocsTest {
         .isEqualTo("(with same properties as /field1/0)");
   }
 
+  @HalApiInterface
+  public interface ResourceWithRepeatedLists {
+
+    @ResourceState
+    Properties getState();
+
+    class Properties {
+
+      /**
+       * Javadoc for field1
+       */
+      public List<BeanProperties> field1;
+
+      /**
+       * Javadoc for field2
+       */
+      public List<BeanProperties> field2;
+    }
+  }
+
   @Test
   public void getProperties_should_skip_recursive_properties_of_same_object_class() {
 
@@ -225,5 +319,200 @@ public class RhymePropertiesDocsTest {
     assertThat(findDocsForProperty("/field2", docs).getDescription())
         .startsWith("Javadoc for field2")
         .endsWith("(with same properties as /field1)");
+  }
+
+  @HalApiInterface
+  public interface ResourceWithRecursiveObjectTypes {
+
+    @ResourceState
+    ResourceWithRecursiveObjectTypes.Properties getState();
+
+    class Properties {
+
+      public FieldProperties field1;
+
+      /**
+       * Javadoc for field2
+       */
+      public FieldProperties field2;
+    }
+  }
+
+  @Test
+  public void getProperties_should_return_single_line_for_json_node_state() {
+
+    RhymeResourceDocs docs = getDocsFor(ResourceWithJsonProperties.class);
+
+    assertThat(docs.getProperties())
+        .extracting(RhymePropertyDocs::getJsonPointer)
+        .containsExactly("/");
+
+    RhymePropertyDocs property = findDocsForProperty("/", docs);
+
+    assertThat(property.getDescription())
+        .contains("uses a generic JSON node");
+
+    assertThat(property.getType())
+        .isEqualTo("JSON Object");
+  }
+
+  @HalApiInterface
+  interface ResourceWithJsonProperties {
+
+    @ResourceState
+    JsonNode getState();
+  }
+
+  @Test
+  public void getProperties_should_handle_arrays() {
+
+    RhymeResourceDocs docs = getDocsFor(ResourceWithArrayProperties.class);
+
+    assertThat(docs.getProperties())
+        .extracting(RhymePropertyDocs::getJsonPointer)
+        .containsExactly("/objectArray",
+            "/objectArray/0/bar",
+            "/objectArray/0/foo",
+            "/objectArray/0/list",
+            "/stringArray");
+
+    assertThat(findDocsForProperty("/objectArray", docs).getType())
+        .isEqualTo("List<FieldProperties>");
+
+    assertThat(findDocsForProperty("/stringArray", docs).getType())
+        .isEqualTo("String[]");
+  }
+
+  @HalApiInterface
+  interface ResourceWithArrayProperties {
+
+    @ResourceState
+    Properties getState();
+
+    class Properties {
+
+      public List<ResourceWithFieldProperties.FieldProperties> objectArray;
+
+      public String[] stringArray;
+    }
+  }
+
+  @Test
+  public void getProperties_should_look_into_jackson_annotations() {
+
+    RhymeResourceDocs docs = getDocsFor(ResourceWithAnnotatedProperties.class);
+
+    assertThat(docs.getProperties())
+        .extracting(RhymePropertyDocs::getJsonPointer)
+        .containsExactly("/annotatedField", "/annotatedMethod");
+
+    assertThat(findDocsForProperty("/annotatedField", docs).getDescription())
+        .isEqualTo("field description");
+
+    assertThat(findDocsForProperty("/annotatedMethod", docs).getDescription())
+        .isEqualTo("method description");
+  }
+
+  @HalApiInterface
+  interface ResourceWithAnnotatedProperties {
+
+    @ResourceState
+    Properties getState();
+
+    class Properties {
+
+      @JsonPropertyDescription("field description")
+      public String annotatedField;
+
+      @JsonPropertyDescription("method description")
+      public String getAnnotatedMethod() {
+        return "bar";
+      }
+
+    }
+  }
+
+  @Test
+  public void getProperties_should_handle_types_without_source() {
+
+    RhymeResourceDocs docs = getDocsFor(ResourceWithPropertiesWithoutSource.class);
+
+    assertThat(docs.getProperties())
+        .extracting(RhymePropertyDocs::getJsonPointer)
+        .contains("/locale", "/locale/country"); // and many more
+
+    assertThat(findDocsForProperty("/locale", docs).getType())
+        .isEqualTo("Locale");
+
+    RhymePropertyDocs countryDocs = findDocsForProperty("/locale/country", docs);
+
+    assertThat(countryDocs.getType())
+        .isEqualTo("String");
+
+    assertThat(countryDocs.getDescription())
+        .isEmpty();
+  }
+
+  @HalApiInterface
+  interface ResourceWithPropertiesWithoutSource {
+
+    @ResourceState
+    Properties getState();
+
+    class Properties {
+
+      public Locale locale;
+
+    }
+  }
+
+  @Test
+  public void getProperties_should_handle_type_edge_cases() {
+
+    RhymeResourceDocs docs = getDocsFor(ResourceWithEdgeCaseProperties.class);
+
+    assertThat(docs.getProperties())
+        .extracting(RhymePropertyDocs::getJsonPointer)
+        .containsExactly(
+            "/intArrayList",
+            "/map",
+            "/primitiveList",
+            "/untypedList");
+
+    assertThat(findDocsForProperty("/intArrayList", docs).getType())
+        .isEqualTo("List<int[]>");
+
+    assertThat(findDocsForProperty("/map", docs).getType())
+        .isEqualTo("Map<String, String>");
+
+    assertThat(findDocsForProperty("/primitiveList", docs).getType())
+        .isEqualTo("List<Boolean>");
+
+    assertThat(findDocsForProperty("/untypedList", docs).getType())
+        .isEqualTo("List");
+  }
+
+  @HalApiInterface
+  interface ResourceWithEdgeCaseProperties {
+
+    @ResourceState
+    Properties getState();
+
+    class Properties {
+
+      public List<int[]> intArrayList;
+
+      public Map<String, String> map;
+
+      public List<Boolean> primitiveList;
+
+      public List<?> untypedList;
+
+      public void setFoo(String foo) {
+        // just to check that bean properties without getters are ignored
+      }
+
+
+    }
   }
 }

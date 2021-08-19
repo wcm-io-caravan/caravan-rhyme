@@ -86,7 +86,7 @@ public class RhymeDocsHtmlRendererTest {
     renderer.writeHtml(apiDocs);
 
     String[] expectedFileNames = Stream.of(RhymeApiDocsTest.TEST_INTERFACES)
-        .map(className -> className + ".html")
+        .map(clazz -> clazz.getCanonicalName() + ".html")
         .toArray(String[]::new);
 
     List<String> actualFileNames = Files.list(tempDir)

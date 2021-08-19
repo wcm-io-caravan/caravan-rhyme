@@ -24,14 +24,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithFieldProperties;
-import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithNestedProperties;
-import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRecursiveObjectTypes;
-import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRepeatedLists;
-import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRepeatedObjectTypes;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRxBeanProperties;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestEntryPoint;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestResource;
@@ -39,15 +36,20 @@ import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestResource;
 
 public class RhymeApiDocsTest {
 
-  public static final String[] TEST_INTERFACES = {
-      RhymeDocTestEntryPoint.class.getName(),
-      RhymeDocTestResource.class.getName(),
-      ResourceWithFieldProperties.class.getName(),
-      ResourceWithRxBeanProperties.class.getName(),
-      ResourceWithNestedProperties.class.getName(),
-      ResourceWithRepeatedObjectTypes.class.getName(),
-      ResourceWithRecursiveObjectTypes.class.getName(),
-      ResourceWithRepeatedLists.class.getName()
+  public static final Class[] TEST_INTERFACES = {
+      RhymeDocTestEntryPoint.class,
+      RhymeDocTestResource.class,
+      ResourceWithFieldProperties.class,
+      ResourceWithRxBeanProperties.class,
+      RhymePropertiesDocsTest.ResourceWithNestedProperties.class,
+      RhymePropertiesDocsTest.ResourceWithRepeatedObjectTypes.class,
+      RhymePropertiesDocsTest.ResourceWithRecursiveObjectTypes.class,
+      RhymePropertiesDocsTest.ResourceWithRepeatedLists.class,
+      RhymePropertiesDocsTest.ResourceWithJsonProperties.class,
+      RhymePropertiesDocsTest.ResourceWithEdgeCaseProperties.class,
+      RhymePropertiesDocsTest.ResourceWithArrayProperties.class,
+      RhymePropertiesDocsTest.ResourceWithPropertiesWithoutSource.class,
+      RhymePropertiesDocsTest.ResourceWithAnnotatedProperties.class
   };
 
   static RhymeApiDocs getApiDocs() {
@@ -59,7 +61,7 @@ public class RhymeApiDocsTest {
     RhymeApiDocs apiDocs = getApiDocs();
 
     return apiDocs.getResourceDocs().stream()
-        .filter(docs -> docs.getFullyQualifiedClassName().equals(halApiInterface.getName()))
+        .filter(docs -> docs.getCanonicalClassName().equals(halApiInterface.getCanonicalName()))
         .findFirst()
         .orElseThrow(() -> new NoSuchElementException("No documentation was generated for " + halApiInterface));
   }
@@ -71,8 +73,12 @@ public class RhymeApiDocsTest {
 
     assertThat(resourceDocs).hasSize(TEST_INTERFACES.length);
 
-    assertThat(resourceDocs).extracting(RhymeResourceDocs::getFullyQualifiedClassName)
-        .containsExactlyInAnyOrder(TEST_INTERFACES);
+    String[] expectedNames = Stream.of(TEST_INTERFACES)
+        .map(Class::getCanonicalName)
+        .toArray(String[]::new);
+
+    assertThat(resourceDocs).extracting(RhymeResourceDocs::getCanonicalClassName)
+        .containsExactlyInAnyOrder(expectedNames);
   }
 
 }

@@ -40,7 +40,7 @@ public class RhymeResourceDocs {
 
     this.apiInterface = apiInterface;
 
-    this.properties = RhymePropertyDocs.create(apiInterface, builder, projectClassLoader);
+    this.properties = RhymePropertyDocsImpl.create(apiInterface, builder, projectClassLoader);
     this.relations = RhymeRelatedMethodDocs.create(apiInterface, builder, projectClassLoader);
   }
 
@@ -54,9 +54,9 @@ public class RhymeResourceDocs {
     return apiInterface.getComment();
   }
 
-  public String getFullyQualifiedClassName() {
+  public String getCanonicalClassName() {
 
-    return apiInterface.getFullyQualifiedName();
+    return apiInterface.getCanonicalName();
   }
 
   public List<RhymePropertyDocs> getProperties() {

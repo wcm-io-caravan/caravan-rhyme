@@ -19,6 +19,9 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.model;
 
+import static io.wcm.caravan.maven.plugins.rhymedocs.model.DocumentationUtils.findJavaDocForField;
+import static io.wcm.caravan.maven.plugins.rhymedocs.model.DocumentationUtils.findJavaDocForMethod;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.File;
@@ -30,7 +33,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.library.SortedClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 
@@ -39,6 +44,8 @@ public class DocumentationUtilsTest {
 
   private JavaClass firstClassWithMethod;
   private JavaMethod javaMethod;
+
+  private static JavaProjectBuilder emptyBuilder = new JavaProjectBuilder(new SortedClassLibraryBuilder());
 
   @BeforeEach
   void setUp() {
@@ -68,5 +75,70 @@ public class DocumentationUtilsTest {
         .isInstanceOf(RuntimeException.class)
         .hasMessageStartingWith("Unable to get method");
   }
+
+  @Test
+  public void findJavaDocForMethod_should_handle_classes_without_sources() throws Exception {
+
+    String fooDesc = DtoWithJacksonAnnotations.findMethodJavaDoc("getFoo");
+
+    assertThat(fooDesc)
+        .isEqualTo("foo property description");
+
+    String barDesc = DtoWithJacksonAnnotations.findMethodJavaDoc("getBar");
+
+    assertThat(barDesc)
+        .isEmpty();
+
+    String fieldDesc = DtoWithJacksonAnnotations.findFieldJavaDoc("field");
+
+    assertThat(fieldDesc)
+        .isEmpty();
+  }
+
+  public static class DtoWithJacksonAnnotations {
+
+    @JsonPropertyDescription("foo property description")
+    public String getFoo() {
+      return "foo";
+    }
+
+    public String getBar() {
+      return "bar";
+    }
+
+    public String field;
+
+    static String findMethodJavaDoc(String name) throws NoSuchMethodException, SecurityException {
+
+      return findJavaDocForMethod(emptyBuilder, DtoWithJacksonAnnotations.class, DtoWithJacksonAnnotations.class.getMethod(name));
+    }
+
+    static String findFieldJavaDoc(String name) throws NoSuchFieldException, SecurityException {
+
+      return findJavaDocForField(emptyBuilder, DtoWithJacksonAnnotations.class, DtoWithJacksonAnnotations.class.getField(name));
+    }
+
+  }
+
+  @Test
+  public void getBeanProperties_should_handle_exceptions() {
+
+    Throwable ex = catchThrowable(() -> DocumentationUtils.getBeanProperties(null));
+
+    assertThat(ex)
+        .hasMessageStartingWith("Failed to lookup bean properties for ")
+        .hasRootCauseInstanceOf(NullPointerException.class);
+  }
+
+  @Test
+  public void getPublicFields_should_handle_exceptions() {
+
+    Throwable ex = catchThrowable(() -> DocumentationUtils.getPublicFields(null));
+
+    assertThat(ex)
+        .hasMessageStartingWith("Failed to lookup fields for ")
+        .hasRootCauseInstanceOf(IllegalArgumentException.class);
+  }
+
 
 }

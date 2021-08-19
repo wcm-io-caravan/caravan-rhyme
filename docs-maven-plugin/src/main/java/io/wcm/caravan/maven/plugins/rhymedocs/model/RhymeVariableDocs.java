@@ -44,17 +44,14 @@ public class RhymeVariableDocs {
     this.name = var.getName();
     this.type = var.getType().getSimpleName();
 
-    if (var.getDtoClass() == null) {
-      this.description = findJavaDocForNamedParameter(javaMethod, name);
-    }
-    else if (var.getDtoMethod() != null) {
+    if (var.getDtoMethod() != null) {
       this.description = findJavaDocForMethod(builder, var.getDtoClass(), var.getDtoMethod());
     }
     else if (var.getDtoField() != null) {
       this.description = findJavaDocForField(builder, var.getDtoClass(), var.getDtoField());
     }
     else {
-      this.description = null;
+      this.description = findJavaDocForNamedParameter(javaMethod, name);
     }
   }
 

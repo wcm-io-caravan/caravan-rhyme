@@ -59,7 +59,7 @@ public class RhymeDocsHtmlRenderer {
 
   private void generateHtmlFile(RhymeResourceDocs resourceDocs) {
 
-    String className = resourceDocs.getFullyQualifiedClassName();
+    String className = resourceDocs.getCanonicalClassName();
 
     try {
       log.info("Generating HTML API docs for " + className);

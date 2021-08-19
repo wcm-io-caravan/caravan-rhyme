@@ -77,7 +77,7 @@ final class DocumentationUtils {
 
   private static Class<?> loadClass(JavaType javaType, ClassLoader classLoader) {
     try {
-      return classLoader.loadClass(javaType.getFullyQualifiedName());
+      return classLoader.loadClass(javaType.getBinaryName());
     }
     catch (ClassNotFoundException ex) {
       throw new RuntimeException("Failed to load class " + javaType.getFullyQualifiedName(), ex);
@@ -88,7 +88,7 @@ final class DocumentationUtils {
 
     JavaClass javaClass = builder.getClassByName(dtoClass.getName());
     if (javaClass == null) {
-      return null;
+      return "";
     }
 
     JavaMethod javaMethod = javaClass.getMethods().stream()
@@ -145,7 +145,15 @@ final class DocumentationUtils {
       return "";
     }
 
-    return StringUtils.trimToEmpty(javaField.getComment());
+    String desc = StringUtils.trimToEmpty(javaField.getComment());
+    if (desc.isEmpty()) {
+      JsonPropertyDescription jsonDesc = dtoField.getAnnotation(JsonPropertyDescription.class);
+      if (jsonDesc != null) {
+        return jsonDesc.value();
+      }
+    }
+
+    return desc;
   }
 
   static Stream<PropertyDescriptor> getBeanProperties(Class<?> type) {
@@ -157,7 +165,7 @@ final class DocumentationUtils {
           .filter(property -> property.getReadMethod() != null)
           .filter(property -> !propertyDenyList.contains(property.getName()));
     }
-    catch (IntrospectionException ex) {
+    catch (IntrospectionException | RuntimeException ex) {
       throw new RuntimeException("Failed to lookup bean properties for " + type, ex);
     }
   }

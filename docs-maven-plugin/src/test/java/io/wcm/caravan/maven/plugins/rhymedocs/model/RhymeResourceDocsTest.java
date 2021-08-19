@@ -51,7 +51,7 @@ public class RhymeResourceDocsTest {
 
     RhymeResourceDocs entryPointDocs = getDocsFor(RhymeDocTestEntryPoint.class);
 
-    assertThat(entryPointDocs.getFullyQualifiedClassName())
+    assertThat(entryPointDocs.getCanonicalClassName())
         .isEqualTo(RhymeDocTestEntryPoint.class.getName());
   }
 
