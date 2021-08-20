@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.model;
 
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * defines getters for resource properties that are exposed to the handlebars template
@@ -30,5 +31,29 @@ public interface RhymePropertyDocs {
   String getType();
 
   String getDescription();
+
+  default String getPropertyNameWithPadding() {
+
+    String jsonPointer = getJsonPointer();
+
+    String propertyName = StringUtils.substringAfterLast(jsonPointer, "/");
+
+    int paddingLevel = StringUtils.countMatches(jsonPointer, "/") - 1;
+
+    if ("0".equals(propertyName)) {
+      propertyName = "[n]";
+    }
+    else if (StringUtils.substringBeforeLast(jsonPointer, "/").endsWith("/0")) {
+      paddingLevel--;
+      propertyName = "[n]." + propertyName;
+    }
+    else if (paddingLevel > 0) {
+      propertyName = "." + propertyName;
+    }
+
+    String padding = StringUtils.repeat("&nbsp;", paddingLevel * 3);
+
+    return padding + propertyName;
+  }
 
 }

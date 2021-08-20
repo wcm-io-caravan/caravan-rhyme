@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -189,6 +190,26 @@ public class RhymePropertiesDocsTest {
             "/field");
   }
 
+  @Test
+  public void getPropertyNameWithPadding_should_reflect_object_structure() {
+
+    String onePaddingLevel = StringUtils.repeat("&nbsp;", 3);
+    String twoPaddingLevels = StringUtils.repeat(onePaddingLevel, 2);
+
+    RhymeResourceDocs docsWithNestedProperties = getDocsFor(ResourceWithNestedProperties.class);
+
+    assertThat(docsWithNestedProperties.getProperties())
+        .extracting(RhymePropertyDocs::getPropertyNameWithPadding)
+        .containsExactly(
+            "bean",
+            onePaddingLevel + ".fieldList",
+            twoPaddingLevels + "[n].foo",
+            onePaddingLevel + ".innerField",
+            "beanList",
+            onePaddingLevel + "[n]",
+            "field");
+  }
+
   @HalApiInterface
   public interface ResourceWithNestedProperties {
 
@@ -247,7 +268,7 @@ public class RhymePropertiesDocsTest {
 
     assertThat(findDocsForProperty("/field2", docs).getDescription())
         .startsWith("Javadoc for field2")
-        .endsWith("(with same properties as /field1)");
+        .endsWith("(an object with same properties as /field1)");
   }
 
   @HalApiInterface
@@ -284,7 +305,7 @@ public class RhymePropertiesDocsTest {
         .isEqualTo("Javadoc for field2");
 
     assertThat(findDocsForProperty("/field2/0", docs).getDescription())
-        .isEqualTo("(with same properties as /field1/0)");
+        .isEqualTo("(an object with same properties as /field1/0)");
   }
 
   @HalApiInterface
@@ -318,7 +339,7 @@ public class RhymePropertiesDocsTest {
 
     assertThat(findDocsForProperty("/field2", docs).getDescription())
         .startsWith("Javadoc for field2")
-        .endsWith("(with same properties as /field1)");
+        .endsWith("(an object with same properties as /field1)");
   }
 
   @HalApiInterface

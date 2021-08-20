@@ -88,7 +88,7 @@ public class RhymeRelationDocsTest {
     RhymeRelatedMethodDocs externalDocs = getEntryPointDocsForRelation(TestRelations.EXTERNAL);
 
     assertThat(externalDocs.getRelatedResourceTitle())
-        .isNull();
+        .isEqualTo("a resource of unspecified type");
   }
 
   @Test
@@ -116,6 +116,9 @@ public class RhymeRelationDocsTest {
 
     assertThat(multipleDocs.getCardinality())
         .isEqualTo("0..n");
+
+    assertThat(multipleDocs.getLinkPrefix())
+        .isEqualTo("links to");
   }
 
   @Test
@@ -125,6 +128,9 @@ public class RhymeRelationDocsTest {
 
     assertThat(optionalDocs.getCardinality())
         .isEqualTo("0..1");
+
+    assertThat(optionalDocs.getLinkPrefix())
+        .isEqualTo("links to");
   }
 
   @Test
@@ -134,6 +140,9 @@ public class RhymeRelationDocsTest {
 
     assertThat(singleDocs.getCardinality())
         .isEqualTo("1");
+
+    assertThat(singleDocs.getLinkPrefix())
+        .isEqualTo("link to");
   }
 
 

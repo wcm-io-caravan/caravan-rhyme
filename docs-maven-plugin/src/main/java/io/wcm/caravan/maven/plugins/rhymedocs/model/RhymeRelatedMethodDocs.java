@@ -49,9 +49,14 @@ public final class RhymeRelatedMethodDocs {
   private final String description;
 
   private final Class<?> relatedResourceType;
-  private final String cardinality;
+  private final Cardinality cardinality;
 
   private final List<RhymeVariableDocs> variables;
+
+  enum Cardinality {
+    SINGLE, OPTIONAL, MULTIPLE
+  }
+
 
   private RhymeRelatedMethodDocs(JavaClass apiInterface, JavaMethod javaMethod, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
 
@@ -86,19 +91,19 @@ public final class RhymeRelatedMethodDocs {
     return type;
   }
 
-  private String getCardinality(Method method) {
+  private Cardinality getCardinality(Method method) {
 
     Class<?> returnType = method.getReturnType();
 
     if (RhymeResourceDocs.TYPE_SUPPORT.isProviderOfOptionalValue(returnType)) {
-      return "0..1";
+      return Cardinality.OPTIONAL;
     }
 
     if (RhymeResourceDocs.TYPE_SUPPORT.isProviderOfMultiplerValues(returnType)) {
-      return "0..n";
+      return Cardinality.MULTIPLE;
     }
 
-    return "1";
+    return Cardinality.SINGLE;
   }
 
   private List<RhymeVariableDocs> findVariables(JavaMethod javaMethod, Method method) {
@@ -117,13 +122,31 @@ public final class RhymeRelatedMethodDocs {
 
   public String getCardinality() {
 
-    return cardinality;
+    switch (cardinality) {
+
+      case OPTIONAL:
+        return "0..1";
+
+      case MULTIPLE:
+        return "0..n";
+
+      default:
+        return "1";
+    }
+  }
+
+  public String getLinkPrefix() {
+
+    if (cardinality == Cardinality.SINGLE) {
+      return "link to";
+    }
+    return "links to";
   }
 
   public String getRelatedResourceTitle() {
 
     if (relatedResourceType == null) {
-      return null;
+      return "a resource of unspecified type";
     }
 
     return relatedResourceType.getSimpleName();

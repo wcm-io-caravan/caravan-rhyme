@@ -160,7 +160,7 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
           if (processedClassNames.containsKey(elementType.getName())) {
             String previous = processedClassNames.get(elementType.getName());
             return Stream.of(docs,
-                new FixedPropertyModel(elementType.getSimpleName(), "(with same properties as " + previous + ")", docs.getJsonPointer() + "/0"));
+                new FixedPropertyModel(elementType.getSimpleName(), "(an object with same properties as " + previous + ")", docs.getJsonPointer() + "/0"));
           }
 
           return Stream.concat(stream,
@@ -172,7 +172,8 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
 
       if (processedClassNames.containsKey(propertyType.getName())) {
         String previous = processedClassNames.get(propertyType.getName());
-        return Stream.of(new FixedPropertyModel(docs.getType(), docs.getDescription() + "(with same properties as " + previous + ")", docs.getJsonPointer()));
+        return Stream
+            .of(new FixedPropertyModel(docs.getType(), docs.getDescription() + " (an object with same properties as " + previous + ")", docs.getJsonPointer()));
       }
 
       stream = Stream.concat(stream,

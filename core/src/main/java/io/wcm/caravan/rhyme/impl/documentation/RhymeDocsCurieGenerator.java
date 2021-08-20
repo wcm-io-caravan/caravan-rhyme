@@ -109,6 +109,6 @@ public class RhymeDocsCurieGenerator {
 
     return new Link(href)
         .setName(curieName)
-        .setTitle("Documentation for relations with " + curieName + " prefix");
+        .setTitle("HTML documentation for relations with " + curieName + " prefix");
   }
 }

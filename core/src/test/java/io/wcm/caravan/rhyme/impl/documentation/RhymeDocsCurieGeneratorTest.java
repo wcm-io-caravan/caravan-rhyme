@@ -174,7 +174,7 @@ public class RhymeDocsCurieGeneratorTest {
     List<Link> curies = addAndGetCuries(DOCS);
 
     assertThat(curies.get(0).getTitle())
-        .isEqualTo("Documentation for relations with test prefix");
+        .isEqualTo("HTML documentation for relations with test prefix");
   }
 
 }
