@@ -54,6 +54,8 @@ public class TemplateVariableDetectionTest {
 
   public static class DtoClass {
 
+    public final static String CONSTANT = "constant";
+
     public Integer fromClass;
   }
 
@@ -107,6 +109,16 @@ public class TemplateVariableDetectionTest {
     assertThat(varInfo.getDtoClass()).isSameAs(DtoInterface.class);
     assertThat(varInfo.getDtoField()).isNull();
     assertThat(varInfo.getDtoMethod()).extracting(Method::getName).isEqualTo("getFromInterface");
+  }
+
+  @Test
+  public void testFindVariables_should_ignore_static_fields() throws Exception {
+
+    List<TemplateVariableWithTypeInfo> variables = findVariables(getMethod("linkTemplate"), Optional.empty());
+
+    assertThat(variables)
+        .extracting(TemplateVariableWithTypeInfo::getName)
+        .containsExactly("withAnnotation", "fromClass", "fromInterface");
   }
 
   @Test
