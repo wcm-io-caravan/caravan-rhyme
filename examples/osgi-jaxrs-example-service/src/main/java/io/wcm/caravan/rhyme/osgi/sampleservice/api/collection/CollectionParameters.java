@@ -19,6 +19,13 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.api.collection;
 
+import io.wcm.caravan.rhyme.api.annotations.Related;
+import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
+
+/**
+ * an interface to be used as {@link TemplateVariables} parameter for
+ * some {@link Related} methods in the {@link CollectionExamplesResource}
+ */
 public interface CollectionParameters {
 
   /**

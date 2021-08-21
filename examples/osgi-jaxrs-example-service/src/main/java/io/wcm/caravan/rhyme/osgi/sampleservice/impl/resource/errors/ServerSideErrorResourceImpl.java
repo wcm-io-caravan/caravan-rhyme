@@ -34,20 +34,20 @@ public class ServerSideErrorResourceImpl implements ErrorResource, LinkableResou
 
   private final Integer statusCode;
   private final String message;
-  private final Boolean withCause;
+  private final Boolean wrapException;
 
-  public ServerSideErrorResourceImpl(ExampleServiceRequestContext context, Integer statusCode, String message, Boolean withCause) {
+  public ServerSideErrorResourceImpl(ExampleServiceRequestContext context, Integer statusCode, String message, Boolean wrapException) {
     this.context = context;
     this.statusCode = statusCode;
     this.message = message;
-    this.withCause = withCause;
+    this.wrapException = wrapException;
   }
 
   @Override
   public Maybe<TitledState> getState() {
 
     Exception exception;
-    if (withCause != null && withCause.booleanValue()) {
+    if (wrapException != null && wrapException.booleanValue()) {
       exception = new WebApplicationException(new RuntimeException(message), statusCode);
     }
     else {
@@ -60,7 +60,7 @@ public class ServerSideErrorResourceImpl implements ErrorResource, LinkableResou
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo((resource, uriInfo, response) -> resource.getServerSideError(uriInfo, response, statusCode, message, withCause))
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getServerSideError(uriInfo, response, statusCode, message, wrapException))
         .setTitle("Simulate a server-side error with the given status code and message");
   }
 }

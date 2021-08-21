@@ -48,11 +48,11 @@ public class HttpErrorResourcesIT {
     this.entryPoint = halApiClient.getRemoteResource(ENTRY_POINT_PATH, ExamplesEntryPointResource.class);
   }
 
-  private HalApiClientException executeRequestAndGetExpectedHalApiClientException(Integer statusCode, String message, Boolean withCause) {
+  private HalApiClientException executeRequestAndGetExpectedHalApiClientException(Integer statusCode, String message, Boolean wrapException) {
 
     return assertThrows(HalApiClientException.class, () -> {
       entryPoint.getErrorExamples()
-          .flatMap(errors -> errors.provokeHttpClientError(statusCode, message, withCause))
+          .flatMap(errors -> errors.provokeHttpClientError(statusCode, message, wrapException))
           .flatMapMaybe(ErrorResource::getState)
           .blockingGet();
     });
@@ -63,9 +63,9 @@ public class HttpErrorResourcesIT {
 
     Integer statusCode = 403;
     String message = "Something went wrong";
-    Boolean withCause = false;
+    Boolean wrapException = false;
 
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
+    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, wrapException);
 
     assertThat(ex.getStatusCode()).isEqualTo(statusCode);
   }
@@ -75,9 +75,9 @@ public class HttpErrorResourcesIT {
 
     Integer statusCode = 403;
     String message = "Something went wrong";
-    Boolean withCause = false;
+    Boolean wrapException = false;
 
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
+    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, wrapException);
 
     assertThat(ex.getErrorResponse().getContentType()).isEqualTo("application/vnd.error+json");
   }
@@ -87,9 +87,9 @@ public class HttpErrorResourcesIT {
 
     Integer statusCode = 403;
     String message = "Something went wrong";
-    Boolean withCause = false;
+    Boolean wrapException = false;
 
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
+    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, wrapException);
 
     Link aboutLink = ex.getErrorResponse().getBody().getLink(VndErrorRelations.ABOUT);
     assertThat(aboutLink).isNotNull();
@@ -101,9 +101,9 @@ public class HttpErrorResourcesIT {
 
     Integer statusCode = 403;
     String message = "Something went wrong";
-    Boolean withCause = false;
+    Boolean wrapException = false;
 
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
+    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, wrapException);
 
     HalResource metadata = ex.getErrorResponse().getBody().getEmbeddedResource("caravan:metadata");
     assertThat(metadata).isNotNull();
@@ -114,9 +114,9 @@ public class HttpErrorResourcesIT {
 
     Integer statusCode = 403;
     String message = "Something went wrong";
-    Boolean withCause = true;
+    Boolean wrapException = true;
 
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
+    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, wrapException);
 
     HalResource vndBody = ex.getErrorResponse().getBody();
 

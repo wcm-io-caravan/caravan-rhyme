@@ -31,12 +31,12 @@ public interface ErrorExamplesResource {
   Single<ErrorResource> provokeError(
       @TemplateVariable("statusCode") Integer statusCode,
       @TemplateVariable("message") String message,
-      @TemplateVariable("withCause") Boolean withCause);
+      @TemplateVariable("wrapException") Boolean wrapException);
 
 
   @Related("errors:httpError")
   Single<ErrorResource> provokeHttpClientError(
       @TemplateVariable("statusCode") Integer statusCode,
       @TemplateVariable("message") String message,
-      @TemplateVariable("withCause") Boolean withCause);
+      @TemplateVariable("wrapException") Boolean wrapException);
 }

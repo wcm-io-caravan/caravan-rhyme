@@ -160,10 +160,10 @@ public class ExampleServiceJaxRsComponent {
   public void getHalApiClientError(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
       @QueryParam("statusCode") Integer statusCode,
       @QueryParam("message") @DefaultValue("default error message") String message,
-      @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
+      @QueryParam("wrapException") @DefaultValue("false") Boolean wrapException) {
 
     renderResource(uriInfo, response,
-        request -> new HalApiClientErrorResourceImpl(request, statusCode, message, withCause));
+        request -> new HalApiClientErrorResourceImpl(request, statusCode, message, wrapException));
   }
 
   @GET
@@ -171,9 +171,9 @@ public class ExampleServiceJaxRsComponent {
   public void getServerSideError(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
       @QueryParam("statusCode") Integer statusCode,
       @QueryParam("message") @DefaultValue("default error message") String message,
-      @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
+      @QueryParam("wrapException") @DefaultValue("false") Boolean wrapException) {
 
     renderResource(uriInfo, response,
-        request -> new ServerSideErrorResourceImpl(request, statusCode, message, withCause));
+        request -> new ServerSideErrorResourceImpl(request, statusCode, message, wrapException));
   }
 }

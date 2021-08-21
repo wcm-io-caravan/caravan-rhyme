@@ -24,7 +24,6 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 
@@ -40,7 +39,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
  * <p>
  * The resources with the "proxy:" relations will be <b>consuming</b> those generated
  * test resources: in the background there will be HTTP requests to the API
- * on localhost using Rhyme's {@link HalApiClient} dynamic proxies. To check what
+ * on localhost using Rhyme's dynamic client proxies. To check what
  * exactly is happening under the hood, look into the embedded "caravan:metadata" resources.
  * </p>
  */

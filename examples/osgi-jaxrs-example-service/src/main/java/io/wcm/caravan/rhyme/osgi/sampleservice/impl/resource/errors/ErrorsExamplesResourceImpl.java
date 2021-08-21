@@ -35,15 +35,15 @@ public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, Linkab
   }
 
   @Override
-  public Single<ErrorResource> provokeError(Integer statusCode, String message, Boolean withCause) {
+  public Single<ErrorResource> provokeError(Integer statusCode, String message, Boolean wrapException) {
 
-    return Single.just(new ServerSideErrorResourceImpl(context, statusCode, message, withCause));
+    return Single.just(new ServerSideErrorResourceImpl(context, statusCode, message, wrapException));
   }
 
   @Override
-  public Single<ErrorResource> provokeHttpClientError(Integer statusCode, String message, Boolean withCause) {
+  public Single<ErrorResource> provokeHttpClientError(Integer statusCode, String message, Boolean wrapException) {
 
-    return Single.just(new HalApiClientErrorResourceImpl(context, statusCode, message, withCause));
+    return Single.just(new HalApiClientErrorResourceImpl(context, statusCode, message, wrapException));
   }
 
   @Override

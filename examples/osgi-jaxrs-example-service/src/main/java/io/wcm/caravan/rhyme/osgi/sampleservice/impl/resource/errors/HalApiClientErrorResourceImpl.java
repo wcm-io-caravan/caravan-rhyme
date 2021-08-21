@@ -32,13 +32,13 @@ public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableRes
 
   private final Integer statusCode;
   private final String message;
-  private final Boolean withCause;
+  private final Boolean wrapException;
 
-  public HalApiClientErrorResourceImpl(ExampleServiceRequestContext context, Integer statusCode, String message, Boolean withCause) {
+  public HalApiClientErrorResourceImpl(ExampleServiceRequestContext context, Integer statusCode, String message, Boolean wrapException) {
     this.context = context;
     this.statusCode = statusCode;
     this.message = message;
-    this.withCause = withCause;
+    this.wrapException = wrapException;
   }
 
   @Override
@@ -46,14 +46,14 @@ public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableRes
 
     return context.getUpstreamEntryPoint()
         .getErrorExamples()
-        .flatMap(examples -> examples.provokeError(statusCode, message, withCause))
+        .flatMap(examples -> examples.provokeError(statusCode, message, wrapException))
         .flatMapMaybe(ErrorResource::getState);
   }
 
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo((resource, uriInfo, response) -> resource.getHalApiClientError(uriInfo, response, statusCode, message, withCause))
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getHalApiClientError(uriInfo, response, statusCode, message, wrapException))
         .setTitle("Trigger an error when executing a HTTP request to an upstream server");
   }
 }
