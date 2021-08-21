@@ -1,6 +1,6 @@
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVICE_ID;
+import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.ENTRY_POINT_PATH;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class CollectionResourcesIT {
   private final ExamplesEntryPointResource entryPoint;
 
   public CollectionResourcesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
+    this.entryPoint = halApiClient.getRemoteResource(ENTRY_POINT_PATH, ExamplesEntryPointResource.class);
   }
 
   private Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems, Integer delayMs) {

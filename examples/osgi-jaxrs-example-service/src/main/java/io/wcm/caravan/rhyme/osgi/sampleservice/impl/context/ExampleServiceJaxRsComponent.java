@@ -76,7 +76,7 @@ public class ExampleServiceJaxRsComponent {
   }
 
   @GET
-  @Path("")
+  @Path("/")
   public void getEntryPoint(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
 
     renderResource(uriInfo, response,

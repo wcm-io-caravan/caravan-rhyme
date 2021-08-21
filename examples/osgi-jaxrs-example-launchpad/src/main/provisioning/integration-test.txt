@@ -71,7 +71,7 @@
 
 [configurations]
   io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig-localhost
-    serviceId="/caravan/hal/sample-service"
+    serviceId="localhost"
     ribbonHosts=["localhost:8080"]
 
 [configurations]

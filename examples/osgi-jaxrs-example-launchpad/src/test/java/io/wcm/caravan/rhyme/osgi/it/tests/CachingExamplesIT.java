@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVICE_ID;
+import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.ENTRY_POINT_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class CachingExamplesIT {
   private final ExamplesEntryPointResource entryPoint;
 
   public CachingExamplesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
+    this.entryPoint = halApiClient.getRemoteResource(ENTRY_POINT_PATH, ExamplesEntryPointResource.class);
   }
 
   private List<ItemState> getItems(int numItems, int delayMs, Function<EvenOddItemsResource, SingleSource<ItemCollectionResource>> func) {

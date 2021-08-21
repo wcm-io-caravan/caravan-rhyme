@@ -30,9 +30,9 @@ import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsName;
 @JaxrsName(ExampleServiceApplication.JAXRS_NAME)
 public class ExampleServiceApplication extends Application {
 
-  public static final String BASE_PATH = "/caravan/hal/sample-service";
+  public static final String BASE_PATH = "";
 
-  public static final String JAXRS_NAME = "caravan.hal.sample-service";
+  public static final String JAXRS_NAME = "caravan.rhyme.example-service";
 
   public static final String SELECTOR = "(osgi.jaxrs.name=" + JAXRS_NAME + ")";
 

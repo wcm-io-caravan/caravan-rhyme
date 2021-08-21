@@ -20,8 +20,8 @@
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.VIA;
+import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.ENTRY_POINT_PATH;
 import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVER_URL;
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVICE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -45,7 +45,7 @@ public class HttpErrorResourcesIT {
   private final ExamplesEntryPointResource entryPoint;
 
   public HttpErrorResourcesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
+    this.entryPoint = halApiClient.getRemoteResource(ENTRY_POINT_PATH, ExamplesEntryPointResource.class);
   }
 
   private HalApiClientException executeRequestAndGetExpectedHalApiClientException(Integer statusCode, String message, Boolean withCause) {
@@ -125,6 +125,6 @@ public class HttpErrorResourcesIT {
 
     Link viaLink = vndBody.getLink(VIA);
     assertThat(viaLink).isNotNull();
-    assertThat(viaLink.getHref()).startsWith("/caravan/hal/sample-service/errors/serverSide?");
+    assertThat(viaLink.getHref()).startsWith("/errors/serverSide?");
   }
 }

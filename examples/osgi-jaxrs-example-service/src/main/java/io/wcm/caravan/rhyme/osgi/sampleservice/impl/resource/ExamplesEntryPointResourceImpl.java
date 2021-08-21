@@ -80,7 +80,7 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
   public Link createLink() {
 
     return context.buildLinkTo((resource, uriInfo, response) -> resource.getEntryPoint(uriInfo, response))
-        .setTitle("The HAL API entry point of the " + context.getServiceId() + " service");
+        .setTitle("The HAL API entry point of the OSGi/JAX-RS example service");
   }
 
 }

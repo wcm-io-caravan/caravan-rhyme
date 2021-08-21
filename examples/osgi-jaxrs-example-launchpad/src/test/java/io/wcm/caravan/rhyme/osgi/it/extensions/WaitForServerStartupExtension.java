@@ -1,7 +1,7 @@
 package io.wcm.caravan.rhyme.osgi.it.extensions;
 
+import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.ENTRY_POINT_PATH;
 import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVER_URL;
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVICE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class WaitForServerStartupExtension implements BeforeAllCallback {
     Stopwatch sw = Stopwatch.createStarted();
     while (sw.elapsed(TimeUnit.SECONDS) < maxWaitSeconds) {
       try {
-        assertHalResourceFoundAt(SERVICE_ID);
+        assertHalResourceFoundAt(ENTRY_POINT_PATH);
         return;
       }
       catch (Exception | AssertionError e) {
@@ -53,7 +53,7 @@ public class WaitForServerStartupExtension implements BeforeAllCallback {
         }
       }
     }
-    throw new IllegalStateException("Entry point at " + TestEnvironmentConstants.SERVER_URL + SERVICE_ID
+    throw new IllegalStateException("Entry point at " + TestEnvironmentConstants.SERVER_URL + ENTRY_POINT_PATH
         + " still fails to load after waiting " + maxWaitSeconds + " seconds");
   }
 
