@@ -27,15 +27,33 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 
+/**
+ * Defines the common structure and available link relations for all collections of test resources in this example
+ * service.
+ */
 @HalApiInterface
 public interface ItemCollectionResource {
 
+  /**
+   * @return an optional state with just a title (to be displayed in the HAL browser when this resource is embedded)
+   */
   @ResourceState
   Maybe<TitledState> getState();
 
+  /**
+   * Allows to request an alternative version of this resource with different parameters. This link
+   * may not be present in all occurrences of this resource.
+   * @param embedItems true if the item resources should also be embedded in the collection resource
+   * @return a {@link Maybe} that emits the same {@link ItemCollectionResource} with different parameters
+   */
   @Related(StandardRelations.ALTERNATE)
   Maybe<ItemCollectionResource> getAlternate(@TemplateVariable("embedItems") Boolean embedItems);
 
-  @Related(StandardRelations.ITEM)
+  /**
+   * The test resources contained in this collection. Depending on the parameters used to fetch this
+   * resource, the item resources may be embedded or only linked.
+   * @return an {@link Observable} that emits all linked (or embedded) {@link ItemResource} instances
+   */
+  @Related("examples:item")
   Observable<ItemResource> getItems();
 }

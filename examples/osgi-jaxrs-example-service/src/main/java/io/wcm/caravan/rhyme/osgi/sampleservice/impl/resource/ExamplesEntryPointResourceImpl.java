@@ -19,11 +19,6 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource;
 
-import java.time.Duration;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -43,13 +38,8 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
   private final ExampleServiceRequestContext context;
 
   public ExamplesEntryPointResourceImpl(ExampleServiceRequestContext context) {
-    this.context = context;
-  }
 
-  @Override
-  public Maybe<ObjectNode> getState() {
-    context.limitMaxAge(Duration.ofSeconds(60));
-    return Maybe.empty();
+    this.context = context;
   }
 
   @Override

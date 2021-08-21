@@ -27,7 +27,6 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionExamples
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 
@@ -40,19 +39,13 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
   }
 
   @Override
-  public Single<TitledState> getState() {
-
-    return Single.just(new TitledState());
-  }
-
-  @Override
-  public Single<ItemCollectionResource> getCollection(CollectionParameters params) {
+  public Single<ItemCollectionResource> getDelayedCollection(CollectionParameters params) {
 
     return Single.just(new DelayableCollectionResourceImpl(context, null));
   }
 
   @Override
-  public Single<ItemResource> getItem(Integer index, Integer delayMs) {
+  public Single<ItemResource> getDelayedItem(Integer index, Integer delayMs) {
 
     return Single.just(new DelayableItemResourceImpl(context, index, delayMs));
   }

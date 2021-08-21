@@ -19,34 +19,56 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.api;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
-import io.wcm.caravan.rhyme.api.annotations.ResourceState;
+import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionExamplesResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorExamplesResource;
 
+/**
+ * The HAL API entry point for the OSGi/JAX-RS example service. This service
+ * is used for integration tests for the asynchronous request/response
+ * handling using <a href="https://github.com/ReactiveX/RxJava">RxJava 3</a>.
+ */
 @HalApiInterface
 public interface ExamplesEntryPointResource {
 
-  @ResourceState
-  Maybe<ObjectNode> getState();
-
+  /**
+   * Example links to show and test how the Rhyme framework is handling collections of
+   * linked or embedded resources, and how multiple resources are
+   * requested in parallel and asynchronously (without blocking the main thread).
+   * @return a {@link Single} that emits the linked {@link CollectionExamplesResource}
+   */
   @Related("examples:collections")
   Single<CollectionExamplesResource> getCollectionExamples();
 
+  /**
+   * Examples to verify the Rhyme framework's internal caching logic.
+   * @return a {@link Single} that emits the linked {@link CachingExamplesResource}
+   */
   @Related("examples:caching")
   Single<CachingExamplesResource> getCachingExamples();
 
+  /**
+   * Examples for error handling that show how exceptions are mapped to
+   * <a href="https://github.com/blongden/vnd.error">vnd.error</a> errors, and how
+   * detailed error information from an upstream response is retained over service boundaries.
+   * @return a {@link Single} that emits the linked {@link ErrorExamplesResource}
+   */
   @Related("examples:errors")
   Single<ErrorExamplesResource> getErrorExamples();
 
+  /**
+   * Allows clients using {@link Rhyme#getRemoteResource(String, Class)} or
+   * {@link CaravanRhyme#getRemoteResource(String, String, Class)} to process this resource
+   * using the generic {@link HalResource} class
+   * @return the {@link HalResource} as it was fetched and parsed
+   */
   @ResourceRepresentation
   HalResource asHalResource();
 }

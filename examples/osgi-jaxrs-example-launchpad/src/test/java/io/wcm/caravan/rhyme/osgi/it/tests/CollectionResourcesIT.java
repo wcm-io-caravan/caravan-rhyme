@@ -39,7 +39,7 @@ public class CollectionResourcesIT {
         .withDelayMs(delayMs);
 
     return entryPoint.getCollectionExamples()
-        .flatMap(collections -> collections.getCollection(params));
+        .flatMap(collections -> collections.getDelayedCollection(params));
   }
 
   private List<ItemState> getCollectionItems(Integer numItems, Boolean embedItems, Integer delayMs) {

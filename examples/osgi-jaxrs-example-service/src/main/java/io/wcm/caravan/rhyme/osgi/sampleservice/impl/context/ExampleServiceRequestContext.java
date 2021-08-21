@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import com.google.common.collect.ImmutableMap;
@@ -37,28 +38,39 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 
 public class ExampleServiceRequestContext {
 
+  private static final String BUNDLE_VERSION_QUERY_PARAM = "bundleVersion";
+
   public static final String LOCALHOST_CARAVAN_SERVICE_ID = "localhost";
 
-  private CaravanRhyme rhyme;
+  private final CaravanRhyme rhyme;
 
   private ExamplesEntryPointResource upstreamEntryPoint;
 
-  private JaxRsLinkBuilder<ExampleServiceJaxRsComponent> linkBuilder;
+  private final JaxRsLinkBuilder<ExampleServiceJaxRsComponent> linkBuilder;
 
   public ExampleServiceRequestContext(CaravanRhyme rhyme, JaxRsBundleInfo bundleInfo) {
     this.rhyme = rhyme;
 
     this.linkBuilder = createLinkBuilder(bundleInfo);
 
-    limitMaxAge(Duration.ofDays(365));
+    setResponseMaxAge(rhyme);
   }
 
   private static JaxRsLinkBuilder<ExampleServiceJaxRsComponent> createLinkBuilder(JaxRsBundleInfo bundleInfo) {
 
-    Map<String, Object> fingerPrintingParams = ImmutableMap.of("bundleVersion", bundleInfo.getBundleVersion());
+    Map<String, Object> fingerPrintingParams = ImmutableMap.of(BUNDLE_VERSION_QUERY_PARAM, bundleInfo.getBundleVersion());
 
     return JaxRsLinkBuilder.create(bundleInfo.getApplicationPath(), ExampleServiceJaxRsComponent.class)
         .withAdditionalQueryParameters(fingerPrintingParams);
+  }
+
+  private static void setResponseMaxAge(CaravanRhyme rhyme) {
+
+    MultivaluedMap<String, String> queryParameters = rhyme.getRequestUri().getQueryParameters();
+    boolean fingerPrintingParamPresent = queryParameters.containsKey(BUNDLE_VERSION_QUERY_PARAM);
+
+    Duration maxAge = fingerPrintingParamPresent ? Duration.ofDays(365) : Duration.ofMinutes(1);
+    rhyme.setResponseMaxAge(maxAge);
   }
 
   public interface ControllerCall {
@@ -71,10 +83,6 @@ public class ExampleServiceRequestContext {
     return linkBuilder.buildLinkTo(resource -> {
       callToResource.call(resource, null, null);
     });
-  }
-
-  public void limitMaxAge(Duration duration) {
-    rhyme.setResponseMaxAge(duration);
   }
 
   public ExamplesEntryPointResource getUpstreamEntryPoint() {

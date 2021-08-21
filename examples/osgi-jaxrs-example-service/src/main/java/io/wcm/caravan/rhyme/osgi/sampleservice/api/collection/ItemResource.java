@@ -23,9 +23,15 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 
+/**
+ * A very simple test resource used in the collections and caching examples
+ */
 @HalApiInterface
 public interface ItemResource {
 
+  /**
+   * @return a {@link Single} that emits the properties defined in {@link ItemState}
+   */
   @ResourceState
   Single<ItemState> getProperties();
 }

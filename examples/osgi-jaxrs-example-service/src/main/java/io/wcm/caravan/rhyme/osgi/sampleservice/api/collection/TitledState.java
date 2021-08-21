@@ -19,13 +19,21 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.api.collection;
 
+import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 
+/**
+ * To be used with {@link ResourceState} if you only want to specify a "title" property
+ * (which is a nice way to identify embedded resources in the HAL browser)
+ */
 public class TitledState {
 
-  public String title;
+  private String title;
 
-  public TitledState() {
-
+  /**
+   * @return a title to be displayed in the HAL browser
+   */
+  public String getTitle() {
+    return this.title;
   }
 
   public TitledState withTitle(String title) {

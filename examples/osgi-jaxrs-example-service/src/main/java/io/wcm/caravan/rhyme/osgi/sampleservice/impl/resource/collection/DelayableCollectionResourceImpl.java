@@ -45,6 +45,12 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
   }
 
   @Override
+  public Maybe<TitledState> getState() {
+
+    return Maybe.empty();
+  }
+
+  @Override
   public Maybe<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
 
     return Maybe.just(new DelayableCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
@@ -55,12 +61,6 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
 
     return Observable.range(0, params.getNumItems())
         .map(index -> new DelayableItemResourceImpl(context, index, params.getDelayMs()).setEmbedded(params.getEmbedItems()));
-  }
-
-  @Override
-  public Maybe<TitledState> getState() {
-
-    return Maybe.empty();
   }
 
   @Override

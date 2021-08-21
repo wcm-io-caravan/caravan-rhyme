@@ -43,6 +43,12 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
   }
 
   @Override
+  public Maybe<TitledState> getState() {
+
+    return Maybe.empty();
+  }
+
+  @Override
   public Maybe<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
 
     return Maybe.just(new ClientCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
@@ -53,15 +59,9 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
     return context.getUpstreamEntryPoint()
         .getCollectionExamples()
-        .flatMap(res -> res.getCollection(params))
+        .flatMap(res -> res.getDelayedCollection(params))
         .flatMapObservable(ItemCollectionResource::getItems)
         .map(EmbeddedItemResourceImpl::new);
-  }
-
-  @Override
-  public Maybe<TitledState> getState() {
-
-    return Maybe.empty();
   }
 
   @Override
@@ -99,16 +99,9 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
     public Single<ItemState> getProperties() {
 
       return resource.getProperties()
-          .map(clientState -> {
-
-            ItemState itemState = new ItemState();
-            itemState.title = clientState.title;
-            itemState.index = clientState.index;
-            itemState.thread = Thread.currentThread().getName();
-
-            return itemState;
-          });
+          .map(ClientItemResourceImpl::cloneStateWithCurrentThread);
     }
+
 
     @Override
     public boolean isEmbedded() {

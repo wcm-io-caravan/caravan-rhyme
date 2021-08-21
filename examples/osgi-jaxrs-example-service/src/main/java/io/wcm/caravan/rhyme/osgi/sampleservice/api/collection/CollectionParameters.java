@@ -21,9 +21,19 @@ package io.wcm.caravan.rhyme.osgi.sampleservice.api.collection;
 
 public interface CollectionParameters {
 
+  /**
+   * @return how many items should be included in the collection
+   */
   Integer getNumItems();
 
+  /**
+   * @return determines whether the item resources should also be embedded
+   *         in the collection resource (when it is generated)
+   */
   Boolean getEmbedItems();
 
+  /**
+   * @return the minimum response times of the item resources (in milliseconds)
+   */
   Integer getDelayMs();
 }
