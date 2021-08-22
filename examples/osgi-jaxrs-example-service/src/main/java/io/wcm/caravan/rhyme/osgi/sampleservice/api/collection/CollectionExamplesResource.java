@@ -24,8 +24,6 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
-import io.wcm.caravan.rhyme.api.relations.StandardRelations;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 
 /**
  * Example links to show and test how the Rhyme framework is handling collections of
@@ -99,11 +97,4 @@ public interface CollectionExamplesResource {
   Single<ItemResource> getItemThroughClient(
       @TemplateVariable("index") Integer index,
       @TemplateVariable("delayMs") Integer delayMs);
-
-  /**
-   * just a convenient way to go back to the entry point in the HAL browser
-   * @return a {@link Single} that emits the linked {@link ExamplesEntryPointResource}
-   */
-  @Related(StandardRelations.INDEX)
-  Single<ExamplesEntryPointResource> getEntryPoint();
 }

@@ -35,9 +35,9 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
   private final ExampleServiceRequestContext context;
 
-  private final CollectionParametersImpl params;
+  private final CollectionParametersBean params;
 
-  public ClientCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
+  public ClientCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersBean parameters) {
     this.context = context;
     this.params = parameters;
   }

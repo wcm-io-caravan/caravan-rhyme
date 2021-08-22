@@ -48,15 +48,16 @@ public interface ExamplesEntryPointResource {
   Single<CollectionExamplesResource> getCollectionExamples();
 
   /**
-   * Examples to verify the Rhyme framework's internal caching logic.
+   * Examples for resources that need local in-memory caching
+   * within the Rhyme framework's internals to avoid multiple identical requests to upstream server
    * @return a {@link Single} that emits the linked {@link CachingExamplesResource}
    */
   @Related("examples:caching")
   Single<CachingExamplesResource> getCachingExamples();
 
   /**
-   * Examples for error handling that show how exceptions are mapped to
-   * <a href="https://github.com/blongden/vnd.error">vnd.error</a> errors, and how
+   * Examples for error handling that show how exceptions are rendered as
+   * <a href="https://github.com/blongden/vnd.error">vnd.error</a> resources, and how
    * detailed error information from an upstream response is retained over service boundaries.
    * @return a {@link Single} that emits the linked {@link ErrorExamplesResource}
    */

@@ -37,9 +37,9 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
 
   private final ExampleServiceRequestContext context;
 
-  private final CollectionParametersImpl params;
+  private final CollectionParametersBean params;
 
-  public DelayableCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
+  public DelayableCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersBean parameters) {
     this.context = context;
     this.params = parameters;
   }

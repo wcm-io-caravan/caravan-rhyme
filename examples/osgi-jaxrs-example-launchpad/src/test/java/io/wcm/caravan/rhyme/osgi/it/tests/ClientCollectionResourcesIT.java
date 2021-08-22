@@ -20,7 +20,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParamete
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemState;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 
 @ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
 public class ClientCollectionResourcesIT {
@@ -33,7 +33,7 @@ public class ClientCollectionResourcesIT {
 
   private Single<ItemCollectionResource> getCollectionThroughClient(Integer numItems, Boolean embedItems, Integer delayMs) {
 
-    CollectionParameters params = new CollectionParametersImpl()
+    CollectionParameters params = new CollectionParametersBean()
         .withNumItems(numItems)
         .withEmbedItems(embedItems)
         .withDelayMs(delayMs);

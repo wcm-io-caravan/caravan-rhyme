@@ -22,7 +22,6 @@ package io.wcm.caravan.rhyme.osgi.sampleservice.impl.context;
 import java.util.function.Function;
 
 import javax.ws.rs.BeanParam;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -48,9 +47,10 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.caching.EvenAndOddI
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.ClientItemResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.DelayableCollectionResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.DelayableItemResourceImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ErrorParametersBean;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ErrorsExamplesResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.HalApiClientErrorResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
@@ -94,7 +94,7 @@ public class ExampleServiceJaxRsComponent {
   @GET
   @Path("/caching/evenAndOdd")
   public void getEvenAndOdd(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @BeanParam CollectionParametersImpl parameters) {
+      @BeanParam CollectionParametersBean parameters) {
 
     renderResource(uriInfo, response,
         request -> new EvenAndOddItemsResourceImpl(request, parameters));
@@ -111,7 +111,7 @@ public class ExampleServiceJaxRsComponent {
   @GET
   @Path("/collections/items")
   public void getDelayableCollection(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @BeanParam CollectionParametersImpl parameters) {
+      @BeanParam CollectionParametersBean parameters) {
 
     renderResource(uriInfo, response,
         request -> new DelayableCollectionResourceImpl(request, parameters));
@@ -128,16 +128,16 @@ public class ExampleServiceJaxRsComponent {
   }
 
   @GET
-  @Path("/collection/client/items")
+  @Path("/collection/proxy/items")
   public void getClientCollection(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @BeanParam CollectionParametersImpl parameters) {
+      @BeanParam CollectionParametersBean parameters) {
 
     renderResource(uriInfo, response,
         request -> new ClientCollectionResourceImpl(request, parameters));
   }
 
   @GET
-  @Path("/collections/client/items/{index}")
+  @Path("/collections/proxy/items/{index}")
   public void getClientItem(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
       @PathParam("index") Integer index,
       @QueryParam("delayMs") Integer delayMs) {
@@ -145,7 +145,6 @@ public class ExampleServiceJaxRsComponent {
     renderResource(uriInfo, response,
         request -> new ClientItemResourceImpl(request, index, delayMs));
   }
-
 
   @GET
   @Path("/errors")
@@ -156,24 +155,20 @@ public class ExampleServiceJaxRsComponent {
   }
 
   @GET
-  @Path("/errors/halApiClient")
+  @Path("/errors/client")
   public void getHalApiClientError(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @QueryParam("statusCode") Integer statusCode,
-      @QueryParam("message") @DefaultValue("default error message") String message,
-      @QueryParam("wrapException") @DefaultValue("false") Boolean wrapException) {
+      @BeanParam ErrorParametersBean parameters) {
 
     renderResource(uriInfo, response,
-        request -> new HalApiClientErrorResourceImpl(request, statusCode, message, wrapException));
+        request -> new HalApiClientErrorResourceImpl(request, parameters));
   }
 
   @GET
-  @Path("/errors/serverSide")
+  @Path("/errors/server")
   public void getServerSideError(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @QueryParam("statusCode") Integer statusCode,
-      @QueryParam("message") @DefaultValue("default error message") String message,
-      @QueryParam("wrapException") @DefaultValue("false") Boolean wrapException) {
+      @BeanParam ErrorParametersBean parameters) {
 
     renderResource(uriInfo, response,
-        request -> new ServerSideErrorResourceImpl(request, statusCode, message, wrapException));
+        request -> new ServerSideErrorResourceImpl(request, parameters));
   }
 }

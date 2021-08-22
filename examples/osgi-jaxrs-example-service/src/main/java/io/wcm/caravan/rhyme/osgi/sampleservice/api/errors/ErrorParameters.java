@@ -19,22 +19,27 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.api.errors;
 
-import io.reactivex.rxjava3.core.Maybe;
-import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
-import io.wcm.caravan.rhyme.api.annotations.ResourceState;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
+import io.wcm.caravan.rhyme.api.annotations.Related;
+import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 
 /**
- * This is used as target resource type by the error handling examples,
- * but you'll never see a resource of this type being successfully rendered, because the examples
- * are implemented to always throw an exception which is rendered as a vnd.error resource
+ * an interface to be used as {@link TemplateVariables} parameter for
+ * some {@link Related} methods in the {@link ErrorExamplesResource}
  */
-@HalApiInterface
-public interface ErrorResource {
+public interface ErrorParameters {
 
   /**
-   * @return the properties of the resource
+   * @return the HTTP status code to be sent in the response header
    */
-  @ResourceState
-  Maybe<TitledState> getProperties();
+  Integer getStatusCode();
+
+  /**
+   * @return the message of the exception that will be thrown by the resource implementation
+   */
+  String getMessage();
+
+  /**
+   * @return true if the exception should not be thrown directly, but as cause of another wrapping exception
+   */
+  Boolean getWrapException();
 }
