@@ -24,4 +24,4 @@ If you don't want to run the integration tests, but use the launchpad to *run* t
 
 You can then load the HAL browser at http://localhost:8080/hal to navigate through the resources of the example service. 
 
-Use the 'docs' icons in the HAL browser to see documentation generated with the [rhyme-docs-maven-plugin](../../rhyme-docs-maven-plugin)
+Use the 'docs' icons in the HAL browser to see documentation generated with the [rhyme-docs-maven-plugin](../../docs-maven-plugin)
