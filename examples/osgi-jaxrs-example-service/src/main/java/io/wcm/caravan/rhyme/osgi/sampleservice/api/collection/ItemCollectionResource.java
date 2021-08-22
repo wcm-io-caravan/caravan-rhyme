@@ -24,7 +24,6 @@ import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
-import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 
 /**
@@ -41,13 +40,12 @@ public interface ItemCollectionResource {
   Maybe<TitledState> getState();
 
   /**
-   * Allows to request an alternative version of this resource with different parameters. This link
-   * may not be present in all occurrences of this resource.
-   * @param embedItems true if the item resources should also be embedded in the collection resource
+   * Allows to switch between two versions of this resource: one that is based on embedded resource items, and one that
+   * is only using links.
    * @return a {@link Maybe} that emits the same {@link ItemCollectionResource} with different parameters
    */
   @Related(StandardRelations.ALTERNATE)
-  Maybe<ItemCollectionResource> getAlternate(@TemplateVariable("embedItems") Boolean embedItems);
+  Maybe<ItemCollectionResource> getAlternate();
 
   /**
    * The test resources contained in this collection. Depending on the parameters used to fetch this

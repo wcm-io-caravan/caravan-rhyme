@@ -120,7 +120,7 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
     }
 
     @Override
-    public Maybe<ItemCollectionResource> getAlternate(Boolean embedItems) {
+    public Maybe<ItemCollectionResource> getAlternate() {
 
       return Maybe.empty();
     }

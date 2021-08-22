@@ -51,9 +51,11 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
   }
 
   @Override
-  public Maybe<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
+  public Maybe<ItemCollectionResource> getAlternate() {
 
-    return Maybe.just(new DelayableCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
+    CollectionParametersBean newParams = params.withEmbedItems(!params.getEmbedItems());
+
+    return Maybe.just(new DelayableCollectionResourceImpl(context, newParams));
   }
 
   @Override

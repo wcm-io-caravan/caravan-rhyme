@@ -43,14 +43,13 @@ public class ExampleServiceRequestContext {
 
   public static final String LOCALHOST_CARAVAN_SERVICE_ID = "localhost";
 
-  private final CaravanRhyme rhyme;
-
-  private ExamplesEntryPointResource upstreamEntryPoint;
+  private final ExamplesEntryPointResource upstreamEntryPoint;
 
   private final JaxRsLinkBuilder<ExampleServiceJaxRsComponent> linkBuilder;
 
   public ExampleServiceRequestContext(CaravanRhyme rhyme, JaxRsBundleInfo bundleInfo) {
-    this.rhyme = rhyme;
+
+    this.upstreamEntryPoint = rhyme.getRemoteResource(LOCALHOST_CARAVAN_SERVICE_ID, BASE_PATH + "/", ExamplesEntryPointResource.class);
 
     this.linkBuilder = createLinkBuilder(bundleInfo);
 
@@ -87,9 +86,7 @@ public class ExampleServiceRequestContext {
   }
 
   public ExamplesEntryPointResource getUpstreamEntryPoint() {
-    if (upstreamEntryPoint == null) {
-      upstreamEntryPoint = rhyme.getRemoteResource(LOCALHOST_CARAVAN_SERVICE_ID, BASE_PATH + "/", ExamplesEntryPointResource.class);
-    }
+
     return upstreamEntryPoint;
   }
 }

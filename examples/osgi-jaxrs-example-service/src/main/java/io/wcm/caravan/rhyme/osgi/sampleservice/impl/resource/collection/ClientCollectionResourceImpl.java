@@ -49,9 +49,11 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
   }
 
   @Override
-  public Maybe<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
+  public Maybe<ItemCollectionResource> getAlternate() {
 
-    return Maybe.just(new ClientCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
+    CollectionParametersBean newParams = params.withEmbedItems(!params.getEmbedItems());
+
+    return Maybe.just(new ClientCollectionResourceImpl(context, newParams));
   }
 
   @Override
