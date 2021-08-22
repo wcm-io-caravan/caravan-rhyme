@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.api;
 
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -63,6 +64,24 @@ public interface ExamplesEntryPointResource {
    */
   @Related("examples:errors")
   Single<ErrorExamplesResource> getErrorExamples();
+
+  /**
+   * Only if the entry point was loaded with a URL fingerprinting query parameter, this link will point to a version
+   * of the entry point that doesn't use such a parameter.
+   * @return a {@link Maybe} that emits a link to the {@link ExamplesEntryPointResource} if the current version
+   *         of this resource was loaded with a fingerprinted URL
+   */
+  @Related("latest-version")
+  Maybe<ExamplesEntryPointResource> getLatestVersion();
+
+  /**
+   * Only if the entry point was loaded <b>without</b> a URL fingerprinting query parameter, this link will point to a
+   * version of the entry point that does use such a parameter.
+   * @return a {@link Maybe} that emits a fingerprinted link to the {@link ExamplesEntryPointResource} if the current
+   *         version of this resource was not loaded with a fingerprinted URL
+   */
+  @Related("bookmark")
+  Maybe<ExamplesEntryPointResource> getPermalink();
 
   /**
    * Allows clients using {@link Rhyme#getRemoteResource(String, Class)} or

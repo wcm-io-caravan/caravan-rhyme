@@ -81,7 +81,7 @@ public class ExampleServiceJaxRsComponent {
   public void getEntryPoint(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
 
     renderResource(uriInfo, response,
-        request -> new ExamplesEntryPointResourceImpl(request));
+        request -> new ExamplesEntryPointResourceImpl(request, request.hasFingerPrintedUrl()));
   }
 
   @GET

@@ -43,11 +43,17 @@ public class ExampleServiceRequestContext {
 
   public static final String LOCALHOST_CARAVAN_SERVICE_ID = "localhost";
 
+  private final CaravanRhyme rhyme;
+  private final JaxRsBundleInfo bundleInfo;
+
   private final ExamplesEntryPointResource upstreamEntryPoint;
 
   private final JaxRsLinkBuilder<ExampleServiceJaxRsComponent> linkBuilder;
 
   public ExampleServiceRequestContext(CaravanRhyme rhyme, JaxRsBundleInfo bundleInfo) {
+
+    this.rhyme = rhyme;
+    this.bundleInfo = bundleInfo;
 
     this.upstreamEntryPoint = rhyme.getRemoteResource(LOCALHOST_CARAVAN_SERVICE_ID, BASE_PATH + "/", ExamplesEntryPointResource.class);
 
@@ -88,5 +94,15 @@ public class ExampleServiceRequestContext {
   public ExamplesEntryPointResource getUpstreamEntryPoint() {
 
     return upstreamEntryPoint;
+  }
+
+  public boolean hasFingerPrintedUrl() {
+
+    return rhyme.getRequestUri().getQueryParameters().containsKey(BUNDLE_VERSION_QUERY_PARAM);
+  }
+
+  public String getBundleVersion() {
+
+    return bundleInfo.getBundleVersion();
   }
 }
