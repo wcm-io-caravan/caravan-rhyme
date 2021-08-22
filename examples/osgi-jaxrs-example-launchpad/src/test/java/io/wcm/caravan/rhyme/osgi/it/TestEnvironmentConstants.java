@@ -27,7 +27,7 @@ public final class TestEnvironmentConstants {
     // this class contains only constants
   }
 
-  public static final String SERVER_URL = "http://localhost:8080"; // System.getProperty("launchpad.http.server.url");
+  public static final String SERVER_URL = "http://localhost:8080";
 
   public static final String CARAVAN_SERVICE_ID = ExampleServiceRequestContext.LOCALHOST_CARAVAN_SERVICE_ID;
 
