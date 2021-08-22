@@ -13,7 +13,7 @@ which is used to run the [osgi-jaxrs-example-service](../osgi-jaxrs-example-serv
 This will run all integration tests defined [here](src/test/java/io/wcm/caravan/rhyme/osgi/it/tests).
 
 These integration tests not only ensure that the resources itself are successfully generated. Because the tests itself are also using a 
-`CaravanHalApiClient` to navigate through the resources, it is also ensured that the links between those resources are correct, and all content 
+Rhyme `HalApiClient` to navigate through the resources, it is also ensured that the links between those resources are correct and all content 
 is properly parsed by Rhyme's dynamic client proxy code.
 
 ## Build and keep launchpad running
