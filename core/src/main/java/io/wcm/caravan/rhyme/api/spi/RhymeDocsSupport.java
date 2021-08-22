@@ -27,12 +27,16 @@ import org.osgi.annotation.versioning.ConsumerType;
 
 import com.google.common.base.Charsets;
 
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 
 /**
  * SPI interface to customize the integration of HTML documentation generated with
- * the rhyme-docs-maven-plugin
+ * the rhyme-docs-maven-plugin. An instance implementing this interface needs
+ * to be provided to the {@link RhymeBuilder#withRhymeDocsSupport(RhymeDocsSupport)} method
+ * so that "curies" links to the documentation will be added by the {@link AsyncHalResponseRenderer}.
  */
 @ConsumerType
 public interface RhymeDocsSupport {
