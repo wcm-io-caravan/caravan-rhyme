@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.impl.context;
 
-import static io.wcm.caravan.rhyme.osgi.sampleservice.impl.jaxrs.ExampleServiceJaxRsApplication.BASE_PATH;
-
 import java.time.Duration;
 import java.util.Map;
 
@@ -36,6 +34,7 @@ import io.wcm.caravan.rhyme.jaxrs.api.JaxRsBundleInfo;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsLinkBuilder;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.jaxrs.ExampleServiceJaxRsComponent;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 
 public class ExampleServiceRequestContext {
 
@@ -55,11 +54,16 @@ public class ExampleServiceRequestContext {
     this.rhyme = rhyme;
     this.bundleInfo = bundleInfo;
 
-    this.upstreamEntryPoint = rhyme.getRemoteResource(LOCALHOST_CARAVAN_SERVICE_ID, BASE_PATH + "/", ExamplesEntryPointResource.class);
-
     this.linkBuilder = createLinkBuilder(bundleInfo);
 
+    this.upstreamEntryPoint = rhyme.getRemoteResource(LOCALHOST_CARAVAN_SERVICE_ID, constructEntryPointUrl(), ExamplesEntryPointResource.class);
+
     setResponseMaxAge(rhyme);
+  }
+
+  private String constructEntryPointUrl() {
+
+    return new ExamplesEntryPointResourceImpl(this, true).createLink().getHref();
   }
 
   private static JaxRsLinkBuilder<ExampleServiceJaxRsComponent> createLinkBuilder(JaxRsBundleInfo bundleInfo) {
