@@ -1,7 +1,7 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> wcm.io Caravan Rhyme - OSGi JAX-RS Launchpad
 ======
 
-# Introduction
+# Summary
 
 This module contains a provisioned [Sling Launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) 
 which is used to run the [osgi-jaxrs-example-service](../osgi-jaxrs-example-service) in an Apache Felix OSGi container.
