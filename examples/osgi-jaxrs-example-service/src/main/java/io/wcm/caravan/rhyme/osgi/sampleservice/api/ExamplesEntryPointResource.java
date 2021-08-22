@@ -35,6 +35,16 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorExamplesResource;
  * The HAL API entry point for the OSGi/JAX-RS example service. This service
  * is used for integration tests for the asynchronous request/response
  * handling using <a href="https://github.com/ReactiveX/RxJava">RxJava 3</a>.
+ * <p>
+ * The links here also show how the Rhyme framework encourages to use URL fingerprinting to ensure
+ * that all resource can be considered immutable (i.e. can be cached indefinitely).
+ * Any links to related resources from this entry point contain an additional parameter
+ * that specifies the bundle version. Whenever a new version of the bundle is deployed, this
+ * version parameter will change, and clients will be directed to a new URL and avoid that cached resources
+ * from a previous version of the service will be used. What's important for this to work is that
+ * the entry point itself can only be cached for a short amount of time (unless a special
+ * 'bookmark' variation of the entry point was requested).
+ * </p>
  */
 @HalApiInterface
 public interface ExamplesEntryPointResource {
@@ -66,8 +76,10 @@ public interface ExamplesEntryPointResource {
   Single<ErrorExamplesResource> getErrorExamples();
 
   /**
-   * Only if the entry point was loaded with a URL fingerprinting query parameter, this link will point to a version
-   * of the entry point that doesn't use such a parameter.
+   * This link will be present only if the entry point was loaded with a URL fingerprinting query parameter.
+   * It will point to a version of the entry point that doesn't use such a parameter, and therefore is only
+   * cachable for a limited amount of time (as the links to related resources will change whenever a new bundle
+   * version is deployed).
    * @return a {@link Maybe} that emits a link to the {@link ExamplesEntryPointResource} if the current version
    *         of this resource was loaded with a fingerprinted URL
    */
@@ -75,8 +87,8 @@ public interface ExamplesEntryPointResource {
   Maybe<ExamplesEntryPointResource> getLatestVersion();
 
   /**
-   * Only if the entry point was loaded <b>without</b> a URL fingerprinting query parameter, this link will point to a
-   * version of the entry point that does use such a parameter.
+   * This link will be present only if the entry point was loaded <b>without</b> a URL fingerprinting query parameter,
+   * It will point to a fingerprinted version of the entry point that can be cached indefinitely.
    * @return a {@link Maybe} that emits a fingerprinted link to the {@link ExamplesEntryPointResource} if the current
    *         version of this resource was not loaded with a fingerprinted URL
    */
