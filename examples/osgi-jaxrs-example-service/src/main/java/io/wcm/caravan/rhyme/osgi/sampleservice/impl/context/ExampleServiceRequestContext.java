@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.impl.context;
 
-import static io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceApplication.BASE_PATH;
+import static io.wcm.caravan.rhyme.osgi.sampleservice.impl.jaxrs.ExampleServiceJaxRsApplication.BASE_PATH;
 
 import java.time.Duration;
 import java.util.Map;
@@ -35,6 +35,7 @@ import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsBundleInfo;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsLinkBuilder;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.jaxrs.ExampleServiceJaxRsComponent;
 
 public class ExampleServiceRequestContext {
 
@@ -87,7 +88,7 @@ public class ExampleServiceRequestContext {
 
   public ExamplesEntryPointResource getUpstreamEntryPoint() {
     if (upstreamEntryPoint == null) {
-      upstreamEntryPoint = rhyme.getRemoteResource(LOCALHOST_CARAVAN_SERVICE_ID, BASE_PATH, ExamplesEntryPointResource.class);
+      upstreamEntryPoint = rhyme.getRemoteResource(LOCALHOST_CARAVAN_SERVICE_ID, BASE_PATH + "/", ExamplesEntryPointResource.class);
     }
     return upstreamEntryPoint;
   }

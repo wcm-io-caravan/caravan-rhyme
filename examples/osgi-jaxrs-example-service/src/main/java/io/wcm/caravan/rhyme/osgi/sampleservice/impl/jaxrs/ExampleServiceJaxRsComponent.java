@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.osgi.sampleservice.impl.context;
+package io.wcm.caravan.rhyme.osgi.sampleservice.impl.jaxrs;
 
 import java.util.function.Function;
 
@@ -41,6 +41,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
 import io.wcm.caravan.rhyme.caravan.api.CaravanRhymeRequestCycle;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsBundleInfo;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.caching.EvenAndOddItemsResourceImpl;
@@ -57,7 +58,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ServerSideEr
 
 @Component(service = ExampleServiceJaxRsComponent.class, scope = ServiceScope.PROTOTYPE)
 @JaxrsResource
-@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
+@JaxrsApplicationSelect(ExampleServiceJaxRsApplication.SELECTOR)
 public class ExampleServiceJaxRsComponent {
 
   @Reference

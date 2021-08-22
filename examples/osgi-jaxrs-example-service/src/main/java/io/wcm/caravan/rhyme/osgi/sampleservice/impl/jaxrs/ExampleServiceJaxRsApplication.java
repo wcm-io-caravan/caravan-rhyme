@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.osgi.sampleservice.impl.context;
+package io.wcm.caravan.rhyme.osgi.sampleservice.impl.jaxrs;
 
 import javax.ws.rs.core.Application;
 
@@ -26,9 +26,9 @@ import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationBase;
 import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsName;
 
 @Component(service = Application.class)
-@JaxrsApplicationBase(ExampleServiceApplication.BASE_PATH)
-@JaxrsName(ExampleServiceApplication.JAXRS_NAME)
-public class ExampleServiceApplication extends Application {
+@JaxrsApplicationBase(ExampleServiceJaxRsApplication.BASE_PATH)
+@JaxrsName(ExampleServiceJaxRsApplication.JAXRS_NAME)
+public class ExampleServiceJaxRsApplication extends Application {
 
   public static final String BASE_PATH = "";
 
