@@ -108,7 +108,7 @@ The return type of these functions are again annotated java interfaces. They des
 - `Optional` is used when it is not guaranteed that a link will be present (e.g. on the last page, there will be no `next` link).
 - The method annotated with [@ResourceState](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceState.java) finally returns the actual data structure containing the core properties of an item.
 
-As return type for the @ResourceState method, you could either use a [jackson](https://github.com/FasterXML/jackson) `ObjectNode` or any other type that can be  parsed from and serialized to JSON using the default jackson `ObjectMapper`. Using generic JSON types in your API is preferred if you are forwarding JSON resources from an external source, and those JSON resources' structure is expected to be extended frequently.
+As return type for the @ResourceState method, you could either use a [Jackson](https://github.com/FasterXML/jackson) `ObjectNode` or any other type that can be  parsed from and serialized to JSON using the default jackson `ObjectMapper`. Using generic JSON types in your API is preferred if you are forwarding JSON resources from an external source, and those JSON resources' structure is expected to be extended frequently.
 
 If you want to provide a strongly **typed** API to your consumers, you should define simple classes that match the JSON structure of your resources' state. You shouldn't share any **code** with theses classes, so a simple struct-like class like this works well:
 
@@ -119,6 +119,7 @@ If you want to provide a strongly **typed** API to your consumers, you should de
     public String title;
   }
 ```
+If you don't like this style with public mutable fields, you can define the class with private fields and access methods. But be aware that this class will have to be deserialized with Jackson on the client side, so you must use annotations (e.g. `@JsonCreator`) that allow instances with the properties from the parsed JSON to be created.
 
 In the end, an actual HAL resource that matches the `ItemResource` interface defined above would look like this:
 
