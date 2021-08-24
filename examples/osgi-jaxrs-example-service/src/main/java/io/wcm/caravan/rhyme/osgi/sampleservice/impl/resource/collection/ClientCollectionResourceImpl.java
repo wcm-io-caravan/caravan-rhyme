@@ -35,17 +35,25 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
   private final ExampleServiceRequestContext context;
 
-  private final CollectionParametersImpl params;
+  private final CollectionParametersBean params;
 
-  public ClientCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
+  public ClientCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersBean parameters) {
     this.context = context;
     this.params = parameters;
   }
 
   @Override
-  public Maybe<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
+  public Maybe<TitledState> getState() {
 
-    return Maybe.just(new ClientCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
+    return Maybe.empty();
+  }
+
+  @Override
+  public Maybe<ItemCollectionResource> getAlternate() {
+
+    CollectionParametersBean newParams = params.withEmbedItems(!params.getEmbedItems());
+
+    return Maybe.just(new ClientCollectionResourceImpl(context, newParams));
   }
 
   @Override
@@ -53,15 +61,9 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
 
     return context.getUpstreamEntryPoint()
         .getCollectionExamples()
-        .flatMap(res -> res.getCollection(params))
+        .flatMap(res -> res.getDelayedCollection(params))
         .flatMapObservable(ItemCollectionResource::getItems)
         .map(EmbeddedItemResourceImpl::new);
-  }
-
-  @Override
-  public Maybe<TitledState> getState() {
-
-    return Maybe.empty();
   }
 
   @Override
@@ -99,16 +101,9 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
     public Single<ItemState> getProperties() {
 
       return resource.getProperties()
-          .map(clientState -> {
-
-            ItemState itemState = new ItemState();
-            itemState.title = clientState.title;
-            itemState.index = clientState.index;
-            itemState.thread = Thread.currentThread().getName();
-
-            return itemState;
-          });
+          .map(ClientItemResourceImpl::cloneStateWithCurrentThread);
     }
+
 
     @Override
     public boolean isEmbedded() {

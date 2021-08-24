@@ -93,6 +93,7 @@ public class DelayableItemResourceImpl implements ItemResource, LinkableResource
 
   @Override
   public boolean isEmbedded() {
+
     return embedded;
   }
 

@@ -20,11 +20,16 @@
 package io.wcm.caravan.rhyme.osgi.sampleservice.api.collection;
 
 
+/** Defines the JSON structure of the {@link ItemResource}'s state */
 public class ItemState {
 
+  /** A title to be displayed in the HAL browser */
   public String title;
 
+  /** The (zero-based) position of this item within a collection */
   public int index;
 
+  /** The name of the Java thread that generated or processed this resource */
   public String thread;
+
 }

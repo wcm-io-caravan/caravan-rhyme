@@ -1,6 +1,6 @@
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVICE_ID;
+import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.ENTRY_POINT_PATH;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,7 +20,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParamete
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemState;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 
 @ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
 public class CollectionResourcesIT {
@@ -28,18 +28,18 @@ public class CollectionResourcesIT {
   private final ExamplesEntryPointResource entryPoint;
 
   public CollectionResourcesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
+    this.entryPoint = halApiClient.getRemoteResource(ENTRY_POINT_PATH, ExamplesEntryPointResource.class);
   }
 
   private Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems, Integer delayMs) {
 
-    CollectionParameters params = new CollectionParametersImpl()
+    CollectionParameters params = new CollectionParametersBean()
         .withNumItems(numItems)
         .withEmbedItems(embedItems)
         .withDelayMs(delayMs);
 
     return entryPoint.getCollectionExamples()
-        .flatMap(collections -> collections.getCollection(params));
+        .flatMap(collections -> collections.getDelayedCollection(params));
   }
 
   private List<ItemState> getCollectionItems(Integer numItems, Boolean embedItems, Integer delayMs) {

@@ -17,30 +17,29 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.osgi.sampleservice.api.collection;
+package io.wcm.caravan.rhyme.osgi.sampleservice.api.errors;
 
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 
 /**
  * an interface to be used as {@link TemplateVariables} parameter for
- * some {@link Related} methods in the {@link CollectionExamplesResource}
+ * some {@link Related} methods in the {@link ErrorExamplesResource}
  */
-public interface CollectionParameters {
+public interface ErrorParameters {
 
   /**
-   * @return how many items should be included in the collection
+   * @return the HTTP status code to be sent in the response header
    */
-  Integer getNumItems();
+  Integer getStatusCode();
 
   /**
-   * @return determines whether the item resources should also be embedded
-   *         in the collection resource (when it is generated)
+   * @return the message of the exception that will be thrown by the resource implementation
    */
-  Boolean getEmbedItems();
+  String getMessage();
 
   /**
-   * @return the minimum response times of the item resources (in milliseconds)
+   * @return true if the exception should not be thrown directly, but as cause of another wrapping exception
    */
-  Integer getDelayMs();
+  Boolean getWrapException();
 }

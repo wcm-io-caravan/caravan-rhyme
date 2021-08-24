@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
+import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
 
@@ -30,30 +31,27 @@ public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableRes
 
   private final ExampleServiceRequestContext context;
 
-  private final Integer statusCode;
-  private final String message;
-  private final Boolean withCause;
+  private final ErrorParametersBean parameters;
 
-  public HalApiClientErrorResourceImpl(ExampleServiceRequestContext context, Integer statusCode, String message, Boolean withCause) {
+  public HalApiClientErrorResourceImpl(ExampleServiceRequestContext context, ErrorParameters parameters) {
+
     this.context = context;
-    this.statusCode = statusCode;
-    this.message = message;
-    this.withCause = withCause;
+    this.parameters = ErrorParametersBean.clone(parameters);
   }
 
   @Override
-  public Maybe<TitledState> getState() {
+  public Maybe<TitledState> getProperties() {
 
     return context.getUpstreamEntryPoint()
         .getErrorExamples()
-        .flatMap(examples -> examples.provokeError(statusCode, message, withCause))
-        .flatMapMaybe(ErrorResource::getState);
+        .flatMap(examples -> examples.simulateErrorOnServer(parameters))
+        .flatMapMaybe(ErrorResource::getProperties);
   }
 
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo((resource, uriInfo, response) -> resource.getHalApiClientError(uriInfo, response, statusCode, message, withCause))
-        .setTitle("Trigger an error when executing a HTTP request to an upstream server");
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getHalApiClientError(uriInfo, response, parameters))
+        .setTitle("Simulate an error when executing an HTTP request to an upstream server");
   }
 }

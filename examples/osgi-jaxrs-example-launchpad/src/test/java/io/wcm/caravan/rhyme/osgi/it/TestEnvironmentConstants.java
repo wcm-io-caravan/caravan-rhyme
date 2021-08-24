@@ -19,13 +19,18 @@
  */
 package io.wcm.caravan.rhyme.osgi.it;
 
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
+
 public final class TestEnvironmentConstants {
 
   private TestEnvironmentConstants() {
     // this class contains only constants
   }
 
-  public static final String SERVER_URL = "http://localhost:8080"; // System.getProperty("launchpad.http.server.url");
-  public static final String SERVICE_ID = "/caravan/hal/sample-service";
+  public static final String SERVER_URL = "http://localhost:8080";
+
+  public static final String CARAVAN_SERVICE_ID = ExampleServiceRequestContext.LOCALHOST_CARAVAN_SERVICE_ID;
+
+  public static final String ENTRY_POINT_PATH = "/";
 
 }

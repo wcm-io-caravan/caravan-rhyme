@@ -37,17 +37,25 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
 
   private final ExampleServiceRequestContext context;
 
-  private final CollectionParametersImpl params;
+  private final CollectionParametersBean params;
 
-  public DelayableCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
+  public DelayableCollectionResourceImpl(ExampleServiceRequestContext context, CollectionParametersBean parameters) {
     this.context = context;
     this.params = parameters;
   }
 
   @Override
-  public Maybe<ItemCollectionResource> getAlternate(Boolean shouldEmbedItems) {
+  public Maybe<TitledState> getState() {
 
-    return Maybe.just(new DelayableCollectionResourceImpl(context, params.withEmbedItems(shouldEmbedItems)));
+    return Maybe.empty();
+  }
+
+  @Override
+  public Maybe<ItemCollectionResource> getAlternate() {
+
+    CollectionParametersBean newParams = params.withEmbedItems(!params.getEmbedItems());
+
+    return Maybe.just(new DelayableCollectionResourceImpl(context, newParams));
   }
 
   @Override
@@ -55,12 +63,6 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
 
     return Observable.range(0, params.getNumItems())
         .map(index -> new DelayableItemResourceImpl(context, index, params.getDelayMs()).setEmbedded(params.getEmbedItems()));
-  }
-
-  @Override
-  public Maybe<TitledState> getState() {
-
-    return Maybe.empty();
   }
 
   @Override

@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorExamplesResource;
+import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
 
@@ -35,15 +36,15 @@ public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, Linkab
   }
 
   @Override
-  public Single<ErrorResource> provokeError(Integer statusCode, String message, Boolean withCause) {
+  public Single<ErrorResource> simulateErrorOnServer(ErrorParameters parameters) {
 
-    return Single.just(new ServerSideErrorResourceImpl(context, statusCode, message, withCause));
+    return Single.just(new ServerSideErrorResourceImpl(context, parameters));
   }
 
   @Override
-  public Single<ErrorResource> provokeHttpClientError(Integer statusCode, String message, Boolean withCause) {
+  public Single<ErrorResource> testClientErrorHandling(ErrorParameters parameters) {
 
-    return Single.just(new HalApiClientErrorResourceImpl(context, statusCode, message, withCause));
+    return Single.just(new HalApiClientErrorResourceImpl(context, parameters));
   }
 
   @Override
@@ -52,4 +53,5 @@ public class ErrorsExamplesResourceImpl implements ErrorExamplesResource, Linkab
     return context.buildLinkTo((resource, uriInfo, response) -> resource.getErrorsExamples(uriInfo, response))
         .setTitle("Examples for error handling");
   }
+
 }

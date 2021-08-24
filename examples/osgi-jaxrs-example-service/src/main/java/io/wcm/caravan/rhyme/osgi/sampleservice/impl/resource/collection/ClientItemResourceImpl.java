@@ -49,8 +49,9 @@ public class ClientItemResourceImpl implements ItemResource, LinkableResource {
 
     return context.getUpstreamEntryPoint()
         .getCollectionExamples()
-        .flatMap(examples -> examples.getItem(index, delayMs))
-        .flatMap(ItemResource::getProperties);
+        .flatMap(examples -> examples.getDelayedItem(index, delayMs))
+        .flatMap(ItemResource::getProperties)
+        .map(ClientItemResourceImpl::cloneStateWithCurrentThread);
   }
 
   @Override
@@ -69,5 +70,16 @@ public class ClientItemResourceImpl implements ItemResource, LinkableResource {
 
     return context.buildLinkTo((resource, uriInfo, response) -> resource.getClientItem(uriInfo, response, index, delayMs))
         .setTitle(title);
+  }
+
+  static ItemState cloneStateWithCurrentThread(ItemState clientState) {
+
+    ItemState itemState = new ItemState();
+
+    itemState.title = clientState.title;
+    itemState.index = clientState.index;
+    itemState.thread = Thread.currentThread().getName();
+
+    return itemState;
   }
 }

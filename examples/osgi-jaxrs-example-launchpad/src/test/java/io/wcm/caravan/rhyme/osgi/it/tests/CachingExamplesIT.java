@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVICE_ID;
+import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.ENTRY_POINT_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -40,7 +40,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.caching.EvenOddItemsResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemState;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 
 @ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
 public class CachingExamplesIT {
@@ -48,12 +48,12 @@ public class CachingExamplesIT {
   private final ExamplesEntryPointResource entryPoint;
 
   public CachingExamplesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
+    this.entryPoint = halApiClient.getRemoteResource(ENTRY_POINT_PATH, ExamplesEntryPointResource.class);
   }
 
   private List<ItemState> getItems(int numItems, int delayMs, Function<EvenOddItemsResource, SingleSource<ItemCollectionResource>> func) {
 
-    CollectionParametersImpl parameters = new CollectionParametersImpl()
+    CollectionParametersBean parameters = new CollectionParametersBean()
         .withNumItems(numItems)
         .withEmbedItems(false)
         .withDelayMs(delayMs);

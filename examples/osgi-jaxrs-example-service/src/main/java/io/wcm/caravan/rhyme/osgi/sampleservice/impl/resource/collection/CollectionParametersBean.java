@@ -19,12 +19,18 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParameters;
 
-public class CollectionParametersImpl implements CollectionParameters {
+/**
+ * An implementation of the {@link CollectionParameters} interface that
+ * contains JAX-RS annotations so it can be used as a {@link BeanParam}
+ * argument in a resource method signature
+ */
+public class CollectionParametersBean implements CollectionParameters {
 
   @QueryParam("numItems")
   private Integer numItems;
@@ -52,13 +58,13 @@ public class CollectionParametersImpl implements CollectionParameters {
     return this.delayMs;
   }
 
-  static CollectionParametersImpl clone(CollectionParameters other) {
+  static CollectionParametersBean clone(CollectionParameters other) {
 
     if (other == null) {
       return null;
     }
 
-    CollectionParametersImpl cloned = new CollectionParametersImpl();
+    CollectionParametersBean cloned = new CollectionParametersBean();
 
     cloned.numItems = other.getNumItems();
     cloned.embedItems = other.getEmbedItems();
@@ -67,20 +73,20 @@ public class CollectionParametersImpl implements CollectionParameters {
     return cloned;
   }
 
-  public CollectionParametersImpl withNumItems(Integer value) {
-    CollectionParametersImpl cloned = clone(this);
+  public CollectionParametersBean withNumItems(Integer value) {
+    CollectionParametersBean cloned = clone(this);
     cloned.numItems = value;
     return cloned;
   }
 
-  public CollectionParametersImpl withEmbedItems(Boolean value) {
-    CollectionParametersImpl cloned = clone(this);
+  public CollectionParametersBean withEmbedItems(Boolean value) {
+    CollectionParametersBean cloned = clone(this);
     cloned.embedItems = value;
     return cloned;
   }
 
-  public CollectionParametersImpl withDelayMs(Integer value) {
-    CollectionParametersImpl cloned = clone(this);
+  public CollectionParametersBean withDelayMs(Integer value) {
+    CollectionParametersBean cloned = clone(this);
     cloned.delayMs = value;
     return cloned;
   }

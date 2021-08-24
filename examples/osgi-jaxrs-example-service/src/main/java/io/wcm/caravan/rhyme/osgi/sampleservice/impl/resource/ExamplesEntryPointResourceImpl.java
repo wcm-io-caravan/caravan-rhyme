@@ -19,9 +19,7 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource;
 
-import java.time.Duration;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang3.StringUtils;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
@@ -42,14 +40,13 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
 
   private final ExampleServiceRequestContext context;
 
-  public ExamplesEntryPointResourceImpl(ExampleServiceRequestContext context) {
-    this.context = context;
-  }
+  private final boolean useFingerprintInSelfLink;
 
-  @Override
-  public Maybe<ObjectNode> getState() {
-    context.limitMaxAge(Duration.ofSeconds(60));
-    return Maybe.empty();
+  public ExamplesEntryPointResourceImpl(ExampleServiceRequestContext context, boolean useFingerprintInSelfLink) {
+
+    this.context = context;
+
+    this.useFingerprintInSelfLink = useFingerprintInSelfLink;
   }
 
   @Override
@@ -79,8 +76,39 @@ public class ExamplesEntryPointResourceImpl implements ExamplesEntryPointResourc
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo((resource, uriInfo, response) -> resource.getEntryPoint(uriInfo, response))
-        .setTitle("The HAL API entry point of the " + context.getServiceId() + " service");
+    Link link = context.buildLinkTo((resource, uriInfo, response) -> resource.getEntryPoint(uriInfo, response));
+
+    String title = "The HAL API entry point of the OSGi/JAX-RS example service";
+
+    if (!useFingerprintInSelfLink) {
+      link.setHref(StringUtils.substringBefore(link.getHref(), "?"));
+      title += " (current version)";
+    }
+    else {
+      title += " (immutable for bundle version " + context.getBundleVersion() + ")";
+    }
+
+    return link.setTitle(title);
+  }
+
+  @Override
+  public Maybe<ExamplesEntryPointResource> getLatestVersion() {
+
+    if (context.hasFingerPrintedUrl()) {
+      return Maybe.just(new ExamplesEntryPointResourceImpl(context, false));
+    }
+
+    return Maybe.empty();
+  }
+
+  @Override
+  public Maybe<ExamplesEntryPointResource> getPermalink() {
+
+    if (!context.hasFingerPrintedUrl()) {
+      return Maybe.just(new ExamplesEntryPointResourceImpl(context, true));
+    }
+
+    return Maybe.empty();
   }
 
 }

@@ -17,12 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.osgi.sampleservice.impl.context;
+package io.wcm.caravan.rhyme.osgi.sampleservice.impl.jaxrs;
 
 import java.util.function.Function;
 
 import javax.ws.rs.BeanParam;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -42,22 +41,24 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
 import io.wcm.caravan.rhyme.caravan.api.CaravanRhymeRequestCycle;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsBundleInfo;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.caching.CachingExamplesResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.caching.EvenAndOddItemsResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.ClientItemResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionExamplesResourceImpl;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.DelayableCollectionResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.DelayableItemResourceImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ErrorParametersBean;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ErrorsExamplesResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.HalApiClientErrorResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ServerSideErrorResourceImpl;
 
 @Component(service = ExampleServiceJaxRsComponent.class, scope = ServiceScope.PROTOTYPE)
 @JaxrsResource
-@JaxrsApplicationSelect(ExampleServiceApplication.SELECTOR)
+@JaxrsApplicationSelect(ExampleServiceJaxRsApplication.SELECTOR)
 public class ExampleServiceJaxRsComponent {
 
   @Reference
@@ -76,11 +77,11 @@ public class ExampleServiceJaxRsComponent {
   }
 
   @GET
-  @Path("")
+  @Path("/")
   public void getEntryPoint(@Context UriInfo uriInfo, @Suspended AsyncResponse response) {
 
     renderResource(uriInfo, response,
-        request -> new ExamplesEntryPointResourceImpl(request));
+        request -> new ExamplesEntryPointResourceImpl(request, request.hasFingerPrintedUrl()));
   }
 
   @GET
@@ -94,7 +95,7 @@ public class ExampleServiceJaxRsComponent {
   @GET
   @Path("/caching/evenAndOdd")
   public void getEvenAndOdd(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @BeanParam CollectionParametersImpl parameters) {
+      @BeanParam CollectionParametersBean parameters) {
 
     renderResource(uriInfo, response,
         request -> new EvenAndOddItemsResourceImpl(request, parameters));
@@ -111,7 +112,7 @@ public class ExampleServiceJaxRsComponent {
   @GET
   @Path("/collections/items")
   public void getDelayableCollection(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @BeanParam CollectionParametersImpl parameters) {
+      @BeanParam CollectionParametersBean parameters) {
 
     renderResource(uriInfo, response,
         request -> new DelayableCollectionResourceImpl(request, parameters));
@@ -128,16 +129,16 @@ public class ExampleServiceJaxRsComponent {
   }
 
   @GET
-  @Path("/collection/client/items")
+  @Path("/collection/proxy/items")
   public void getClientCollection(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @BeanParam CollectionParametersImpl parameters) {
+      @BeanParam CollectionParametersBean parameters) {
 
     renderResource(uriInfo, response,
         request -> new ClientCollectionResourceImpl(request, parameters));
   }
 
   @GET
-  @Path("/collections/client/items/{index}")
+  @Path("/collections/proxy/items/{index}")
   public void getClientItem(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
       @PathParam("index") Integer index,
       @QueryParam("delayMs") Integer delayMs) {
@@ -145,7 +146,6 @@ public class ExampleServiceJaxRsComponent {
     renderResource(uriInfo, response,
         request -> new ClientItemResourceImpl(request, index, delayMs));
   }
-
 
   @GET
   @Path("/errors")
@@ -156,24 +156,20 @@ public class ExampleServiceJaxRsComponent {
   }
 
   @GET
-  @Path("/errors/halApiClient")
+  @Path("/errors/client")
   public void getHalApiClientError(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @QueryParam("statusCode") Integer statusCode,
-      @QueryParam("message") @DefaultValue("default error message") String message,
-      @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
+      @BeanParam ErrorParametersBean parameters) {
 
     renderResource(uriInfo, response,
-        request -> new HalApiClientErrorResourceImpl(request, statusCode, message, withCause));
+        request -> new HalApiClientErrorResourceImpl(request, parameters));
   }
 
   @GET
-  @Path("/errors/serverSide")
+  @Path("/errors/server")
   public void getServerSideError(@Context UriInfo uriInfo, @Suspended AsyncResponse response,
-      @QueryParam("statusCode") Integer statusCode,
-      @QueryParam("message") @DefaultValue("default error message") String message,
-      @QueryParam("withCause") @DefaultValue("false") Boolean withCause) {
+      @BeanParam ErrorParametersBean parameters) {
 
     renderResource(uriInfo, response,
-        request -> new ServerSideErrorResourceImpl(request, statusCode, message, withCause));
+        request -> new ServerSideErrorResourceImpl(request, parameters));
   }
 }
