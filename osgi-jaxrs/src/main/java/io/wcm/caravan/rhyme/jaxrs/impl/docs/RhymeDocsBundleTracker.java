@@ -66,19 +66,6 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
     bundleTracker.close();
   }
 
-  @Override
-  public String addingBundle(Bundle bundle, BundleEvent event) {
-
-    log.debug("Bundle {} was added", bundle.getSymbolicName());
-
-    if (hasRhymeDocs(bundle)) {
-      rhymeDocsSupport.registerBundle(bundle);
-      return bundle.getSymbolicName();
-    }
-
-    return null;
-  }
-
   private static boolean hasRhymeDocs(Bundle bundle) {
 
     String rhymeDocsPath = "/" + RhymeDocsSupport.FOLDER;
@@ -92,6 +79,20 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
 
     log.info("Rhyme docs were found in bundle {} at {}", bundle.getSymbolicName(), rhymeDocsUrl);
     return true;
+  }
+  
+  @Override
+  public String addingBundle(Bundle bundle, BundleEvent event) {
+
+    log.debug("Bundle {} was added", bundle.getSymbolicName());
+
+    if (!hasRhymeDocs(bundle)) {
+      return null;
+    }
+
+    rhymeDocsSupport.registerBundle(bundle);
+  
+    return bundle.getSymbolicName();  
   }
 
   @Override
