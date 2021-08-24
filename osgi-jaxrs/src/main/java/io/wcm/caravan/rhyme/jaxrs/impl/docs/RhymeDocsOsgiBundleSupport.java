@@ -91,8 +91,8 @@ public class RhymeDocsOsgiBundleSupport implements RhymeDocsSupport {
   }
 
   /**
-   * Call by the {@link RhymeDocsBundleTracker} if a bundle has been de-activated
-   * @param bundle any OSGI bundle
+   * Called by the {@link RhymeDocsBundleTracker} if a bundle has been de-activated
+   * @param bundle a bundle known to contain a {@link RhymeDocsSupport#FOLDER} folder
    */
   void unregisterBundle(Bundle bundle) {
 
