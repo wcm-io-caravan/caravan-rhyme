@@ -349,4 +349,19 @@ public class RelatedResourceTest {
 
     assertThat(embedded1).containsExactlyElementsOf(embedded2);
   }
+
+  @Test
+  public void calling_hashCode_on_client_proxy_throws_exception() throws Exception {
+
+    entryPoint.createLinked(ITEM).setText("item text");
+
+    ResourceWithRequiredState linkedResource = createClientProxy(ResourceWithSingleRelated.class)
+        .getItem();
+
+    Throwable ex = catchThrowable(() -> linkedResource.hashCode());
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("You cannot call hashCode() on dynamic client proxies.");
+  }
 }

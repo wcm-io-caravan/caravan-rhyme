@@ -75,4 +75,5 @@ public interface Rhyme {
    * @return a {@link HalResponse} instance with status code, content type and body already set
    */
   HalResponse renderVndErrorResponse(Throwable error);
+
 }

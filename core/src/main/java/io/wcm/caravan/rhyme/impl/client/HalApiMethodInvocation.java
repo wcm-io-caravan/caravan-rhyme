@@ -20,24 +20,20 @@
 
 package io.wcm.caravan.rhyme.impl.client;
 
-import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.getTemplateVariablesFrom;
-
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 
 import io.wcm.caravan.rhyme.api.annotations.Related;
-import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
-import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
+import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection;
 
 
 class HalApiMethodInvocation {
@@ -57,38 +53,9 @@ class HalApiMethodInvocation {
     this.emissionType = hasTemplatedReturnType() ? RxJavaReflectionUtils.getObservableEmissionType(method, typeSupport) : method.getReturnType();
     this.typeSupport = typeSupport;
 
-    this.templateVariables = new LinkedHashMap<>();
+    this.templateVariables = TemplateVariableDetection.getVariablesNameValueMap(method, Optional.ofNullable(args));
 
-    boolean nonNullParameterFound = false;
-
-    for (int i = 0; i < method.getParameterCount(); i++) {
-      Parameter parameter = method.getParameters()[i];
-
-      Object parameterValue = args[i];
-      nonNullParameterFound = nonNullParameterFound || parameterValue != null;
-
-      TemplateVariable variable = parameter.getAnnotation(TemplateVariable.class);
-      TemplateVariables variables = parameter.getAnnotation(TemplateVariables.class);
-
-      if (variable != null) {
-        templateVariables.put(variable.value(), parameterValue);
-      }
-      else if (variables != null) {
-        templateVariables.putAll(getTemplateVariablesFrom(parameterValue, parameter.getType()));
-      }
-      // if no annotation was used, we can try to extract the parameter name from the method.
-      // these arguments will be called "arg0", "arg1" etc if this information was stripped from the compiler
-      else if (!("arg" + i).equals(parameter.getName())) {
-        templateVariables.put(parameter.getName(), parameterValue);
-      }
-      else {
-        throw new HalApiDeveloperException("method parameter names have been stripped for  " + toString() + ", so they do need to be annotated with either"
-            + " @" + TemplateVariable.class.getSimpleName()
-            + " or @" + TemplateVariables.class.getSimpleName());
-      }
-    }
-
-    this.calledWithOnlyNullParameters = !nonNullParameterFound;
+    this.calledWithOnlyNullParameters = args != null && Stream.of(args).allMatch(Objects::isNull);
   }
 
 

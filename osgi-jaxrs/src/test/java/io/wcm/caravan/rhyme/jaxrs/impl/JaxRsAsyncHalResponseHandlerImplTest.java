@@ -35,6 +35,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
+import org.apache.sling.testing.mock.osgi.junit5.OsgiContextExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,14 +54,18 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
+import io.wcm.caravan.rhyme.jaxrs.impl.docs.RhymeDocsOsgiBundleSupport;
 
+@ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
 @SuppressFBWarnings("UWF_NULL_FIELD")
 public class JaxRsAsyncHalResponseHandlerImplTest {
 
   private static final String REQUEST_URL = "/request/url";
 
-  private JaxRsAsyncHalResponseRenderer handler = new JaxRsAsyncHalResponseHandlerImpl();
+  private final OsgiContext context = new OsgiContext();
+
+  private JaxRsAsyncHalResponseRenderer handler;
 
   private RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
@@ -72,6 +78,10 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   @BeforeEach
   void setUp() {
     lenient().when(uriInfo.getRequestUri()).thenReturn(URI.create(REQUEST_URL));
+
+    context.registerInjectActivateService(new RhymeDocsOsgiBundleSupport());
+
+    handler = context.registerInjectActivateService(new JaxRsAsyncHalResponseHandlerImpl());
   }
 
   private Response verifyResumeHasBeenCalled() {

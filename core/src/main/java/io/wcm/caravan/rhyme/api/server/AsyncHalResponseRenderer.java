@@ -30,6 +30,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
@@ -65,7 +66,7 @@ public interface AsyncHalResponseRenderer {
 
     AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
 
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport);
+    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, null);
   }
 
   /**
@@ -78,15 +79,36 @@ public interface AsyncHalResponseRenderer {
    * @param returnTypeSupport an (optional) strategy to support additional return types in your HAL API interface
    *          methods
    * @return a new {@link AsyncHalResponseRenderer} to use for the current incoming request
+   * @deprecated Use
+   *             {@link #create(RequestMetricsCollector,ExceptionStatusAndLoggingStrategy,HalApiAnnotationSupport,HalApiReturnTypeSupport,RhymeDocsSupport)}
+   *             instead
    */
+  @Deprecated
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
+    return create(metrics, exceptionStrategy, annotationSupport, returnTypeSupport, null);
+  }
+
+  /**
+   * Alternative factory method that allows to support different HAL API annotations or method return types
+   * @param metrics an instance of {@link RequestMetricsCollector} to collect performance and caching information for
+   *          the current incoming request
+   * @param exceptionStrategy allows to control the status code and logging of exceptions being thrown during rendering
+   * @param annotationSupport an (optional) strategy to identify HAL API interfaces and methods that use different
+   *          annotations
+   * @param returnTypeSupport an (optional) strategy to support additional return types in your HAL API interface
+   *          methods
+   * @param rhymeDocsSupport to know where the generation documentation will be mounted
+   * @return a new {@link AsyncHalResponseRenderer} to use for the current incoming request
+   */
+  static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy,
+      HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport, RhymeDocsSupport rhymeDocsSupport) {
 
     HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(annotationSupport, returnTypeSupport);
 
     AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
 
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport);
+    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, rhymeDocsSupport);
   }
 
 }

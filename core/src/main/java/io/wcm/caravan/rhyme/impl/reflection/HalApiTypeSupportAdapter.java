@@ -113,6 +113,11 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
     return returnTypeSupport.isProviderOfMultiplerValues(returnType);
   }
 
+  @Override
+  public boolean isProviderOfOptionalValue(Class<?> returnType) {
+    return returnTypeSupport.isProviderOfOptionalValue(returnType);
+  }
+
   HalApiAnnotationSupport getAnnotationSupport() {
     return annotationSupport;
   }
@@ -135,6 +140,11 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
 
     @Override
     public boolean isProviderOfMultiplerValues(Class<?> returnType) {
+      return false;
+    }
+
+    @Override
+    public boolean isProviderOfOptionalValue(Class<?> returnType) {
       return false;
     }
 
@@ -178,4 +188,5 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
     }
 
   }
+
 }

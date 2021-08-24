@@ -33,6 +33,7 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
@@ -50,12 +51,13 @@ final class RhymeImpl implements Rhyme {
   private final HalApiClient client;
   private final AsyncHalResponseRenderer renderer;
 
-  RhymeImpl(String requestUri, HalResourceLoader resourceLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport) {
+  RhymeImpl(String requestUri, HalResourceLoader resourceLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport,
+      RhymeDocsSupport rhymeDocsSupport) {
     this.requestUri = requestUri;
     this.resourceLoader = resourceLoader;
     this.exceptionStrategy = exceptionStrategy;
     this.client = createHalApiClient(typeSupport);
-    this.renderer = createResponseRenderer(typeSupport);
+    this.renderer = createResponseRenderer(typeSupport, rhymeDocsSupport);
   }
 
   private HalApiClient createHalApiClient(HalApiTypeSupport typeSupport) {
@@ -74,11 +76,11 @@ final class RhymeImpl implements Rhyme {
     return new HalApiClientImpl(resourceLoader, metrics, typeSupport);
   }
 
-  private AsyncHalResponseRenderer createResponseRenderer(HalApiTypeSupport typeSupport) {
+  private AsyncHalResponseRenderer createResponseRenderer(HalApiTypeSupport typeSupport, RhymeDocsSupport docsSupport) {
 
     AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
 
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport);
+    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, docsSupport);
   }
 
   @Override
@@ -106,6 +108,4 @@ final class RhymeImpl implements Rhyme {
 
     return errorRenderer.renderError(requestUri, null, error, metrics);
   }
-
-
 }

@@ -132,7 +132,7 @@ public class CompositeHalApiTypeSupportTest {
   @Test
   public void response_renderer_should_use_custom_annotations() throws Exception {
 
-    AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy, mockAnnotationSupport, null);
+    AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy, mockAnnotationSupport, null, null);
 
     assertThatMockAnnotationSupportIsEffective(((AsyncHalResponseRendererImpl)renderer).getAnnotationSupport());
   }
@@ -244,6 +244,12 @@ public class CompositeHalApiTypeSupportTest {
   public void isProviderOfMultiplerValues_should_return_first_true_value() throws Exception {
 
     assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfMultiplerValues(Set.class));
+  }
+
+  @Test
+  public void isProviderOptionalValues_should_return_first_true_value() throws Exception {
+
+    assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfOptionalValue(Set.class));
   }
 
 }

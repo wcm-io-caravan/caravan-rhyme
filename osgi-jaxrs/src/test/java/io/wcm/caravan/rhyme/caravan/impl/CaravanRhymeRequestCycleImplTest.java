@@ -59,6 +59,7 @@ import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
 import io.wcm.caravan.rhyme.caravan.impl.CaravanRhymeRequestCycleImpl.CaravanRhymeImpl;
 import io.wcm.caravan.rhyme.jaxrs.impl.JaxRsAsyncHalResponseHandlerImpl;
+import io.wcm.caravan.rhyme.jaxrs.impl.docs.RhymeDocsOsgiBundleSupport;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -85,6 +86,9 @@ public class CaravanRhymeRequestCycleImplTest {
     Mockito.lenient().when(uriInfo.getRequestUri()).thenReturn(URI.create(REQUEST_URI));
 
     context.registerService(CaravanHttpClient.class, httpClient);
+
+    context.registerInjectActivateService(new RhymeDocsOsgiBundleSupport());
+
     context.registerInjectActivateService(new JaxRsAsyncHalResponseHandlerImpl());
 
     context.registerInjectActivateService(new CaravanHalApiClientImpl());

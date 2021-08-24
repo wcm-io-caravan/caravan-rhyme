@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.rhyme.api.spi;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.osgi.annotation.versioning.ConsumerType;
@@ -34,14 +35,16 @@ public interface HalApiReturnTypeSupport {
 
   /**
    * @param targetType the type to convert to
-   * @return a function that will create an instance of the given type from an {@link Observable}
+   * @return a function that will create an instance of the given type from an {@link Observable},
+   *         or null if this is not possible
    * @param <T> the type to covert to
    */
   <T> Function<Observable, T> convertFromObservable(Class<T> targetType);
 
   /**
    * @param sourceType the type to convert from
-   * @return a function that will create an {@link Observable} from an instance of the given type
+   * @return a function that will create an {@link Observable} from an instance of the given type,
+   *         or null if this is not possible
    */
   Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType);
 
@@ -50,5 +53,13 @@ public interface HalApiReturnTypeSupport {
    * @return true if the type is a collection or a reactive type that can emit multiple values
    */
   boolean isProviderOfMultiplerValues(Class<?> returnType);
+
+  /**
+   * @param returnType the return type of an annotated method
+   * @return true if the type is an {@link Optional} or a reactive type that can emit zero or one values
+   */
+  default boolean isProviderOfOptionalValue(Class<?> returnType) {
+    return false;
+  }
 
 }

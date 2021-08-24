@@ -16,6 +16,7 @@ The key concepts and features of **Rhyme** are:
 - These interfaces are shared with the consumers, which can use them as a **highly abstracted client API**.
 - The same interfaces are also used to **keep the server-side implementation well structured**, and always in sync with the published API.
 - simple and transparent support for **embedded resources**
+- generation and integration of **HTML API documentation** from the annotated interfaces
 -  **controlling caching** using the `cache-control: max-age` header
 - Simplify **data debugging and performance analysis** (by including embedded metadata in every response)
 - **Retaining error information over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
@@ -355,6 +356,34 @@ If you don't override any of the default methods from the interface, the `Rhyme#
 Proxy client implementations created with the **Rhyme** framework will also always look if any embedded resources are present when a method annotated with `@Related` is being called. If they find embedded resources for that relation, they will be used instead of following the corresponding links.
 
 You can also create a nested hierarchy of embedded resources. This may for example be useful if you have a deep hierarchy tree of objects, where the leaf object require links to other resources be present. In those cases it may not always be reasonable to have a unique URI to access each resource in the tree individually. To achieve that, simply make your server-side resources **only** implement `EmbeddedResource` (but not `LinkableResource`). 
+
+## Generation and Integration of HTML API documentation
+
+Since the interfaces annotated with `@HalApiInterface` define the structure and relations of all resources in the API, they can also be used to generate a nice context-sensitive documentation for your API, that is automatically integrated in tools such as the [HAL Browser](https://github.com/mikekelly/hal-browser) or [HAL Explorer](https://github.com/toedter/hal-explorer).
+
+All you have to do to generate documentation is to add the following plugin configuration for the [rhyme-docs-maven-plugin](docs-maven-plugin) into the pom.xml of the module that contains the sources for your interfaces annotated with `@HalApiInterface`:
+
+```
+      <!-- Generate HTML documentation into classpath resources-->
+      <plugin>
+        <groupId>io.wcm.caravan.maven.plugins</groupId>
+        <artifactId>rhyme-docs-maven-plugin</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-rhyme-docs</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+```
+
+After your API interfaces are compiled, the plugin will use the annotations and javadoc comments of your interfaces to generate HTML documentation files that will be stored within the .jar file of your modules.
+
+To ensure that your rendered API responses contain valid CURIE links pointing to your documentation, an implementation of the [RhymeDocsSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/RhymeDocsSupport.java) interface and a call `RhymeBuilder#withRhymeDocsSupport` is required. You also have to write some code to expose the documentation files from the class path to the base URL defined in your `RhymeDocsSupport` implementation.
+
+All this is usually done once in the integration module for your platform. For example if you are using OSGi / JAX-RS, this all happens in the [docs package](osgi-jaxrs/src/main/java/io/wcm/caravan/rhyme/jaxrs/impl/docs), and as a service developer you don't need to do anything than configure the maven plugin.
 
 ## Controlling caching
 

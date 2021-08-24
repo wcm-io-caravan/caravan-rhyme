@@ -171,6 +171,13 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
         || Publisher.class.isAssignableFrom(returnType);
   }
 
+  @Override
+  public boolean isProviderOfOptionalValue(Class<?> returnType) {
+
+    return Optional.class.isAssignableFrom(returnType)
+        || Maybe.class.isAssignableFrom(returnType);
+  }
+
   /**
    * @param annotationSupport additional support for different annotations
    * @param returnTypeSupport additional support for different return types
@@ -184,5 +191,6 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
 
     return new CompositeHalApiTypeSupport(ImmutableList.of(defaultSupport, adapter));
   }
+
 
 }

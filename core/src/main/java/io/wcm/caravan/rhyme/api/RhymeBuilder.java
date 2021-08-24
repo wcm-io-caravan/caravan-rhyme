@@ -21,10 +21,12 @@ package io.wcm.caravan.rhyme.api;
 
 import org.osgi.annotation.versioning.ProviderType;
 
+import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.RhymeBuilderImpl;
 
 /**
@@ -51,6 +53,17 @@ public interface RhymeBuilder {
   static RhymeBuilder withResourceLoader(HalResourceLoader resourceLoader) {
     return new RhymeBuilderImpl(resourceLoader);
   }
+
+  /**
+   * Enable generation of curie links (to HTML documentation generated with the rhyme-docs-maven-plugin)
+   * when rendering {@link HalResponse}s with
+   * {@link Rhyme#renderResponse(io.wcm.caravan.rhyme.api.resources.LinkableResource)}.
+   * If you call this method, you also have to ensure that you actually serve the generated HTML files using
+   * {@link RhymeDocsSupport#loadGeneratedHtml(RhymeDocsSupport, String)}
+   * @param rhymeDocsSupport the SPI instance that handles loading of the generated HTML
+   * @return this
+   */
+  RhymeBuilder withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport);
 
   /**
    * Extend the core framework to support additional return types in your annotated HAL API interfaces.
