@@ -54,9 +54,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
   @Activate
   void activate(ComponentContext componentContext) {
 
-    BundleContext bundleContext = componentContext.getBundleContext();
-
-    bundleTracker = new BundleTracker<String>(bundleContext, Bundle.ACTIVE, this);
+    bundleTracker = new BundleTracker<String>(componentContext.getBundleContext(), Bundle.ACTIVE, this);
     bundleTracker.open();
   }
 
