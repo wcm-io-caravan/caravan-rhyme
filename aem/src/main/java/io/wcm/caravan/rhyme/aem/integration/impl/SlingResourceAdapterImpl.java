@@ -340,6 +340,10 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
     private void decorateLinks(Resource resource, ModelType model) {
 
+      if (!linkDecorator.hasDelegates()) {
+        return;
+      }
+
       if (!(model instanceof SlingLinkableResource)) {
         throw new HalApiDeveloperException(
             "Your model class " + model.getClass().getSimpleName() + " does not implement " + SlingLinkableResource.class.getName()
@@ -401,6 +405,10 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
           .filter(Objects::nonNull)
           .findFirst()
           .orElse(null);
+    }
+
+    public boolean hasDelegates() {
+      return !delegates.isEmpty();
     }
 
     @Override

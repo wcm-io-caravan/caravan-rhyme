@@ -96,6 +96,18 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
+  public void should_adapt_models_not_implementing_SlingLinkableResource_if_no_decorators_are_used() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    ClassThatDoesNotImplementSlingLinkableResource resource = adapter.selectCurrentResource()
+        .adaptTo(ClassThatDoesNotImplementSlingLinkableResource.class)
+        .getInstance();
+
+    assertThat(resource).isNotNull();
+  }
+
+  @Test
   public void should_fail_to_adapt_single_instance_that_does_not_exist() throws Exception {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
@@ -724,6 +736,7 @@ public class SlingResourceAdapterImplTest {
     assertThat(resources).hasSize(1);
     assertThatResourceIsSelectorSlingTestResourceAt("/content/foo/page2", resources.get(0));
   }
+
 
   @Test
   public void withLinkTitle_allows_to_overide_title_for_SlingLinkableResource_instances() {
