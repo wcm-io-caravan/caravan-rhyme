@@ -33,10 +33,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
-import io.wcm.caravan.rhyme.aem.testing.models.TestResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -49,18 +49,18 @@ public class AemApiDiscoveryResourceImplTest {
   private AemContext context = AppAemContext.newAemContext();
 
   @Mock
-  private ResourceSelectorProvider mockProvider;
+  private RhymeResourceRegistration mockRegistration;
 
   @Mock
   private LinkableResource mockResource;
 
-  AemApiDiscoveryResourceImpl resource;
+  private AemApiDiscoveryResourceImpl resource;
 
   @BeforeEach
   void setUp() {
 
-    context.registerService(ResourceSelectorProvider.class, new TestResourceSelectorProvider());
-    context.registerService(ResourceSelectorProvider.class, mockProvider);
+    context.registerService(RhymeResourceRegistration.class, new TestResourceRegistration());
+    context.registerService(RhymeResourceRegistration.class, mockRegistration);
 
     SlingRhyme rhyme = AppAemContext.createRhymeInstance(context, "/content");
 
@@ -91,7 +91,7 @@ public class AemApiDiscoveryResourceImplTest {
   @Test
   void getAllEntryPoints_should_include_second_entrypoint_from_Mock() {
 
-    Mockito.when(mockProvider.getApiEntryPoint(ArgumentMatchers.any()))
+    Mockito.when(mockRegistration.getApiEntryPoint(ArgumentMatchers.any()))
         .thenAnswer(invocation -> Optional.of(new TestEntryPointResource()));
 
     List<LinkableResource> entryPoints = resource.getApiEntryPoints();

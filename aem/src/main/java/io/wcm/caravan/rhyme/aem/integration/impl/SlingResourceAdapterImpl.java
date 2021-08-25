@@ -47,7 +47,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   private UrlHandler urlHandler;
 
   @Inject
-  private ResourceSelectorRegistry registry;
+  private RhymeResourceRegistry registry;
 
   private final Resource fromResource;
 

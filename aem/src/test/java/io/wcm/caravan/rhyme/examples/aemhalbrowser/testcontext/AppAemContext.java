@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.integration.impl.HalResourceLoaderManager;
-import io.wcm.caravan.rhyme.aem.integration.impl.ResourceSelectorRegistry;
+import io.wcm.caravan.rhyme.aem.integration.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.aem.integration.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
@@ -44,7 +44,7 @@ public final class AppAemContext {
 
     context.registerInjectActivateService(new HalResourceLoaderManager());
 
-    context.registerInjectActivateService(new ResourceSelectorRegistry());
+    context.registerInjectActivateService(new RhymeResourceRegistry());
 
     return context;
   }

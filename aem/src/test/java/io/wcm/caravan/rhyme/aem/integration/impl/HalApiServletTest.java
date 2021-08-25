@@ -45,13 +45,13 @@ import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.integration.impl.entrypoint.AemApiDiscoveryResourceImpl;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.ResourceTypeSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
-import io.wcm.caravan.rhyme.aem.testing.models.TestResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.api.relations.VndErrorRelations;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
@@ -70,7 +70,7 @@ public class HalApiServletTest {
   @BeforeEach
   void setUp() {
 
-    context.registerService(ResourceSelectorProvider.class, new TestResourceSelectorProvider());
+    context.registerService(RhymeResourceRegistration.class, new TestResourceRegistration());
 
     servlet = context.registerInjectActivateService(new HalApiServlet());
   }
@@ -156,7 +156,7 @@ public class HalApiServletTest {
   @Test
   public void doGet_with_selector_should_fail_if_multiple_resources_are_registered_for_selector() throws Exception {
 
-    context.registerService(ResourceSelectorProvider.class, new MultipleResourcesWithSameSelector());
+    context.registerService(RhymeResourceRegistration.class, new MultipleResourcesWithSameSelector());
 
     servlet = context.registerInjectActivateService(new HalApiServlet());
 
@@ -170,7 +170,7 @@ public class HalApiServletTest {
         .startsWith("More than one resource was registered");
   }
 
-  class MultipleResourcesWithSameSelector implements ResourceSelectorProvider {
+  class MultipleResourcesWithSameSelector implements RhymeResourceRegistration {
 
     @Override
     public Map<Class<? extends LinkableResource>, String> getModelClassesWithSelectors() {

@@ -15,13 +15,13 @@ import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.testing.models.ResourceTypeSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
-import io.wcm.caravan.rhyme.aem.testing.models.TestResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -33,7 +33,7 @@ public class SlingLinkBuilderImplTest {
 
   @BeforeEach
   void setUp() {
-    context.registerService(ResourceSelectorProvider.class, new TestResourceSelectorProvider());
+    context.registerService(RhymeResourceRegistration.class, new TestResourceRegistration());
   }
 
   private SlingRhyme createRhymeInstance(String resourcePath) {

@@ -33,22 +33,22 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 
-import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-@Component(service = ResourceSelectorRegistry.class)
-public class ResourceSelectorRegistry {
+@Component(service = RhymeResourceRegistry.class)
+public class RhymeResourceRegistry {
 
   @Reference(cardinality = ReferenceCardinality.MULTIPLE,
       policy = ReferencePolicy.STATIC,
       policyOption = ReferencePolicyOption.GREEDY)
-  private List<ResourceSelectorProvider> providers;
+  private List<RhymeResourceRegistration> registrations;
 
   public Optional<Class<? extends LinkableResource>> getModelClassForSelectors(Collection<String> selectors) {
 
-    List<Class<? extends LinkableResource>> customModelClasses = providers.stream()
+    List<Class<? extends LinkableResource>> customModelClasses = registrations.stream()
         .flatMap(provider -> provider.getModelClassesWithSelectors().entrySet().stream())
         .filter(entry -> selectors.contains(entry.getValue()))
         .map(entry -> entry.getKey())
@@ -75,7 +75,7 @@ public class ResourceSelectorRegistry {
 
   public Optional<String> getSelectorForModelClass(Class<?> clazz) {
 
-    return providers.stream()
+    return registrations.stream()
         .map(provider -> provider.getModelClassesWithSelectors().get(clazz))
         .filter(Objects::nonNull)
         .findFirst();
@@ -83,7 +83,7 @@ public class ResourceSelectorRegistry {
 
   public Optional<String> getSelectorForHalApiInterface(Class<?> halApiInterface) {
 
-    Optional<Class<? extends LinkableResource>> modelClass = providers.stream()
+    Optional<Class<? extends LinkableResource>> modelClass = registrations.stream()
         .flatMap(provider -> provider.getModelClassesWithSelectors().keySet().stream())
         .filter(clazz -> halApiInterface.isAssignableFrom(clazz))
         .findFirst();
@@ -94,7 +94,7 @@ public class ResourceSelectorRegistry {
 
   public Stream<LinkableResource> getAllApiEntryPoints(SlingResourceAdapter adapter) {
 
-    return providers.stream()
+    return registrations.stream()
         .map(provider -> provider.getApiEntryPoint(adapter))
         .flatMap(this::optionalAsStream);
   }

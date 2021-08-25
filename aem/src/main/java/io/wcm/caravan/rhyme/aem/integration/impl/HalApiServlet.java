@@ -54,7 +54,7 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
   static final String QUERY_PARAM_EMBED_METADATA = "embedMetadata";
 
   @Reference
-  private ResourceSelectorRegistry registry;
+  private RhymeResourceRegistry registry;
 
   @Override
   protected void doGet(@NotNull SlingHttpServletRequest request, @NotNull SlingHttpServletResponse response)

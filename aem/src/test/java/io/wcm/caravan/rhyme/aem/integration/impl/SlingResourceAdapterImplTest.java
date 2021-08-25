@@ -38,13 +38,13 @@ import com.day.cq.wcm.api.Page;
 import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
-import io.wcm.caravan.rhyme.aem.testing.models.TestResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
@@ -58,7 +58,7 @@ public class SlingResourceAdapterImplTest {
 
   @BeforeEach
   void setUp() {
-    context.registerService(ResourceSelectorProvider.class, new TestResourceSelectorProvider());
+    context.registerService(RhymeResourceRegistration.class, new TestResourceRegistration());
   }
 
   private SlingResourceAdapterImpl createAdapterInstanceForResource(String resourcePath) {

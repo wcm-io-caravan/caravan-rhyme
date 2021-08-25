@@ -21,7 +21,7 @@ package io.wcm.caravan.rhyme.aem.integration.impl.entrypoint;
 
 import java.util.List;
 
-import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
  * is that you have a single URL from which you can discover the entry points of all other services
  * implemented with caravan Rhyme that have been installed on this system. To achieve this,
  * the service developer has to implement
- * {@link ResourceSelectorProvider#getApiEntryPoint(SlingResourceAdapter)} to let the integration framework
+ * {@link RhymeResourceRegistration#getApiEntryPoint(SlingResourceAdapter)} to let the integration framework
  * know which resource from the API is the entry point that allows to access / discover all other resources.
  */
 @HalApiInterface

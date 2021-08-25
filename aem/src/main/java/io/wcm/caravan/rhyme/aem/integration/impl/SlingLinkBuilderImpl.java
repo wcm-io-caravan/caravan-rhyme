@@ -26,7 +26,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
   private UrlHandler urlHandler;
 
   @Inject
-  private ResourceSelectorRegistry registry;
+  private RhymeResourceRegistry registry;
 
   @Override
   public Link createLinkToCurrentResource(SlingLinkableResource slingModel) {

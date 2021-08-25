@@ -29,7 +29,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.aem.integration.impl.ResourceSelectorRegistry;
+import io.wcm.caravan.rhyme.aem.integration.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Model(adaptables = Resource.class,
@@ -40,7 +40,7 @@ public class AemApiDiscoveryResourceImpl extends AbstractLinkableResource implem
   public static final Integer MAX_AGE_SECONDS = 60;
 
   @Inject
-  private ResourceSelectorRegistry registry;
+  private RhymeResourceRegistry registry;
 
   @Override
   public List<LinkableResource> getApiEntryPoints() {

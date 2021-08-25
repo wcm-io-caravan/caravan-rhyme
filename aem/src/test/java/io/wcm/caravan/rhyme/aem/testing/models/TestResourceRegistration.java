@@ -26,12 +26,12 @@ import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.ImmutableMap;
 
-import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Component
-public class TestResourceSelectorProvider implements ResourceSelectorProvider {
+public class TestResourceRegistration implements RhymeResourceRegistration {
 
   @Override
   public Map<Class<? extends LinkableResource>, String> getModelClassesWithSelectors() {
