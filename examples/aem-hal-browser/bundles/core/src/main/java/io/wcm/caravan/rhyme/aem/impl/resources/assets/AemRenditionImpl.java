@@ -61,6 +61,11 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
     this.media = mediaBuilder.build();
   }
 
+  public void setWidthAndHeight(Integer width, Integer height) {
+    this.width = width;
+    this.height = height;
+  }
+
   private Integer parseRequestParameter(String name) {
     RequestParameter param = request.getRequestParameter(name);
     if (param == null) {
@@ -172,5 +177,6 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
     parts.put(WIDTH, width);
     return parts;
   }
+
 
 }

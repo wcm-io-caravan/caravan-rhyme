@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -239,109 +240,122 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   }
 
   @Override
-  public <ModelType> TypedResourceAdapter<ModelType> adaptTo(Class<ModelType> clazz) {
+  public <I> TypedResourceAdapter<I, I> adaptTo(Class<I> clazz) {
 
     if (templateGenerationRequired) {
-      return new TemplateResourceAdapter<ModelType>(clazz);
+      return new TemplateResourceAdapter<I, I>(clazz);
     }
 
-    return new TypedResourceAdapterImpl<ModelType>(clazz);
+    return new TypedResourceAdapterImpl<I, I>(clazz, clazz);
+  }
+
+  @Override
+  public <I, M extends I> TypedResourceAdapter<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass) {
+
+    return new TypedResourceAdapterImpl<I, M>(halApiInterface, slingModelClass);
   }
 
 
-  private final class TypedResourceAdapterImpl<ModelType> implements TypedResourceAdapter<ModelType> {
+  private final class TypedResourceAdapterImpl<I, M extends I> implements TypedResourceAdapter<I, M> {
 
-    private final Class<ModelType> clazz;
+    private final Class<I> interfaze;
+    private final Class<M> clazz;
+    private final List<Consumer<M>> instanceDecorators;
 
-    private final CompositeLinkDecorator<ModelType> linkDecorator;
-
-    private TypedResourceAdapterImpl(Class<ModelType> clazz) {
+    private TypedResourceAdapterImpl(Class<I> interfaze, Class<M> clazz) {
+      this.interfaze = interfaze;
       this.clazz = clazz;
-      this.linkDecorator = new CompositeLinkDecorator<ModelType>();
+      this.instanceDecorators = new ArrayList<>();
     }
 
-    private TypedResourceAdapterImpl(Class<ModelType> clazz, CompositeLinkDecorator<ModelType> decorator) {
+    private TypedResourceAdapterImpl(Class<I> interfaze, Class<M> clazz, List<Consumer<M>> instanceDecorators) {
+      this.interfaze = interfaze;
       this.clazz = clazz;
-      this.linkDecorator = decorator;
+      this.instanceDecorators = instanceDecorators;
     }
 
-    private TypedResourceAdapterImpl<ModelType> withLinkDecorator(LinkDecorator<ModelType> decorator) {
-      return new TypedResourceAdapterImpl<ModelType>(clazz, linkDecorator.withAdditionalDecorator(decorator));
+    private TypedResourceAdapterImpl<I, M> withInstanceDecorator(Consumer<M> decorator) {
+
+      List<Consumer<M>> list = new ArrayList<>(instanceDecorators);
+      list.add(decorator);
+
+      return new TypedResourceAdapterImpl<>(interfaze, clazz, list);
     }
 
-    @Override
-    public TypedResourceAdapter<ModelType> withLinkTitle(String title) {
+    private TypedResourceAdapterImpl<I, M> withLinkDecorator(Consumer<SlingLinkableResource> decorator) {
 
-      return withLinkDecorator(new LinkDecorator<ModelType>() {
-
-        @Override
-        public String getLinkTitle(Resource resource, ModelType model) {
-          return title;
+      return withInstanceDecorator(instance -> {
+        if (!(instance instanceof SlingLinkableResource)) {
+          throw new HalApiDeveloperException(
+              "Your model class " + instance.getClass().getSimpleName() + " does not implement " + SlingLinkableResource.class.getName()
+                  + " (which is required if you want to override link names and titles via SlingResourceAdapter)");
         }
+
+        decorator.accept((SlingLinkableResource)instance);
 
       });
     }
 
     @Override
-    public TypedResourceAdapter<ModelType> withLinkName(String name) {
-
-      return withLinkDecorator(new LinkDecorator<ModelType>() {
-
-        @Override
-        public String getLinkName(Resource resource, ModelType model) {
-          return name;
-        }
-
-      });
+    public TypedResourceAdapter<I, M> withModifications(Consumer<M> consumer) {
+      return withInstanceDecorator(consumer);
     }
 
     @Override
-    public TypedResourceAdapter<ModelType> withQueryParameters(Map<String, Object> parameters) {
+    public TypedResourceAdapter<I, M> withLinkTitle(String title) {
 
-      return withLinkDecorator(new LinkDecorator<ModelType>() {
-
-        @Override
-        public Map<String, Object> getQueryParameters() {
-          return parameters;
-        }
-      });
+      return withLinkDecorator(r -> r.setLinkTitle(title));
     }
 
     @Override
-    public TypedResourceAdapter<ModelType> withPartialLinkTemplate() {
+    public TypedResourceAdapter<I, M> withLinkName(String name) {
 
-      return withLinkDecorator(new LinkDecorator<ModelType>() {
-
-        @Override
-        public boolean keepPartialTemplate() {
-          return true;
-        }
-
-      });
+      return withLinkDecorator(r -> r.setLinkName(name));
     }
 
+    @Override
+    public TypedResourceAdapter<I, M> withQueryParameters(Map<String, Object> parameters) {
+
+      return withLinkDecorator(r -> r.setQueryParameters(parameters));
+    }
 
     @Override
-    public TypedResourceAdapter<ModelType> withQueryParameterTemplate(String... names) {
+    public TypedResourceAdapter<I, M> withPartialLinkTemplate() {
+
+      return withLinkDecorator(r -> r.setExpandAllVariables(false));
+    }
+
+    @Override
+    public TypedResourceAdapter<I, M> withQueryParameterTemplate(String... names) {
       throw new HalApiDeveloperException("#withQueryParameterTemplatecan only be called if you selected a null resource path to create a template");
     }
 
     @Override
-    public ModelType getInstance() {
+    public M getInstance() {
 
-      return getOptional()
+      return getStreamOfModels()
+          .findFirst()
           .orElseThrow(() -> new HalApiDeveloperException("No resources were found after selecting " + resourceSelector.description));
     }
 
     @Override
-    public Optional<ModelType> getOptional() {
+    public Optional<I> getOptional() {
 
       return getStream().findFirst();
     }
 
     @Override
-    public Stream<ModelType> getStream() {
+    public Stream<I> getStream() {
 
+      return getResources().map(this::adaptToModelTypeAnDecorateLinks);
+    }
+
+    private Stream<M> getStreamOfModels() {
+
+      return getResources().map(this::adaptToModelTypeAnDecorateLinks);
+    }
+
+    private Stream<Resource> getResources() {
       Stream<Resource> resources = resourceSelector.resources;
 
       if (resources == null) {
@@ -351,52 +365,18 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       if (resourceFilter.predicate != null) {
         resources = resources.filter(resourceFilter.predicate);
       }
-
-      return resources.map(this::adaptToModelTypeAnDecorateLinks);
+      return resources;
     }
 
-    private ModelType adaptToModelTypeAnDecorateLinks(Resource res) {
+    private M adaptToModelTypeAnDecorateLinks(Resource res) {
 
-      ModelType model = slingRhyme.adaptResource(res, this.clazz);
+      M model = slingRhyme.adaptResource(res, this.clazz);
 
-      decorateLinks(res, model);
+      instanceDecorators.forEach(decorator -> decorator.accept(model));
 
       return model;
     }
 
-    private void decorateLinks(Resource resource, ModelType model) {
-
-      if (!linkDecorator.hasDelegates()) {
-        return;
-      }
-
-      if (!(model instanceof SlingLinkableResource)) {
-        throw new HalApiDeveloperException(
-            "Your model class " + model.getClass().getSimpleName() + " does not implement " + SlingLinkableResource.class.getName()
-                + " (which is required if you want to override link names and titles via SlingResourceAdapter)");
-      }
-
-      SlingLinkableResource linkable = (SlingLinkableResource)model;
-
-      String title = linkDecorator.getLinkTitle(resource, model);
-      if (title != null) {
-        linkable.setLinkTitle(title);
-      }
-
-      String name = linkDecorator.getLinkName(resource, model);
-      if (name != null) {
-        linkable.setLinkName(name);
-      }
-
-      Map<String, Object> parameters = linkDecorator.getQueryParameters();
-      if (parameters != null) {
-        linkable.setQueryParameters(parameters);
-      }
-
-      if (linkDecorator.keepPartialTemplate()) {
-        linkable.setExpandAllVariables(false);
-      }
-    }
   }
 
   private interface LinkDecorator<ModelType> {
@@ -547,60 +527,65 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   }
 
 
-  private final class TemplateResourceAdapter<T> implements TypedResourceAdapter<T> {
+  private final class TemplateResourceAdapter<I, M extends I> implements TypedResourceAdapter<I, M> {
 
     private static final String PATH_PLACEHOLDER = "/letsassumethisisunlikelytoexist";
 
-    private final Class<T> halApiInterface;
+    private final Class<I> halApiInterface;
 
     private String linkTitle;
     private String linkName;
     private String[] queryParameters;
 
-    private TemplateResourceAdapter(Class<T> halApiInterface) {
+    private TemplateResourceAdapter(Class<I> halApiInterface) {
       this.halApiInterface = halApiInterface;
     }
 
     @Override
-    public TypedResourceAdapter<T> withLinkTitle(String title) {
+    public TypedResourceAdapter<I, M> withLinkTitle(String title) {
       this.linkTitle = title;
       return this;
     }
 
     @Override
-    public TypedResourceAdapter<T> withLinkName(String name) {
+    public TypedResourceAdapter<I, M> withLinkName(String name) {
       this.linkName = name;
       return this;
     }
 
     @Override
-    public TypedResourceAdapter<T> withQueryParameterTemplate(String... names) {
+    public TypedResourceAdapter<I, M> withQueryParameterTemplate(String... names) {
       this.queryParameters = names;
       return this;
     }
 
     @Override
-    public TypedResourceAdapter<T> withQueryParameters(Map<String, Object> parameters) {
+    public TypedResourceAdapter<I, M> withQueryParameters(Map<String, Object> parameters) {
       throw new HalApiDeveloperException("#withQueryParameters cannot be called if you selected a null resource path to build a template");
     }
 
     @Override
-    public TypedResourceAdapter<T> withPartialLinkTemplate() {
+    public TypedResourceAdapter<I, M> withPartialLinkTemplate() {
       throw new HalApiDeveloperException("#withPartialLinkTemplate cannot be called if you selected a null resource path to build a template");
     }
 
     @Override
-    public T getInstance() {
+    public TypedResourceAdapterImpl<I, M> withModifications(Consumer<M> decorator) {
+      throw new HalApiDeveloperException("#withModifications cannot be called if you selected a null resource path to build a template");
+    }
+
+    @Override
+    public M getInstance() {
       return createResource();
     }
 
     @Override
-    public Optional<T> getOptional() {
+    public Optional<I> getOptional() {
       return Optional.of(createResource());
     }
 
     @Override
-    public Stream<T> getStream() {
+    public Stream<I> getStream() {
       return Stream.of(createResource());
     }
 

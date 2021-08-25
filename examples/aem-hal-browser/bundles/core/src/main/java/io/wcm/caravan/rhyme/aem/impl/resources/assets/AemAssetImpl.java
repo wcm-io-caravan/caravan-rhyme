@@ -64,8 +64,9 @@ public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
 
     return resourceAdapter
         .selectCurrentResource()
-        .adaptTo(AemRendition.class)
+        .adaptTo(AemRendition.class, AemRenditionImpl.class)
         .withLinkTitle("Get a dynamic rendition for this asset with the specified width and/or height")
+        .withModifications(impl -> impl.setWidthAndHeight(width, height))
         .withPartialLinkTemplate()
         .getOptional();
   }

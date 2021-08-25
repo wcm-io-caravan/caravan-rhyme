@@ -2,6 +2,7 @@ package io.wcm.caravan.rhyme.aem.integration;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -50,26 +51,30 @@ public interface SlingResourceAdapter {
   SlingResourceAdapter filterWithName(String resourceName);
 
 
-  <SlingModelType> TypedResourceAdapter<SlingModelType> adaptTo(Class<SlingModelType> slingModelClass);
+  <I> TypedResourceAdapter<I, I> adaptTo(Class<I> halApiInterface);
+
+  <I, M extends I> TypedResourceAdapter<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass);
 
 
-  interface TypedResourceAdapter<T> {
+  interface TypedResourceAdapter<I, M extends I> {
 
-    TypedResourceAdapter<T> withLinkTitle(String title);
+    TypedResourceAdapter<I, M> withModifications(Consumer<M> consumer);
 
-    TypedResourceAdapter<T> withLinkName(String name);
+    TypedResourceAdapter<I, M> withLinkTitle(String title);
 
-    TypedResourceAdapter<T> withQueryParameterTemplate(String... names);
+    TypedResourceAdapter<I, M> withLinkName(String name);
 
-    TypedResourceAdapter<T> withQueryParameters(Map<String, Object> parameters);
+    TypedResourceAdapter<I, M> withQueryParameterTemplate(String... names);
 
-    TypedResourceAdapter<T> withPartialLinkTemplate();
+    TypedResourceAdapter<I, M> withQueryParameters(Map<String, Object> parameters);
 
-    T getInstance();
+    TypedResourceAdapter<I, M> withPartialLinkTemplate();
 
-    Optional<T> getOptional();
+    M getInstance();
 
-    Stream<T> getStream();
+    Optional<I> getOptional();
+
+    Stream<I> getStream();
   }
 
 
