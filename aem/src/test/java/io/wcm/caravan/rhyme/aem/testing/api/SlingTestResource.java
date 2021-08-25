@@ -20,6 +20,7 @@
 package io.wcm.caravan.rhyme.aem.testing.api;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
@@ -28,4 +29,7 @@ public interface SlingTestResource extends LinkableResource {
 
   @ResourceState
   SlingTestState getState();
+
+  @Related("test:self")
+  SlingTestResource getSelfLinkWithPrefix();
 }

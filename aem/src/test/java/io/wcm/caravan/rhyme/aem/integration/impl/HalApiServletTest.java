@@ -44,6 +44,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.ResourceTypeSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceSelectorProvider;
@@ -158,6 +159,27 @@ public class HalApiServletTest {
 
     assertThat(halResource.getEmbedded("caravan:metadata")).hasSize(1);
   }
+
+  @Test
+  public void curies_to_custom_link_relations_should_be_present() throws Exception {
+
+    Resource resource = context.create().resource(TEST_RESOURCE_PATH);
+
+    MockSlingHttpServletResponse response = requestResource(resource, SelectorSlingTestResource.SELECTOR);
+
+    HalResource halResource = assertStatusIsOkAndParse(response);
+
+    Link curies = halResource.getLink("curies");
+
+    assertThat(curies).isNotNull();
+
+    assertThat(curies.getName())
+        .isEqualTo("test");
+
+    assertThat(curies.getHref())
+        .isEqualTo("/content.rhymedocs.html/" + SlingTestResource.class.getName() + ".html");
+  }
+
 
   private void assertThatSelfLinkHasHrefAndTitle(HalResource halResource, String href, String title) {
     assertThat(halResource.getLink()).isNotNull();

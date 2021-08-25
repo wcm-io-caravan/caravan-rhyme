@@ -187,7 +187,7 @@
       <dependency>
         <groupId>.io.wcm.caravan</groupId>
         <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>.io.wcm.caravan</groupId>
@@ -329,6 +329,37 @@
           </configuration>
         </plugin>
 
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      io.wcm.caravan.maven.plugins
+                    </groupId>
+                    <artifactId>
+                      rhyme-docs-maven-plugin
+                    </artifactId>
+                    <versionRange>
+                      [1.0.0-SNAPSHOT,)
+                    </versionRange>
+                    <goals>
+                      <goal>generate-rhyme-docs</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>

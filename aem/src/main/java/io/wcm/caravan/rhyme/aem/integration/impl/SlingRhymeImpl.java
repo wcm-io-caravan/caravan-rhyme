@@ -15,6 +15,7 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
 
 import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.integration.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
@@ -30,13 +31,14 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   private final Rhyme rhyme;
 
   @Inject
-  public SlingRhymeImpl(@Self SlingHttpServletRequest request, HalResourceLoaderManager picker) {
+  public SlingRhymeImpl(@Self SlingHttpServletRequest request, HalResourceLoaderManager picker, RhymeDocsOsgiBundleSupport rhymeDocs) {
 
     this.request = request;
 
     this.currentResource = request.getResource();
 
     this.rhyme = RhymeBuilder.withResourceLoader(picker.getResourceLoader())
+        .withRhymeDocsSupport(rhymeDocs)
         .buildForRequestTo(request.getRequestURL().toString());
   }
 

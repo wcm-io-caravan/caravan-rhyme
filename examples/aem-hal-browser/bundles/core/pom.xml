@@ -226,6 +226,30 @@
         </configuration>
       </plugin>
 
+      <!-- Generate HTML documentation into classpath resources-->
+      <plugin>
+        <groupId>io.wcm.caravan.maven.plugins</groupId>
+        <artifactId>rhyme-docs-maven-plugin</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-rhyme-docs</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- ensure that parameter names are not stripped out from the class files, so they are available via reflection -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

@@ -55,4 +55,9 @@ public class ResourceTypeSlingTestResource extends AbstractLinkableResource impl
   protected String getDefaultLinkTitle() {
     return DEFAULT_TITLE;
   }
+
+  @Override
+  public SlingTestResource getSelfLinkWithPrefix() {
+    return this;
+  }
 }

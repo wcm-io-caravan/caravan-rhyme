@@ -66,5 +66,9 @@ public class SelectorSlingTestResource extends AbstractLinkableResource implemen
     return getClass().getSimpleName() + " at " + resource.getPath();
   }
 
+  @Override
+  public SlingTestResource getSelfLinkWithPrefix() {
+    return this;
+  }
 
 }
