@@ -131,6 +131,6 @@ public class CollectionResourcesIT {
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
     assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(2 * delayMs);
+    assertThat(responseTime).isLessThan(5 * delayMs);
   }
 }
