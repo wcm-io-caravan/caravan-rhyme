@@ -185,6 +185,21 @@ public class SlingResourceAdapterImplTemplateTest {
   }
 
   @Test
+  public void withPartialLinkTemplate_fails_if_null_path_is_given() {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    Throwable ex = catchThrowable(() -> adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .withPartialLinkTemplate()
+        .getInstance());
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessage("#withPartialLinkTemplate cannot be called if you selected a null resource path to build a template");
+  }
+
+
+  @Test
   public void selectResourceAt_can_be_used_to_build_templates_for_unregistered_resources() throws Exception {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");

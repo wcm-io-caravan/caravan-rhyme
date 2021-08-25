@@ -63,6 +63,8 @@ public interface SlingResourceAdapter {
 
     TypedResourceAdapter<T> withQueryParameters(Map<String, Object> parameters);
 
+    TypedResourceAdapter<T> withPartialLinkTemplate();
+
     T getInstance();
 
     Optional<T> getOptional();

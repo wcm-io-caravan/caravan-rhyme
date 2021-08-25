@@ -64,7 +64,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
         .filter(entry -> entry.getValue() != null)
         .forEach(entry -> template.set(entry.getKey(), entry.getValue()));
 
-    return template.expand();
+    return slingModel.isExpandAllVariables() ? template.expand() : template.expandPartial();
   }
 
   private String getClassSpecificSelector(SlingLinkableResource slingModel) {

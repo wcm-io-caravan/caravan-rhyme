@@ -26,6 +26,8 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
   private boolean useParametersFromRequest = true;
   private Map<String, Object> queryParameters = new LinkedHashMap<>();
 
+  private boolean expandAllVariables = true;
+
   @RhymeObject
   private SlingHttpServletRequest request;
 
@@ -89,4 +91,16 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
     useParametersFromRequest = false;
     queryParameters = parameters;
   }
+
+  @Override
+  public void setExpandAllVariables(boolean expandAllVariables) {
+    this.expandAllVariables = expandAllVariables;
+  }
+
+  @Override
+  public boolean isExpandAllVariables() {
+    return expandAllVariables;
+  }
+
+
 }

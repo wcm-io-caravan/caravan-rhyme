@@ -17,4 +17,8 @@ public interface SlingLinkableResource {
 
   void setQueryParameters(Map<String, Object> parameters);
 
+  void setExpandAllVariables(boolean expandAllVariables);
+
+  boolean isExpandAllVariables();
+
 }

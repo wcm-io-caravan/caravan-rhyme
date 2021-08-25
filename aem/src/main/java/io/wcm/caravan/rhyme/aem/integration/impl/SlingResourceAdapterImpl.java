@@ -308,6 +308,20 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     }
 
     @Override
+    public TypedResourceAdapter<ModelType> withPartialLinkTemplate() {
+
+      return withLinkDecorator(new LinkDecorator<ModelType>() {
+
+        @Override
+        public boolean keepPartialTemplate() {
+          return true;
+        }
+
+      });
+    }
+
+
+    @Override
     public TypedResourceAdapter<ModelType> withQueryParameterTemplate(String... names) {
       throw new HalApiDeveloperException("#withQueryParameterTemplatecan only be called if you selected a null resource path to create a template");
     }
@@ -378,9 +392,11 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       if (parameters != null) {
         linkable.setQueryParameters(parameters);
       }
+
+      if (linkDecorator.keepPartialTemplate()) {
+        linkable.setExpandAllVariables(false);
+      }
     }
-
-
   }
 
   private interface LinkDecorator<ModelType> {
@@ -395,6 +411,10 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
     default Map<String, Object> getQueryParameters() {
       return null;
+    }
+
+    default boolean keepPartialTemplate() {
+      return false;
     }
   }
 
@@ -439,6 +459,13 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     public Map<String, Object> getQueryParameters() {
 
       return findFirstNonNull(dec -> dec.getQueryParameters());
+    }
+
+    @Override
+    public boolean keepPartialTemplate() {
+
+      return delegates.stream()
+          .anyMatch(LinkDecorator::keepPartialTemplate);
     }
 
   }
@@ -557,6 +584,10 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       throw new HalApiDeveloperException("#withQueryParameters cannot be called if you selected a null resource path to build a template");
     }
 
+    @Override
+    public TypedResourceAdapter<T> withPartialLinkTemplate() {
+      throw new HalApiDeveloperException("#withPartialLinkTemplate cannot be called if you selected a null resource path to build a template");
+    }
 
     @Override
     public T getInstance() {

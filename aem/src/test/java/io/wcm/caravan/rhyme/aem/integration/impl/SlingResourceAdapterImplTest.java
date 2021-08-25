@@ -22,7 +22,9 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -864,5 +866,24 @@ public class SlingResourceAdapterImplTest {
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageStartingWith("#withQueryParameterTemplatecan only be called if you selected a null resource path to create a template");
 
+  }
+
+  @Test
+  public void withPartialLinkTemplate_should_keep_parameters_with_null_values() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    Map<String, Object> parameters = new LinkedHashMap<>();
+    parameters.put("foo", 123);
+    parameters.put("bar", null);
+
+    Link link = adapter.selectCurrentResource()
+        .adaptTo(SlingTestResource.class)
+        .withQueryParameters(parameters)
+        .withPartialLinkTemplate()
+        .getInstance()
+        .createLink();
+
+    assertThat(link.getHref()).isEqualTo("/content.selectortest.rhyme?foo=123{&bar}");
   }
 }
