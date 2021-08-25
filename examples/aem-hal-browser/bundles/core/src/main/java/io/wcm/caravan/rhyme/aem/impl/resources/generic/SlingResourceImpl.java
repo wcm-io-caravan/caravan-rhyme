@@ -24,10 +24,8 @@ import io.wcm.caravan.rhyme.aem.api.sites.AemPage;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, SlingResource.class },
-    resourceType = { "sling:redirect", "nt:Folder" })
+@Model(adaptables = Resource.class, adapters = { LinkableResource.class, SlingResource.class })
 public class SlingResourceImpl extends AbstractLinkableResource implements SlingResource {
-
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
       .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);

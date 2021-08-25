@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
@@ -29,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.aem.integration.impl.entrypoint.AemApiDiscoveryResourceImpl;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -40,6 +42,8 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
     SLING_SERVLET_RESOURCE_TYPES + "=" + DEFAULT_RESOURCE_TYPE,
     SLING_SERVLET_EXTENSIONS + "=" + HalApiServlet.EXTENSION })
 public class HalApiServlet extends SlingSafeMethodsServlet {
+
+  private static final String CONTENT_PATH = "/content";
 
   private static final long serialVersionUID = -7540592969300324670L;
 
@@ -87,9 +91,18 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
 
   private LinkableResource adaptRequestedResourceToSlingModel(SlingHttpServletRequest request, SlingRhymeImpl rhyme) {
 
-    List<String> selectors = Arrays.asList(request.getRequestPathInfo().getSelectors());
+    RequestPathInfo pathInfo = request.getRequestPathInfo();
 
-    Class<? extends LinkableResource> modelClass = registry.getModelClassForSelectors(selectors);
+    List<String> selectors = Arrays.asList(pathInfo.getSelectors());
+
+    Class<? extends LinkableResource> modelClass;
+    if (selectors.isEmpty() && CONTENT_PATH.equals(pathInfo.getResourcePath())) {
+      modelClass = AemApiDiscoveryResourceImpl.class;
+    }
+    else {
+      modelClass = registry.getModelClassForSelectors(selectors)
+          .orElseThrow(() -> new HalApiServerException(HttpStatus.SC_NOT_FOUND, "No resource is registered for URL " + request.getRequestURI()));
+    }
 
     return rhyme.adaptResource(request.getResource(), modelClass);
   }

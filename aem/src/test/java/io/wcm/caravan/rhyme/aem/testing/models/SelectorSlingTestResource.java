@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.rhyme.aem.testing.models;
 
-import java.time.Duration;
-
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
@@ -34,8 +32,6 @@ public class SelectorSlingTestResource extends AbstractLinkableResource implemen
 
   public static final String SELECTOR = "selectortest";
 
-  public static final Integer MAX_AGE_SECONDS = 60;
-
   public static final String DEFAULT_TITLE = "the default title of the test resource that is registered via selector";
 
   @Self
@@ -43,8 +39,6 @@ public class SelectorSlingTestResource extends AbstractLinkableResource implemen
 
   @Override
   public SlingTestState getState() {
-
-    rhyme.setResponseMaxAge(Duration.ofSeconds(MAX_AGE_SECONDS));
 
     return new SlingTestState() {
 

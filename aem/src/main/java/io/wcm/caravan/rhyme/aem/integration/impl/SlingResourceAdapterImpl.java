@@ -1,5 +1,7 @@
 package io.wcm.caravan.rhyme.aem.integration.impl;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -18,6 +20,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.UriTemplateBuilder;
@@ -35,6 +38,8 @@ import io.wcm.handler.url.UrlHandler;
 @Model(adaptables = SlingRhyme.class, adapters = SlingResourceAdapter.class)
 public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
+  private static final Logger log = getLogger(SlingResourceAdapterImpl.class);
+
   @Self
   private SlingRhyme slingRhyme;
 
@@ -44,23 +49,28 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Inject
   private ResourceSelectorRegistry registry;
 
-  @Self
-  private Resource currentResource;
+  private final Resource fromResource;
+
+  private final boolean templateGenerationRequired;
 
   private final ResourceSelector resourceSelector;
 
   private final ResourceFilter resourceFilter;
 
+
   public SlingResourceAdapterImpl() {
+    fromResource = null;
+    templateGenerationRequired = false;
     resourceSelector = new ResourceSelector(null, null);
     resourceFilter = new ResourceFilter(null, null);
   }
 
-  private SlingResourceAdapterImpl(SlingResourceAdapterImpl adapter, Resource resource, ResourceSelector selector, ResourceFilter filter) {
+  private SlingResourceAdapterImpl(SlingResourceAdapterImpl adapter, ResourceSelector selector, ResourceFilter filter) {
     slingRhyme = adapter.slingRhyme;
     urlHandler = adapter.urlHandler;
     registry = adapter.registry;
-    currentResource = resource;
+    fromResource = adapter.fromResource;
+    templateGenerationRequired = adapter.templateGenerationRequired;
     resourceSelector = new ResourceSelector(selector.description, selector.resources);
     resourceFilter = new ResourceFilter(filter.description, filter.predicate);
   }
@@ -69,7 +79,8 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
     slingRhyme = adapter.slingRhyme;
     urlHandler = adapter.urlHandler;
     registry = adapter.registry;
-    currentResource = resource;
+    fromResource = resource;
+    templateGenerationRequired = resource == null;
     resourceSelector = new ResourceSelector(null, null);
     resourceFilter = new ResourceFilter(null, null);
   }
@@ -86,7 +97,9 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter fromResourceAt(String path) {
 
-    Resource resource = currentResource.getResourceResolver().getResource(path);
+    log.info("fromResourceAt({}) was called with currentResource={}", path, slingRhyme.getCurrentResource());
+
+    Resource resource = slingRhyme.getRequestedResource().getResourceResolver().getResource(path);
 
     if (resource == null) {
       throw new HalApiDeveloperException("There does not exist a resource at " + path);
@@ -98,19 +111,19 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter fromCurrentPage() {
 
-    return fromResource(ResourceStreams.getPageResource(currentResource));
+    return fromResource(ResourceStreams.getPageResource(slingRhyme.getCurrentResource()));
   }
 
   @Override
   public SlingResourceAdapter fromParentPage() {
 
-    return fromResource(ResourceStreams.getParentPageResource(currentResource));
+    return fromResource(ResourceStreams.getParentPageResource(slingRhyme.getCurrentResource()));
   }
 
   @Override
   public SlingResourceAdapter fromGrandParentPage() {
 
-    return fromResource(ResourceStreams.getGrandParentPageResource(currentResource));
+    return fromResource(ResourceStreams.getGrandParentPageResource(slingRhyme.getCurrentResource()));
   }
 
   @Override
@@ -122,67 +135,65 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter selectCurrentResource() {
 
-    return resourceSelector.add(currentResource, Stream::of, "current resource at {}");
+    return resourceSelector.add(Stream::of, "current resource at {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentResource() {
-    return resourceSelector.add(currentResource, ResourceStreams::getContentResource, "content resource of {}");
+    return resourceSelector.add(ResourceStreams::getContentResource, "content resource of {}");
   }
 
   @Override
   public SlingResourceAdapter selectParentResource() {
 
-    return resourceSelector.add(currentResource, ResourceStreams::getParent, "parent of {}");
+    return resourceSelector.add(ResourceStreams::getParent, "parent of {}");
   }
 
   @Override
   public SlingResourceAdapter selectChildResources() {
 
-    return resourceSelector.add(currentResource, ResourceStreams::getChildren, "children of {}");
+    return resourceSelector.add(ResourceStreams::getChildren, "children of {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentOfCurrentPage() {
 
-    return resourceSelector.add(currentResource, ResourceStreams::getContentOfContainingPage, "content of {}");
+    return resourceSelector.add(ResourceStreams::getContentOfContainingPage, "content of {}");
   }
 
 
   @Override
   public SlingResourceAdapter selectContentOfChildPages() {
 
-    return resourceSelector.add(currentResource, ResourceStreams::getContentOfChildPages, "content of child pages of {}");
+    return resourceSelector.add(ResourceStreams::getContentOfChildPages, "content of child pages of {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentOfChildPage(String name) {
 
-    return resourceSelector.add(currentResource, res -> ResourceStreams.getContentOfNamedChildPage(res, name),
-        "content of child page named '" + name + "' of {}");
+    return resourceSelector.add(res -> ResourceStreams.getContentOfNamedChildPage(res, name), "content of child page named '" + name + "' of {}");
   }
 
   @Override
   public SlingResourceAdapter selectContentOfGrandChildPages() {
 
-    return resourceSelector.add(currentResource, ResourceStreams::getContentOfGrandChildPages, "content of grand child pages of {}");
+    return resourceSelector.add(ResourceStreams::getContentOfGrandChildPages, "content of grand child pages of {}");
   }
 
   @Override
   public SlingResourceAdapter selectChildResource(String name) {
 
-    return resourceSelector.add(currentResource, res -> ResourceStreams.getNamedChild(res, name), "child named '" + name + "' of {}");
+    return resourceSelector.add(res -> ResourceStreams.getNamedChild(res, name), "child named '" + name + "' of {}");
   }
 
   @Override
   public SlingResourceAdapter selectResourceAt(String path) {
 
     if (path == null) {
-      currentResource = null;
-      return this;
+      return new SlingResourceAdapterImpl(this, null);
     }
 
-    Resource resource = currentResource.getResourceResolver().getResource(path);
+    Resource resource = slingRhyme.getRequestedResource().getResourceResolver().getResource(path);
     if (resource == null) {
       return resourceSelector.add(Stream.empty(), "non-existent resource at " + path);
     }
@@ -230,12 +241,13 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public <ModelType> TypedResourceAdapter<ModelType> adaptTo(Class<ModelType> clazz) {
 
-    if (currentResource == null) {
+    if (templateGenerationRequired) {
       return new TemplateResourceAdapter<ModelType>(clazz);
     }
 
     return new TypedResourceAdapterImpl<ModelType>(clazz);
   }
+
 
   private final class TypedResourceAdapterImpl<ModelType> implements TypedResourceAdapter<ModelType> {
 
@@ -455,7 +467,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
         newFilter = new ResourceFilter(newDescription, newPredicate);
       }
 
-      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, currentResource, resourceSelector, newFilter);
+      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, resourceSelector, newFilter);
 
       return newInstance;
     }
@@ -472,7 +484,12 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       this.resources = resources;
     }
 
-    private SlingResourceAdapter add(Resource contextResource, Function<Resource, Stream<Resource>> streamFunc, String newDescription) {
+    private SlingResourceAdapter add(Function<Resource, Stream<Resource>> streamFunc, String newDescription) {
+
+      Resource contextResource = fromResource;
+      if (contextResource == null) {
+        contextResource = slingRhyme.getCurrentResource();
+      }
 
       Stream<Resource> stream = streamFunc.apply(contextResource);
 
@@ -496,11 +513,12 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       }
 
 
-      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, currentResource, newSelector, resourceFilter);
+      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, newSelector, resourceFilter);
 
       return newInstance;
     }
   }
+
 
   private final class TemplateResourceAdapter<T> implements TypedResourceAdapter<T> {
 

@@ -20,6 +20,7 @@
 package io.wcm.caravan.rhyme.aem.integration;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -29,4 +30,6 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 public interface ResourceSelectorProvider {
 
   Map<Class<? extends LinkableResource>, String> getModelClassesWithSelectors();
+
+  Optional<? extends LinkableResource> getApiEntryPoint(SlingResourceAdapter adapter);
 }

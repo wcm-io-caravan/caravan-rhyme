@@ -17,7 +17,6 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.media.MediaHandler;
 
 @Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemAsset.class })
-
 public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
 
   @Self
@@ -25,9 +24,6 @@ public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
 
   @Self
   private MediaHandler mediaHandler;
-
-  @Self
-  private Resource resource;
 
   @Override
   public AemAssetProperties getProperties() {

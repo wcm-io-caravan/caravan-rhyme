@@ -20,12 +20,14 @@
 package io.wcm.caravan.rhyme.aem.testing.models;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Component
@@ -34,5 +36,13 @@ public class TestResourceSelectorProvider implements ResourceSelectorProvider {
   @Override
   public Map<Class<? extends LinkableResource>, String> getModelClassesWithSelectors() {
     return ImmutableMap.of(SelectorSlingTestResource.class, SelectorSlingTestResource.SELECTOR);
+  }
+
+  @Override
+  public Optional<? extends LinkableResource> getApiEntryPoint(SlingResourceAdapter adapter) {
+
+    return adapter.selectResourceAt("/")
+        .adaptTo(SelectorSlingTestResource.class)
+        .getOptional();
   }
 }

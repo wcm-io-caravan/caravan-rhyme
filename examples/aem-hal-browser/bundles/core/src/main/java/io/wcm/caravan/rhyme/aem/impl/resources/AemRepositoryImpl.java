@@ -17,10 +17,8 @@ import io.wcm.caravan.rhyme.aem.impl.resources.assets.AemRenditionImpl;
 import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemRepository.class },
-    resourceType = "sling:redirect")
+@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemRepository.class })
 public class AemRepositoryImpl extends AbstractLinkableResource implements AemRepository {
-
 
   @Override
   public SlingResource getRoot() {

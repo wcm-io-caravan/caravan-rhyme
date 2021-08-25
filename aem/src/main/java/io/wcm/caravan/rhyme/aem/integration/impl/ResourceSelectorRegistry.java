@@ -23,7 +23,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -31,6 +34,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Component(service = ResourceSelectorRegistry.class)
@@ -41,20 +46,31 @@ public class ResourceSelectorRegistry {
       policyOption = ReferencePolicyOption.GREEDY)
   private List<ResourceSelectorProvider> providers;
 
-  public Class<? extends LinkableResource> getModelClassForSelectors(Collection<String> selectors) {
+  public Optional<Class<? extends LinkableResource>> getModelClassForSelectors(Collection<String> selectors) {
 
-    Class<? extends LinkableResource> customModelClass = providers.stream()
+    List<Class<? extends LinkableResource>> customModelClasses = providers.stream()
         .flatMap(provider -> provider.getModelClassesWithSelectors().entrySet().stream())
         .filter(entry -> selectors.contains(entry.getValue()))
         .map(entry -> entry.getKey())
-        .findFirst()
-        .orElse(null);
+        .distinct()
+        .collect(Collectors.toList());
 
-    if (customModelClass != null) {
-      return customModelClass;
+    if (customModelClasses.isEmpty()) {
+      return Optional.empty();
     }
 
-    return LinkableResource.class;
+    if (customModelClasses.size() > 1) {
+
+      String classNames = customModelClasses.stream()
+          .map(Class::getName)
+          .collect(Collectors.joining(", "));
+
+      String msg = "More than one resource was registered for selector [" + StringUtils.join(selectors, ",") + "]: " + classNames;
+
+      throw new HalApiDeveloperException(msg);
+    }
+
+    return Optional.of(customModelClasses.iterator().next());
   }
 
   public Optional<String> getSelectorForModelClass(Class<?> clazz) {
@@ -74,6 +90,18 @@ public class ResourceSelectorRegistry {
 
     return modelClass
         .flatMap(this::getSelectorForModelClass);
+  }
+
+  public Stream<LinkableResource> getAllApiEntryPoints(SlingResourceAdapter adapter) {
+
+    return providers.stream()
+        .map(provider -> provider.getApiEntryPoint(adapter))
+        .flatMap(this::optionalAsStream);
+  }
+
+  private <T> Stream<? extends LinkableResource> optionalAsStream(Optional<? extends LinkableResource> optional) {
+
+    return optional.isPresent() ? Stream.of(optional.get()) : Stream.empty();
   }
 
 }

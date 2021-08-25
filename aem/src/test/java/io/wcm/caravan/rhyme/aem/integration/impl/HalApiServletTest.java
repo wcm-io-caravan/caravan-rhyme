@@ -22,12 +22,13 @@ package io.wcm.caravan.rhyme.aem.integration.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpHeaders;
-import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.servlethelpers.MockSlingHttpServletResponse;
@@ -40,15 +41,19 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.integration.ResourceSelectorProvider;
+import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
+import io.wcm.caravan.rhyme.aem.integration.impl.entrypoint.AemApiDiscoveryResourceImpl;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.ResourceTypeSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceSelectorProvider;
 import io.wcm.caravan.rhyme.api.relations.VndErrorRelations;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -70,10 +75,6 @@ public class HalApiServletTest {
     servlet = context.registerInjectActivateService(new HalApiServlet());
   }
 
-  private Resource createResourceWithResourceType(String path, String resourceType) {
-    return context.create().resource(path, SlingConstants.PROPERTY_RESOURCE_TYPE, resourceType);
-  }
-
   private MockSlingHttpServletResponse requestResource(Resource resource, String selector) throws ServletException, IOException {
 
     context.requestPathInfo().setResourcePath(resource.getPath());
@@ -92,17 +93,36 @@ public class HalApiServletTest {
 
 
   @Test
-  public void doGet_without_selector_should_return_test_resource_registered_to_resource_type() throws Exception {
+  public void doGet_for_content_root_without_selector_should_return_entry_point_resource() throws Exception {
 
-    Resource resource = createResourceWithResourceType(TEST_RESOURCE_PATH, ResourceTypeSlingTestResource.RESOURCE_TYPE);
+    Resource resource = context.create().resource("/content");
 
     MockSlingHttpServletResponse response = requestResource(resource, null);
 
     HalResource halResource = assertStatusIsOkAndParse(response);
 
-    assertThatSelfLinkHasHrefAndTitle(halResource, context.request().getPathInfo(), ResourceTypeSlingTestResource.DEFAULT_TITLE);
+    assertThatSelfLinkHasHrefAndTitle(halResource, context.request().getPathInfo(), "A list of all HAL+JSON APIs registered on this AEM instance");
 
-    assertThat(response.getHeader(HttpHeaders.CACHE_CONTROL)).isNull();
+    assertThat(halResource.getLinks("hal:api"))
+        .hasSize(1)
+        .first()
+        .returns("/.selectortest.rhyme", Link::getHref);
+
+    assertThat(response.getHeader(HttpHeaders.CACHE_CONTROL)).isEqualTo("max-age=" + AemApiDiscoveryResourceImpl.MAX_AGE_SECONDS);
+  }
+
+  @Test
+  public void doGet_for_existing_resource_without_selector_should_return_404() throws Exception {
+
+    Resource resource = context.create().resource("/content/foo");
+
+    MockSlingHttpServletResponse response = requestResource(resource, null);
+
+    HalResource vndErrorResource = assertStatusIsNotOkAndParseVndError(response, HttpStatus.SC_NOT_FOUND);
+
+    Link aboutLink = vndErrorResource.getLink(VndErrorRelations.ABOUT);
+    assertThat(aboutLink).isNotNull();
+    assertThat(aboutLink.getHref()).isEqualTo("http://localhost/content/foo.rhyme");
   }
 
   @Test
@@ -116,30 +136,63 @@ public class HalApiServletTest {
 
     assertThatSelfLinkHasHrefAndTitle(halResource, context.request().getPathInfo(), SelectorSlingTestResource.DEFAULT_TITLE);
 
-    assertThat(response.getHeader(HttpHeaders.CACHE_CONTROL)).isEqualTo("max-age=" + SelectorSlingTestResource.MAX_AGE_SECONDS);
+    assertThat(response.getHeader(HttpHeaders.CACHE_CONTROL)).isNull();
   }
-
 
   @Test
   public void doGet_with_path_to_non_existing_resource_should_return_404() throws Exception {
 
     Resource resource = new NonExistingResource(context.resourceResolver(), "/does/not/exist");
 
-    MockSlingHttpServletResponse response = requestResource(resource, null);
+    MockSlingHttpServletResponse response = requestResource(resource, SelectorSlingTestResource.SELECTOR);
 
     HalResource vndErrorResource = assertStatusIsNotOkAndParseVndError(response, HttpStatus.SC_NOT_FOUND);
 
     Link aboutLink = vndErrorResource.getLink(VndErrorRelations.ABOUT);
     assertThat(aboutLink).isNotNull();
-    assertThat(aboutLink.getHref()).isEqualTo("http://localhost/does/not/exist.rhyme");
+    assertThat(aboutLink.getHref()).isEqualTo("http://localhost/does/not/exist.selectortest.rhyme");
+  }
+
+  @Test
+  public void doGet_with_selector_should_fail_if_multiple_resources_are_registered_for_selector() throws Exception {
+
+    context.registerService(ResourceSelectorProvider.class, new MultipleResourcesWithSameSelector());
+
+    servlet = context.registerInjectActivateService(new HalApiServlet());
+
+    Resource resource = context.create().resource(TEST_RESOURCE_PATH);
+
+    MockSlingHttpServletResponse response = requestResource(resource, SelectorSlingTestResource.SELECTOR);
+
+    HalResource vndErrorResource = assertStatusIsNotOkAndParseVndError(response, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+
+    assertThat(vndErrorResource.getModel().path("message").asText())
+        .startsWith("More than one resource was registered");
+  }
+
+  class MultipleResourcesWithSameSelector implements ResourceSelectorProvider {
+
+    @Override
+    public Map<Class<? extends LinkableResource>, String> getModelClassesWithSelectors() {
+
+      return ImmutableMap.of(
+          SelectorSlingTestResource.class, SelectorSlingTestResource.SELECTOR,
+          ResourceTypeSlingTestResource.class, SelectorSlingTestResource.SELECTOR);
+    }
+
+    @Override
+    public Optional<? extends LinkableResource> getApiEntryPoint(SlingResourceAdapter adapter) {
+      return Optional.empty();
+    }
+
   }
 
   @Test
   public void caravan_metadata_should_be_removed_by_default() throws Exception {
 
-    Resource resource = createResourceWithResourceType(TEST_RESOURCE_PATH, ResourceTypeSlingTestResource.RESOURCE_TYPE);
+    Resource resource = context.create().resource(TEST_RESOURCE_PATH);
 
-    MockSlingHttpServletResponse response = requestResource(resource, null);
+    MockSlingHttpServletResponse response = requestResource(resource, SelectorSlingTestResource.SELECTOR);
 
     HalResource halResource = assertStatusIsOkAndParse(response);
 
@@ -149,11 +202,11 @@ public class HalApiServletTest {
   @Test
   public void caravan_metadata_should_be_maintained_if_query_parameter_is_present() throws Exception {
 
-    Resource resource = createResourceWithResourceType(TEST_RESOURCE_PATH, ResourceTypeSlingTestResource.RESOURCE_TYPE);
+    Resource resource = context.create().resource(TEST_RESOURCE_PATH);
 
     context.request().setQueryString(HalApiServlet.QUERY_PARAM_EMBED_METADATA);
 
-    MockSlingHttpServletResponse response = requestResource(resource, null);
+    MockSlingHttpServletResponse response = requestResource(resource, SelectorSlingTestResource.SELECTOR);
 
     HalResource halResource = assertStatusIsOkAndParse(response);
 
