@@ -30,7 +30,8 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
-import io.wcm.caravan.rhyme.aem.api.util.ResourceStreams;
+import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
+import io.wcm.caravan.rhyme.aem.impl.util.ResourceStreams;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.url.UrlHandler;
@@ -111,19 +112,19 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter fromCurrentPage() {
 
-    return fromResource(ResourceStreams.getPageResource(slingRhyme.getCurrentResource()));
+    return fromResource(PageUtils.getPageResource(slingRhyme.getCurrentResource()));
   }
 
   @Override
   public SlingResourceAdapter fromParentPage() {
 
-    return fromResource(ResourceStreams.getParentPageResource(slingRhyme.getCurrentResource()));
+    return fromResource(PageUtils.getParentPageResource(slingRhyme.getCurrentResource()));
   }
 
   @Override
   public SlingResourceAdapter fromGrandParentPage() {
 
-    return fromResource(ResourceStreams.getGrandParentPageResource(slingRhyme.getCurrentResource()));
+    return fromResource(PageUtils.getGrandParentPageResource(slingRhyme.getCurrentResource()));
   }
 
   @Override

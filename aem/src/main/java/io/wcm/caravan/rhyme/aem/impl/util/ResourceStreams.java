@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.aem.api.util;
+package io.wcm.caravan.rhyme.aem.impl.util;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -26,8 +26,6 @@ import java.util.stream.StreamSupport;
 import org.apache.sling.api.resource.Resource;
 
 import com.day.cq.commons.jcr.JcrConstants;
-
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 public final class ResourceStreams {
 
@@ -48,22 +46,22 @@ public final class ResourceStreams {
 
   public static Stream<Resource> getChildPages(Resource res) {
 
-    Resource pageResource = getPageResource(res);
+    Resource pageResource = PageUtils.getPageResource(res);
 
     return getChildren(pageResource)
-        .filter(ResourceStreams::isPage);
+        .filter(PageUtils::isPage);
   }
 
   public static Stream<Resource> getContentOfContainingPage(Resource res) {
 
-    Resource pageResource = getPageResource(res);
+    Resource pageResource = PageUtils.getPageResource(res);
 
     return getContentResources(Stream.of(pageResource));
   }
 
   public static Stream<Resource> getContentOfChildPages(Resource res) {
 
-    Resource pageResource = getPageResource(res);
+    Resource pageResource = PageUtils.getPageResource(res);
 
     Stream<Resource> childPages = getChildPages(pageResource);
 
@@ -72,7 +70,7 @@ public final class ResourceStreams {
 
   public static Stream<Resource> getContentOfGrandChildPages(Resource res) {
 
-    Resource pageResource = getPageResource(res);
+    Resource pageResource = PageUtils.getPageResource(res);
 
     Stream<Resource> grandChildPages = getChildPages(pageResource)
         .flatMap(ResourceStreams::getChildPages);
@@ -82,7 +80,7 @@ public final class ResourceStreams {
 
   public static Stream<Resource> getContentOfNamedChildPage(Resource res, String name) {
 
-    Resource pageResource = getPageResource(res);
+    Resource pageResource = PageUtils.getPageResource(res);
 
     Stream<Resource> childPage = ResourceStreams.getChildPages(pageResource)
         .filter(child -> name.equals(child.getName()));
@@ -95,41 +93,11 @@ public final class ResourceStreams {
     return Stream.of(res.getParent()).filter(Objects::nonNull);
   }
 
-  public static Resource getPageResource(Resource resource) {
-    Resource candidate = resource;
-    while (candidate != null && !isPage(candidate)) {
-      candidate = candidate.getParent();
-    }
-    if (candidate == null) {
-      throw new HalApiDeveloperException("The resource " + resource + " is not a page, and not located within a page");
-    }
-    return candidate;
-  }
-
-  public static Resource getParentPageResource(Resource resource) {
-    Resource page = getPageResource(resource);
-    Resource parent = page.getParent();
-    if (!isPage(parent)) {
-      throw new HalApiDeveloperException("The parent resource " + parent + " is not a page");
-    }
-    return parent;
-  }
-
-  public static Resource getGrandParentPageResource(Resource resource) {
-    Resource parentPage = getParentPageResource(resource);
-    return getParentPageResource(parentPage);
-  }
-
-  public static boolean isPage(Resource page) {
-    return "cq:Page".equals(page.getResourceType());
-  }
-
   public static Stream<Resource> getContentResource(Resource pageResource) {
 
     return Stream.of(pageResource.getChild(JcrConstants.JCR_CONTENT))
         .filter(Objects::nonNull);
   }
-
 
   public static Stream<Resource> getContentResources(Stream<Resource> pageResources) {
 
