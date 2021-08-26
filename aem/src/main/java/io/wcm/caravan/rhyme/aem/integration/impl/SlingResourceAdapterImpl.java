@@ -8,7 +8,6 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -375,77 +374,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       instanceDecorators.forEach(decorator -> decorator.accept(model));
 
       return model;
-    }
-
-  }
-
-  private interface LinkDecorator<ModelType> {
-
-    default String getLinkTitle(Resource resource, ModelType model) {
-      return null;
-    }
-
-    default String getLinkName(Resource resource, ModelType model) {
-      return null;
-    }
-
-    default Map<String, Object> getQueryParameters() {
-      return null;
-    }
-
-    default boolean keepPartialTemplate() {
-      return false;
-    }
-  }
-
-  private class CompositeLinkDecorator<ModelType> implements LinkDecorator<ModelType> {
-
-    private final List<LinkDecorator<ModelType>> delegates = new ArrayList<>();
-
-    CompositeLinkDecorator<ModelType> withAdditionalDecorator(LinkDecorator<ModelType> decorator) {
-      CompositeLinkDecorator<ModelType> newInstance = new CompositeLinkDecorator<>();
-
-      newInstance.delegates.addAll(this.delegates);
-      newInstance.delegates.add(decorator);
-      return newInstance;
-    }
-
-    private <T> T findFirstNonNull(Function<LinkDecorator<ModelType>, T> func) {
-
-      return delegates.stream()
-          .map(func)
-          .filter(Objects::nonNull)
-          .findFirst()
-          .orElse(null);
-    }
-
-    public boolean hasDelegates() {
-      return !delegates.isEmpty();
-    }
-
-    @Override
-    public String getLinkTitle(Resource resource, ModelType model) {
-
-      return findFirstNonNull(dec -> dec.getLinkTitle(resource, model));
-    }
-
-    @Override
-    public String getLinkName(Resource resource, ModelType model) {
-
-      return findFirstNonNull(dec -> dec.getLinkName(resource, model));
-    }
-
-    @Override
-    public Map<String, Object> getQueryParameters() {
-
-      return findFirstNonNull(dec -> dec.getQueryParameters());
-    }
-
-    @Override
-    public boolean keepPartialTemplate() {
-
-      return delegates.stream()
-          .anyMatch(LinkDecorator::keepPartialTemplate);
     }
 
   }
