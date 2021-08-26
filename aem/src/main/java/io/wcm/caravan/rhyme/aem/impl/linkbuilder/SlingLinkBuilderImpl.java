@@ -16,19 +16,31 @@ import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
+import io.wcm.caravan.rhyme.aem.impl.SlingRhymeImpl;
 import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingRhyme.class, adapters = SlingLinkBuilder.class)
 public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
-  @Self
-  private Resource targetResource;
+  private final Resource targetResource;
 
-  @Self
-  private UrlHandler urlHandler;
+  private final UrlHandler urlHandler;
 
+  private final RhymeResourceRegistry registry;
+
+  /**
+   * Default constructor used when this sling model is instantiated
+   * @param targetResource the current sling resource (adapted via {@link SlingRhymeImpl#adaptTo(Class)} for which the
+   *          link should be created
+   * @param urlHandler an URL handler (adapted via {@link SlingRhymeImpl#adaptTo(Class)} to generate the resource URL
+   * @param registry to lookup the selectors to be used for URL generation
+   */
   @Inject
-  private RhymeResourceRegistry registry;
+  public SlingLinkBuilderImpl(@Self Resource targetResource, @Self UrlHandler urlHandler, RhymeResourceRegistry registry) {
+    this.targetResource = targetResource;
+    this.urlHandler = urlHandler;
+    this.registry = registry;
+  }
 
   @Override
   public Link createLinkToCurrentResource(SlingLinkableResource slingModel) {

@@ -29,44 +29,41 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
   private static final Logger log = getLogger(SlingResourceAdapterImpl.class);
 
-  @Self
-  private SlingRhyme slingRhyme;
-
-  @Inject
-  private RhymeResourceRegistry registry;
+  private final SlingRhyme slingRhyme;
+  private final RhymeResourceRegistry registry;
 
   private final Resource fromResource;
-
-  private final boolean templateGenerationRequired;
+  private final boolean nullResourcePathGiven;
 
   private final ResourceSelector resourceSelector;
-
   private final ResourceFilter resourceFilter;
 
-
-  public SlingResourceAdapterImpl() {
-    fromResource = null;
-    templateGenerationRequired = false;
-    resourceSelector = new ResourceSelector(null, null);
-    resourceFilter = new ResourceFilter(null, null);
+  @Inject
+  public SlingResourceAdapterImpl(@Self SlingRhyme slingRhyme, RhymeResourceRegistry registry) {
+    this.slingRhyme = slingRhyme;
+    this.registry = registry;
+    this.fromResource = null;
+    this.nullResourcePathGiven = false;
+    this.resourceSelector = new ResourceSelector(null, null);
+    this.resourceFilter = new ResourceFilter(null, null);
   }
 
   private SlingResourceAdapterImpl(SlingResourceAdapterImpl adapter, ResourceSelector selector, ResourceFilter filter) {
-    slingRhyme = adapter.slingRhyme;
-    registry = adapter.registry;
-    fromResource = adapter.fromResource;
-    templateGenerationRequired = adapter.templateGenerationRequired;
-    resourceSelector = new ResourceSelector(selector.description, selector.resources);
-    resourceFilter = new ResourceFilter(filter.description, filter.predicate);
+    this.slingRhyme = adapter.slingRhyme;
+    this.registry = adapter.registry;
+    this.fromResource = adapter.fromResource;
+    this.nullResourcePathGiven = adapter.nullResourcePathGiven;
+    this.resourceSelector = new ResourceSelector(selector.description, selector.resources);
+    this.resourceFilter = new ResourceFilter(filter.description, filter.predicate);
   }
 
-  private SlingResourceAdapterImpl(SlingResourceAdapterImpl adapter, Resource resource) {
-    slingRhyme = adapter.slingRhyme;
-    registry = adapter.registry;
-    fromResource = resource;
-    templateGenerationRequired = resource == null;
-    resourceSelector = new ResourceSelector(null, null);
-    resourceFilter = new ResourceFilter(null, null);
+  private SlingResourceAdapterImpl(SlingResourceAdapterImpl adapter, Resource newFromResource) {
+    this.slingRhyme = adapter.slingRhyme;
+    this.registry = adapter.registry;
+    this.fromResource = newFromResource;
+    this.nullResourcePathGiven = newFromResource == null;
+    this.resourceSelector = new ResourceSelector(null, null);
+    this.resourceFilter = new ResourceFilter(null, null);
   }
 
   private SlingResourceAdapter fromResource(Resource resource) {
@@ -80,8 +77,6 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
   @Override
   public SlingResourceAdapter fromResourceAt(String path) {
-
-    log.info("fromResourceAt({}) was called with currentResource={}", path, slingRhyme.getCurrentResource());
 
     Resource resource = slingRhyme.getRequestedResource().getResourceResolver().getResource(path);
 
@@ -224,7 +219,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public <I> PostAdaptionStage<I, I> adaptTo(Class<I> clazz) {
 
-    if (templateGenerationRequired) {
+    if (nullResourcePathGiven) {
       return new UnknownResourcePostAdaptionStage<I, I>(this, clazz, registry);
     }
 
@@ -234,7 +229,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public <I, M extends I> PostAdaptionStage<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass) {
 
-    if (templateGenerationRequired) {
+    if (nullResourcePathGiven) {
       throw new HalApiDeveloperException("You cannot specify a model class if pure template generation was forced by calling #selectResourceAt");
     }
 
