@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
-import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
+import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.integration.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 

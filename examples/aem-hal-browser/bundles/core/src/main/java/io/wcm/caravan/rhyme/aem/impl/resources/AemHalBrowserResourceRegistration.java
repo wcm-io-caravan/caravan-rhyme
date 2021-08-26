@@ -7,12 +7,12 @@ import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.ImmutableMap;
 
+import io.wcm.caravan.rhyme.aem.api.RhymeResourceRegistration;
+import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.impl.resources.assets.AemAssetImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.assets.AemRenditionImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.generic.SlingResourceImpl;
 import io.wcm.caravan.rhyme.aem.impl.resources.sites.AemPageImpl;
-import io.wcm.caravan.rhyme.aem.integration.RhymeResourceRegistration;
-import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Component

@@ -27,10 +27,10 @@ import com.damnhandy.uri.template.UriTemplateBuilder;
 import com.google.common.base.Preconditions;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.aem.integration.ResourceStreams;
-import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
-import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
-import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
+import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
+import io.wcm.caravan.rhyme.aem.api.util.ResourceStreams;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.url.UrlHandler;

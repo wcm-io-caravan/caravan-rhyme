@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.aem.integration;
+package io.wcm.caravan.rhyme.aem.api;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,12 +25,13 @@ import java.util.Optional;
 import org.osgi.annotation.versioning.ConsumerType;
 import org.osgi.service.component.annotations.Component;
 
+import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
  * An SPI interface that needs to be implemented as an OSGi {@link Component} in your service bundle.
  * It is required for the Rhyme AEM integration to know how to find the right resource implementation
- * based on the selector of the incoming request, and will also render all links to these resource
+ * based on the selector of the incoming request, and how to render all links to these resource
  * classes with the appropriate selector.
  */
 @ConsumerType
@@ -39,7 +40,8 @@ public interface RhymeResourceRegistration {
   /**
    * Lists all <b>linkable</b> resource implementation classes (e.g. sling models) defined in your bundle, and defines
    * the Sling selectors to be used in the links to these resources
-   * @return a {@link Map} with resource implementation classes as keys, and the corresponding selectors as values
+   * @return a {@link Map} with resource implementation sling model classes as keys, and the corresponding selectors as
+   *         values
    */
   Map<Class<? extends LinkableResource>, String> getModelClassesWithSelectors();
 

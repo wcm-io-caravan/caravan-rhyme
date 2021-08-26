@@ -14,12 +14,12 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import com.day.cq.dam.api.Asset;
 import com.day.cq.wcm.api.Page;
 
+import io.wcm.caravan.rhyme.aem.api.RhymeObject;
+import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.aem.api.generic.SlingResource;
 import io.wcm.caravan.rhyme.aem.api.sites.AemLinkedContent;
 import io.wcm.caravan.rhyme.aem.api.sites.AemPage;
-import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
-import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
 
 @Model(adaptables = Resource.class, adapters = { AemLinkedContent.class })
 public class AemLinkedContentImpl implements AemLinkedContent {

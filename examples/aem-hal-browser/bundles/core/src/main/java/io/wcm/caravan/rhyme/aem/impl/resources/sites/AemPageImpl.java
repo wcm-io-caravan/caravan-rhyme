@@ -11,10 +11,10 @@ import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.wcm.api.Page;
 
 import io.wcm.caravan.rhyme.aem.api.generic.SlingResource;
+import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.api.sites.AemLinkedContent;
 import io.wcm.caravan.rhyme.aem.api.sites.AemPage;
 import io.wcm.caravan.rhyme.aem.api.sites.AemPageProperties;
-import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemPage.class })

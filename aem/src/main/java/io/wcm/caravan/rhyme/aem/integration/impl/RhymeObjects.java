@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.jetbrains.annotations.NotNull;
 
-import io.wcm.caravan.rhyme.aem.integration.RhymeObject;
-import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.api.RhymeObject;
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 final class RhymeObjects {

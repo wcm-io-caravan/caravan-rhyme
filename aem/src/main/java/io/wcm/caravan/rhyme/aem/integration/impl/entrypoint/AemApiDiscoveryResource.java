@@ -21,8 +21,8 @@ package io.wcm.caravan.rhyme.aem.integration.impl.entrypoint;
 
 import java.util.List;
 
-import io.wcm.caravan.rhyme.aem.integration.RhymeResourceRegistration;
-import io.wcm.caravan.rhyme.aem.integration.SlingResourceAdapter;
+import io.wcm.caravan.rhyme.aem.api.RhymeResourceRegistration;
+import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;

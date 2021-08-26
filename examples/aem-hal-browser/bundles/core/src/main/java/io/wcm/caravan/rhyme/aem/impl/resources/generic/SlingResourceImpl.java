@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.wcm.caravan.rhyme.aem.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.aem.api.generic.InfinityJsonResource;
 import io.wcm.caravan.rhyme.aem.api.generic.SlingResource;
+import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.api.sites.AemPage;
-import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Model(adaptables = Resource.class, adapters = { LinkableResource.class, SlingResource.class })

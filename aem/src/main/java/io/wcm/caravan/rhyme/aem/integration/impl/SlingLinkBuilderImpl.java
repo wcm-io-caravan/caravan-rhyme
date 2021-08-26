@@ -11,9 +11,9 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import com.damnhandy.uri.template.UriTemplate;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.aem.integration.SlingLinkBuilder;
-import io.wcm.caravan.rhyme.aem.integration.SlingLinkableResource;
-import io.wcm.caravan.rhyme.aem.integration.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
+import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
 import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingRhyme.class, adapters = SlingLinkBuilder.class)

@@ -18,7 +18,7 @@ import com.day.cq.dam.api.Asset;
 import io.wcm.caravan.rhyme.aem.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.aem.api.assets.AemRendition;
 import io.wcm.caravan.rhyme.aem.api.assets.AemRenditionProperties;
-import io.wcm.caravan.rhyme.aem.integration.AbstractLinkableResource;
+import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.media.Media;
 import io.wcm.handler.media.MediaArgs;

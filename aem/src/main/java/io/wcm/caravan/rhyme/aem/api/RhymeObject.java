@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.integration;
+package io.wcm.caravan.rhyme.aem.api;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

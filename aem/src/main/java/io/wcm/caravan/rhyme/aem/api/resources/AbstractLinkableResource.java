@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.integration;
+package io.wcm.caravan.rhyme.aem.api.resources;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -7,6 +7,10 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestParameter;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.aem.api.RhymeObject;
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
+import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 public abstract class AbstractLinkableResource implements LinkableResource, SlingLinkableResource {

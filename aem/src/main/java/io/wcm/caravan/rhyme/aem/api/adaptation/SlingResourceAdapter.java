@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.aem.integration;
+package io.wcm.caravan.rhyme.aem.api.adaptation;
 
 import java.util.Map;
 import java.util.Optional;
