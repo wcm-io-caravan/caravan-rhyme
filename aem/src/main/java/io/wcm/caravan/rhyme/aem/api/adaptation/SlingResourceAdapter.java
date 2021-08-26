@@ -1,8 +1,5 @@
 package io.wcm.caravan.rhyme.aem.api.adaptation;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -51,31 +48,9 @@ public interface SlingResourceAdapter {
   SlingResourceAdapter filterWithName(String resourceName);
 
 
-  <I> TypedResourceAdapter<I, I> adaptTo(Class<I> halApiInterface);
+  <I> PostAdaptionStage<I, I> adaptTo(Class<I> halApiInterface);
 
-  <I, M extends I> TypedResourceAdapter<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass);
-
-
-  interface TypedResourceAdapter<I, M extends I> {
-
-    TypedResourceAdapter<I, M> withModifications(Consumer<M> consumer);
-
-    TypedResourceAdapter<I, M> withLinkTitle(String title);
-
-    TypedResourceAdapter<I, M> withLinkName(String name);
-
-    TypedResourceAdapter<I, M> withQueryParameterTemplate(String... names);
-
-    TypedResourceAdapter<I, M> withQueryParameters(Map<String, Object> parameters);
-
-    TypedResourceAdapter<I, M> withPartialLinkTemplate();
-
-    M getInstance();
-
-    Optional<I> getOptional();
-
-    Stream<I> getStream();
-  }
+  <I, M extends I> PostAdaptionStage<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass);
 
 
 }
