@@ -198,6 +198,21 @@ public class SlingResourceAdapterImplTemplateTest {
         .hasMessage("#withPartialLinkTemplate cannot be called if you selected a null resource path to build a template");
   }
 
+  @Test
+  public void withModifications_fails_if_null_path_is_given() {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    Throwable ex = catchThrowable(() -> adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        // #getClass doesn't really make sense here, but there is nothing else to call in the interface
+        // but it's not executed anyway as the exception is triggered by calling #withModifications
+        .withModifications(res -> res.getClass())
+        .getInstance());
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessage("#withModifications cannot be called if you selected a null resource path to build a template");
+  }
 
   @Test
   public void selectResourceAt_can_be_used_to_build_templates_for_unregistered_resources() throws Exception {
@@ -218,15 +233,35 @@ public class SlingResourceAdapterImplTemplateTest {
   }
 
   @Test
-  public void buildTemplateTo_fails_if_any_other_method_is_called_on_proxy() throws Exception {
+  public void adaptTo_should_not_allow_to_specify_model_class_if_selectResourceAt_was_called_with_null_path() throws Exception {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
-    String linkTitle = "A title for the template";
+    Throwable ex = catchThrowable(() -> adapter.selectResourceAt(null)
+        .adaptTo(UnregisteredResource.class, UnregisteredResourceImpl.class)
+        .getInstance());
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("You cannot specify a model class");
+  }
+
+  static class UnregisteredResourceImpl implements UnregisteredResource {
+
+    @Override
+    public Link createLink() {
+      return new Link("/foo");
+    }
+
+  }
+
+  @Test
+  public void should_not_allow_any_other_method_call_than_createLink_on_proxy() throws Exception {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
     SlingTestResource resource = adapter.selectResourceAt(null)
         .adaptTo(SlingTestResource.class)
-        .withLinkTitle(linkTitle)
         .getInstance();
 
     Throwable ex = catchThrowable(() -> resource.getState());

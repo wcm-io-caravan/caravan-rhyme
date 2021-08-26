@@ -251,6 +251,10 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public <I, M extends I> TypedResourceAdapter<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass) {
 
+    if (templateGenerationRequired) {
+      throw new HalApiDeveloperException("You cannot specify a model class if pure template generation was forced by calling #selectResourceAt");
+    }
+
     return new TypedResourceAdapterImpl<I, M>(halApiInterface, slingModelClass);
   }
 
@@ -326,7 +330,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
     @Override
     public TypedResourceAdapter<I, M> withQueryParameterTemplate(String... names) {
-      throw new HalApiDeveloperException("#withQueryParameterTemplatecan only be called if you selected a null resource path to create a template");
+      throw new HalApiDeveloperException("#withQueryParameterTemplatecan can only be called if you selected a null resource path to create a template");
     }
 
     @Override
@@ -530,7 +534,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
           throw new HalApiDeveloperException("Unsupported call to " + method.getName() + " method on "
               + halApiInterface.getName() + " proxy instance. "
-              + "Any instances created with SlingLinkBuilder#buildTemplateTo can only be used to create link templates for these resources");
+              + "Any instances created with SlingLinkBuilder#selectResourceAt(null can only be used to create link templates for these resources");
         }
       });
     }
@@ -561,9 +565,5 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
           .extension(HalApiServlet.EXTENSION)
           .buildExternalLinkUrl();
     }
-
-
   }
-
-
 }

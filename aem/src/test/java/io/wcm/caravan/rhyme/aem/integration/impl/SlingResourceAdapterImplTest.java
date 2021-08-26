@@ -98,6 +98,19 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
+  public void should_allow_to_specify_implementation_sling_model_class() throws Exception {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    SelectorSlingTestResource resource = adapter.selectCurrentResource()
+        .adaptTo(SlingTestResource.class, SelectorSlingTestResource.class)
+        .getInstance();
+
+    assertThatResourceIsSelectorSlingTestResourceAt("/content/foo", resource);
+  }
+
+
+  @Test
   public void should_adapt_models_not_implementing_SlingLinkableResource_if_no_decorators_are_used() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
@@ -864,7 +877,7 @@ public class SlingResourceAdapterImplTest {
         .getInstance());
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("#withQueryParameterTemplatecan only be called if you selected a null resource path to create a template");
+        .hasMessageStartingWith("#withQueryParameterTemplatecan can only be called if you selected a null resource path to create a template");
 
   }
 
@@ -885,5 +898,22 @@ public class SlingResourceAdapterImplTest {
         .createLink();
 
     assertThat(link.getHref()).isEqualTo("/content.selectortest.rhyme?foo=123{&bar}");
+  }
+
+  @Test
+  public void withModifications_should_allow_calls_to_impl_instance() {
+
+    String customTitle = "This is a link to foo!";
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    Link link = adapter.selectCurrentResource()
+        .adaptTo(SlingTestResource.class, SelectorSlingTestResource.class)
+        .withModifications(impl -> impl.setLinkTitle(customTitle))
+        .getInstance()
+        .createLink();
+
+    assertThat(link.getTitle())
+        .isEqualTo(customTitle);
   }
 }
