@@ -74,7 +74,7 @@ public class AbstractLinkableResourceTest {
 
     ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
 
-    resource.setLinkTitle("Custom Title");
+    resource.getLinkProperties().setTitle("Custom Title");
 
     assertThat(resource.createLink().getTitle()).isEqualTo("Custom Title");
   }
@@ -96,7 +96,7 @@ public class AbstractLinkableResourceTest {
 
     ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
 
-    resource.setLinkName("bar");
+    resource.getLinkProperties().setName("bar");
 
     assertThat(resource.createLink().getName()).isEqualTo("bar");
   }
@@ -110,7 +110,7 @@ public class AbstractLinkableResourceTest {
 
     ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
 
-    Map<String, Object> params = resource.getQueryParameters();
+    Map<String, Object> params = resource.getLinkProperties().getQueryParameters();
     assertThat(params).hasSize(2);
     assertThat(params).containsEntry("foo", "123");
     assertThat(params).containsEntry("bar", "456");
@@ -123,7 +123,7 @@ public class AbstractLinkableResourceTest {
 
     ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
 
-    Map<String, Object> params = resource.getQueryParameters();
+    Map<String, Object> params = resource.getLinkProperties().getQueryParameters();
     assertThat(params).isEmpty();
   }
 
@@ -136,9 +136,9 @@ public class AbstractLinkableResourceTest {
 
     ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
 
-    resource.setQueryParameters(ImmutableMap.of("abc", "def"));
+    resource.getLinkProperties().setQueryParameters(ImmutableMap.of("abc", "def"));
 
-    Map<String, Object> params = resource.getQueryParameters();
+    Map<String, Object> params = resource.getLinkProperties().getQueryParameters();
     assertThat(params).hasSize(1);
     assertThat(params).containsEntry("abc", "def");
   }

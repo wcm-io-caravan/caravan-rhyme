@@ -48,8 +48,8 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     String url = buildResourceUrl(slingModel);
 
     Link link = new Link(url)
-        .setName(slingModel.getLinkName())
-        .setTitle(slingModel.getLinkTitle());
+        .setName(slingModel.getLinkProperties().getName())
+        .setTitle(slingModel.getLinkProperties().getTitle());
 
     return link;
   }
@@ -66,7 +66,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
   private String appendQueryWithTemplate(String baseUrl, SlingLinkableResource slingModel) {
 
-    Map<String, Object> queryParams = slingModel.getQueryParameters();
+    Map<String, Object> queryParams = slingModel.getLinkProperties().getQueryParameters();
     if (queryParams.isEmpty()) {
       return baseUrl;
     }
@@ -78,7 +78,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
         .filter(entry -> entry.getValue() != null)
         .forEach(entry -> template.set(entry.getKey(), entry.getValue()));
 
-    return slingModel.isExpandAllVariables() ? template.expand() : template.expandPartial();
+    return slingModel.getLinkProperties().isAllowTemplate() ? template.expandPartial() : template.expand();
   }
 
   private String getClassSpecificSelector(SlingLinkableResource slingModel) {

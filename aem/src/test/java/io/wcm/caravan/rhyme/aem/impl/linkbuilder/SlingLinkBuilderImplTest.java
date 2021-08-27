@@ -1,27 +1,22 @@
 package io.wcm.caravan.rhyme.aem.impl.linkbuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
-import io.wcm.caravan.rhyme.aem.testing.models.UnregisteredSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
+import io.wcm.caravan.rhyme.aem.testing.models.UnregisteredSlingTestResource;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -84,26 +79,23 @@ public class SlingLinkBuilderImplTest {
     assertThat(link.getHref()).isEqualTo("/content.rhyme");
   }
 
-  @Test
-  public void createLinkToCurrentResource_includes_query_parameters() throws Exception {
+  private Link createLinkWithQueryParams(Consumer<Map<String, Object>> paramProvider) {
 
     SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
 
-    AbstractLinkableResource resource = new AbstractLinkableResource() {
+    AbstractLinkableResource resource = new LinkableResourceImpl();
+    paramProvider.accept(resource.getLinkProperties().getQueryParameters());
 
-      @Override
-      public Map<String, Object> getQueryParameters() {
-        return ImmutableMap.of("foo", "1", "bar", "2");
-      }
+    return linkBuilder.createLinkToCurrentResource(resource);
+  }
 
-      @Override
-      protected String getDefaultLinkTitle() {
-        return "the default title";
-      }
+  @Test
+  public void createLinkToCurrentResource_includes_query_parameters() throws Exception {
 
-    };
-
-    Link link = linkBuilder.createLinkToCurrentResource(resource);
+    Link link = createLinkWithQueryParams(queryParams -> {
+      queryParams.put("foo", 1);
+      queryParams.put("bar", 2);
+    });
 
     assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=1&bar=2");
   }
@@ -111,28 +103,67 @@ public class SlingLinkBuilderImplTest {
   @Test
   public void createLinkToCurrentResource_strips_parameters_with_null_value() throws Exception {
 
-    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
 
-    AbstractLinkableResource resource = new AbstractLinkableResource() {
-
-      @Override
-      public Map<String, Object> getQueryParameters() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("foo", null);
-        params.put("bar", "1");
-        return params;
-      }
-
-      @Override
-      protected String getDefaultLinkTitle() {
-        return "the default title";
-      }
-
-    };
-
-    Link link = linkBuilder.createLinkToCurrentResource(resource);
+    Link link = createLinkWithQueryParams(queryParams -> {
+      queryParams.put("bar", 1);
+    });
 
     assertThat(link.getHref()).isEqualTo("/content.rhyme?bar=1");
+  }
+
+  @Test
+  public void createLinkToCurrentResource_strips_parameters_with_null_values() throws Exception {
+
+    Link link = createLinkWithQueryParams(queryParams -> {
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme");
+  }
+
+  private Link createLinkTemplateWithQueryParams(Consumer<Map<String, Object>> paramProvider) {
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    AbstractLinkableResource resource = new LinkableResourceImpl();
+
+    paramProvider.accept(resource.getLinkProperties().getQueryParameters());
+    resource.getLinkProperties().setTemplated(true);
+
+    return linkBuilder.createLinkToCurrentResource(resource);
+  }
+
+  @Test
+  public void createLinkToCurrentResource_includes_query_parameters_fully_resolves_template() throws Exception {
+
+    Link link = createLinkTemplateWithQueryParams(queryParams -> {
+      queryParams.put("foo", 1);
+      queryParams.put("bar", 2);
+    });
+
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=1&bar=2");
+  }
+
+  @Test
+  public void createLinkToCurrentResource_keeps_template_variable_with_null_value() throws Exception {
+
+    Link link = createLinkTemplateWithQueryParams(queryParams -> {
+      queryParams.put("foo", null);
+      queryParams.put("bar", 1);
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme{?foo}&bar=1");
+  }
+
+  @Test
+  public void createLinkToCurrentResource_keeps_template_variables_with_null_values() throws Exception {
+
+    Link link = createLinkTemplateWithQueryParams(queryParams -> {
+      queryParams.put("foo", null);
+      queryParams.put("bar", null);
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme{?foo,bar}");
   }
 
   @Test
@@ -142,12 +173,36 @@ public class SlingLinkBuilderImplTest {
 
     SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
 
-    SlingLinkableResource resource = mock(SlingLinkableResource.class);
-    when(resource.getLinkTitle()).thenReturn(linkTitle);
+    AbstractLinkableResource resource = new LinkableResourceImpl();
+    resource.getLinkProperties().setTitle(linkTitle);
 
     Link link = linkBuilder.createLinkToCurrentResource(resource);
 
     assertThat(link.getTitle()).isEqualTo(linkTitle);
+  }
+
+  @Test
+  public void createLinkToCurrentResource_uses_link_name() throws Exception {
+
+    String linkName = "foo";
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    AbstractLinkableResource resource = new LinkableResourceImpl();
+    resource.getLinkProperties().setName(linkName);
+
+    Link link = linkBuilder.createLinkToCurrentResource(resource);
+
+    assertThat(link.getName()).isEqualTo(linkName);
+  }
+
+  public static class LinkableResourceImpl extends AbstractLinkableResource {
+
+    @Override
+    protected String getDefaultLinkTitle() {
+      return "the default title";
+    }
+
   }
 
 }

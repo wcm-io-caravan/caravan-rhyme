@@ -1,6 +1,5 @@
 package io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.assets;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -54,8 +53,7 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
 
   @PostConstruct
   void activate() {
-    width = parseRequestParameter(WIDTH);
-    height = parseRequestParameter(HEIGHT);
+    setWidthAndHeight(parseRequestParameter(WIDTH), parseRequestParameter(HEIGHT));
 
     this.mediaBuilder = createMediaBuilder();
     this.media = mediaBuilder.build();
@@ -64,6 +62,11 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
   public void setWidthAndHeight(Integer width, Integer height) {
     this.width = width;
     this.height = height;
+
+    Map<String, Object> queryParameters = getLinkProperties().getQueryParameters();
+    queryParameters.clear();
+    queryParameters.put(WIDTH, width);
+    queryParameters.put(HEIGHT, height);
   }
 
   private Integer parseRequestParameter(String name) {
@@ -167,15 +170,6 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
   @Override
   protected String getDefaultLinkTitle() {
     return "dynamic rendition of asset at " + asset.getPath() + " with width=" + width + " and height=" + height;
-  }
-
-  @Override
-  public Map<String, Object> getQueryParameters() {
-
-    Map<String, Object> parts = new HashMap<>();
-    parts.put(HEIGHT, height);
-    parts.put(WIDTH, width);
-    return parts;
   }
 
 

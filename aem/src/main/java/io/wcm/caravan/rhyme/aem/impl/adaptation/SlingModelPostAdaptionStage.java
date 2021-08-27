@@ -85,25 +85,25 @@ final class SlingModelPostAdaptionStage<I, M extends I> implements PostAdaptionS
   @Override
   public PostAdaptionStage<I, M> withLinkTitle(String title) {
 
-    return withLinkDecorator(r -> r.setLinkTitle(title));
+    return withLinkDecorator(r -> r.getLinkProperties().setTitle(title));
   }
 
   @Override
   public PostAdaptionStage<I, M> withLinkName(String name) {
 
-    return withLinkDecorator(r -> r.setLinkName(name));
+    return withLinkDecorator(r -> r.getLinkProperties().setName(name));
   }
 
   @Override
   public PostAdaptionStage<I, M> withQueryParameters(Map<String, Object> parameters) {
 
-    return withLinkDecorator(r -> r.setQueryParameters(parameters));
+    return withLinkDecorator(r -> r.getLinkProperties().setQueryParameters(parameters));
   }
 
   @Override
   public PostAdaptionStage<I, M> withPartialLinkTemplate() {
 
-    return withLinkDecorator(r -> r.setExpandAllVariables(false));
+    return withLinkDecorator(r -> r.getLinkProperties().setTemplated(true));
   }
 
   @Override

@@ -216,7 +216,7 @@ public class SlingModelPostAdaptionStageTest {
 
     Link link = adapter.selectCurrentResource()
         .adaptTo(SlingTestResource.class, SelectorSlingTestResource.class)
-        .withModifications(impl -> impl.setLinkTitle(customTitle))
+        .withModifications(impl -> impl.getLinkProperties().setTitle(customTitle))
         .getInstance()
         .createLink();
 

@@ -1,7 +1,6 @@
 package io.wcm.caravan.rhyme.aem.api.resources;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import javax.annotation.PostConstruct;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestParameter;
@@ -10,6 +9,7 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
+import io.wcm.caravan.rhyme.aem.api.linkbuilder.LinkProperties;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -32,17 +32,19 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
   @Self
   protected SlingLinkBuilder linkBuilder;
 
-  private String contextLinkTitle;
-  private String linkName;
+  private final LinkProperties linkProperties = new LinkProperties();
 
-  private boolean useParametersFromRequest = true;
-  private Map<String, Object> queryParameters = new LinkedHashMap<>();
+  @PostConstruct
+  void init() {
+    linkProperties.setTitle(getDefaultLinkTitle());
+    linkProperties.setName(rhyme.getCurrentResource().getName());
 
-  private boolean expandAllVariables = true;
+    SlingHttpServletRequest request = rhyme.adaptTo(SlingHttpServletRequest.class);
+    for (RequestParameter parameter : request.getRequestParameterList()) {
 
-  @Self
-  private SlingHttpServletRequest request;
-
+      linkProperties.getQueryParameters().put(parameter.getName(), parameter.getString());
+    }
+  }
 
   @Override
   public Link createLink() {
@@ -51,68 +53,11 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
   }
 
   @Override
-  public String getLinkTitle() {
+  public LinkProperties getLinkProperties() {
 
-    return contextLinkTitle != null ? contextLinkTitle : getDefaultLinkTitle();
-  }
-
-  @Override
-  public void setLinkTitle(String linkTitle) {
-
-    this.contextLinkTitle = linkTitle;
-  }
-
-  @Override
-  public String getLinkName() {
-
-    if (linkName != null) {
-      return linkName;
-    }
-
-    if (rhyme != null) {
-      return rhyme.getCurrentResource().getName();
-    }
-
-    return null;
-  }
-
-  @Override
-  public void setLinkName(String name) {
-
-    this.linkName = name;
+    return linkProperties;
   }
 
   protected abstract String getDefaultLinkTitle();
-
-  @Override
-  public Map<String, Object> getQueryParameters() {
-
-    if (useParametersFromRequest) {
-      for (RequestParameter parameter : request.getRequestParameterList()) {
-        // TODO: add support for parameters with multiple values
-        queryParameters.put(parameter.getName(), parameter.getString());
-      }
-      useParametersFromRequest = false;
-    }
-
-    return queryParameters;
-  }
-
-  @Override
-  public void setQueryParameters(Map<String, Object> parameters) {
-    useParametersFromRequest = false;
-    queryParameters = parameters;
-  }
-
-  @Override
-  public void setExpandAllVariables(boolean expandAllVariables) {
-    this.expandAllVariables = expandAllVariables;
-  }
-
-  @Override
-  public boolean isExpandAllVariables() {
-    return expandAllVariables;
-  }
-
 
 }
