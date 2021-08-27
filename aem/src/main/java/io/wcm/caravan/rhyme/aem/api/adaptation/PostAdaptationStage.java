@@ -23,17 +23,17 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface PostAdaptionStage<I, M extends I> {
+public interface PostAdaptationStage<I, M extends I> {
 
-  PostAdaptionStage<I, M> withModifications(Consumer<M> consumer);
+  PostAdaptationStage<I, M> withModifications(Consumer<M> consumer);
 
-  PostAdaptionStage<I, M> withLinkTitle(String title);
+  PostAdaptationStage<I, M> withLinkTitle(String title);
 
-  PostAdaptionStage<I, M> withLinkName(String name);
+  PostAdaptationStage<I, M> withLinkName(String name);
 
-  PostAdaptionStage<I, M> withQueryParameterTemplate(String... names);
+  PostAdaptationStage<I, M> withQueryParameterTemplate(String... names);
 
-  PostAdaptionStage<I, M> withPartialLinkTemplate();
+  PostAdaptationStage<I, M> withPartialLinkTemplate();
 
   M getInstance();
 

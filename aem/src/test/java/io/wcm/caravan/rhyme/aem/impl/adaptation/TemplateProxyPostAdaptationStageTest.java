@@ -44,7 +44,7 @@ import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 @ExtendWith(AemContextExtension.class)
-public class UnknownResourcePostAdaptionStageTest {
+public class TemplateProxyPostAdaptationStageTest {
 
   private AemContext context = AppAemContext.newAemContext();
 

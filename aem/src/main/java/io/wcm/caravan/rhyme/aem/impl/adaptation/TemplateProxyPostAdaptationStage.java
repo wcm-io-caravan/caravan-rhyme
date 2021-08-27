@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,14 +30,14 @@ import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.UriTemplateBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.aem.api.adaptation.PostAdaptionStage;
+import io.wcm.caravan.rhyme.aem.api.adaptation.PostAdaptationStage;
 import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.url.UrlHandler;
 
-final class UnknownResourcePostAdaptionStage<I, M extends I> implements PostAdaptionStage<I, M> {
+final class TemplateProxyPostAdaptationStage<I, M extends I> implements PostAdaptationStage<I, M> {
 
   private static final String PATH_PLACEHOLDER = "/letsassumethisisunlikelytoexist";
 
@@ -49,56 +49,56 @@ final class UnknownResourcePostAdaptionStage<I, M extends I> implements PostAdap
   private String linkName;
   private String[] queryParameters;
 
-  UnknownResourcePostAdaptionStage(SlingResourceAdapterImpl adapterImpl, Class<I> halApiInterface, RhymeResourceRegistry registry) {
+  TemplateProxyPostAdaptationStage(SlingResourceAdapterImpl adapterImpl, Class<I> halApiInterface, RhymeResourceRegistry registry) {
     this.adapterImpl = adapterImpl;
     this.halApiInterface = halApiInterface;
     this.registry = registry;
   }
 
   @Override
-  public PostAdaptionStage<I, M> withLinkTitle(String title) {
+  public PostAdaptationStage<I, M> withLinkTitle(String title) {
     this.linkTitle = title;
     return this;
   }
 
   @Override
-  public PostAdaptionStage<I, M> withLinkName(String name) {
+  public PostAdaptationStage<I, M> withLinkName(String name) {
     this.linkName = name;
     return this;
   }
 
   @Override
-  public PostAdaptionStage<I, M> withQueryParameterTemplate(String... names) {
+  public PostAdaptationStage<I, M> withQueryParameterTemplate(String... names) {
     this.queryParameters = names;
     return this;
   }
 
   @Override
-  public PostAdaptionStage<I, M> withPartialLinkTemplate() {
+  public PostAdaptationStage<I, M> withPartialLinkTemplate() {
     throw new HalApiDeveloperException("#withPartialLinkTemplate cannot be called if you selected a null resource path to build a template");
   }
 
   @Override
-  public SlingModelPostAdaptionStage<I, M> withModifications(Consumer<M> decorator) {
+  public SlingModelPostAdaptationStage<I, M> withModifications(Consumer<M> decorator) {
     throw new HalApiDeveloperException("#withModifications cannot be called if you selected a null resource path to build a template");
   }
 
   @Override
   public M getInstance() {
-    return createResource();
+    return createResourceProxy();
   }
 
   @Override
   public Optional<I> getOptional() {
-    return Optional.of(createResource());
+    return Optional.of(createResourceProxy());
   }
 
   @Override
   public Stream<I> getStream() {
-    return Stream.of(createResource());
+    return Stream.of(createResourceProxy());
   }
 
-  private <T extends LinkableResource> T createResource() {
+  private <T extends LinkableResource> T createResourceProxy() {
 
     return (T)Proxy.newProxyInstance(halApiInterface.getClassLoader(), new Class[] { halApiInterface }, new InvocationHandler() {
 
@@ -111,7 +111,7 @@ final class UnknownResourcePostAdaptionStage<I, M extends I> implements PostAdap
 
         throw new HalApiDeveloperException("Unsupported call to " + method.getName() + " method on "
             + halApiInterface.getName() + " proxy instance. "
-            + "Any instances created with SlingLinkBuilder#selectResourceAt(null can only be used to create link templates for these resources");
+            + "Any instances created with SlingLinkBuilder#selectResourceAt(null) can only be used to create link templates for these resources");
       }
     });
   }

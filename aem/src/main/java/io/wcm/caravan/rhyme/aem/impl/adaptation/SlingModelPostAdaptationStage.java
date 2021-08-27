@@ -28,11 +28,11 @@ import java.util.stream.Stream;
 
 import org.apache.sling.api.resource.Resource;
 
-import io.wcm.caravan.rhyme.aem.api.adaptation.PostAdaptionStage;
+import io.wcm.caravan.rhyme.aem.api.adaptation.PostAdaptationStage;
 import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
-final class SlingModelPostAdaptionStage<I, M extends I> implements PostAdaptionStage<I, M> {
+final class SlingModelPostAdaptationStage<I, M extends I> implements PostAdaptationStage<I, M> {
 
   private final SlingResourceAdapterImpl adapterImpl;
 
@@ -40,29 +40,29 @@ final class SlingModelPostAdaptionStage<I, M extends I> implements PostAdaptionS
   private final Class<M> clazz;
   private final List<Consumer<M>> instanceDecorators;
 
-  SlingModelPostAdaptionStage(SlingResourceAdapterImpl adapterImpl, Class<I> interfaze, Class<M> clazz) {
+  SlingModelPostAdaptationStage(SlingResourceAdapterImpl adapterImpl, Class<I> interfaze, Class<M> clazz) {
     this.adapterImpl = adapterImpl;
     this.interfaze = interfaze;
     this.clazz = clazz;
     this.instanceDecorators = new ArrayList<>();
   }
 
-  private SlingModelPostAdaptionStage(SlingModelPostAdaptionStage<I, M> instance, List<Consumer<M>> instanceDecorators) {
+  private SlingModelPostAdaptationStage(SlingModelPostAdaptationStage<I, M> instance, List<Consumer<M>> instanceDecorators) {
     this.adapterImpl = instance.adapterImpl;
     this.interfaze = instance.interfaze;
     this.clazz = instance.clazz;
     this.instanceDecorators = instanceDecorators;
   }
 
-  private SlingModelPostAdaptionStage<I, M> withInstanceDecorator(Consumer<M> decorator) {
+  private SlingModelPostAdaptationStage<I, M> withInstanceDecorator(Consumer<M> decorator) {
 
     List<Consumer<M>> list = new ArrayList<>(instanceDecorators);
     list.add(decorator);
 
-    return new SlingModelPostAdaptionStage<>(this, list);
+    return new SlingModelPostAdaptationStage<>(this, list);
   }
 
-  private SlingModelPostAdaptionStage<I, M> withLinkDecorator(Consumer<SlingLinkableResource> decorator) {
+  private SlingModelPostAdaptationStage<I, M> withLinkDecorator(Consumer<SlingLinkableResource> decorator) {
 
     return withInstanceDecorator(instance -> {
       if (!(instance instanceof SlingLinkableResource)) {
@@ -77,30 +77,30 @@ final class SlingModelPostAdaptionStage<I, M extends I> implements PostAdaptionS
   }
 
   @Override
-  public PostAdaptionStage<I, M> withModifications(Consumer<M> consumer) {
+  public PostAdaptationStage<I, M> withModifications(Consumer<M> consumer) {
     return withInstanceDecorator(consumer);
   }
 
   @Override
-  public PostAdaptionStage<I, M> withLinkTitle(String title) {
+  public PostAdaptationStage<I, M> withLinkTitle(String title) {
 
     return withLinkDecorator(r -> r.getLinkProperties().setTitle(title));
   }
 
   @Override
-  public PostAdaptionStage<I, M> withLinkName(String name) {
+  public PostAdaptationStage<I, M> withLinkName(String name) {
 
     return withLinkDecorator(r -> r.getLinkProperties().setName(name));
   }
 
   @Override
-  public PostAdaptionStage<I, M> withPartialLinkTemplate() {
+  public PostAdaptationStage<I, M> withPartialLinkTemplate() {
 
     return withLinkDecorator(r -> r.getLinkProperties().setTemplated(true));
   }
 
   @Override
-  public PostAdaptionStage<I, M> withQueryParameterTemplate(String... names) {
+  public PostAdaptationStage<I, M> withQueryParameterTemplate(String... names) {
     throw new HalApiDeveloperException("#withQueryParameterTemplatecan can only be called if you selected a null resource path to create a template");
   }
 

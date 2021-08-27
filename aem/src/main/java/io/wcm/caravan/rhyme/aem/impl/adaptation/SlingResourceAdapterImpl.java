@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import com.google.common.base.Preconditions;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
-import io.wcm.caravan.rhyme.aem.api.adaptation.PostAdaptionStage;
+import io.wcm.caravan.rhyme.aem.api.adaptation.PostAdaptationStage;
 import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
@@ -222,23 +222,23 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   }
 
   @Override
-  public <I> PostAdaptionStage<I, I> adaptTo(Class<I> clazz) {
+  public <I> PostAdaptationStage<I, I> adaptTo(Class<I> clazz) {
 
     if (nullResourcePathGiven) {
-      return new UnknownResourcePostAdaptionStage<I, I>(this, clazz, registry);
+      return new TemplateProxyPostAdaptationStage<I, I>(this, clazz, registry);
     }
 
-    return new SlingModelPostAdaptionStage<I, I>(this, clazz, clazz);
+    return new SlingModelPostAdaptationStage<I, I>(this, clazz, clazz);
   }
 
   @Override
-  public <I, M extends I> PostAdaptionStage<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass) {
+  public <I, M extends I> PostAdaptationStage<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass) {
 
     if (nullResourcePathGiven) {
       throw new HalApiDeveloperException("You cannot specify a model class if pure template generation was forced by calling #selectResourceAt");
     }
 
-    return new SlingModelPostAdaptionStage<I, M>(this, halApiInterface, slingModelClass);
+    return new SlingModelPostAdaptationStage<I, M>(this, halApiInterface, slingModelClass);
   }
 
 
