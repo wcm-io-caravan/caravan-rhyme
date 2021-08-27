@@ -15,10 +15,10 @@ import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.api.parameters.QueryParam;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
+import io.wcm.caravan.rhyme.aem.testing.context.AppAemContext;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.aem.testing.models.UnregisteredSlingTestResource;
-import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 

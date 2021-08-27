@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
-import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
+import io.wcm.caravan.rhyme.aem.testing.context.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 

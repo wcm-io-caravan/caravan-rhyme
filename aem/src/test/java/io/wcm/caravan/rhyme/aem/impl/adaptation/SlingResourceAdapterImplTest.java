@@ -41,10 +41,10 @@ import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
 import io.wcm.caravan.rhyme.aem.impl.adaptation.SlingModelPostAdaptionStageTest.ClassThatDoesNotImplementSlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
+import io.wcm.caravan.rhyme.aem.testing.context.AppAemContext;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 

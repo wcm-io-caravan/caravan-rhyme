@@ -81,7 +81,7 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
         .filter(entry -> entry.getValue() != null)
         .forEach(entry -> template.set(entry.getKey(), entry.getValue()));
 
-    return slingModel.getLinkProperties().isAllowTemplate() ? template.expandPartial() : template.expand();
+    return slingModel.getLinkProperties().isTemplated() ? template.expandPartial() : template.expand();
   }
 
   private String getClassSpecificSelector(SlingLinkableResource slingModel) {

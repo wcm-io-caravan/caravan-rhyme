@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext;
+package io.wcm.caravan.rhyme.aem.testing.context;
 
 import static io.wcm.testing.mock.wcmio.caconfig.ContextPlugins.WCMIO_CACONFIG;
 import static io.wcm.testing.mock.wcmio.handler.ContextPlugins.WCMIO_HANDLER;

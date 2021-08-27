@@ -27,22 +27,18 @@ public class LinkProperties {
   private boolean templated;
 
   public String getTitle() {
-
     return title;
   }
 
   public void setTitle(String linkTitle) {
-
     this.title = linkTitle;
   }
 
   public String getName() {
-
     return name;
   }
 
   public void setName(String linkName) {
-
     this.name = linkName;
   }
 
@@ -50,7 +46,7 @@ public class LinkProperties {
     this.templated = templated;
   }
 
-  public boolean isAllowTemplate() {
+  public boolean isTemplated() {
     return templated;
   }
 }
