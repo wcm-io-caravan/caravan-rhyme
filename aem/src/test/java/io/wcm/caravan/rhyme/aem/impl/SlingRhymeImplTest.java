@@ -306,11 +306,10 @@ public class SlingRhymeImplTest {
     Throwable ex = catchThrowable(() -> rhyme.adaptResource(context.currentResource(), ModelWithInvalidField.class));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("Failed to adapt")
-        .hasCauseInstanceOf(HalApiDeveloperException.class);
+        .hasMessageStartingWith("Failed to adapt");
 
     assertThat(ex.getCause())
-        .hasMessageEndingWith("returned null, see previous log messages for the root cause");
+        .hasMessageStartingWith("Could not inject all required fields");
   }
 
   @Model(adaptables = SlingRhyme.class)

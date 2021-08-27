@@ -27,6 +27,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @Model(adaptables = SlingHttpServletRequest.class, adapters = { SlingRhyme.class, SlingRhymeImpl.class })
@@ -80,6 +81,9 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
       return slingModel;
     }
     catch (RuntimeException ex) {
+      if (ex.getCause() instanceof HalApiServerException) {
+        throw (HalApiServerException)ex.getCause();
+      }
       throw new HalApiDeveloperException("Failed to adapt " + resource + " to " + modelClass.getSimpleName(), ex);
     }
   }
@@ -104,24 +108,19 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
       return (AdapterType)request;
     }
 
-    // shortcut to avoid further lookup if the target type is adaptable from SlingRhyme
+    // use the model factory if the target type is a sling model, so that if anything goes wrong,
+    // an exception is caught (and thrown) rather than just null being returned
     if (isDirectlyAdaptableFromSlingRhyme(type)) {
-      return super.adaptTo(type);
+      return modelFactory.createModel(this, type);
     }
-
-    /*
-     * these cases are covered by the "tryAdapting" below, but they might be useful if failed
-     * attempts to adapt to a sling model are causing extensive logging
-
     if (modelFactory.canCreateFromAdaptable(request, type)) {
       return modelFactory.createModel(request, type);
     }
     if (modelFactory.canCreateFromAdaptable(currentResource, type)) {
       return modelFactory.createModel(currentResource, type);
     }
-    */
 
-    // then try
+    // but we also want to adapt to other non-sling model types
     return tryAdapting(type, getRelatedAdaptables())
         .orElseGet(() -> super.adaptTo(type));
   }

@@ -30,13 +30,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.google.common.collect.ImmutableMap;
-
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
-import io.wcm.caravan.rhyme.aem.impl.adaptation.SlingResourceAdapterImpl;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -169,20 +166,6 @@ public class UnknownResourcePostAdaptionStageTest {
         .getInstance();
 
     assertThat(resource.createLink().getHref()).isEqualTo("{+path}.selectortest.rhyme{?foo,bar}");
-  }
-
-  @Test
-  public void withQueryParameters_fails_if_null_path_is_given() {
-
-    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
-
-    Throwable ex = catchThrowable(() -> adapter.selectResourceAt(null)
-        .adaptTo(SlingTestResource.class)
-        .withQueryParameters(ImmutableMap.of("foo", "bar"))
-        .getInstance());
-
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessage("#withQueryParameters cannot be called if you selected a null resource path to build a template");
   }
 
   @Test

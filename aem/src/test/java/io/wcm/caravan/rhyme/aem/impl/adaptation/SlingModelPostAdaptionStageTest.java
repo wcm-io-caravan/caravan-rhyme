@@ -22,21 +22,17 @@ package io.wcm.caravan.rhyme.aem.impl.adaptation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.apache.sling.models.annotations.Model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
+import io.wcm.caravan.rhyme.aem.impl.linkbuilder.SlingLinkBuilderImplTest.ResourceWithParameters;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
@@ -145,31 +141,18 @@ public class SlingModelPostAdaptionStageTest {
   }
 
   @Test
-  public void withQueryParameters_should_append_encoded_query_parameter() {
+  public void withModifications_should_allow_to_append_muliple_query_parameters() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
 
     Link link = adapter.selectCurrentResource()
-        .adaptTo(SlingTestResource.class)
-        .withQueryParameters(ImmutableMap.of("foo", "?/"))
+        .adaptTo(ResourceWithParameters.class)
+        .withModifications(resource -> resource.setFoo(123))
+        .withModifications(resource -> resource.setBar(456))
         .getInstance()
         .createLink();
 
-    assertThat(link.getHref()).isEqualTo("/content.selectortest.rhyme?foo=%3F%2F");
-  }
-
-  @Test
-  public void withQueryParameters_should_append_muliple_query_parameters() {
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
-
-    Link link = adapter.selectCurrentResource()
-        .adaptTo(SlingTestResource.class)
-        .withQueryParameters(ImmutableMap.of("foo", "123", "bar", "456"))
-        .getInstance()
-        .createLink();
-
-    assertThat(link.getHref()).isEqualTo("/content.selectortest.rhyme?foo=123&bar=456");
+    assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=123&bar=456");
   }
 
   @Test
@@ -193,18 +176,14 @@ public class SlingModelPostAdaptionStageTest {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
 
-    Map<String, Object> parameters = new LinkedHashMap<>();
-    parameters.put("foo", 123);
-    parameters.put("bar", null);
-
     Link link = adapter.selectCurrentResource()
-        .adaptTo(SlingTestResource.class)
-        .withQueryParameters(parameters)
+        .adaptTo(ResourceWithParameters.class)
+        .withModifications(resource -> resource.setFoo(123))
         .withPartialLinkTemplate()
         .getInstance()
         .createLink();
 
-    assertThat(link.getHref()).isEqualTo("/content.selectortest.rhyme?foo=123{&bar}");
+    assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=123{&bar,string}");
   }
 
   @Test
@@ -223,5 +202,6 @@ public class SlingModelPostAdaptionStageTest {
     assertThat(link.getTitle())
         .isEqualTo(customTitle);
   }
+
 
 }

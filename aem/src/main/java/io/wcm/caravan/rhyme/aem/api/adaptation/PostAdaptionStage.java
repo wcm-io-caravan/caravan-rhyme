@@ -19,7 +19,6 @@
  */
 package io.wcm.caravan.rhyme.aem.api.adaptation;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -33,8 +32,6 @@ public interface PostAdaptionStage<I, M extends I> {
   PostAdaptionStage<I, M> withLinkName(String name);
 
   PostAdaptionStage<I, M> withQueryParameterTemplate(String... names);
-
-  PostAdaptionStage<I, M> withQueryParameters(Map<String, Object> parameters);
 
   PostAdaptionStage<I, M> withPartialLinkTemplate();
 

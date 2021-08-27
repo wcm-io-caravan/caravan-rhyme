@@ -19,15 +19,10 @@
  */
 package io.wcm.caravan.rhyme.aem.api.linkbuilder;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class LinkProperties {
 
   private String title;
   private String name;
-
-  private Map<String, Object> queryParameters = new LinkedHashMap<>();
 
   private boolean templated;
 
@@ -49,18 +44,6 @@ public class LinkProperties {
   public void setName(String linkName) {
 
     this.name = linkName;
-  }
-
-  @Deprecated
-  public Map<String, Object> getQueryParameters() {
-
-    return this.queryParameters;
-  }
-
-  @Deprecated
-  public void setQueryParameters(Map<String, Object> queryParameters) {
-
-    this.queryParameters = queryParameters;
   }
 
   public void setTemplated(boolean templated) {

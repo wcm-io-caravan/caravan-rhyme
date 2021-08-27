@@ -22,7 +22,6 @@ package io.wcm.caravan.rhyme.aem.impl.adaptation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -72,11 +71,6 @@ final class UnknownResourcePostAdaptionStage<I, M extends I> implements PostAdap
   public PostAdaptionStage<I, M> withQueryParameterTemplate(String... names) {
     this.queryParameters = names;
     return this;
-  }
-
-  @Override
-  public PostAdaptionStage<I, M> withQueryParameters(Map<String, Object> parameters) {
-    throw new HalApiDeveloperException("#withQueryParameters cannot be called if you selected a null resource path to build a template");
   }
 
   @Override

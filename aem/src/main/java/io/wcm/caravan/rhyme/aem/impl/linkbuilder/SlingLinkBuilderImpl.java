@@ -17,6 +17,7 @@ import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.aem.impl.SlingRhymeImpl;
+import io.wcm.caravan.rhyme.aem.impl.parameters.QueryParamCollector;
 import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingRhyme.class, adapters = SlingLinkBuilder.class)
@@ -66,7 +67,9 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
   private String appendQueryWithTemplate(String baseUrl, SlingLinkableResource slingModel) {
 
-    Map<String, Object> queryParams = slingModel.getLinkProperties().getQueryParameters();
+    QueryParamCollector collector = new QueryParamCollector();
+
+    Map<String, Object> queryParams = collector.getQueryParameters(slingModel);
     if (queryParams.isEmpty()) {
       return baseUrl;
     }

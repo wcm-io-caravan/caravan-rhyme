@@ -1,12 +1,9 @@
 package io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.assets;
 
-import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
@@ -14,6 +11,7 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import com.day.cq.dam.api.Asset;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.api.parameters.QueryParam;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
@@ -30,9 +28,6 @@ import io.wcm.handler.media.format.MediaFormatBuilder;
 @Model(adaptables = SlingRhyme.class, adapters = AemRendition.class)
 public class AemRenditionImpl extends AbstractLinkableResource implements AemRendition {
 
-  public static final String HEIGHT = "height";
-  public static final String WIDTH = "width";
-
   @Self
   private Asset asset;
 
@@ -42,10 +37,10 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
   @Self
   private Resource resource;
 
-  @Self
-  private SlingHttpServletRequest request;
-
+  @QueryParam
   private Integer width;
+
+  @QueryParam
   private Integer height;
 
   private MediaBuilder mediaBuilder;
@@ -53,8 +48,6 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
 
   @PostConstruct
   void activate() {
-    setWidthAndHeight(parseRequestParameter(WIDTH), parseRequestParameter(HEIGHT));
-
     this.mediaBuilder = createMediaBuilder();
     this.media = mediaBuilder.build();
   }
@@ -62,24 +55,6 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
   public void setWidthAndHeight(Integer width, Integer height) {
     this.width = width;
     this.height = height;
-
-    Map<String, Object> queryParameters = getLinkProperties().getQueryParameters();
-    queryParameters.clear();
-    queryParameters.put(WIDTH, width);
-    queryParameters.put(HEIGHT, height);
-  }
-
-  private Integer parseRequestParameter(String name) {
-    RequestParameter param = request.getRequestParameter(name);
-    if (param == null) {
-      return null;
-    }
-    try {
-      return Integer.parseInt(param.getString());
-    }
-    catch (NumberFormatException ex) {
-      return null;
-    }
   }
 
   private MediaBuilder createMediaBuilder() {

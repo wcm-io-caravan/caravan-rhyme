@@ -2,8 +2,6 @@ package io.wcm.caravan.rhyme.aem.api.resources;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -38,12 +36,6 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
   void init() {
     linkProperties.setTitle(getDefaultLinkTitle());
     linkProperties.setName(rhyme.getCurrentResource().getName());
-
-    SlingHttpServletRequest request = rhyme.adaptTo(SlingHttpServletRequest.class);
-    for (RequestParameter parameter : request.getRequestParameterList()) {
-
-      linkProperties.getQueryParameters().put(parameter.getName(), parameter.getString());
-    }
   }
 
   @Override

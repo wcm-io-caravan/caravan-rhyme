@@ -99,6 +99,13 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.3.2</version>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- AssertJ for fluent assertions -->
     <dependency>
       <groupId>org.assertj</groupId>
@@ -179,6 +186,14 @@
       <groupId>org.apache.sling</groupId>
       <artifactId>org.apache.sling.testing.osgi-mock.junit5</artifactId>
       <version>2.4.16</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- required as a workaround for the unit-tests to run with Java 12+ - see https://issues.apache.org/jira/browse/FELIX-6157 -->
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.converter</artifactId>
+      <version>1.0.12</version>
       <scope>test</scope>
     </dependency>
 

@@ -14,7 +14,6 @@ import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemRendition;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.SlingResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.sites.AemPage;
-import io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.assets.AemRenditionImpl;
 
 @Model(adaptables = SlingRhyme.class, adapters = AemRepository.class)
 public class AemRepositoryImpl extends AbstractLinkableResource implements AemRepository {
@@ -64,7 +63,7 @@ public class AemRepositoryImpl extends AbstractLinkableResource implements AemRe
       return resourceAdapter.selectResourceAt(null)
           .adaptTo(AemRendition.class)
           .withLinkTitle("Get a dynamic (cropped) rendition of an asset with the specified width and height")
-          .withQueryParameterTemplate(AemRenditionImpl.WIDTH, AemRenditionImpl.HEIGHT)
+          .withQueryParameterTemplate("width", "height")
           .getOptional();
     }
 

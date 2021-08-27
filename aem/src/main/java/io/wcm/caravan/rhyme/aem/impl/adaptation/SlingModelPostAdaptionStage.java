@@ -21,7 +21,6 @@ package io.wcm.caravan.rhyme.aem.impl.adaptation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -92,12 +91,6 @@ final class SlingModelPostAdaptionStage<I, M extends I> implements PostAdaptionS
   public PostAdaptionStage<I, M> withLinkName(String name) {
 
     return withLinkDecorator(r -> r.getLinkProperties().setName(name));
-  }
-
-  @Override
-  public PostAdaptionStage<I, M> withQueryParameters(Map<String, Object> parameters) {
-
-    return withLinkDecorator(r -> r.getLinkProperties().setQueryParameters(parameters));
   }
 
   @Override

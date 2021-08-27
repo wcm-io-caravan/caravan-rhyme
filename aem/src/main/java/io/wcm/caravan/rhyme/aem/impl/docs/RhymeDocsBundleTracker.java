@@ -77,7 +77,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
     log.info("Rhyme docs were found in bundle {} at {}", bundle.getSymbolicName(), rhymeDocsUrl);
     return true;
   }
-  
+
   @Override
   public String addingBundle(Bundle bundle, BundleEvent event) {
 
@@ -88,8 +88,8 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
     }
 
     rhymeDocsSupport.registerBundle(bundle);
-  
-    return bundle.getSymbolicName();  
+
+    return bundle.getSymbolicName();
   }
 
   @Override

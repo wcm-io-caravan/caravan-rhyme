@@ -21,13 +21,9 @@ package io.wcm.caravan.rhyme.aem.api.resources;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Map;
-
 import org.apache.sling.models.annotations.Model;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
@@ -99,48 +95,6 @@ public class AbstractLinkableResourceTest {
     resource.getLinkProperties().setName("bar");
 
     assertThat(resource.createLink().getName()).isEqualTo("bar");
-  }
-
-  @Test
-  public void getQueryParameters_should_contain_all_parameters_from_request() {
-
-    SlingRhyme rhyme = createRhymeInstance("/foo");
-
-    context.request().setQueryString("foo=123&bar=456");
-
-    ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
-
-    Map<String, Object> params = resource.getLinkProperties().getQueryParameters();
-    assertThat(params).hasSize(2);
-    assertThat(params).containsEntry("foo", "123");
-    assertThat(params).containsEntry("bar", "456");
-  }
-
-  @Test
-  public void getQueryParameters_should_return_empty_map_if_no_query_string_is_present() {
-
-    SlingRhyme rhyme = createRhymeInstance("/foo");
-
-    ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
-
-    Map<String, Object> params = resource.getLinkProperties().getQueryParameters();
-    assertThat(params).isEmpty();
-  }
-
-  @Test
-  public void setQueryParameters_should_replace_parameters_from_request() {
-
-    SlingRhyme rhyme = createRhymeInstance("/foo");
-
-    context.request().setQueryString("foo=123&bar=456");
-
-    ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
-
-    resource.getLinkProperties().setQueryParameters(ImmutableMap.of("abc", "def"));
-
-    Map<String, Object> params = resource.getLinkProperties().getQueryParameters();
-    assertThat(params).hasSize(1);
-    assertThat(params).containsEntry("abc", "def");
   }
 
   @Model(adaptables = SlingRhyme.class)

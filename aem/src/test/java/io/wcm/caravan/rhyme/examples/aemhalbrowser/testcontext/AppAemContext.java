@@ -16,6 +16,7 @@ import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.impl.ResourceLoaderRegistry;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
+import io.wcm.caravan.rhyme.aem.impl.parameters.QueryParamInjector;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextCallback;
@@ -45,6 +46,8 @@ public final class AppAemContext {
     context.registerInjectActivateService(new ResourceLoaderRegistry());
 
     context.registerInjectActivateService(new RhymeResourceRegistry());
+
+    context.registerInjectActivateService(new QueryParamInjector());
 
     return context;
   }
