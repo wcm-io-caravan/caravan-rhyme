@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -140,7 +139,7 @@ public class SlingModelPostAdaptionStageTest {
   }
 
 
-  @Model(adaptables = Resource.class, adapters = ClassThatDoesNotImplementSlingLinkableResource.class)
+  @Model(adaptables = SlingRhyme.class)
   public static class ClassThatDoesNotImplementSlingLinkableResource implements EmbeddableResource {
 
   }

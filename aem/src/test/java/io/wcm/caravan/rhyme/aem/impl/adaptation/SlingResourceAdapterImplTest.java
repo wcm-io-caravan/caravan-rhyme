@@ -234,6 +234,16 @@ public class SlingResourceAdapterImplTest {
         .hasMessageStartingWith("There does not exist a resource at");
   }
 
+  @Test
+  public void fromResourceAt_should_fail_on_multiple_calls() throws Exception {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    Throwable ex = catchThrowable(() -> applySelection(adapter.fromResourceAt("/content").fromResourceAt("/").selectCurrentResource()));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("You cannot call the from* methods multiple times");
+  }
 
   @Test
   public void fromCurrentPage_should_work_from_page_resource() throws Exception {

@@ -8,10 +8,11 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.InfinityJsonResource;
 import io.wcm.handler.url.UrlHandler;
 
-@Model(adaptables = Resource.class, adapters = { InfinityJsonResource.class })
+@Model(adaptables = SlingRhyme.class, adapters = InfinityJsonResource.class)
 public class InfinityJsonResourceImpl implements InfinityJsonResource {
 
   @Self

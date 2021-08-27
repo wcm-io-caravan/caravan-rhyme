@@ -23,18 +23,16 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-@Model(adaptables = Resource.class, adapters = LinkableResource.class,
-    resourceType = ResourceTypeSlingTestResource.RESOURCE_TYPE)
-public class ResourceTypeSlingTestResource extends AbstractLinkableResource implements SlingTestResource {
+@Model(adaptables = SlingRhyme.class, adapters = LinkableResource.class)
+public class UnregisteredSlingTestResource extends AbstractLinkableResource implements SlingTestResource {
 
-  public static final String RESOURCE_TYPE = "rhyme_aem/test_resource";
-
-  public static final String DEFAULT_TITLE = "the default title of the test resource that is registered to a resource type";
+  public static final String DEFAULT_TITLE = "the default title of the test resource that is not registered";
 
   @Self
   private Resource resource;

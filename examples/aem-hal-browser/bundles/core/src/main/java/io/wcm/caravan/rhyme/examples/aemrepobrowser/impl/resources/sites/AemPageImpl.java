@@ -3,26 +3,24 @@ package io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.sites;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.wcm.api.Page;
 
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.SlingResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.sites.AemLinkedContent;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.sites.AemPage;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.sites.AemPageProperties;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemPage.class })
+@Model(adaptables = SlingRhyme.class, adapters = AemPage.class)
 public class AemPageImpl extends AbstractLinkableResource implements AemPage {
 
-
   @Self
-  private Page page;
+  private Page resourcePage;
 
   @Override
   public AemPageProperties getProperties() {
@@ -31,7 +29,7 @@ public class AemPageImpl extends AbstractLinkableResource implements AemPage {
 
       @Override
       public String getTitle() {
-        return page.getTitle();
+        return resourcePage.getTitle();
       }
     };
   }
@@ -78,7 +76,7 @@ public class AemPageImpl extends AbstractLinkableResource implements AemPage {
   @Override
   protected String getDefaultLinkTitle() {
 
-    return page.getTitle();
+    return resourcePage.getTitle();
   }
 
 }

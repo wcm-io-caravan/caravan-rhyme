@@ -9,16 +9,17 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
+import com.day.cq.wcm.api.Page;
+import com.google.common.collect.ImmutableMap;
+
 import io.reactivex.rxjava3.core.Single;
-import io.wcm.caravan.rhyme.aem.api.RhymeObject;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
-import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
-import io.wcm.caravan.rhyme.aem.impl.SlingRhymeImpl;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
@@ -82,7 +83,6 @@ public class SlingRhymeImplTest {
     Resource resourceToAdapt = context.create().resource("/foo/bar");
     ModelWithSlingRhymeField model = slingRhyme.adaptResource(resourceToAdapt, ModelWithSlingRhymeField.class);
 
-    assertThat(model).isNotNull();
     assertThat(model.slingRhyme).isInstanceOf(SlingRhymeImpl.class);
 
     // the injected SlingRhyme instance is a different instance (because the current resource might be different)
@@ -96,10 +96,10 @@ public class SlingRhymeImplTest {
     assertThat(model.slingRhyme.getRequestedResource()).isSameAs(context.request().getResource());
   }
 
-  @Model(adaptables = Resource.class)
+  @Model(adaptables = SlingRhyme.class)
   public static class ModelWithSlingRhymeField {
 
-    @RhymeObject
+    @Self
     private SlingRhyme slingRhyme;
   }
 
@@ -110,14 +110,13 @@ public class SlingRhymeImplTest {
 
     ModelWithSlingLinkBuilderField model = rhyme.adaptResource(context.currentResource(), ModelWithSlingLinkBuilderField.class);
 
-    assertThat(model).isNotNull();
     assertThat(model.linkBuilder).isNotNull();
   }
 
-  @Model(adaptables = Resource.class)
+  @Model(adaptables = SlingRhyme.class)
   public static class ModelWithSlingLinkBuilderField {
 
-    @RhymeObject
+    @Self
     private SlingLinkBuilder linkBuilder;
   }
 
@@ -128,14 +127,13 @@ public class SlingRhymeImplTest {
 
     ModelWithSlingRequestField model = rhyme.adaptResource(context.currentResource(), ModelWithSlingRequestField.class);
 
-    assertThat(model).isNotNull();
     assertThat(model.request).isNotNull();
   }
 
-  @Model(adaptables = Resource.class)
+  @Model(adaptables = SlingRhyme.class)
   public static class ModelWithSlingRequestField {
 
-    @RhymeObject
+    @Self
     private SlingHttpServletRequest request;
   }
 
@@ -146,7 +144,6 @@ public class SlingRhymeImplTest {
 
     ModelWithFieldThatIsAdaptableFromRequest model = rhyme.adaptResource(context.currentResource(), ModelWithFieldThatIsAdaptableFromRequest.class);
 
-    assertThat(model).isNotNull();
     assertThat(model.field).isNotNull();
     assertThat(model.field.request).isNotNull();
   }
@@ -158,11 +155,147 @@ public class SlingRhymeImplTest {
     private SlingHttpServletRequest request;
   }
 
-  @Model(adaptables = Resource.class)
+  @Model(adaptables = SlingRhyme.class)
   public static class ModelWithFieldThatIsAdaptableFromRequest {
 
-    @RhymeObject
+    @Self
     private ModelThatIsAdaptableFromRequest field;
+  }
+
+  @Test
+  public void adaptResource_should_inject_Resource_instance() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    ModelWithSlingResourceField model = rhyme.adaptResource(context.currentResource(), ModelWithSlingResourceField.class);
+
+    assertThat(model.resource).isNotNull();
+  }
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ModelWithSlingResourceField {
+
+    @Self
+    private Resource resource;
+  }
+
+  @Test
+  public void adaptResource_should_inject_instance_adaptable_from_Resource() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    ModelWithFieldThatIsAdaptableFromResource model = rhyme.adaptResource(context.currentResource(), ModelWithFieldThatIsAdaptableFromResource.class);
+
+    assertThat(model.field).isNotNull();
+    assertThat(model.field.resource).isNotNull();
+  }
+
+  interface InterfaceWithResource {
+
+    Resource getResource();
+  }
+
+  @Model(adaptables = Resource.class, adapters = InterfaceWithResource.class)
+  public static class ModelThatIsAdaptableFromResource implements InterfaceWithResource {
+
+    @Self
+    private Resource resource;
+
+    @Override
+    public Resource getResource() {
+      return resource;
+    }
+  }
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ModelWithFieldThatIsAdaptableFromResource {
+
+    @Self
+    private ModelThatIsAdaptableFromResource field;
+  }
+
+  @Test
+  public void adaptResource_should_inject_interface_instance_adaptable_from_Resource() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    ModelWithFieldThatIsAnInterfaceOfAnAdaptableFromResource model = rhyme.adaptResource(context.currentResource(),
+        ModelWithFieldThatIsAnInterfaceOfAnAdaptableFromResource.class);
+
+    assertThat(model.field).isNotNull();
+    assertThat(model.field.getResource()).isNotNull();
+  }
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ModelWithFieldThatIsAnInterfaceOfAnAdaptableFromResource {
+
+    @Self
+    private InterfaceWithResource field;
+  }
+
+  @Test
+  public void adaptResource_should_inject_ValueMapValue_instance() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    String resourcePath = context.create().resource("/foo", ImmutableMap.of("bar", "abc")).getPath();
+
+    ModelWithValueMapValueField model = rhyme.adaptResource(context.currentResource(resourcePath), ModelWithValueMapValueField.class);
+
+    assertThat(model.bar).isEqualTo("abc");
+  }
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ModelWithValueMapValueField {
+
+    @ValueMapValue
+    private String bar;
+  }
+
+  @Test
+  public void adaptResource_should_inject_Page_instance_if_page_path_was_requested() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    String pagePath = context.create().page("/foo").getPath();
+
+    ModelWithPageField model = rhyme.adaptResource(context.currentResource(pagePath), ModelWithPageField.class);
+
+    assertThat(model.page).isNotNull();
+  }
+
+  @Test
+  public void adaptResource_should_inject_Page_instance_if_content_path_was_requested() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    String contentPath = context.create().page("/foo").getContentResource().getPath();
+
+    ModelWithPageField model = rhyme.adaptResource(context.currentResource(contentPath), ModelWithPageField.class);
+
+    assertThat(model.page).isNotNull();
+    assertThat(model.page.getPath()).isEqualTo("/foo");
+  }
+
+  @Test
+  public void adaptResource_should_inject_Page_instance_if_resource_below_content_path_was_requested() throws Exception {
+
+    SlingRhyme rhyme = createRhymeInstance();
+
+    Resource content = context.create().page("/foo").getContentResource();
+    String childPath = context.create().resource(content, "bar").getPath();
+
+    ModelWithPageField model = rhyme.adaptResource(context.currentResource(childPath), ModelWithPageField.class);
+
+    assertThat(model.page).isNotNull();
+    assertThat(model.page.getPath()).isEqualTo("/foo");
+  }
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ModelWithPageField {
+
+    @Self
+    private Page page;
   }
 
   @Test
@@ -177,13 +310,13 @@ public class SlingRhymeImplTest {
         .hasCauseInstanceOf(HalApiDeveloperException.class);
 
     assertThat(ex.getCause())
-        .hasMessageStartingWith("Cannot inject servlet field");
+        .hasMessageEndingWith("returned null, see previous log messages for the root cause");
   }
 
-  @Model(adaptables = Resource.class)
+  @Model(adaptables = SlingRhyme.class)
   public static class ModelWithInvalidField {
 
-    @RhymeObject
+    @Self
     private HalApiServlet servlet;
   }
 
@@ -223,7 +356,7 @@ public class SlingRhymeImplTest {
     Throwable ex = catchThrowable(() -> rhyme.adaptResource(context.currentResource(), ModelAdaptablesFromRequest.class));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageEndingWith("is not declared to be adaptable from " + Resource.class);
+        .hasMessageEndingWith("is not declared to be adaptable from " + SlingRhyme.class);
   }
 
   @Model(adaptables = SlingHttpServletRequest.class)

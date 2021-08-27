@@ -68,6 +68,11 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
   private SlingResourceAdapter fromResource(Resource resource) {
 
+    if (fromResource != null) {
+      throw new HalApiDeveloperException(
+          "You cannot call the from* methods multiple times, as a single context resource is required for the following selection steps");
+    }
+
     if (resourceSelector.resources != null) {
       throw new HalApiDeveloperException("The SlingResourceAdapterImpl#fromXyz methods must be called *before* any of the selectXyz methods are called");
     }

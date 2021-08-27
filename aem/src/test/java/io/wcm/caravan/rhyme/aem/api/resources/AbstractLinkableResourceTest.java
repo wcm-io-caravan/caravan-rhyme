@@ -23,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
-import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -144,7 +143,7 @@ public class AbstractLinkableResourceTest {
     assertThat(params).containsEntry("abc", "def");
   }
 
-  @Model(adaptables = Resource.class)
+  @Model(adaptables = SlingRhyme.class)
   public static class ResourceImpl extends AbstractLinkableResource {
 
     @Override

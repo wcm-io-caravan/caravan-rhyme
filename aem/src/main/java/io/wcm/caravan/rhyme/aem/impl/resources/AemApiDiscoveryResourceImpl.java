@@ -25,16 +25,14 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-@Model(adaptables = Resource.class,
-    adapters = { LinkableResource.class, AemApiDiscoveryResource.class },
-    resourceType = "sling:OrderedFolder")
+@Model(adaptables = SlingRhyme.class, adapters = AemApiDiscoveryResource.class)
 public class AemApiDiscoveryResourceImpl extends AbstractLinkableResource implements AemApiDiscoveryResource {
 
   public static final Integer MAX_AGE_SECONDS = 60;

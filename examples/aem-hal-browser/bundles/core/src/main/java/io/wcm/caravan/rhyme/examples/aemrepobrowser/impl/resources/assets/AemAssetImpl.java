@@ -2,12 +2,12 @@ package io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.assets;
 
 import java.util.Optional;
 
-import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import com.day.cq.dam.api.Asset;
 
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
@@ -16,7 +16,7 @@ import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemRendition;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.SlingResource;
 import io.wcm.handler.media.MediaHandler;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemAsset.class })
+@Model(adaptables = SlingRhyme.class, adapters = AemAsset.class)
 public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
 
   @Self

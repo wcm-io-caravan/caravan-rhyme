@@ -11,10 +11,10 @@ import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
-import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 
 import com.day.cq.dam.api.Asset;
 
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
@@ -28,7 +28,7 @@ import io.wcm.handler.media.Rendition;
 import io.wcm.handler.media.format.MediaFormat;
 import io.wcm.handler.media.format.MediaFormatBuilder;
 
-@Model(adaptables = Resource.class, adapters = { AemRendition.class })
+@Model(adaptables = SlingRhyme.class, adapters = AemRendition.class)
 public class AemRenditionImpl extends AbstractLinkableResource implements AemRendition {
 
   public static final String HEIGHT = "height";
@@ -43,7 +43,7 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
   @Self
   private Resource resource;
 
-  @SlingObject
+  @Self
   private SlingHttpServletRequest request;
 
   private Integer width;

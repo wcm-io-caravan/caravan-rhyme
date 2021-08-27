@@ -2,14 +2,13 @@ package io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources;
 
 import java.util.Optional;
 
-import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
 import com.day.cq.dam.api.Asset;
 import com.day.cq.wcm.api.Page;
 
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.AemRepository;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemRendition;
@@ -17,7 +16,7 @@ import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.SlingResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.sites.AemPage;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.assets.AemRenditionImpl;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, AemRepository.class })
+@Model(adaptables = SlingRhyme.class, adapters = AemRepository.class)
 public class AemRepositoryImpl extends AbstractLinkableResource implements AemRepository {
 
   @Override

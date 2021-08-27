@@ -1,40 +1,48 @@
 package io.wcm.caravan.rhyme.aem.impl;
 
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.adapter.Adaptable;
 import org.apache.sling.api.adapter.SlingAdaptable;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.apache.sling.models.factory.ModelFactory;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
-import io.wcm.caravan.rhyme.aem.impl.adaptation.RhymeObjects;
 import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
+import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingHttpServletRequest.class, adapters = { SlingRhyme.class, SlingRhymeImpl.class })
 public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
+
+  private final ModelFactory modelFactory;
 
   private final SlingHttpServletRequest request;
   private final Resource currentResource;
   private final Rhyme rhyme;
 
   @Inject
-  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ResourceLoaderRegistry picker, RhymeDocsOsgiBundleSupport rhymeDocs) {
+  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ModelFactory modelFactory, ResourceLoaderRegistry picker, RhymeDocsOsgiBundleSupport rhymeDocs) {
 
+    this.modelFactory = modelFactory;
     this.request = request;
-
     this.currentResource = request.getResource();
 
     this.rhyme = RhymeBuilder.withResourceLoader(picker.getResourceLoader())
@@ -43,7 +51,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   }
 
   private SlingRhymeImpl(SlingRhymeImpl slingRhyme, Resource currentResource) {
-
+    this.modelFactory = slingRhyme.modelFactory;
     this.request = slingRhyme.request;
     this.currentResource = currentResource;
     this.rhyme = slingRhyme.rhyme;
@@ -56,15 +64,18 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
       throw new HalApiDeveloperException("Cannot adapt null resource to " + modelClass.getSimpleName());
     }
 
+    if (resource != currentResource) {
+      SlingRhymeImpl slingRhymeWithNextResource = new SlingRhymeImpl(this, resource);
+      return slingRhymeWithNextResource.adaptResource(resource, modelClass);
+    }
+
     verifyModelAnnotationIfPresent(modelClass);
 
     try {
-      T slingModel = resource.adaptTo(modelClass);
+      T slingModel = adaptTo(modelClass);
       if (slingModel == null) {
-        throw new HalApiDeveloperException("Resource#adaptTo(" + modelClass.getName() + ") returned null, see previous log messages for the root cause");
+        throw new HalApiDeveloperException("SlingRhyme#adaptTo(" + modelClass.getName() + ") returned null, see previous log messages for the root cause");
       }
-
-      RhymeObjects.injectIntoSlingModel(slingModel, () -> new SlingRhymeImpl(this, resource));
 
       return slingModel;
     }
@@ -75,11 +86,9 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
 
   private void verifyModelAnnotationIfPresent(Class<?> modelClass) {
 
-    Model modelAnnotation = modelClass.getAnnotation(Model.class);
-    if (modelAnnotation != null) {
-
-      if (!Arrays.asList(modelAnnotation.adaptables()).contains(Resource.class)) {
-        throw new HalApiDeveloperException(modelClass + " is not declared to be adaptable from " + Resource.class);
+    if (modelClass.isAnnotationPresent(Model.class)) {
+      if (!isDirectlyAdaptableFromSlingRhyme(modelClass)) {
+        throw new HalApiDeveloperException(modelClass + " is not declared to be adaptable from " + SlingRhyme.class);
       }
     }
   }
@@ -87,31 +96,65 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   @Override
   public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
 
-    if (UrlHandler.class.isAssignableFrom(type)) {
-      return (AdapterType)request.adaptTo(UrlHandler.class);
-    }
+    // immediately return the current resource or request if they are the target of the adaption
     if (Resource.class.isAssignableFrom(type)) {
       return (AdapterType)currentResource;
     }
     if (HttpServletRequest.class.isAssignableFrom(type)) {
       return (AdapterType)request;
     }
-    if (isAdaptableFromRequest(type)) {
-      return request.adaptTo(type);
+
+    // shortcut to avoid further lookup if the target type is adaptable from SlingRhyme
+    if (isDirectlyAdaptableFromSlingRhyme(type)) {
+      return super.adaptTo(type);
     }
 
-    return super.adaptTo(type);
+    /*
+     * these cases are covered by the "tryAdapting" below, but they might be useful if failed
+     * attempts to adapt to a sling model are causing extensive logging
+
+    if (modelFactory.canCreateFromAdaptable(request, type)) {
+      return modelFactory.createModel(request, type);
+    }
+    if (modelFactory.canCreateFromAdaptable(currentResource, type)) {
+      return modelFactory.createModel(currentResource, type);
+    }
+    */
+
+    // then try
+    return tryAdapting(type, getRelatedAdaptables())
+        .orElseGet(() -> super.adaptTo(type));
   }
 
-  private <AdapterType> boolean isAdaptableFromRequest(Class<AdapterType> type) {
+  private Collection<Adaptable> getRelatedAdaptables() {
 
-    Model annotation = type.getAnnotation(Model.class);
-    if (annotation == null) {
+    Builder<Adaptable> builder = ImmutableSet.<Adaptable>builder();
+    builder.add(currentResource);
+    builder.add(request);
+
+    PageUtils.getOptionalPageResource(currentResource).ifPresent(builder::add);
+
+    return builder.build();
+  }
+
+  private <AdapterType> Optional<AdapterType> tryAdapting(Class<AdapterType> type, Collection<Adaptable> adaptables) {
+
+    return adaptables.stream()
+        .filter(Objects::nonNull)
+        .map(adaptable -> adaptable.adaptTo(type))
+        .filter(Objects::nonNull)
+        .findFirst();
+  }
+
+  private boolean isDirectlyAdaptableFromSlingRhyme(Class<?> adapterType) {
+
+    Model modelAnnotation = adapterType.getAnnotation(Model.class);
+    if (modelAnnotation == null) {
       return false;
     }
 
-    return Stream.of(annotation.adaptables())
-        .anyMatch(adaptableClass -> HttpServletRequest.class.isAssignableFrom(adaptableClass));
+    return Stream.of(modelAnnotation.adaptables())
+        .anyMatch(modelAdaptable -> SlingRhyme.class.isAssignableFrom(modelAdaptable));
   }
 
   @Override

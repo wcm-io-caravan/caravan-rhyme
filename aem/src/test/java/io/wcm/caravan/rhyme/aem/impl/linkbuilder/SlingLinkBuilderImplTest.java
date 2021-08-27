@@ -19,7 +19,7 @@ import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
-import io.wcm.caravan.rhyme.aem.testing.models.ResourceTypeSlingTestResource;
+import io.wcm.caravan.rhyme.aem.testing.models.UnregisteredSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
@@ -77,7 +77,7 @@ public class SlingLinkBuilderImplTest {
 
     SlingLinkBuilder linkBuilder = slingRhyme.adaptTo(SlingLinkBuilder.class);
 
-    ResourceTypeSlingTestResource resource = slingRhyme.adaptResource(context.currentResource(), ResourceTypeSlingTestResource.class);
+    UnregisteredSlingTestResource resource = slingRhyme.adaptResource(context.currentResource(), UnregisteredSlingTestResource.class);
 
     Link link = linkBuilder.createLinkToCurrentResource(resource);
 

@@ -50,7 +50,7 @@ import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
 import io.wcm.caravan.rhyme.aem.impl.resources.AemApiDiscoveryResourceImpl;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
-import io.wcm.caravan.rhyme.aem.testing.models.ResourceTypeSlingTestResource;
+import io.wcm.caravan.rhyme.aem.testing.models.UnregisteredSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.api.relations.VndErrorRelations;
@@ -178,7 +178,7 @@ public class HalApiServletTest {
 
       return ImmutableMap.of(
           SelectorSlingTestResource.class, SelectorSlingTestResource.SELECTOR,
-          ResourceTypeSlingTestResource.class, SelectorSlingTestResource.SELECTOR);
+          UnregisteredSlingTestResource.class, SelectorSlingTestResource.SELECTOR);
     }
 
     @Override

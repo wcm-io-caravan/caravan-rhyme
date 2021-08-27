@@ -23,11 +23,12 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestState;
 
-@Model(adaptables = Resource.class, adapters = SlingTestResource.class)
+@Model(adaptables = SlingRhyme.class, adapters = SlingTestResource.class)
 public class SelectorSlingTestResource extends AbstractLinkableResource implements SlingTestResource {
 
   public static final String SELECTOR = "selectortest";

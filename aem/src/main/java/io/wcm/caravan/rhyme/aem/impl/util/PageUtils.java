@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.aem.impl.util;
 
+import java.util.Optional;
+
 import org.apache.sling.api.resource.Resource;
 
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
@@ -31,15 +33,18 @@ public final class PageUtils {
 
   public static Resource getPageResource(Resource resource) {
 
+    return getOptionalPageResource(resource)
+        .orElseThrow(() -> new HalApiDeveloperException("The resource " + resource + " is not a page, and not located within a page"));
+  }
+
+  public static Optional<Resource> getOptionalPageResource(Resource resource) {
+
     Resource candidate = resource;
     while (candidate != null && !PageUtils.isPage(candidate)) {
       candidate = candidate.getParent();
     }
 
-    if (candidate == null) {
-      throw new HalApiDeveloperException("The resource " + resource + " is not a page, and not located within a page");
-    }
-    return candidate;
+    return Optional.ofNullable(candidate);
   }
 
   public static Resource getParentPageResource(Resource resource) {

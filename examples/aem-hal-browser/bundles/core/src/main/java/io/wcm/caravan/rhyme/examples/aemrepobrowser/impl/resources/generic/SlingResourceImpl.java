@@ -17,14 +17,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.InfinityJsonResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.SlingResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.sites.AemPage;
 
-@Model(adaptables = Resource.class, adapters = { LinkableResource.class, SlingResource.class })
+@Model(adaptables = SlingRhyme.class, adapters = SlingResource.class)
 public class SlingResourceImpl extends AbstractLinkableResource implements SlingResource {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
