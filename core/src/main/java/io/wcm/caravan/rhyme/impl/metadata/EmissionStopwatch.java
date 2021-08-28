@@ -19,7 +19,6 @@
  */
 package io.wcm.caravan.rhyme.impl.metadata;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -39,7 +38,6 @@ public class EmissionStopwatch<T> implements SingleTransformer<T, T>, Observable
 
   private final RequestMetricsCollector metrics;
   private final Supplier<String> message;
-  private final AtomicInteger itemCounter = new AtomicInteger();
 
   private RequestMetricsStopwatch stopwatch;
 
@@ -71,7 +69,6 @@ public class EmissionStopwatch<T> implements SingleTransformer<T, T>, Observable
 
     return upstream
         .doOnSubscribe(d -> startStopwatch())
-        .doOnNext(i -> itemCounter.incrementAndGet())
         .doOnTerminate(this::sendMetrics);
   }
 

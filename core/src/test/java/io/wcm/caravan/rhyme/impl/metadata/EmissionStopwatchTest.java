@@ -36,6 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.google.common.base.Stopwatch;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.SingleSubject;
@@ -120,5 +121,20 @@ public class EmissionStopwatchTest {
     subject.onSuccess("item");
 
     Mockito.verify(metrics, times(2)).onMethodInvocationFinished(eq(EmissionStopwatch.class), eq(METHOD_DESC), longThat(micros -> micros >= microsSlept));
+  }
+
+  @Test
+  public void should_not_fail_if_emissions_come_before_subscriptions() throws Exception {
+
+    Subject<String> subject = PublishSubject.create();
+
+    Observable<String> obs = subject.compose(EmissionStopwatch.collectMetrics(() -> METHOD_DESC, metrics));
+
+    subject.onNext("item1");
+    subject.onComplete();
+
+    obs.subscribe();
+
+    Mockito.verify(metrics).onMethodInvocationFinished(eq(EmissionStopwatch.class), eq(METHOD_DESC), ArgumentMatchers.anyLong());
   }
 }
