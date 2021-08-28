@@ -63,7 +63,7 @@ public class EmissionStopwatch<T> implements SingleTransformer<T, T>, Observable
 
     return upstream
         .doOnSubscribe(d -> startStopwatch())
-        .doOnSuccess(o -> sendMetrics());
+        .doOnTerminate(this::sendMetrics);
   }
 
   @Override
@@ -84,10 +84,7 @@ public class EmissionStopwatch<T> implements SingleTransformer<T, T>, Observable
   }
 
   private void sendMetrics() {
-
-    if (stopwatch != null) {
-      stopwatch.close();
-    }
+    stopwatch.close();
   }
 
 }
