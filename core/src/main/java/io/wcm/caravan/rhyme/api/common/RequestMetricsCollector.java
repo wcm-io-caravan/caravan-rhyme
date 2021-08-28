@@ -20,8 +20,9 @@
 package io.wcm.caravan.rhyme.api.common;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
-import org.osgi.annotation.versioning.ConsumerType;
+import org.osgi.annotation.versioning.ProviderType;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -31,7 +32,7 @@ import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator;
  * Keeps track of all upstream resource that have been fetched while handling the current-request, and collects
  * additional data for performance analyze and caching.
  */
-@ConsumerType
+@ProviderType
 public interface RequestMetricsCollector {
 
   /**
@@ -69,8 +70,26 @@ public interface RequestMetricsCollector {
    * @param category a class used to group measurements
    * @param methodDescription describes what task was executed
    * @param invocationDurationMicros the time in microseconds used to execute that task
+   * @deprecated use {@link #startStopwatch(Class, Supplier)} instead
    */
+
+  @Deprecated
   void onMethodInvocationFinished(Class category, String methodDescription, long invocationDurationMicros);
+
+  /**
+   * Start measuring the execution time of a specific (possibly repeated) task within your own code. To finish the
+   * measurement, you have to call {@link RequestMetricsStopwatch#close()} when the task has been completed,
+   * or use a try-with-resources statement around the code section to be measured (since it's an {@link AutoCloseable}
+   * type).
+   * The result of your measurements will appear within the embedded "rhyme:metadata" resource in the rendered response.
+   * @param measuringClass only used to group the results in the "rhyme:metadata" resource into separate sections for
+   *          each class
+   * @param taskDescription provides a human readable description of the task (and context) that was executed.
+   *          Measurements with the exact same task descriptions will be grouped, and the execution count and overall
+   *          sum of execution times will be calculated
+   * @return a {@link RequestMetricsStopwatch} that you need to close to finish the measurement
+   */
+  RequestMetricsStopwatch startStopwatch(Class measuringClass, Supplier<String> taskDescription);
 
   /**
    * Create a new instance to collect performance data for the current incoming request

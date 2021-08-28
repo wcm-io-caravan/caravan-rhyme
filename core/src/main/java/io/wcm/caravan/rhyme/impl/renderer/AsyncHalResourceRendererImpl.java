@@ -26,18 +26,16 @@ import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.getSimp
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Stopwatch;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
-import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
@@ -64,7 +62,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
    * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
    */
   public AsyncHalResourceRendererImpl(RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
-    this.relatedRenderer = new RelatedResourcesRendererImpl(this::renderLinkedOrEmbeddedResource, metrics, typeSupport);
+    this.relatedRenderer = new RelatedResourcesRendererImpl(this::renderResourceAndEmbedded, metrics, typeSupport);
     this.metrics = metrics;
     this.typeSupport = typeSupport;
   }
@@ -72,37 +70,36 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
   @Override
   public Single<HalResource> renderResource(LinkableResource resourceImpl) {
 
-    return renderLinkedOrEmbeddedResource(resourceImpl);
+    return renderResourceAndEmbedded(resourceImpl);
   }
 
-  Single<HalResource> renderLinkedOrEmbeddedResource(Object resourceImplInstance) {
+  Single<HalResource> renderResourceAndEmbedded(Object resourceImplInstance) {
 
-    Stopwatch assemblyTime = Stopwatch.createStarted();
+    try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResourceRenderer.class,
+        () -> "calls to #renderResourceAndEmbedded with " + getSimpleClassName(resourceImplInstance, typeSupport))) {
 
-    Preconditions.checkNotNull(resourceImplInstance, "Cannot create a HalResource from a null reference");
+      Preconditions.checkNotNull(resourceImplInstance, "Cannot create a HalResource from a null reference");
 
-    // find the interface annotated with @HalApiInterface
-    Class<?> apiInterface = findHalApiInterface(resourceImplInstance, typeSupport);
+      // find the interface annotated with @HalApiInterface
+      Class<?> apiInterface = findHalApiInterface(resourceImplInstance, typeSupport);
 
-    // get the JSON resource state from the method annotated with @ResourceState
-    Single<ObjectNode> rxState = renderResourceState(apiInterface, resourceImplInstance);
+      // get the JSON resource state from the method annotated with @ResourceState
+      Single<ObjectNode> rxState = renderResourceState(apiInterface, resourceImplInstance);
 
-    // render links and embedded resources for each method annotated with @RelatedResource
-    Single<List<RelationRenderResult>> rxRelated = relatedRenderer.renderRelated(apiInterface, resourceImplInstance);
+      // render links and embedded resources for each method annotated with @RelatedResource
+      Single<List<RelationRenderResult>> rxRelated = relatedRenderer.renderRelated(apiInterface, resourceImplInstance);
 
-    String simpleClassName = getSimpleClassName(resourceImplInstance, typeSupport);
-    // wait until all this is available...
-    Single<HalResource> rxHalResource = Single.zip(rxState, rxRelated,
-        // ...and then create the HalResource instance
-        (stateNode, listOfRelated) -> createHalResource(resourceImplInstance, stateNode, listOfRelated))
-        // and measure the time of the emissions
-        .compose(EmissionStopwatch.collectMetrics("rendering " + simpleClassName + " instances", metrics));
+      String simpleClassName = getSimpleClassName(resourceImplInstance, typeSupport);
 
-    metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class,
-        "calling #renderLinkedOrEmbeddedResource with " + simpleClassName,
-        assemblyTime.elapsed(TimeUnit.MICROSECONDS));
+      // wait until all this is available...
+      Single<HalResource> rxHalResource = Single.zip(rxState, rxRelated,
+          // ...and then create the HalResource instance
+          (stateNode, listOfRelated) -> createHalResource(resourceImplInstance, stateNode, listOfRelated))
+          // and measure the time of the emissions
+          .compose(EmissionStopwatch.collectMetrics(() -> "rendering " + simpleClassName + " instances", metrics));
 
-    return rxHalResource;
+      return rxHalResource;
+    }
   }
 
   Single<ObjectNode> renderResourceState(Class<?> apiInterface, Object resourceImplInstance) {
@@ -124,7 +121,8 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
         .switchIfEmpty(emptyObject)
         // and measure the total time of the emissions
         .compose(
-            EmissionStopwatch.collectMetrics("rendering state emited by " + getClassAndMethodName(resourceImplInstance, method.get(), typeSupport), metrics));
+            EmissionStopwatch.collectMetrics(() -> "rendering state emitted by " + getClassAndMethodName(resourceImplInstance, method.get(), typeSupport),
+                metrics));
   }
 
   HalResource createHalResource(Object resourceImplInstance, ObjectNode stateNode, List<RelationRenderResult> listOfRelated) {
@@ -132,14 +130,12 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
     HalResource hal = new HalResource(stateNode);
 
     if (resourceImplInstance instanceof LinkableResource) {
-      Stopwatch sw = Stopwatch.createStarted();
-      Link selfLink = ((LinkableResource)resourceImplInstance).createLink();
 
-      metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class,
-          "calling #createLink of " + getSimpleClassName(resourceImplInstance, typeSupport),
-          sw.elapsed(TimeUnit.MICROSECONDS));
+      try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResourceRenderer.class,
+          () -> "calls to #createLink of " + getSimpleClassName(resourceImplInstance, typeSupport))) {
 
-      hal.setLink(selfLink);
+        hal.setLink(((LinkableResource)resourceImplInstance).createLink());
+      }
     }
 
     for (RelationRenderResult related : listOfRelated) {

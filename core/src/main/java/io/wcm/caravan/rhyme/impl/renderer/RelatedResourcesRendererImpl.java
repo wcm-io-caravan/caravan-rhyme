@@ -26,10 +26,7 @@ import static io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils.invokeM
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import com.google.common.base.Stopwatch;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
@@ -38,6 +35,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -114,7 +112,7 @@ final class RelatedResourcesRendererImpl {
     // and measure the time of the emissions
     return renderResult
         .compose(EmissionStopwatch
-            .collectMetrics("emission of all linked and embedded " + emissionType.getSimpleName() + " instances returned by "
+            .collectMetrics(() -> "processing of related " + emissionType.getSimpleName() + " instances returned by "
                 + getClassAndMethodName(resourceImplInstance, method, typeSupport), metrics));
   }
 
@@ -166,21 +164,24 @@ final class RelatedResourcesRendererImpl {
     Observable<Link> rxLinks = rxLinkedResourceImpls
         .map(linkedResource -> {
 
-          String methodName = "#createLink of " + HalApiReflectionUtils.getSimpleClassName(linkedResource, typeSupport);
+          try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResourceRenderer.class,
+              () -> "calls to #createLink of " + getSimpleClassName(linkedResource))) {
 
-          Stopwatch sw = Stopwatch.createStarted();
-          Link link = linkedResource.createLink();
-          metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class,
-              "calling " + methodName,
-              sw.elapsed(TimeUnit.MICROSECONDS));
+            Link link = linkedResource.createLink();
 
-          if (link == null) {
-            throw new HalApiDeveloperException(methodName + " returned a null value");
+            if (link == null) {
+              throw new HalApiDeveloperException(getSimpleClassName(linkedResource) + " returned a null value");
+            }
+            return link;
           }
-          return link;
         });
 
     return rxLinks.toList();
+  }
+
+  private String getSimpleClassName(LinkableResource linkedResource) {
+
+    return HalApiReflectionUtils.getSimpleClassName(linkedResource, typeSupport);
   }
 
   private boolean filterLinksToEmbeddedResource(Object relatedResource) {

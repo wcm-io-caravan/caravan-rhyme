@@ -24,9 +24,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
@@ -38,6 +36,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
@@ -72,17 +71,15 @@ final class HalApiInvocationHandler implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-    if (method.getName().equals("hashCode")) {
+    if ("hashCode".equals(method.getName())) {
       throw new HalApiDeveloperException("You cannot call hashCode() on dynamic client proxies. Avoid using collections like LinkedHashSet.");
     }
 
-    // we want to measure how much time is spent for reflection magic in this proxy
-    Stopwatch stopwatch = Stopwatch.createStarted();
-
     // create an object to help with identification of methods and parameters
-    HalApiMethodInvocation invocation = new HalApiMethodInvocation(resourceInterface, method, args, typeSupport);
+    HalApiMethodInvocation invocation = new HalApiMethodInvocation(metrics, resourceInterface, method, args, typeSupport);
 
-    try {
+    // collect the time spend calling all proxy methods during the current request in the HalResponseMetadata object
+    try (RequestMetricsStopwatch sw = metrics.startStopwatch(HalApiClient.class, () -> "calling " + invocation)) {
       Observable rxReturnValue = getCachedObservableReturnValue(invocation);
       return RxJavaReflectionUtils.convertObservableTo(rxReturnValue, method.getReturnType(), typeSupport);
     }
@@ -103,10 +100,6 @@ final class HalApiInvocationHandler implements InvocationHandler {
     catch (Exception e) {
       // CHECKSTYLE:ON
       throw new RuntimeException("The invocation of " + invocation + " has failed with an unexpected exception", e);
-    }
-    finally {
-      // collect the time spend calling all proxy methods during the current request in the HalResponseMetadata object
-      metrics.onMethodInvocationFinished(HalApiClient.class, "calling " + invocation.toString(), stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
   }
 

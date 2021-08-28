@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.rhyme.api.server;
 
-import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.CARAVAN_METADATA_RELATION;
+import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RHYME_METADATA_RELATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ public class AsyncHalResponseRendererTest {
     assertThat(response).isNotNull();
     assertThat(response.getContentType()).isEqualTo(HalResource.CONTENT_TYPE);
     assertThat(response.getBody().getLink()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(CARAVAN_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
   }
 
   @Test
@@ -86,7 +86,7 @@ public class AsyncHalResponseRendererTest {
     assertThat(response).isNotNull();
     assertThat(response.getContentType()).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(CARAVAN_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
   }
 
 

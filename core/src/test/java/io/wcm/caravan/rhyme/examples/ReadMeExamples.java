@@ -122,7 +122,7 @@ public class ReadMeExamples {
 
   private void convertToFrameworkResponse(HalResponse response) {
 
-    response.getBody().removeEmbedded("caravan:metadata");
+    response.getBody().removeEmbedded("rhyme:metadata");
     if (response.getBody().getModel().path("_embedded").size() == 0) {
       response.getBody().getModel().remove("_embedded");
     }

@@ -126,7 +126,7 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
 
     HalResource metadata = metrics.createMetadataResource(resourceImpl);
     if (metadata != null) {
-      hal.addEmbedded(ResponseMetadataRelations.CARAVAN_METADATA_RELATION, metadata);
+      hal.addEmbedded(ResponseMetadataRelations.RHYME_METADATA_RELATION, metadata);
     }
   }
 

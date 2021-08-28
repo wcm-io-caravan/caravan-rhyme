@@ -47,13 +47,12 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
-import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
 import io.wcm.caravan.rhyme.aem.impl.resources.AemApiDiscoveryResourceImpl;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.context.AppAemContext;
-import io.wcm.caravan.rhyme.aem.testing.models.UnregisteredSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
+import io.wcm.caravan.rhyme.aem.testing.models.UnregisteredSlingTestResource;
 import io.wcm.caravan.rhyme.api.relations.VndErrorRelations;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -197,7 +196,7 @@ public class HalApiServletTest {
 
     HalResource halResource = assertStatusIsOkAndParse(response);
 
-    assertThat(halResource.getEmbedded("caravan:metadata")).isEmpty();
+    assertThat(halResource.getEmbedded("rhyme:metadata")).isEmpty();
   }
 
   @Test
@@ -211,7 +210,7 @@ public class HalApiServletTest {
 
     HalResource halResource = assertStatusIsOkAndParse(response);
 
-    assertThat(halResource.getEmbedded("caravan:metadata")).hasSize(1);
+    assertThat(halResource.getEmbedded("rhyme:metadata")).hasSize(1);
   }
 
   @Test

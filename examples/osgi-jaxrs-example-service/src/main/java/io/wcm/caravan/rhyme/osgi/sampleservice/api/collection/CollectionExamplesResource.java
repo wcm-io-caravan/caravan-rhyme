@@ -38,7 +38,7 @@ import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
  * The resources with the "proxy:" relations will be <b>consuming</b> those generated
  * test resources: in the background there will be HTTP requests to the API
  * on localhost using Rhyme's dynamic client proxies. To check what
- * exactly is happening under the hood, look into the embedded "caravan:metadata" resources.
+ * exactly is happening under the hood, look into the embedded "rhyme:metadata" resources.
  * </p>
  */
 @HalApiInterface

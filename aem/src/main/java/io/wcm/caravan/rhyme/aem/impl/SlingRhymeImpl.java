@@ -26,6 +26,7 @@ import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -100,29 +101,32 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   @Override
   public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
 
-    // immediately return the current resource or request if they are the target of the adaption
-    if (Resource.class.isAssignableFrom(type)) {
-      return (AdapterType)currentResource;
-    }
-    if (HttpServletRequest.class.isAssignableFrom(type)) {
-      return (AdapterType)request;
-    }
+    try (RequestMetricsStopwatch sw = rhyme.startStopwatch(getClass(), () -> "calls to SlingRhyme#adaptTo(" + type.getSimpleName() + ")")) {
 
-    // use the model factory if the target type is a sling model, so that if anything goes wrong,
-    // an exception is caught (and thrown) rather than just null being returned
-    if (isDirectlyAdaptableFromSlingRhyme(type)) {
-      return modelFactory.createModel(this, type);
-    }
-    if (modelFactory.canCreateFromAdaptable(request, type)) {
-      return modelFactory.createModel(request, type);
-    }
-    if (modelFactory.canCreateFromAdaptable(currentResource, type)) {
-      return modelFactory.createModel(currentResource, type);
-    }
+      // immediately return the current resource or request if they are the target of the adaption
+      if (Resource.class.isAssignableFrom(type)) {
+        return (AdapterType)currentResource;
+      }
+      if (HttpServletRequest.class.isAssignableFrom(type)) {
+        return (AdapterType)request;
+      }
 
-    // but we also want to adapt to other non-sling model types
-    return tryAdapting(type, getRelatedAdaptables())
-        .orElseGet(() -> super.adaptTo(type));
+      // use the model factory if the target type is a sling model, so that if anything goes wrong,
+      // an exception is caught (and thrown) rather than just null being returned
+      if (isDirectlyAdaptableFromSlingRhyme(type)) {
+        return modelFactory.createModel(this, type);
+      }
+      if (modelFactory.canCreateFromAdaptable(request, type)) {
+        return modelFactory.createModel(request, type);
+      }
+      if (modelFactory.canCreateFromAdaptable(currentResource, type)) {
+        return modelFactory.createModel(currentResource, type);
+      }
+
+      // but we also want to adapt to other non-sling model types
+      return tryAdapting(type, getRelatedAdaptables())
+          .orElseGet(() -> super.adaptTo(type));
+    }
   }
 
   private Collection<Adaptable> getRelatedAdaptables() {

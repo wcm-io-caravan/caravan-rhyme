@@ -166,7 +166,7 @@ public class VndErrorResponseRendererImpl implements VndErrorResponseRenderer {
     }
 
     HalResource causeFromBody = new HalResource(upstreamBody.getModel().deepCopy());
-    causeFromBody.removeEmbedded(ResponseMetadataRelations.CARAVAN_METADATA_RELATION);
+    causeFromBody.removeEmbedded(ResponseMetadataRelations.RHYME_METADATA_RELATION);
 
     List<HalResource> embeddedCauses = causeFromBody.getEmbedded(ERRORS);
 

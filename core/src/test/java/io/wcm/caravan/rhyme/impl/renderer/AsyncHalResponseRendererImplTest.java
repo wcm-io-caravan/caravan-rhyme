@@ -146,8 +146,8 @@ public class AsyncHalResponseRendererImplTest {
     HalResponse response = renderResponse();
 
     HalResource hal = response.getBody();
-    assertThat(hal.hasEmbedded(ResponseMetadataRelations.CARAVAN_METADATA_RELATION));
-    assertThat(hal.getEmbeddedResource(ResponseMetadataRelations.CARAVAN_METADATA_RELATION).getModel()).isEqualTo(metadata.getModel());
+    assertThat(hal.hasEmbedded(ResponseMetadataRelations.RHYME_METADATA_RELATION));
+    assertThat(hal.getEmbeddedResource(ResponseMetadataRelations.RHYME_METADATA_RELATION).getModel()).isEqualTo(metadata.getModel());
   }
 
   @Test

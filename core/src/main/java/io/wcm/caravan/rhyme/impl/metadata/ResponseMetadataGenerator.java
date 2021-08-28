@@ -22,7 +22,10 @@ package io.wcm.caravan.rhyme.impl.metadata;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.EMISSION_TIMES;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.INVOCATION_TIMES;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.MAX_AGE;
+import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.PROXY_TIMES;
+import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RENDERING_TIMES;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RESPONSE_TIMES;
+import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.SLING_MODELS;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.SOURCE_LINKS;
 
 import java.time.Duration;
@@ -32,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
@@ -54,6 +59,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
@@ -81,6 +87,8 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
 
   private final List<Link> sourceLinks = Collections.synchronizedList(new ArrayList<>());
 
+  private final AtomicLong metricsCollectionNanos = new AtomicLong();
+
   private Integer maxAgeLimit;
 
   private final AtomicBoolean metadataWasRendered = new AtomicBoolean();
@@ -104,9 +112,33 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
   }
 
   @Override
+  public RequestMetricsStopwatch startStopwatch(Class measuringClass, Supplier<String> taskDescription) {
+
+    return new RequestMetricsStopwatch() {
+
+      private final Stopwatch stopwatch = Stopwatch.createStarted();
+
+      @Override
+      public void close() {
+        rememberInvocationTimes(measuringClass, taskDescription, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+      }
+    };
+  }
+
+  @Override
   public void onMethodInvocationFinished(Class category, String methodDescription, long invocationDurationMicros) {
+
+    rememberInvocationTimes(category, () -> methodDescription, invocationDurationMicros);
+  }
+
+  private void rememberInvocationTimes(Class category, Supplier<String> methodDescription, long invocationDurationMicros) {
+
+    Stopwatch sw = Stopwatch.createStarted();
+
     methodInvocationTimes.put(category.getSimpleName(),
-        new TimeMeasurement(methodDescription, invocationDurationMicros / 1000.f, TimeUnit.MILLISECONDS));
+        new TimeMeasurement(methodDescription.get(), invocationDurationMicros / 1000.f, TimeUnit.MILLISECONDS));
+
+    metricsCollectionNanos.addAndGet(sw.elapsed(TimeUnit.NANOSECONDS));
   }
 
   @Override
@@ -153,9 +185,9 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
     return TimeMeasurement.LONGEST_TIME_FIRST.sortedCopy(inputResponseTimes);
   }
 
-  List<TimeMeasurement> getGroupedAndSortedInvocationTimes(Class category, boolean useMax) {
+  List<TimeMeasurement> getGroupedAndSortedInvocationTimes(String simpleClassName, boolean useMax) {
 
-    List<TimeMeasurement> invocationTimes = methodInvocationTimes.get(category.getSimpleName());
+    List<TimeMeasurement> invocationTimes = methodInvocationTimes.get(simpleClassName);
 
     List<TimeMeasurement> groupedInvocationTimes = new ArrayList<>();
     invocationTimes.stream()
@@ -230,26 +262,15 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
             + "If you see many individual requests here then check if the upstream "
             + "service also provides a way to fetch this data all at once. ");
 
-    HalResource emissionTimes = createTimingResource(getGroupedAndSortedInvocationTimes(EmissionStopwatch.class, true));
-    addEmbedded(metadataResource, EMISSION_TIMES, emissionTimes,
-        "A breakdown of emission and rendering times by resource and method",
-        "Use these times to identify performance hotspots in your server-side implementation classes");
-
-    HalResource proxyInvocationTimes = createTimingResource(getGroupedAndSortedInvocationTimes(HalApiClient.class, false));
-    addEmbedded(metadataResource, INVOCATION_TIMES, proxyInvocationTimes,
-        "A breakdown of time spent in blocking HalApiClient proxy method calls",
-        null);
-
-    HalResource asyncRendererResource = createTimingResource(getGroupedAndSortedInvocationTimes(AsyncHalResourceRenderer.class, false));
-    addEmbedded(metadataResource, INVOCATION_TIMES, asyncRendererResource,
-        "A breakdown of time spent in blocking method calls by AsyncHalResourceRenderer",
-        null);
-
     HalResource maxAgeResource = createTimingResource(getSortedInputMaxAgeSeconds());
     addEmbedded(metadataResource, MAX_AGE, maxAgeResource,
         "The max-age cache header values of all retrieved resources",
         "If the max-age in this response's cache headers is lower then you expected, "
             + "then check the resources at the very bottom of the list, because they will determine the overall max-age time.");
+
+    List<TimingResourceCategory> allCategories = getAllCategories();
+
+    allCategories.forEach(category -> createAndEmbed(metadataResource, category));
 
     // and also include the overall max-age of the response
     metadataResource.getModel().put("maxAge", getResponseMaxAge() + " s");
@@ -259,12 +280,81 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
     metadataResource.getModel().put("sumOfResourceAssemblyTime", getSumOfInvocationMillis(AsyncHalResourceRenderer.class) + "ms");
     metadataResource.getModel().put("sumOfResponseAndParseTimes", getSumOfResponseTimeMillis() + "ms");
     metadataResource.getModel().put("overallServerSideResponseTime", getOverallResponseTimeMillis() + "ms");
+    metadataResource.getModel().put("metricsCollectionTime", TimeUnit.NANOSECONDS.toMillis(metricsCollectionNanos.get()) + "ms");
     metadataResource.getModel().put("metadataGenerationTime", stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
 
     return metadataResource;
   }
 
+  private List<TimingResourceCategory> getAllCategories() {
+
+    List<TimingResourceCategory> knownCategories = getKnownCategoriesWithDescription();
+
+    List<String> knownClassNames = knownCategories.stream()
+        .map(category -> category.simpleClassName)
+        .collect(Collectors.toList());
+
+    List<TimingResourceCategory> allCategories = new ArrayList<>(knownCategories);
+
+    methodInvocationTimes.keySet().stream()
+        .filter(className -> !knownClassNames.contains(className))
+        .map(className -> new TimingResourceCategory(className, INVOCATION_TIMES, "Invocations of methods in class " + className, null, false))
+        .forEach(allCategories::add);
+
+    return allCategories;
+  }
+
+  private ImmutableList<TimingResourceCategory> getKnownCategoriesWithDescription() {
+    return ImmutableList.of(
+
+        new TimingResourceCategory(EmissionStopwatch.class.getSimpleName(), EMISSION_TIMES,
+            "A breakdown of emission and rendering times by resource and method",
+            "Use these times to identify performance hotspots in your server-side implementation classes", true),
+
+        new TimingResourceCategory(HalApiClient.class.getSimpleName(), PROXY_TIMES,
+            "A breakdown of time spent in blocking HalApiClient proxy method calls",
+            null, false),
+
+        new TimingResourceCategory(AsyncHalResourceRenderer.class.getSimpleName(), RENDERING_TIMES,
+            "A breakdown of time spent in blocking method calls by AsyncHalResourceRenderer",
+            null, false),
+
+        new TimingResourceCategory("SlingRhymeImpl", SLING_MODELS,
+            "A breakdown of time spent adapting sling models from SlingRhyme",
+            null, false));
+  }
+
+
+  static class TimingResourceCategory {
+
+    private final String simpleClassName;
+    private final String relation;
+
+    private final String description;
+    private final String developerHint;
+    private final boolean useMaxForAggregration;
+
+    TimingResourceCategory(String simpleClassName, String relation, String description, String developerHint, boolean useMaxForAggregration) {
+      this.simpleClassName = simpleClassName;
+      this.relation = relation;
+      this.description = description;
+      this.developerHint = developerHint;
+      this.useMaxForAggregration = useMaxForAggregration;
+    }
+  }
+
+  private void createAndEmbed(HalResource metadataResource, TimingResourceCategory category) {
+
+    HalResource timingResource = createTimingResource(getGroupedAndSortedInvocationTimes(category.simpleClassName, category.useMaxForAggregration));
+
+    addEmbedded(metadataResource, category.relation, timingResource, category.description, category.developerHint);
+  }
+
   private static void addEmbedded(HalResource metadataResource, String relation, HalResource toEmbed, String title, String developerHint) {
+
+    if (toEmbed.getModel().path("measurements").size() == 0 && toEmbed.getLinks().isEmpty()) {
+      return;
+    }
 
     toEmbed.getModel().put("title", title);
 
@@ -316,5 +406,6 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
       return this.unit;
     }
   }
+
 
 }

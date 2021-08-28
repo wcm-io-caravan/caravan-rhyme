@@ -23,19 +23,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.reactivestreams.Publisher;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Stopwatch;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
@@ -64,13 +63,11 @@ public final class RxJavaReflectionUtils {
   public static Observable<?> invokeMethodAndReturnObservable(Object resourceImplInstance, Method method, RequestMetricsCollector metrics,
       HalApiTypeSupport typeSupport) {
 
-    Stopwatch stopwatch = Stopwatch.createStarted();
-
     String fullMethodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method, typeSupport);
 
-    Object[] args = new Object[method.getParameterCount()];
+    try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResourceRenderer.class, () -> "calls to " + fullMethodName)) {
 
-    try {
+      Object[] args = new Object[method.getParameterCount()];
       Object returnValue = method.invoke(resourceImplInstance, args);
 
       if (returnValue == null) {
@@ -89,12 +86,6 @@ public final class RxJavaReflectionUtils {
     }
     catch (IllegalAccessException | IllegalArgumentException ex) {
       throw new HalApiDeveloperException("Failed to invoke method " + fullMethodName, ex);
-    }
-    finally {
-
-      metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class,
-          "calling " + fullMethodName,
-          stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
   }
 
@@ -140,7 +131,7 @@ public final class RxJavaReflectionUtils {
       HalApiReturnTypeSupport typeSupport) {
 
     Observable<?> observable = convertToObservable(reactiveInstance, typeSupport)
-        .compose(EmissionStopwatch.collectMetrics(description, metrics));
+        .compose(EmissionStopwatch.collectMetrics(() -> description, metrics));
 
     // do not use Observable#cache() here, because we want consumers to be able to use Observable#retry()
     Observable<?> cached = observable.compose(RxJavaTransformers.cacheIfCompleted());

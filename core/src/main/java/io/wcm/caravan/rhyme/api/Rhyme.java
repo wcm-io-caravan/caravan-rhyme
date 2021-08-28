@@ -20,12 +20,14 @@
 package io.wcm.caravan.rhyme.api;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 import org.osgi.annotation.versioning.ProviderType;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
@@ -75,5 +77,20 @@ public interface Rhyme {
    * @return a {@link HalResponse} instance with status code, content type and body already set
    */
   HalResponse renderVndErrorResponse(Throwable error);
+
+  /**
+   * Start measuring the execution time of a specific (possibly repeated) task within your own code. To finish the
+   * measurement, you have to call {@link RequestMetricsStopwatch#close()} when the task has been completed,
+   * or use a try-with-resources statement around the code section to be measured (since it's an {@link AutoCloseable}
+   * type).
+   * The result of your measurements will appear within the embedded "rhyme:metadata" resource in the rendered response.
+   * @param measuringClass only used to group the results in the "rhyme:metadata" resource into separate sections for
+   *          each class
+   * @param taskDescription provides a human readable description of the task (and context) that was executed.
+   *          Measurements with the exact same task descriptions will be grouped, and the execution count and overall
+   *          sum of execution times will be calculated
+   * @return a {@link RequestMetricsStopwatch} that you need to close to finish the measurement
+   */
+  RequestMetricsStopwatch startStopwatch(Class measuringClass, Supplier<String> taskDescription);
 
 }

@@ -26,13 +26,16 @@ package io.wcm.caravan.rhyme.impl.metadata;
 public final class ResponseMetadataRelations {
 
   /** the relation used to embedd information on upstream resources and performance in every rendered resource */
-  public static final String CARAVAN_METADATA_RELATION = "caravan:metadata";
+  public static final String RHYME_METADATA_RELATION = "rhyme:metadata";
 
   static final String MAX_AGE = "metrics:maxAge";
   static final String RESPONSE_TIMES = "metrics:responseTimes";
-  static final String INVOCATION_TIMES = "metrics:invocationTimes";
-  static final String EMISSION_TIMES = "metrics:emissionTimes";
+  static final String RENDERING_TIMES = "metrics:renderer";
+  static final String PROXY_TIMES = "metrics:clientProxies";
+  static final String SLING_MODELS = "metrics:slingModels";
+  static final String EMISSION_TIMES = "metrics:observableEmissions";
   static final String SOURCE_LINKS = "metrics:sourceLinks";
+  public static final String INVOCATION_TIMES = "metrics:invocationTimes";
 
   private ResponseMetadataRelations() {
     // constants only

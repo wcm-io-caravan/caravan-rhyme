@@ -20,5 +20,5 @@
 /**
  * Interfaces and data structures that are shared for client- and server-side
  */
-@org.osgi.annotation.versioning.Version("1.0.1")
+@org.osgi.annotation.versioning.Version("1.1.0")
 package io.wcm.caravan.rhyme.api.common;

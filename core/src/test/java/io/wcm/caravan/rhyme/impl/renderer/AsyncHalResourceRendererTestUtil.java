@@ -47,7 +47,7 @@ public final class AsyncHalResourceRendererTestUtil {
       rxResource = renderer.renderResource((LinkableResource)resourceImplInstance);
     }
     else {
-      rxResource = renderer.renderLinkedOrEmbeddedResource(resourceImplInstance);
+      rxResource = renderer.renderResourceAndEmbedded(resourceImplInstance);
     }
 
     return rxResource.toObservable().blockingFirst();

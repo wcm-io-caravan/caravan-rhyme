@@ -127,7 +127,7 @@ public class ServerSideErrorResourcesIT {
 
     HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
-    HalResource metadata = ex.getErrorResponse().getBody().getEmbeddedResource("caravan:metadata");
+    HalResource metadata = ex.getErrorResponse().getBody().getEmbeddedResource("rhyme:metadata");
 
     assertThat(metadata)
         .isNotNull();

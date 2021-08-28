@@ -20,6 +20,7 @@
 package io.wcm.caravan.rhyme.impl;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -27,6 +28,7 @@ import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
@@ -107,5 +109,11 @@ final class RhymeImpl implements Rhyme {
     VndErrorResponseRenderer errorRenderer = VndErrorResponseRenderer.create(exceptionStrategy);
 
     return errorRenderer.renderError(requestUri, null, error, metrics);
+  }
+
+  @Override
+  public RequestMetricsStopwatch startStopwatch(Class clazz, Supplier<String> taskDescription) {
+
+    return metrics.startStopwatch(clazz, taskDescription);
   }
 }

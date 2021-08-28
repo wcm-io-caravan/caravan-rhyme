@@ -120,7 +120,7 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
     HalResource responseBody = halResponse.getBody();
 
     if (shouldMetadataBeRemoved(request)) {
-      responseBody.removeEmbedded("caravan:metadata");
+      responseBody.removeEmbedded("rhyme:metadata");
     }
 
     OBJECT_MAPPER.writeValue(servletResponse.getWriter(), responseBody.getModel());

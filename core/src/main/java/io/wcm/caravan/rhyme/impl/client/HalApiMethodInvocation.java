@@ -31,6 +31,9 @@ import java.util.stream.Stream;
 import com.google.common.base.Preconditions;
 
 import io.wcm.caravan.rhyme.api.annotations.Related;
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
 import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection;
@@ -47,15 +50,18 @@ class HalApiMethodInvocation {
   private final boolean calledWithOnlyNullParameters;
 
 
-  HalApiMethodInvocation(Class interfaze, Method method, Object[] args, HalApiTypeSupport typeSupport) {
-    this.interfaze = interfaze;
-    this.method = method;
-    this.emissionType = hasTemplatedReturnType() ? RxJavaReflectionUtils.getObservableEmissionType(method, typeSupport) : method.getReturnType();
-    this.typeSupport = typeSupport;
+  HalApiMethodInvocation(RequestMetricsCollector metrics, Class interfaze, Method method, Object[] args, HalApiTypeSupport typeSupport) {
 
-    this.templateVariables = TemplateVariableDetection.getVariablesNameValueMap(method, Optional.ofNullable(args));
+    try (RequestMetricsStopwatch sw = metrics.startStopwatch(HalApiClient.class, () -> "creating HalApiMethodInvocation instances")) {
+      this.interfaze = interfaze;
+      this.method = method;
+      this.emissionType = hasTemplatedReturnType() ? RxJavaReflectionUtils.getObservableEmissionType(method, typeSupport) : method.getReturnType();
+      this.typeSupport = typeSupport;
 
-    this.calledWithOnlyNullParameters = args != null && Stream.of(args).allMatch(Objects::isNull);
+      this.templateVariables = TemplateVariableDetection.getVariablesNameValueMap(method, Optional.ofNullable(args));
+
+      this.calledWithOnlyNullParameters = args != null && Stream.of(args).allMatch(Objects::isNull);
+    }
   }
 
 
@@ -103,7 +109,7 @@ class HalApiMethodInvocation {
 
   String getDescription() {
 
-    StringBuilder desc = new StringBuilder("emitting {}")
+    StringBuilder desc = new StringBuilder("emitting ")
         .append(getEmissionType().getSimpleName());
 
     if (isForMethodAnnotatedWithRelatedResource()) {

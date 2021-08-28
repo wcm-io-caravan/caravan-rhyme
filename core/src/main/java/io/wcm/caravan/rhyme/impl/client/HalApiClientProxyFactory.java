@@ -25,9 +25,7 @@ import java.lang.reflect.Proxy;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
@@ -40,6 +38,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceLink;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
@@ -105,7 +104,7 @@ final class HalApiClientProxyFactory {
           return resourceLoader.getHalResource(url)
               .map(HalResponse::getBody);
         })
-        .compose(EmissionStopwatch.collectMetrics("fetching " + relatedResourceType.getSimpleName() + " from upstream server", metrics));
+        .compose(EmissionStopwatch.collectMetrics(() -> "fetching " + relatedResourceType.getSimpleName() + " from upstream server (or cache)", metrics));
   }
 
 
@@ -130,9 +129,9 @@ final class HalApiClientProxyFactory {
 
   private <T> T createProxy(Class<T> relatedResourceType, Single<HalResource> rxHal, Link linkToResource) {
 
-    Stopwatch sw = Stopwatch.createStarted();
+    try (RequestMetricsStopwatch sw = metrics.startStopwatch(HalApiClient.class,
+        () -> "creating " + relatedResourceType.getSimpleName() + " proxy instance")) {
 
-    try {
       // check that the given class is indeed a HAL api interface
       if (!isHalApiInterface(relatedResourceType, typeSupport)) {
         throw new HalApiDeveloperException(
@@ -148,11 +147,6 @@ final class HalApiClientProxyFactory {
       T proxy = (T)Proxy.newProxyInstance(relatedResourceType.getClassLoader(), interfaces, invocationHandler);
 
       return proxy;
-    }
-    finally {
-      metrics.onMethodInvocationFinished(HalApiClient.class,
-          "creating " + relatedResourceType.getSimpleName() + " proxy instance",
-          sw.elapsed(TimeUnit.MICROSECONDS));
     }
   }
 
