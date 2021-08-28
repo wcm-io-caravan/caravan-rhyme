@@ -11,7 +11,6 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import com.damnhandy.uri.template.UriTemplate;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
@@ -20,7 +19,7 @@ import io.wcm.caravan.rhyme.aem.impl.SlingRhymeImpl;
 import io.wcm.caravan.rhyme.aem.impl.parameters.QueryParamCollector;
 import io.wcm.handler.url.UrlHandler;
 
-@Model(adaptables = SlingRhyme.class, adapters = SlingLinkBuilder.class)
+@Model(adaptables = SlingRhymeImpl.class, adapters = SlingLinkBuilder.class)
 public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
   private final Resource targetResource;
@@ -31,15 +30,13 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
   /**
    * Default constructor used when this sling model is instantiated
-   * @param targetResource the current sling resource (adapted via {@link SlingRhymeImpl#adaptTo(Class)} for which the
-   *          link should be created
-   * @param urlHandler an URL handler (adapted via {@link SlingRhymeImpl#adaptTo(Class)} to generate the resource URL
+   * @param slingRhyme the model from which this link builder is adapted
    * @param registry to lookup the selectors to be used for URL generation
    */
   @Inject
-  public SlingLinkBuilderImpl(@Self Resource targetResource, @Self UrlHandler urlHandler, RhymeResourceRegistry registry) {
-    this.targetResource = targetResource;
-    this.urlHandler = urlHandler;
+  public SlingLinkBuilderImpl(@Self SlingRhymeImpl slingRhyme, RhymeResourceRegistry registry) {
+    this.targetResource = slingRhyme.getCurrentResource();
+    this.urlHandler = slingRhyme.getUrlHandler();
     this.registry = registry;
   }
 

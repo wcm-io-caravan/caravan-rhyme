@@ -30,6 +30,7 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingHttpServletRequest.class, adapters = { SlingRhyme.class, SlingRhymeImpl.class })
 public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
@@ -38,16 +39,23 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
 
   private final SlingHttpServletRequest request;
   private final Resource currentResource;
+
+  private final UrlHandler urlHandler;
+
   private final Rhyme rhyme;
 
   @Inject
-  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ModelFactory modelFactory, ResourceLoaderRegistry picker, RhymeDocsOsgiBundleSupport rhymeDocs) {
+  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ModelFactory modelFactory, ResourceLoaderRegistry resourceLoaders, RhymeDocsOsgiBundleSupport rhymeDocs) {
 
     this.modelFactory = modelFactory;
     this.request = request;
     this.currentResource = request.getResource();
 
-    this.rhyme = RhymeBuilder.withResourceLoader(picker.getResourceLoader())
+    // the UrlHandler is only created only once for each request, and re-used when new SlingRhymeImpl instances are
+    // created for different context-resources.
+    this.urlHandler = request.adaptTo(UrlHandler.class);
+
+    this.rhyme = RhymeBuilder.withResourceLoader(resourceLoaders.getResourceLoader())
         .withRhymeDocsSupport(rhymeDocs)
         .buildForRequestTo(request.getRequestURL().toString());
   }
@@ -56,6 +64,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     this.modelFactory = slingRhyme.modelFactory;
     this.request = slingRhyme.request;
     this.currentResource = currentResource;
+    this.urlHandler = slingRhyme.urlHandler;
     this.rhyme = slingRhyme.rhyme;
   }
 
@@ -172,10 +181,6 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     return currentResource;
   }
 
-  Rhyme getCaravanRhyme() {
-    return rhyme;
-  }
-
   @Override
   public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
     return rhyme.getRemoteResource(uri, halApiInterface);
@@ -192,6 +197,14 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
 
   HalResponse renderVndErrorResponse(Throwable error) {
     return rhyme.renderVndErrorResponse(error);
+  }
+
+  public Rhyme getCaravanRhyme() {
+    return rhyme;
+  }
+
+  public UrlHandler getUrlHandler() {
+    return urlHandler;
   }
 
 }
