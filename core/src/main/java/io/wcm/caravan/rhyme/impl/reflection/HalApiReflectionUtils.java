@@ -19,8 +19,11 @@
  */
 package io.wcm.caravan.rhyme.impl.reflection;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -36,6 +39,9 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
+import io.wcm.caravan.rhyme.api.server.ResourceConversions;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 
 /**
@@ -212,4 +218,58 @@ public final class HalApiReflectionUtils {
     }
 
   }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T createEmbeddedResourceProxy(T linkableResource, boolean linkedWhenEmbedded) {
+
+    Set<Class<?>> interfaces = collectInterfaces(linkableResource.getClass());
+
+    interfaces.add(EmbeddableResource.class);
+
+    return (T)Proxy.newProxyInstance(linkableResource.getClass().getClassLoader(),
+        interfaces.stream().toArray(Class[]::new),
+        new EmbeddedResourceProxyInvocationHandler<T>(linkableResource, linkedWhenEmbedded));
+  }
+
+  static final class EmbeddedResourceProxyInvocationHandler<T> implements InvocationHandler {
+
+    private final T linkableResource;
+    private final boolean linkedWhenEmbedded;
+
+    EmbeddedResourceProxyInvocationHandler(T linkableResource, boolean linkedWhenEmbedded) {
+      this.linkableResource = linkableResource;
+      this.linkedWhenEmbedded = linkedWhenEmbedded;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) {
+
+      try {
+        if ("isEmbedded".equals(method.getName())) {
+          return true;
+        }
+        if ("isLinkedWhenEmbedded".equals(method.getName())) {
+          return this.linkedWhenEmbedded;
+        }
+
+        return method.invoke(this.linkableResource, args);
+      }
+      catch (IllegalAccessException | InvocationTargetException | RuntimeException ex) {
+
+        // if the original implementation method just threw a runtime exception then re-throw that cause
+        if (ex instanceof InvocationTargetException) {
+          if (ex.getCause() instanceof RuntimeException) {
+            throw (RuntimeException)ex.getCause();
+          }
+        }
+
+        throw new HalApiServerException(500,
+            "Failed to invoke method " + method.getName() + " on proxy created with class "
+                + ResourceConversions.class.getSimpleName(),
+            ex);
+      }
+
+    }
+  }
+
 }

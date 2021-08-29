@@ -21,11 +21,17 @@ package io.wcm.caravan.rhyme.impl.reflection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Method;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.EmbeddedResourceProxyInvocationHandler;
 import io.wcm.caravan.ryhme.testing.LinkableTestResource;
 
 
@@ -72,5 +78,22 @@ public class HalApiReflectionUtilsTest {
     String name = getSimpleClassName(resourceImpl);
 
     assertThat(name).isEqualTo("anonymous TestResource (defined in HalApiReflectionUtilsTest)");
+  }
+
+  @Test
+  public void EmbeddedResourceProxyInvocationHandler_should_catch_any_exception() throws Exception {
+
+    LinkableTestResource resource = Mockito.mock(LinkableTestResource.class);
+
+    EmbeddedResourceProxyInvocationHandler<LinkableTestResource> handler = new EmbeddedResourceProxyInvocationHandler<LinkableTestResource>(resource, false);
+
+    // just for code coverage in case that invoking a method throws something *other* than
+    // a InvocationTargetException we deliberately call a method with the wrong number of parameters
+    Method method = LinkableTestResource.class.getMethod("createLink");
+    Throwable ex = Assertions.catchThrowable(() -> handler.invoke(resource, method, new Object[] { "foo" }));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiServerException.class)
+        .hasCauseInstanceOf(IllegalArgumentException.class);
   }
 }
