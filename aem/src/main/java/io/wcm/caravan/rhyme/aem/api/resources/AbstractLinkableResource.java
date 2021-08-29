@@ -1,7 +1,5 @@
 package io.wcm.caravan.rhyme.aem.api.resources;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -32,14 +30,16 @@ public abstract class AbstractLinkableResource implements LinkableResource, Slin
 
   private final LinkProperties linkProperties = new LinkProperties();
 
-  @PostConstruct
-  void init() {
-    linkProperties.setTitle(getDefaultLinkTitle());
-    linkProperties.setName(rhyme.getCurrentResource().getName());
-  }
-
   @Override
   public Link createLink() {
+
+    if (linkProperties.getTitle() == null) {
+      linkProperties.setTitle(getDefaultLinkTitle());
+    }
+
+    if (linkProperties.getName() == null) {
+      linkProperties.setName(rhyme.getCurrentResource().getName());
+    }
 
     return linkBuilder.createLinkToCurrentResource(this);
   }
