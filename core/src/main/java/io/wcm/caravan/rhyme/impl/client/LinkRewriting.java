@@ -30,7 +30,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 
 /**
- * A class that rewrites all relative link URLs in a {@link HalResponse} to absolute URLs, using protocal, hostname port
+ * A class that rewrites all relative link URLs in a {@link HalResponse} to absolute URLs, using protocol, hostname port
  * etc. from the context URL from which that resource was retrieved.
  * If that context resource also wasn't fetched with an absolute URL then the links remain unchanged.
  */
@@ -85,7 +85,7 @@ public class LinkRewriting {
 
     String href = link.getHref();
 
-    if (href.startsWith("/")) {
+    if (href.startsWith("/") || href.startsWith("{")) {
 
       // URI templates cannot be parsed by the URI class, so we need a workaround for them
       String newHref = link.isTemplated() ? resolvePathTemplate(href) : resolvePath(href);
@@ -114,7 +114,9 @@ public class LinkRewriting {
 
     URI uriWithPlaceholder = contextUri.resolve(PATH_PLACEHOLDER);
 
-    return uriWithPlaceholder.toString()
+    String resolvedTemplate = uriWithPlaceholder.toString()
         .replace(PATH_PLACEHOLDER, pathTemplate);
+
+    return resolvedTemplate;
   }
 }
