@@ -65,7 +65,7 @@ class HttpHalResourceLoader implements HalResourceLoader {
 
     void onUrlModified(URI uri);
 
-    void onHeadersAvailable(int statusCode, Map<String, Collection<String>> contentType);
+    void onHeadersAvailable(int statusCode, Map<String, Collection<String>> headers);
 
     void onBodyAvailable(InputStream is);
 
@@ -116,7 +116,7 @@ class HttpHalResourceLoader implements HalResourceLoader {
           .ifPresent(contentType -> halResponse = halResponse.withContentType(contentType));
 
       findHeader("cache-control", headers)
-          .map(CacheControlUtil::parseMaxAge)
+          .flatMap(CacheControlUtil::parseMaxAge)
           .ifPresent(maxAge -> halResponse = halResponse.withMaxAge(maxAge));
     }
 
