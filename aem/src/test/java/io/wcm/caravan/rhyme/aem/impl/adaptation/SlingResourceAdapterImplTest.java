@@ -480,6 +480,99 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
+  public void selectChildPages_should_find_child_pages_and_ignore_content() throws Exception {
+
+    setUpPages("/content/foo", "/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectChildPages());
+
+    assertThatResourcesMatch(resources, "/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
+  }
+
+  @Test
+  public void selectGrandChildResources_should_find_grand_children() throws Exception {
+
+    setUpPages("/content",
+        "/content/foo", "/content/foo/1", "/content/foo/2",
+        "/content/bar", "/content/bar/1", "/content/bar/2");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectGrandChildResources());
+
+    assertThatResourcesMatch(resources,
+        "/content/foo/jcr:content", "/content/foo/1", "/content/foo/2",
+        "/content/bar/jcr:content", "/content/bar/1", "/content/bar/2");
+  }
+
+  @Test
+  public void selectGrandChildResources_should_handle_leaf_page() throws Exception {
+
+    setUpPages("/content");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectGrandChildResources());
+
+    assertThat(resources).isEmpty();
+  }
+
+
+  @Test
+  public void selectGrandChildPages_should_find_grand_children_and_ignore_content() throws Exception {
+
+    setUpPages("/content",
+        "/content/foo", "/content/foo/1", "/content/foo/2",
+        "/content/bar", "/content/bar/1", "/content/bar/2");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectGrandChildPages());
+
+    assertThatResourcesMatch(resources, "/content/foo/1", "/content/foo/2", "/content/bar/1", "/content/bar/2");
+  }
+
+  @Test
+  public void selectGrandChildPages_should_handle_leaf_page() throws Exception {
+
+    setUpPages("/content");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectGrandChildPages());
+
+    assertThat(resources).isEmpty();
+  }
+
+  @Test
+  public void selectGrandChildPages_should_handle_empty_grand_child_page() throws Exception {
+
+    setUpPages("/content", "/content/foo", "/content/bar");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectGrandChildPages());
+
+    assertThat(resources).isEmpty();
+  }
+
+  @Test
+  public void selectChildPages_should_handle_empty_children() throws Exception {
+
+    setUpPages("/content/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    assertThat(context.resourceResolver().getResource("/content/foo/jcr:content")).isNotNull();
+
+    List<SlingTestResource> resources = applySelection(adapter.selectChildPages());
+
+    assertThat(resources).isEmpty();
+  }
+
+  @Test
   public void selectChildResource_should_find_child_by_name() throws Exception {
 
     setUpPages("/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
@@ -501,6 +594,82 @@ public class SlingResourceAdapterImplTest {
     List<SlingTestResource> resources = applySelection(adapter.selectChildResource("6"));
 
     assertThat(resources).isEmpty();
+  }
+
+  @Test
+  public void selectSiblingResource_should_find_child_by_name() throws Exception {
+
+    setUpPages("/content/foo", "/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/1");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectSiblingResource("3"));
+
+    assertThatResourcesMatch(resources, "/content/foo/3");
+  }
+
+  @Test
+  public void selectSiblingResource_should_handle_non_existent_name() throws Exception {
+
+    setUpPages("/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/6");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectChildResource("6"));
+
+    assertThat(resources).isEmpty();
+  }
+
+  /*
+
+  @Override
+  public SlingResourceAdapter selectGrandChildResources() {
+
+    return resourceSelector.add(ResourceStreams::getGrandChildren, "grand children of {}");
+  }
+
+
+  @Override
+  public SlingResourceAdapter selectGrandChildPages() {
+
+    return resourceSelector.add(ResourceStreams::getGrandChildPages, "grand child pages of {}");
+  }
+  */
+
+  @Test
+  public void selectContainingPage_should_select_current_resource_from_page_resource() throws Exception {
+
+    setUpPages("/content/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectContainingPage());
+
+    assertThatResourcesMatch(resources, "/content/foo");
+  }
+
+  @Test
+  public void selectContainingPage_should_select_parent_resource_page_content_resource() throws Exception {
+
+    setUpPages("/content/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectContainingPage());
+
+    assertThatResourcesMatch(resources, "/content/foo");
+  }
+
+  @Test
+  public void selectContainingPage_should_work_below_content_resource() throws Exception {
+
+    setUpPages("/content/foo");
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content/foo/bar");
+
+    List<SlingTestResource> resources = applySelection(adapter.selectContainingPage());
+
+    assertThatResourcesMatch(resources, "/content/foo");
   }
 
   @Test

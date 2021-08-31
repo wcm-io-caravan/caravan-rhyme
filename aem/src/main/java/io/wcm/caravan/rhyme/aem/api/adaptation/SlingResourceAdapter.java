@@ -51,6 +51,16 @@ public interface SlingResourceAdapter {
 
   SlingResourceAdapter selectChildResource(String name);
 
+  SlingResourceAdapter selectSiblingResource(String name);
+
+  SlingResourceAdapter selectGrandChildResources();
+
+  SlingResourceAdapter selectContainingPage();
+
+  SlingResourceAdapter selectChildPages();
+
+  SlingResourceAdapter selectGrandChildPages();
+
   SlingResourceAdapter selectContentOfCurrentPage();
 
   SlingResourceAdapter selectContentOfChildPages();
@@ -74,6 +84,7 @@ public interface SlingResourceAdapter {
   <I> PostAdaptationStage<I, I> adaptTo(Class<I> halApiInterface);
 
   <I, M extends I> PostAdaptationStage<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass);
+
 
 
 }

@@ -38,10 +38,22 @@ public final class ResourceStreams {
     return StreamSupport.stream(res.getChildren().spliterator(), false);
   }
 
+  public static Stream<Resource> getGrandChildren(Resource res) {
+
+    return getChildren(res)
+        .flatMap(ResourceStreams::getChildren);
+  }
+
   public static Stream<Resource> getNamedChild(Resource res, String name) {
 
     return Stream.of(res.getChild(name))
         .filter(Objects::nonNull);
+  }
+
+  public static Stream<Resource> getNamedSibling(Resource res, String name) {
+
+    return getParent(res)
+        .flatMap(parent -> getNamedChild(parent, name));
   }
 
   public static Stream<Resource> getChildPages(Resource res) {
@@ -70,12 +82,16 @@ public final class ResourceStreams {
 
   public static Stream<Resource> getContentOfGrandChildPages(Resource res) {
 
-    Resource pageResource = PageUtils.getPageResource(res);
-
-    Stream<Resource> grandChildPages = getChildPages(pageResource)
-        .flatMap(ResourceStreams::getChildPages);
+    Stream<Resource> grandChildPages = getGrandChildPages(res);
 
     return getContentResources(grandChildPages);
+  }
+
+  public static Stream<Resource> getGrandChildPages(Resource res) {
+    Resource pageResource = PageUtils.getPageResource(res);
+
+    return getChildPages(pageResource)
+        .flatMap(ResourceStreams::getChildPages);
   }
 
   public static Stream<Resource> getContentOfNamedChildPage(Resource res, String name) {

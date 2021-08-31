@@ -124,6 +124,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
   @Override
   public SlingResourceAdapter selectContentResource() {
+
     return resourceSelector.add(ResourceStreams::getContentResource, "content resource of {}");
   }
 
@@ -140,9 +141,39 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   }
 
   @Override
+  public SlingResourceAdapter selectSiblingResource(String name) {
+
+    return resourceSelector.add(res -> ResourceStreams.getNamedSibling(res, name), "sibling of {} with name " + name);
+  }
+
+  @Override
+  public SlingResourceAdapter selectGrandChildResources() {
+
+    return resourceSelector.add(ResourceStreams::getGrandChildren, "grand children of {}");
+  }
+
+  @Override
+  public SlingResourceAdapter selectContainingPage() {
+
+    return resourceSelector.add((res) -> Stream.of(PageUtils.getPageResource(res)), "page containing {}");
+  }
+
+  @Override
+  public SlingResourceAdapter selectChildPages() {
+
+    return resourceSelector.add(ResourceStreams::getChildPages, "child pages of {}");
+  }
+
+  @Override
+  public SlingResourceAdapter selectGrandChildPages() {
+
+    return resourceSelector.add(ResourceStreams::getGrandChildPages, "grand child pages of {}");
+  }
+
+  @Override
   public SlingResourceAdapter selectContentOfCurrentPage() {
 
-    return resourceSelector.add(ResourceStreams::getContentOfContainingPage, "content of {}");
+    return resourceSelector.add(ResourceStreams::getContentOfContainingPage, "content of page containing {}");
   }
 
 
@@ -333,4 +364,5 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       return newInstance;
     }
   }
+
 }
