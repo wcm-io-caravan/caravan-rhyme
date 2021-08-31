@@ -3,11 +3,11 @@ package io.wcm.caravan.ryhme.testing.client;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 
-public class ApacheHttpClientResourceLoaderTest extends HalResourceLoaderTest {
+public class ApacheBlockingHttpTest extends HalResourceLoaderTest {
 
   @Override
   protected HalResourceLoader createLoader() {
-    return new ApacheHttpClientResourceLoader();
+    return new HttpHalResourceLoader(new ApacheBlockingHttpImplementation());
   }
 
 }

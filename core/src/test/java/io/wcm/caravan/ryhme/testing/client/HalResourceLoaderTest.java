@@ -296,7 +296,10 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
-    assertThat(ex.getCause()).isInstanceOf(JsonProcessingException.class);
+    assertThat(ex.getCause())
+        .hasMessageStartingWith("Failed to read or parse JSON response");
+
+    assertThat(ex).hasRootCauseInstanceOf(JsonProcessingException.class);
   }
 
   @Test
