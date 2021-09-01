@@ -34,9 +34,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.common.collect.LinkedHashMultimap;
 
-import io.wcm.caravan.ryhme.testing.client.HttpHalResourceLoader.ResponseCallback;
-
-class ApacheBlockingHttpImplementation implements HttpLoadingImplementation {
+class ApacheBlockingHttpImplementation implements HttpClientImplementation {
 
   private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
@@ -50,11 +48,11 @@ class ApacheBlockingHttpImplementation implements HttpLoadingImplementation {
     this.baseUri = baseUri;
   }
 
-  private Map<String, Collection<String>> getHeaders(HttpResponse httpResponse) {
+  private Map<String, Collection<String>> getHeaders(HttpResponse response) {
 
     LinkedHashMultimap<String, String> headers = LinkedHashMultimap.create();
 
-    for (Header header : httpResponse.getAllHeaders()) {
+    for (Header header : response.getAllHeaders()) {
       headers.put(header.getName(), header.getValue());
     }
 
@@ -62,29 +60,29 @@ class ApacheBlockingHttpImplementation implements HttpLoadingImplementation {
   }
 
   @Override
-  public void executeRequest(URI uri, ResponseCallback response) {
+  public void executeRequest(URI uri, HttpClientCallback callback) {
 
     URI requestUri = uri;
     if (baseUri != null) {
       baseUri.resolve(uri);
-      response.onUrlModified(requestUri);
+      callback.onUrlModified(requestUri);
     }
 
-    try (CloseableHttpResponse result = httpClient.execute(new HttpGet(requestUri))) {
+    try (CloseableHttpResponse response = httpClient.execute(new HttpGet(requestUri))) {
 
-      int statusCode = result.getStatusLine().getStatusCode();
+      int statusCode = response.getStatusLine().getStatusCode();
 
-      Map<String, Collection<String>> headers = getHeaders(result);
+      Map<String, Collection<String>> headers = getHeaders(response);
 
-      response.onHeadersAvailable(statusCode, headers);
+      callback.onHeadersAvailable(statusCode, headers);
 
-      InputStream is = result.getEntity().getContent();
+      InputStream is = response.getEntity().getContent();
 
-      response.onBodyAvailable(is);
+      callback.onBodyAvailable(is);
 
     }
     catch (IOException | RuntimeException ex) {
-      response.onExceptionCaught(ex);
+      callback.onExceptionCaught(ex);
     }
   }
 }

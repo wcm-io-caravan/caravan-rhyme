@@ -30,9 +30,9 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import wiremock.org.apache.http.client.utils.URIBuilder;
 
-public abstract class HalResourceLoaderTest {
+public abstract class AbstractHttpClientImplementationTest {
 
-  private static final String INVALID_URL = "http://foo.bar";
+  private static final String UNKNOWN_HOST_URL = "http://foo.bar";
 
   private static final String TEST_PATH = "/test";
 
@@ -150,8 +150,9 @@ public abstract class HalResourceLoaderTest {
 
     Throwable ex = catchThrowable(() -> rxResponse.blockingGet());
 
-    assertThat(ex).withFailMessage("No exception was emitted by the single returned by #getHalResource").isNotNull();
-    assertThat(ex).isInstanceOf(HalApiClientException.class);
+    assertThat(ex)
+        .isInstanceOf(HalApiClientException.class)
+        .hasMessageStartingWith("HTTP request failed with status code");
 
     return (HalApiClientException)ex;
   }
@@ -163,7 +164,8 @@ public abstract class HalResourceLoaderTest {
 
     HalResponse response = loadResource();
 
-    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(response.getStatus())
+        .isEqualTo(200);
   }
 
   @Test
@@ -173,7 +175,8 @@ public abstract class HalResourceLoaderTest {
 
     HalResponse response = loadResource();
 
-    assertThat(response.getContentType()).isEqualTo(HalResource.CONTENT_TYPE);
+    assertThat(response.getContentType())
+        .isEqualTo(HalResource.CONTENT_TYPE);
   }
 
   @Test
@@ -183,18 +186,22 @@ public abstract class HalResourceLoaderTest {
 
     HalResponse response = loadResource();
 
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().getModel()).isEqualTo(createHalResource().getModel());
+    assertThat(response.getBody())
+        .isNotNull();
+
+    assertThat(response.getBody().getModel())
+        .isEqualTo(createHalResource().getModel());
   }
 
   @Test
-  public void maxAge_should_be_null_for_200_hal_response() throws Exception {
+  public void maxAge_should_be_null_for_200_hal_response_without_cache_control() throws Exception {
 
     stub200HalResponseWithMaxAge(null);
 
     HalResponse response = loadResource();
 
-    assertThat(response.getMaxAge()).isNull();
+    assertThat(response.getMaxAge())
+        .isNull();
   }
 
   @Test
@@ -204,7 +211,8 @@ public abstract class HalResourceLoaderTest {
 
     HalResponse response = loadResource();
 
-    assertThat(response.getMaxAge()).isEqualTo(100);
+    assertThat(response.getMaxAge())
+        .isEqualTo(100);
   }
 
   @Test
@@ -214,7 +222,8 @@ public abstract class HalResourceLoaderTest {
 
     HalResponse response = loadResource();
 
-    assertThat(response.getMaxAge()).isEqualTo(0);
+    assertThat(response.getMaxAge())
+        .isEqualTo(0);
   }
 
   @Test
@@ -224,7 +233,8 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
-    assertThat(ex.getStatusCode()).isEqualTo(503);
+    assertThat(ex.getStatusCode())
+        .isEqualTo(503);
   }
 
   @Test
@@ -234,7 +244,8 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
-    assertThat(ex.getRequestUrl()).isEqualTo(testUrl);
+    assertThat(ex.getRequestUrl())
+        .isEqualTo(testUrl);
   }
 
   @Test
@@ -244,7 +255,10 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
-    assertThat(ex.getErrorResponse().getBody()).isNull();
+    assertThat(ex.getErrorResponse())
+        .isNotNull();
+    assertThat(ex.getErrorResponse().getBody())
+        .isNull();
   }
 
   @Test
@@ -254,7 +268,10 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
-    assertThat(ex.getErrorResponse().getBody()).isNull();
+    assertThat(ex.getErrorResponse())
+        .isNotNull();
+    assertThat(ex.getErrorResponse().getBody())
+        .isNull();
   }
 
   @Test
@@ -264,9 +281,15 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
+    assertThat(ex.getErrorResponse())
+        .isNotNull();
+
     HalResource body = ex.getErrorResponse().getBody();
-    assertThat(body).isNotNull();
-    assertThat(body.getModel()).isEqualTo(createJsonResource());
+
+    assertThat(body)
+        .isNotNull();
+    assertThat(body.getModel())
+        .isEqualTo(createJsonResource());
   }
 
   @Test
@@ -276,7 +299,8 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
-    assertThat(ex.getStatusCode()).isNull();
+    assertThat(ex.getStatusCode())
+        .isNull();
   }
 
   @Test
@@ -286,7 +310,8 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
-    assertThat(ex.getRequestUrl()).isEqualTo(testUrl);
+    assertThat(ex.getRequestUrl())
+        .isEqualTo(testUrl);
   }
 
   @Test
@@ -296,42 +321,49 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
+    assertThat(ex)
+        .hasRootCauseInstanceOf(JsonProcessingException.class);
+
     assertThat(ex.getCause())
         .hasMessageStartingWith("Failed to read or parse JSON response");
-
-    assertThat(ex).hasRootCauseInstanceOf(JsonProcessingException.class);
   }
 
   @Test
   public void status_code_should_be_null_in_HalApiClientException_for_network_errors() throws Exception {
 
-    HalApiClientException ex = loadResourceAndExpectClientException(INVALID_URL);
+    HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
-    assertThat(ex.getStatusCode()).isNull();
+    assertThat(ex.getStatusCode())
+        .isNull();
   }
 
   @Test
   public void request_url_should_be_present_in_HalApiClientException_for_network_errors() throws Exception {
 
-    HalApiClientException ex = loadResourceAndExpectClientException(INVALID_URL);
+    HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
-    assertThat(ex.getRequestUrl()).isEqualTo(INVALID_URL);
+    assertThat(ex.getRequestUrl())
+        .isEqualTo(UNKNOWN_HOST_URL);
   }
 
   @Test
   public void error_body_should_be_null_in_HalApiClientException_for_network_errors() throws Exception {
 
-    HalApiClientException ex = loadResourceAndExpectClientException(INVALID_URL);
+    HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
-    assertThat(ex.getErrorResponse().getBody()).isNull();
+    assertThat(ex.getErrorResponse())
+        .isNotNull();
+    assertThat(ex.getErrorResponse().getBody())
+        .isNull();
   }
 
   @Test
   public void cause_should_be_present_in_HalApiClientException_for_for_network_errors() throws Exception {
 
-    HalApiClientException ex = loadResourceAndExpectClientException(INVALID_URL);
+    HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
-    assertThat(ex.getCause()).isInstanceOf(UnknownHostException.class);
+    assertThat(ex)
+        .hasCauseInstanceOf(UnknownHostException.class);
   }
 
   @Test
@@ -339,7 +371,8 @@ public abstract class HalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException(sslTestUrl);
 
-    assertThat(ex.getCause()).isInstanceOf(SSLHandshakeException.class);
+    assertThat(ex)
+        .hasCauseInstanceOf(SSLHandshakeException.class);
   }
 
 }

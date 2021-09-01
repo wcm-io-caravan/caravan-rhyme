@@ -21,7 +21,7 @@ package io.wcm.caravan.ryhme.testing.client;
 
 import java.net.URI;
 
-interface HttpLoadingImplementation {
+interface HttpClientImplementation {
 
-  void executeRequest(URI uri, HttpHalResourceLoader.ResponseCallback response);
+  void executeRequest(URI uri, HttpClientCallback callback);
 }

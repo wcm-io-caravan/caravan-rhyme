@@ -34,9 +34,7 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
 import com.google.common.collect.LinkedHashMultimap;
 
-import io.wcm.caravan.ryhme.testing.client.HttpHalResourceLoader.ResponseCallback;
-
-class ApacheAsyncHttpImplementation implements HttpLoadingImplementation {
+class ApacheAsyncHttpImplementation implements HttpClientImplementation {
 
   private final CloseableHttpAsyncClient httpClient = HttpAsyncClientBuilder.create().build();
 
@@ -52,38 +50,37 @@ class ApacheAsyncHttpImplementation implements HttpLoadingImplementation {
   }
 
   @Override
-  public void executeRequest(URI uri, ResponseCallback response) {
+  public void executeRequest(URI uri, HttpClientCallback callback) {
 
     URI requestUri = uri;
     if (baseUri != null) {
       baseUri.resolve(uri);
-      response.onUrlModified(requestUri);
+      callback.onUrlModified(requestUri);
     }
 
     httpClient.execute(new HttpGet(requestUri), new FutureCallback<HttpResponse>() {
 
       @Override
       public void failed(Exception ex) {
-        response.onExceptionCaught(ex);
+        callback.onExceptionCaught(ex);
       }
 
       @Override
-      public void completed(HttpResponse result) {
+      public void completed(HttpResponse response) {
 
         try {
+          int statusCode = response.getStatusLine().getStatusCode();
 
-          int statusCode = result.getStatusLine().getStatusCode();
+          Map<String, Collection<String>> headers = getHeaders(response);
 
-          Map<String, Collection<String>> headers = getHeaders(result);
+          callback.onHeadersAvailable(statusCode, headers);
 
-          response.onHeadersAvailable(statusCode, headers);
+          InputStream is = response.getEntity().getContent();
 
-          InputStream is = result.getEntity().getContent();
-
-          response.onBodyAvailable(is);
+          callback.onBodyAvailable(is);
         }
         catch (IOException | RuntimeException ex) {
-          response.onExceptionCaught(ex);
+          callback.onExceptionCaught(ex);
         }
       }
 

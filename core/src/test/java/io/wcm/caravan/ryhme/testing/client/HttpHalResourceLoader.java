@@ -44,9 +44,9 @@ class HttpHalResourceLoader implements HalResourceLoader {
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final JsonFactory JSON_FACTORY = new JsonFactory(OBJECT_MAPPER);
 
-  private HttpLoadingImplementation spi;
+  private HttpClientImplementation spi;
 
-  public HttpHalResourceLoader(HttpLoadingImplementation spi) {
+  public HttpHalResourceLoader(HttpClientImplementation spi) {
     this.spi = spi;
   }
 
@@ -61,18 +61,7 @@ class HttpHalResourceLoader implements HalResourceLoader {
     });
   }
 
-  interface ResponseCallback {
-
-    void onUrlModified(URI uri);
-
-    void onHeadersAvailable(int statusCode, Map<String, Collection<String>> headers);
-
-    void onBodyAvailable(InputStream is);
-
-    void onExceptionCaught(Exception ex);
-  }
-
-  class Request implements HttpHalResourceLoader.ResponseCallback {
+  class Request implements HttpClientCallback {
 
     private final SingleEmitter<HalResponse> subscriber;
 
@@ -107,7 +96,7 @@ class HttpHalResourceLoader implements HalResourceLoader {
     }
 
     @Override
-    public void onHeadersAvailable(int statusCode, Map<String, Collection<String>> headers) {
+    public void onHeadersAvailable(int statusCode, Map<String, ? extends Collection<String>> headers) {
 
       halResponse = halResponse
           .withStatus(statusCode);
@@ -120,7 +109,7 @@ class HttpHalResourceLoader implements HalResourceLoader {
           .ifPresent(maxAge -> halResponse = halResponse.withMaxAge(maxAge));
     }
 
-    private Optional<String> findHeader(String name, Map<String, Collection<String>> headers) {
+    private Optional<String> findHeader(String name, Map<String, ? extends Collection<String>> headers) {
 
       return headers.entrySet().stream()
           .filter(entry -> StringUtils.equalsIgnoreCase(name, entry.getKey()))
