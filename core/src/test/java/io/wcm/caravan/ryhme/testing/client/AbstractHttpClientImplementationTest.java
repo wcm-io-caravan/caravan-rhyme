@@ -140,7 +140,7 @@ public abstract class AbstractHttpClientImplementationTest {
 
     HttpClientImplementation clientImpl = createImplementationUnderTest();
 
-    return HalResourceLoader.withClientImplementation(clientImpl);
+    return HalResourceLoader.withCustomHttpClient(clientImpl);
   }
 
   private HalResponse loadResource() {

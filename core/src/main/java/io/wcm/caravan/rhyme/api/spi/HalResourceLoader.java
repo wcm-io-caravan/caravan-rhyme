@@ -32,10 +32,10 @@ import io.wcm.caravan.rhyme.impl.client.http.UrlConnectionImplementation;
 
 /**
  * An interface to delegate the actual loading and caching of a JSON+HAL resource via HTTP to any other HTTP client
- * library. You can use {@link #withDefaultImplementation()} to create an instance that is simply using
+ * library. You can use {@link #withDefaultHttpClient()} to create an instance that is simply using
  * {@link HttpURLConnection} to execute the HTTP requests. If you need additional configuration options (e.g.
- * authentication) or want to use an asynchronous library then you can call
- * {@link #withClientImplementation(HttpClientImplementation)} to provide your own implementation of the
+ * authentication) or want to use an asynchronous HTTP library then you can call
+ * {@link #withCustomHttpClient(HttpClientImplementation)} to provide your own implementation of the
  * {@link HttpClientImplementation} SPI interface.
  */
 @FunctionalInterface
@@ -50,11 +50,13 @@ public interface HalResourceLoader {
    */
   Single<HalResponse> getHalResource(String uri);
 
-  static HalResourceLoader withDefaultImplementation() {
-    return withClientImplementation(new UrlConnectionImplementation());
+  static HalResourceLoader withDefaultHttpClient() {
+
+    return HttpHalResourceLoader.withClientImplementation(new UrlConnectionImplementation());
   }
 
-  static HalResourceLoader withClientImplementation(HttpClientImplementation impl) {
+  static HalResourceLoader withCustomHttpClient(HttpClientImplementation impl) {
+
     return HttpHalResourceLoader.withClientImplementation(impl);
   }
 }

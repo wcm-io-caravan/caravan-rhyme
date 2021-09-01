@@ -21,7 +21,7 @@ public class HalApiClientExtension implements ParameterResolver {
   public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
       throws ParameterResolutionException {
 
-    HalResourceLoader loader = HalResourceLoader.withClientImplementation(new ApacheAsyncHttpImplementation());
+    HalResourceLoader loader = HalResourceLoader.withCustomHttpClient(new ApacheAsyncHttpImplementation());
 
     RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
