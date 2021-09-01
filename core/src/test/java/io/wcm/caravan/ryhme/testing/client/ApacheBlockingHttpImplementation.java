@@ -34,6 +34,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.common.collect.LinkedHashMultimap;
 
+import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
+import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
+
 class ApacheBlockingHttpImplementation implements HttpClientImplementation {
 
   private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
@@ -60,7 +63,7 @@ class ApacheBlockingHttpImplementation implements HttpClientImplementation {
   }
 
   @Override
-  public void executeRequest(URI uri, HttpClientCallback callback) {
+  public void executeGetRequest(URI uri, HttpClientCallback callback) {
 
     URI requestUri = uri;
     if (baseUri != null) {

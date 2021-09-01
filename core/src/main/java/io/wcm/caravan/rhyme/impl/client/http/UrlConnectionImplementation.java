@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing.client;
+package io.wcm.caravan.rhyme.impl.client.http;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -25,13 +25,14 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpStatus;
+import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
+import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
 
 
 public class UrlConnectionImplementation implements HttpClientImplementation {
 
   @Override
-  public void executeRequest(URI uri, HttpClientCallback callback) {
+  public void executeGetRequest(URI uri, HttpClientCallback callback) {
 
     try {
       HttpURLConnection connection = (HttpURLConnection)uri.toURL().openConnection();
@@ -41,7 +42,7 @@ public class UrlConnectionImplementation implements HttpClientImplementation {
 
       callback.onHeadersAvailable(statusCode, headers);
 
-      if (statusCode == HttpStatus.SC_OK) {
+      if (statusCode == 200) {
         callback.onBodyAvailable(connection.getInputStream());
       }
       else {

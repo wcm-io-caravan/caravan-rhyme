@@ -19,15 +19,14 @@
  */
 package io.wcm.caravan.ryhme.testing.client;
 
-import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
+import io.wcm.caravan.rhyme.impl.client.http.UrlConnectionImplementation;
 
 
 public class UrlConnectionTest extends AbstractHttpClientImplementationTest {
 
   @Override
-  protected HalResourceLoader createLoader() {
-    return new HttpHalResourceLoader(new UrlConnectionImplementation());
+  protected HttpClientImplementation createImplementationUnderTest() {
+    return new UrlConnectionImplementation();
   }
-
-
 }

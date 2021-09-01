@@ -28,6 +28,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
 import wiremock.org.apache.http.client.utils.URIBuilder;
 
 public abstract class AbstractHttpClientImplementationTest {
@@ -64,6 +65,10 @@ public abstract class AbstractHttpClientImplementationTest {
   void tearDown() {
     wireMockServer.resetAll();
   }
+
+
+  protected abstract HttpClientImplementation createImplementationUnderTest();
+
 
   private static HalResource createHalResource() {
 
@@ -131,7 +136,12 @@ public abstract class AbstractHttpClientImplementationTest {
             .withStatus(statusCode)));
   }
 
-  protected abstract HalResourceLoader createLoader();
+  private HalResourceLoader createLoader() {
+
+    HttpClientImplementation clientImpl = createImplementationUnderTest();
+
+    return HalResourceLoader.withClientImplementation(clientImpl);
+  }
 
   private HalResponse loadResource() {
 
@@ -139,7 +149,6 @@ public abstract class AbstractHttpClientImplementationTest {
 
     return createLoader().getHalResource(uri).blockingGet();
   }
-
   private HalApiClientException loadResourceAndExpectClientException() {
 
     return loadResourceAndExpectClientException(testUrl);

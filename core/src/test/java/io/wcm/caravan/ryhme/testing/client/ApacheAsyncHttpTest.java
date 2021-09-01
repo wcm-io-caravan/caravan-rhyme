@@ -1,13 +1,13 @@
 package io.wcm.caravan.ryhme.testing.client;
 
-import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
 
 
 public class ApacheAsyncHttpTest extends AbstractHttpClientImplementationTest {
 
   @Override
-  protected HalResourceLoader createLoader() {
-    return new HttpHalResourceLoader(new ApacheAsyncHttpImplementation());
+  protected HttpClientImplementation createImplementationUnderTest() {
+    return new ApacheAsyncHttpImplementation();
   }
 
 }

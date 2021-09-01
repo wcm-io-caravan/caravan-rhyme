@@ -17,17 +17,14 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing.client;
+package io.wcm.caravan.rhyme.impl.client.http;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,16 +35,22 @@ import io.reactivex.rxjava3.core.SingleEmitter;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
+import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
 
-class HttpHalResourceLoader implements HalResourceLoader {
+public class HttpHalResourceLoader implements HalResourceLoader {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final JsonFactory JSON_FACTORY = new JsonFactory(OBJECT_MAPPER);
 
   private HttpClientImplementation spi;
 
-  public HttpHalResourceLoader(HttpClientImplementation spi) {
+  private HttpHalResourceLoader(HttpClientImplementation spi) {
     this.spi = spi;
+  }
+
+  public static HttpHalResourceLoader withClientImplementation(HttpClientImplementation impl) {
+    return new HttpHalResourceLoader(impl);
   }
 
   @Override
@@ -78,14 +81,25 @@ class HttpHalResourceLoader implements HalResourceLoader {
       this.originalUri = uri;
     }
 
+    private void emitHalResponse() {
+      subscriber.onSuccess(halResponse);
+    }
+
+    private void emitHalApiClientExceptionWithCause(Exception cause) {
+      if (done.compareAndSet(false, true)) {
+        HalApiClientException ex = new HalApiClientException(halResponse, actualUri.toString(), cause);
+        subscriber.onError(ex);
+      }
+    }
+
     public void get() {
       try {
         actualUri = URI.create(originalUri);
 
-        spi.executeRequest(actualUri, this);
+        spi.executeGetRequest(actualUri, this);
       }
       catch (RuntimeException ex) {
-        onExceptionCaught(ex);
+        emitHalApiClientExceptionWithCause(ex);
       }
     }
 
@@ -98,61 +112,65 @@ class HttpHalResourceLoader implements HalResourceLoader {
     @Override
     public void onHeadersAvailable(int statusCode, Map<String, ? extends Collection<String>> headers) {
 
-      halResponse = halResponse
-          .withStatus(statusCode);
+      updateStatusCode(statusCode);
 
-      findHeader("content-type", headers)
-          .ifPresent(contentType -> halResponse = halResponse.withContentType(contentType));
+      HttpHeadersParser parsedHeaders = new HttpHeadersParser(headers);
 
-      findHeader("cache-control", headers)
-          .flatMap(CacheControlUtil::parseMaxAge)
-          .ifPresent(maxAge -> halResponse = halResponse.withMaxAge(maxAge));
-    }
+      parsedHeaders.getContentType()
+          .ifPresent(this::updateContentType);
 
-    private Optional<String> findHeader(String name, Map<String, ? extends Collection<String>> headers) {
-
-      return headers.entrySet().stream()
-          .filter(entry -> StringUtils.equalsIgnoreCase(name, entry.getKey()))
-          .flatMap(entry -> entry.getValue().stream())
-          .findFirst();
+      parsedHeaders.getMaxAge()
+          .ifPresent(this::updateMaxAge);
     }
 
     @Override
     public void onBodyAvailable(InputStream is) {
 
-      boolean ok = halResponse.getStatus() == 200;
+      boolean statusIsOk = halResponse.getStatus() == 200;
 
       try {
         JsonNode parsedJson = parseJson(is);
 
-        halResponse = halResponse
-            .withBody(parsedJson);
+        updateBody(parsedJson);
 
-        if (ok) {
-          subscriber.onSuccess(halResponse);
+        if (statusIsOk) {
+          emitHalResponse();
         }
         else {
-          onExceptionCaught(null);
+          emitHalApiClientExceptionWithCause(null);
         }
       }
       catch (RuntimeException ex) {
-        if (ok) {
-          halResponse = halResponse.withStatus(null);
-          onExceptionCaught(ex);
+        if (statusIsOk) {
+          updateStatusCode(null);
+          emitHalApiClientExceptionWithCause(ex);
         }
         else {
-          onExceptionCaught(null);
+          emitHalApiClientExceptionWithCause(null);
         }
       }
     }
 
     @Override
-    public void onExceptionCaught(Exception cause) {
+    public void onExceptionCaught(Exception ex) {
 
-      if (done.compareAndSet(false, true)) {
-        HalApiClientException ex = new HalApiClientException(halResponse, actualUri.toString(), cause);
-        subscriber.onError(ex);
-      }
+      emitHalApiClientExceptionWithCause(ex);
+    }
+
+    private void updateStatusCode(Integer statusCode) {
+      halResponse = halResponse.withStatus(statusCode);
+    }
+
+    private void updateContentType(String contentType) {
+      halResponse = halResponse.withContentType(contentType);
+    }
+
+    private void updateMaxAge(Integer maxAge) {
+      halResponse = halResponse.withMaxAge(maxAge);
+    }
+
+    private void updateBody(JsonNode parsedJson) {
+      halResponse = halResponse.withBody(parsedJson);
     }
   }
 

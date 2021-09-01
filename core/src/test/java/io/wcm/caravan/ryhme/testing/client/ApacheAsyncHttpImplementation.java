@@ -34,6 +34,9 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
 import com.google.common.collect.LinkedHashMultimap;
 
+import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
+import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
+
 class ApacheAsyncHttpImplementation implements HttpClientImplementation {
 
   private final CloseableHttpAsyncClient httpClient = HttpAsyncClientBuilder.create().build();
@@ -50,7 +53,7 @@ class ApacheAsyncHttpImplementation implements HttpClientImplementation {
   }
 
   @Override
-  public void executeRequest(URI uri, HttpClientCallback callback) {
+  public void executeGetRequest(URI uri, HttpClientCallback callback) {
 
     URI requestUri = uri;
     if (baseUri != null) {
