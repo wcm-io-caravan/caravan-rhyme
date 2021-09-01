@@ -28,15 +28,15 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.impl.client.http.HttpHalResourceLoader;
-import io.wcm.caravan.rhyme.impl.client.http.UrlConnectionImplementation;
+import io.wcm.caravan.rhyme.impl.client.http.HttpUrlConnectionSupport;
 
 /**
  * An interface to delegate the actual loading and caching of a JSON+HAL resource via HTTP to any other HTTP client
  * library. You can use {@link #withDefaultHttpClient()} to create an instance that is simply using
  * {@link HttpURLConnection} to execute the HTTP requests. If you need additional configuration options (e.g.
  * authentication) or want to use an asynchronous HTTP library then you can call
- * {@link #withCustomHttpClient(HttpClientImplementation)} to provide your own implementation of the
- * {@link HttpClientImplementation} SPI interface.
+ * {@link #withCustomHttpClient(HttpClientSupport)} to provide your own implementation of the
+ * {@link HttpClientSupport} SPI interface.
  */
 @FunctionalInterface
 @ConsumerType
@@ -52,11 +52,11 @@ public interface HalResourceLoader {
 
   static HalResourceLoader withDefaultHttpClient() {
 
-    return HttpHalResourceLoader.withClientImplementation(new UrlConnectionImplementation());
+    return HttpHalResourceLoader.withClientImplementation(new HttpUrlConnectionSupport());
   }
 
-  static HalResourceLoader withCustomHttpClient(HttpClientImplementation impl) {
+  static HalResourceLoader withCustomHttpClient(HttpClientSupport httpClient) {
 
-    return HttpHalResourceLoader.withClientImplementation(impl);
+    return HttpHalResourceLoader.withClientImplementation(httpClient);
   }
 }

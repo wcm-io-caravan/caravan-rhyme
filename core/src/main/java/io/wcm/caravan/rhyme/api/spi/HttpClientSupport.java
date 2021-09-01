@@ -17,16 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing.client;
+package io.wcm.caravan.rhyme.api.spi;
 
-import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
-import io.wcm.caravan.rhyme.impl.client.http.UrlConnectionImplementation;
+import java.net.URI;
 
+public interface HttpClientSupport {
 
-public class UrlConnectionTest extends AbstractHttpClientImplementationTest {
-
-  @Override
-  protected HttpClientImplementation createImplementationUnderTest() {
-    return new UrlConnectionImplementation();
-  }
+  void executeGetRequest(URI uri, HttpClientCallback callback);
 }

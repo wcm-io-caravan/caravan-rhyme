@@ -36,20 +36,20 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
-import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
+import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 public class HttpHalResourceLoader implements HalResourceLoader {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final JsonFactory JSON_FACTORY = new JsonFactory(OBJECT_MAPPER);
 
-  private HttpClientImplementation spi;
+  private HttpClientSupport spi;
 
-  private HttpHalResourceLoader(HttpClientImplementation spi) {
+  private HttpHalResourceLoader(HttpClientSupport spi) {
     this.spi = spi;
   }
 
-  public static HttpHalResourceLoader withClientImplementation(HttpClientImplementation impl) {
+  public static HttpHalResourceLoader withClientImplementation(HttpClientSupport impl) {
     return new HttpHalResourceLoader(impl);
   }
 

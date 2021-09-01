@@ -28,10 +28,10 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
+import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 import wiremock.org.apache.http.client.utils.URIBuilder;
 
-public abstract class AbstractHttpClientImplementationTest {
+public abstract class AbstractHttpClientSupportTest {
 
   private static final String UNKNOWN_HOST_URL = "http://foo.bar";
 
@@ -67,7 +67,7 @@ public abstract class AbstractHttpClientImplementationTest {
   }
 
 
-  protected abstract HttpClientImplementation createImplementationUnderTest();
+  protected abstract HttpClientSupport createImplementationUnderTest();
 
 
   private static HalResource createHalResource() {
@@ -138,7 +138,7 @@ public abstract class AbstractHttpClientImplementationTest {
 
   private HalResourceLoader createLoader() {
 
-    HttpClientImplementation clientImpl = createImplementationUnderTest();
+    HttpClientSupport clientImpl = createImplementationUnderTest();
 
     return HalResourceLoader.withCustomHttpClient(clientImpl);
   }

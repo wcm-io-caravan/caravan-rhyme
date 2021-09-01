@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
-import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
+import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 
-public class UrlConnectionImplementation implements HttpClientImplementation {
+public class HttpUrlConnectionSupport implements HttpClientSupport {
 
   @Override
   public void executeGetRequest(URI uri, HttpClientCallback callback) {

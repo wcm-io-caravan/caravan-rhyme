@@ -1,12 +1,12 @@
 package io.wcm.caravan.ryhme.testing.client;
 
-import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
+import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 
-public class ApacheBlockingHttpTest extends AbstractHttpClientImplementationTest {
+public class ApacheBlockingHttpTest extends AbstractHttpClientSupportTest {
 
   @Override
-  protected HttpClientImplementation createImplementationUnderTest() {
-    return new ApacheBlockingHttpImplementation();
+  protected HttpClientSupport createImplementationUnderTest() {
+    return new ApacheBlockingHttpSupport();
   }
 }

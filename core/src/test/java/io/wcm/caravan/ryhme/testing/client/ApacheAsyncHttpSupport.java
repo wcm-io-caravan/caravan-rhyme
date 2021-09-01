@@ -35,19 +35,19 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import com.google.common.collect.LinkedHashMultimap;
 
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
-import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
+import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
-class ApacheAsyncHttpImplementation implements HttpClientImplementation {
+class ApacheAsyncHttpSupport implements HttpClientSupport {
 
   private final CloseableHttpAsyncClient httpClient = HttpAsyncClientBuilder.create().build();
 
   private final URI baseUri;
 
-  public ApacheAsyncHttpImplementation() {
+  public ApacheAsyncHttpSupport() {
     this(null);
   }
 
-  public ApacheAsyncHttpImplementation(URI baseUri) {
+  public ApacheAsyncHttpSupport(URI baseUri) {
     this.baseUri = baseUri;
     this.httpClient.start();
   }

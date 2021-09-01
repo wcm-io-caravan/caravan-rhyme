@@ -35,19 +35,19 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import com.google.common.collect.LinkedHashMultimap;
 
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
-import io.wcm.caravan.rhyme.api.spi.HttpClientImplementation;
+import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
-class ApacheBlockingHttpImplementation implements HttpClientImplementation {
+class ApacheBlockingHttpSupport implements HttpClientSupport {
 
   private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
   private final URI baseUri;
 
-  public ApacheBlockingHttpImplementation() {
+  public ApacheBlockingHttpSupport() {
     this(null);
   }
 
-  public ApacheBlockingHttpImplementation(URI baseUri) {
+  public ApacheBlockingHttpSupport(URI baseUri) {
     this.baseUri = baseUri;
   }
 
