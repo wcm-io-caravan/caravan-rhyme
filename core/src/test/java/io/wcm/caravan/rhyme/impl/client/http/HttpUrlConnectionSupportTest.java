@@ -19,15 +19,15 @@
  */
 package io.wcm.caravan.rhyme.impl.client.http;
 
-import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
-import io.wcm.caravan.rhyme.impl.client.http.HttpUrlConnectionSupport;
-import io.wcm.caravan.ryhme.testing.client.AbstractHttpClientSupportTest;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.ryhme.testing.client.AbstractHalResourceLoaderTest;
 
 
-public class HttpUrlConnectionSupportTest extends AbstractHttpClientSupportTest {
+public class HttpUrlConnectionSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
-  protected HttpClientSupport createImplementationUnderTest() {
-    return new HttpUrlConnectionSupport();
+  protected HalResourceLoader createLoaderUnderTest() {
+
+    return HalResourceLoader.withCustomHttpClient(new HttpUrlConnectionSupport());
   }
 }

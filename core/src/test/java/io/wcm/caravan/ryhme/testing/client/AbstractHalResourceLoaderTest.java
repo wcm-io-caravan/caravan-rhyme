@@ -29,10 +29,9 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 import wiremock.org.apache.http.client.utils.URIBuilder;
 
-public abstract class AbstractHttpClientSupportTest {
+public abstract class AbstractHalResourceLoaderTest {
 
   private static final String UNKNOWN_HOST_URL = "http://foo.bar";
 
@@ -66,9 +65,6 @@ public abstract class AbstractHttpClientSupportTest {
   void tearDown() {
     wireMockServer.resetAll();
   }
-
-
-  protected abstract HttpClientSupport createImplementationUnderTest();
 
 
   private static HalResource createHalResource() {
@@ -149,18 +145,13 @@ public abstract class AbstractHttpClientSupportTest {
             .withStatus(statusCode)));
   }
 
-  private HalResourceLoader createLoader() {
-
-    HttpClientSupport clientImpl = createImplementationUnderTest();
-
-    return HalResourceLoader.withCustomHttpClient(clientImpl);
-  }
+  protected abstract HalResourceLoader createLoaderUnderTest();
 
   private HalResponse loadResource() {
 
     String uri = testUrl;
 
-    return createLoader().getHalResource(uri).blockingGet();
+    return createLoaderUnderTest().getHalResource(uri).blockingGet();
   }
   private HalApiClientException loadResourceAndExpectClientException() {
 
@@ -168,7 +159,7 @@ public abstract class AbstractHttpClientSupportTest {
   }
 
   private HalApiClientException loadResourceAndExpectClientException(String url) {
-    Single<HalResponse> rxResponse = createLoader().getHalResource(url);
+    Single<HalResponse> rxResponse = createLoaderUnderTest().getHalResource(url);
 
     Throwable ex = catchThrowable(() -> rxResponse.blockingGet());
 
