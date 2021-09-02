@@ -34,6 +34,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleEmitter;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
@@ -86,8 +87,12 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     }
 
     private void emitHalApiClientExceptionWithCause(Exception cause) {
+
       if (done.compareAndSet(false, true)) {
-        HalApiClientException ex = new HalApiClientException(halResponse, actualUri.toString(), cause);
+
+        String uri = actualUri != null ? actualUri.toString() : originalUri;
+        HalApiClientException ex = new HalApiClientException(halResponse, uri, cause);
+
         subscriber.onError(ex);
       }
     }
@@ -125,6 +130,10 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
     @Override
     public void onBodyAvailable(InputStream is) {
+
+      if (halResponse.getStatus() == null) {
+        throw new HalApiDeveloperException("onHeadersAvailable() should be called before onBodyAvailable()");
+      }
 
       boolean statusIsOk = halResponse.getStatus() == 200;
 
