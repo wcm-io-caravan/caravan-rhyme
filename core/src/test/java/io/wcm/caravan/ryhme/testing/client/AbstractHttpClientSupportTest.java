@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.time.Duration;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -80,7 +81,7 @@ public abstract class AbstractHttpClientSupportTest {
     return JsonNodeFactory.instance.objectNode().put("föö", "官ar");
   }
 
-  private static ResponseDefinitionBuilder get200HalResponseWithMaxAge(Integer maxAge) {
+  private static ResponseDefinitionBuilder get200HalResponseWithCacheControl(String... values) {
 
     HalResource hal = createHalResource();
 
@@ -89,8 +90,8 @@ public abstract class AbstractHttpClientSupportTest {
         .withStatus(200)
         .withBody(hal.getModel().toString());
 
-    if (maxAge != null) {
-      response = response.withHeader(HttpHeaders.CACHE_CONTROL, "max-age=" + maxAge);
+    for (String value : values) {
+      response = response.withHeader(HttpHeaders.CACHE_CONTROL, value);
     }
 
     return response;
@@ -99,7 +100,19 @@ public abstract class AbstractHttpClientSupportTest {
   private static void stub200HalResponseWithMaxAge(Integer maxAge) {
 
     wireMockServer.stubFor(get(urlEqualTo(TEST_PATH))
-        .willReturn(get200HalResponseWithMaxAge(maxAge)));
+        .willReturn(get200HalResponseWithCacheControl("max-age=" + maxAge)));
+  }
+
+  private static void stub200HalResponseWithCacheControl(String... cacheControl) {
+
+    wireMockServer.stubFor(get(urlEqualTo(TEST_PATH))
+        .willReturn(get200HalResponseWithCacheControl(cacheControl)));
+  }
+
+  private static void stub200HalResponse() {
+
+    wireMockServer.stubFor(get(urlEqualTo(TEST_PATH))
+        .willReturn(get200HalResponseWithCacheControl()));
   }
 
   private static void stubHtmlResponseWithStatusCode(int statusCode) {
@@ -169,7 +182,7 @@ public abstract class AbstractHttpClientSupportTest {
   @Test
   public void response_code_should_be_set_for_200_hal_response() throws Exception {
 
-    stub200HalResponseWithMaxAge(null);
+    stub200HalResponse();
 
     HalResponse response = loadResource();
 
@@ -180,7 +193,7 @@ public abstract class AbstractHttpClientSupportTest {
   @Test
   public void content_type_should_be_set_for_200_hal_response() throws Exception {
 
-    stub200HalResponseWithMaxAge(null);
+    stub200HalResponse();
 
     HalResponse response = loadResource();
 
@@ -191,7 +204,7 @@ public abstract class AbstractHttpClientSupportTest {
   @Test
   public void body_should_be_set_for_200_hal_response() throws Exception {
 
-    stub200HalResponseWithMaxAge(null);
+    stub200HalResponse();
 
     HalResponse response = loadResource();
 
@@ -205,7 +218,7 @@ public abstract class AbstractHttpClientSupportTest {
   @Test
   public void maxAge_should_be_null_for_200_hal_response_without_cache_control() throws Exception {
 
-    stub200HalResponseWithMaxAge(null);
+    stub200HalResponseWithCacheControl();
 
     HalResponse response = loadResource();
 
@@ -233,6 +246,50 @@ public abstract class AbstractHttpClientSupportTest {
 
     assertThat(response.getMaxAge())
         .isEqualTo(0);
+  }
+
+  @Test
+  public void maxAge_should_be_found_if_seperated_in_multiple_cache_control_headers() throws Exception {
+
+    stub200HalResponseWithCacheControl("public", "no-transform", "max-age=86400");
+
+    HalResponse response = loadResource();
+
+    assertThat(response.getMaxAge())
+        .isEqualTo(86400);
+  }
+
+  @Test
+  public void immutable_should_override_max_age() throws Exception {
+
+    stub200HalResponseWithCacheControl("public", "max-age=86400", "immutable");
+
+    HalResponse response = loadResource();
+
+    assertThat(response.getMaxAge())
+        .isEqualTo(Duration.ofDays(365).getSeconds());
+  }
+
+  @Test
+  public void maxAge_should_be_ignored_if_it_contains_invalid_value() throws Exception {
+
+    stub200HalResponseWithCacheControl("max-age=foo");
+
+    HalResponse response = loadResource();
+
+    assertThat(response.getMaxAge())
+        .isNull();
+  }
+
+  @Test
+  public void maxAge_should_be_properly_capped_to_max_int_value() throws Exception {
+
+    stub200HalResponseWithCacheControl("max-age=" + (1000l + Integer.MAX_VALUE));
+
+    HalResponse response = loadResource();
+
+    assertThat(response.getMaxAge())
+        .isEqualTo(Integer.MAX_VALUE);
   }
 
   @Test

@@ -1,14 +1,19 @@
 package io.wcm.caravan.rhyme.impl.client.http;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Ordering;
 
 class HttpHeadersParser {
 
@@ -31,36 +36,40 @@ class HttpHeadersParser {
 
   Optional<Integer> getMaxAge() {
 
-    return findHeader("cache-control")
-        .flatMap(HttpHeadersParser::parseMaxAge);
+    return findHeaders("cache-control")
+        .map(HttpHeadersParser::parseMaxAge)
+        .filter(Objects::nonNull)
+        .max(Ordering.natural());
   }
 
   private Optional<String> findHeader(String name) {
 
-    return headers.entrySet().stream()
-        .filter(entry -> StringUtils.equalsIgnoreCase(name, entry.getKey()))
-        .flatMap(entry -> entry.getValue().stream())
+    return findHeaders(name)
         .findFirst();
   }
 
-  private static Optional<Integer> parseMaxAge(String cacheControl) {
+  Stream<String> findHeaders(String name) {
+    return headers.entrySet().stream()
+        .filter(entry -> StringUtils.equalsIgnoreCase(name, entry.getKey()))
+        .flatMap(entry -> entry.getValue().stream());
+  }
 
-    if (StringUtils.isBlank(cacheControl)) {
-      return Optional.empty();
+  private static Integer parseMaxAge(String cacheControl) {
+
+    if (cacheControl.contains("immutable")) {
+      return (int)Duration.ofDays(365).getSeconds();
     }
 
     Matcher matcher = MAX_AGE_PATTERN.matcher(cacheControl);
     if (!matcher.matches()) {
-      return Optional.empty();
+      return null;
     }
 
-    try {
-      return Optional.of(Integer.parseInt(matcher.group(1)));
+    long maxAge = Long.parseLong(matcher.group(1));
+    if (maxAge > Integer.MAX_VALUE) {
+      return Integer.MAX_VALUE;
     }
-    catch (RuntimeException ex) {
-      log.warn("failed to parse max-age from cache-control header with value {} ", cacheControl, ex);
-      return Optional.empty();
-    }
+    return (int)maxAge;
   }
 
 }
