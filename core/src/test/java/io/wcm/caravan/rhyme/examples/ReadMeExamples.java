@@ -189,7 +189,7 @@ public class ReadMeExamples {
   void handleEntryPointRequest() {
 
     // create a single Rhyme instance as early as possible in the request-cycle
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader().buildForRequestTo(incomingRequest.getUrl());
+    Rhyme rhyme = RhymeBuilder.create().buildForRequestTo(incomingRequest.getUrl());
 
     // instantiate your server-side implementation of the requested @HalApiInterface resource
     ApiEntryPoint entryPoint = new ApiEntryPointImpl(database);

@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +43,6 @@ import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.impl.renderer.blocking.RenderResourceStateTest.TestResourceWithRequiredState;
@@ -88,18 +88,40 @@ public class RhymeImplTest {
     assertThat(ex.getCause()).hasMessageContaining(NON_EXISTING_PATH);
   }
 
-  @Test
-  public void getEntryPoint_should_fail_if_no_resource_loader_was_provided() throws Exception {
+  private TestState getResourceFromUnknownHost(Rhyme rhymeWithoutResourceLoader) {
 
+    return rhymeWithoutResourceLoader
+        .getRemoteResource("http://foo.bar", TestResourceWithRequiredState.class)
+        .getState();
+  }
+
+  @Test
+  public void withoutResourceLoader_should_use_a_default_http_implementation() throws Exception {
+
+    @SuppressWarnings("deprecation")
     Rhyme rhymeWithoutResourceLoader = RhymeBuilder
         .withoutResourceLoader()
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
-    Throwable ex = catchThrowable(
-        () -> rhymeWithoutResourceLoader.getRemoteResource(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class));
+    Throwable ex = catchThrowable(() -> getResourceFromUnknownHost(rhymeWithoutResourceLoader));
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageContaining("#getRemoteResource can only be used if you have provided a HalResourceLoader");
+    assertThat(ex)
+        .isInstanceOf(HalApiClientException.class)
+        .hasRootCauseInstanceOf(UnknownHostException.class);
+  }
+
+  @Test
+  public void create_should_use_a_default_http_implementation() throws Exception {
+
+    Rhyme rhymeWithoutResourceLoader = RhymeBuilder
+        .create()
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    Throwable ex = catchThrowable(() -> getResourceFromUnknownHost(rhymeWithoutResourceLoader));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiClientException.class)
+        .hasRootCauseInstanceOf(UnknownHostException.class);
   }
 
   @Test

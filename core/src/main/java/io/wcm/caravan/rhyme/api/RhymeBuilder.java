@@ -47,9 +47,13 @@ public interface RhymeBuilder {
    * Create a {@link RhymeBuilder} that can only build {@link Rhyme} instances which do not request any resources
    * from upstream services
    * @return the new instance
+   * @deprecated no longer required because there is now a default {@link HalResourceLoader} implementation available,
+   *             use {@link #create()} instead
    */
+  @Deprecated
   static RhymeBuilder withoutResourceLoader() {
-    return new RhymeBuilderImpl(null);
+
+    return RhymeBuilder.create();
   }
 
   /**
@@ -59,6 +63,7 @@ public interface RhymeBuilder {
    * @return the new instance
    */
   static RhymeBuilder create() {
+
     return new RhymeBuilderImpl(HalResourceLoader.withDefaultHttpClient());
   }
 

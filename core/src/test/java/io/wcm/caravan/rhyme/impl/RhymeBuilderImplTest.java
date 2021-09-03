@@ -76,7 +76,7 @@ public class RhymeBuilderImplTest {
 
   private Rhyme createRhymeWithCustomExceptionStrategy() {
 
-    return RhymeBuilder.withoutResourceLoader()
+    return RhymeBuilder.create()
         .withExceptionStrategy(new CustomExceptionStrategy())
         .buildForRequestTo(INCOMING_REQUEST_URI);
   }
@@ -124,7 +124,7 @@ public class RhymeBuilderImplTest {
   @Test
   public void withExceptionStrategy_should_allow_multiple_custom_strategies() {
 
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
+    Rhyme rhyme = RhymeBuilder.create()
         .withExceptionStrategy(new CustomExceptionStrategy())
         .withExceptionStrategy(new AdditionalExceptionStrategy())
         .buildForRequestTo(INCOMING_REQUEST_URI);
@@ -424,7 +424,7 @@ public class RhymeBuilderImplTest {
   @Test
   public void no_curies_are_rendered_if_withRhymeDocsSupport_is_not_called() {
 
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
+    Rhyme rhyme = RhymeBuilder.create()
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
     Link curieLink = renderResourceAndGetCuriesLink(rhyme);
@@ -442,7 +442,7 @@ public class RhymeBuilderImplTest {
     when(docsSupport.getRhymeDocsBaseUrl())
         .thenReturn(baseUrl);
 
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
+    Rhyme rhyme = RhymeBuilder.create()
         .withRhymeDocsSupport(docsSupport)
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
