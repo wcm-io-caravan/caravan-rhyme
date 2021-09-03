@@ -25,10 +25,21 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 
+/**
+ * A default implementation of {@link HttpClientSupport} that is used in factory methods
+ * that allow requesting resources without providing a more sophisticated implementation.
+ * It's using {@link HttpURLConnection} without any configuration options.
+ * @see HalResourceLoader#withDefaultHttpClient()
+ * @see HalApiClient#create()
+ * @see RhymeBuilder#create()
+ */
 public class HttpUrlConnectionSupport implements HttpClientSupport {
 
   @Override

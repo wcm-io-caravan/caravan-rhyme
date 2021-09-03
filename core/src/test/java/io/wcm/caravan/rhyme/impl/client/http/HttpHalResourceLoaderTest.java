@@ -179,6 +179,38 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
+  public void should_ignore_if_onBodyAvailable_is_called_multiple_times() throws Exception {
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+      callback.onHeadersAvailable(200, Collections.emptyMap());
+      callback.onBodyAvailable(new ByteArrayInputStream(new byte[0]));
+      callback.onBodyAvailable(new ByteArrayInputStream(new byte[0]));
+    });
+
+    HalResponse response = executeGetRequestWith(VALID_URI, loader);
+
+    assertThat(response.getStatus())
+        .isEqualTo(200);
+  }
+
+  @Test
+  public void should_ignore_if_onBodyAvailable_is_called_after_onExceptionCaught() throws Exception {
+
+    RuntimeException cause = new RuntimeException("Something has failed");
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+      callback.onExceptionCaught(cause);
+      callback.onBodyAvailable(new ByteArrayInputStream(new byte[0]));
+    });
+
+    HalApiClientException ex = loadResourceAndExpectClientException(loader, VALID_URI);
+
+    assertThat(ex)
+        .hasCauseReference(cause);
+  }
+
+
+  @Test
   public void should_emit_HalResponse_for_ok_json_response() throws Exception {
 
     String jsonString = "{\"foo\": 123}";

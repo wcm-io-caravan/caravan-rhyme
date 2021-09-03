@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.time.Duration;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.google.common.net.HttpHeaders;
 
 import io.reactivex.rxjava3.core.Single;
@@ -145,6 +147,15 @@ public abstract class AbstractHalResourceLoaderTest {
             .withStatus(statusCode)));
   }
 
+  private void stubFaultyResponseWithStatusCode(int statusCode, Fault fault) {
+
+    wireMockServer.stubFor(get(urlEqualTo(TEST_PATH))
+        .willReturn(aResponse()
+            .withStatus(statusCode)
+            .withFault(fault)));
+  }
+
+
   protected abstract HalResourceLoader createLoaderUnderTest();
 
   private HalResponse loadResource() {
@@ -153,6 +164,7 @@ public abstract class AbstractHalResourceLoaderTest {
 
     return createLoaderUnderTest().getHalResource(uri).blockingGet();
   }
+
   private HalApiClientException loadResourceAndExpectClientException() {
 
     return loadResourceAndExpectClientException(testUrl);
@@ -382,7 +394,50 @@ public abstract class AbstractHalResourceLoaderTest {
         .hasRootCauseInstanceOf(JsonProcessingException.class);
 
     assertThat(ex.getCause())
-        .hasMessageStartingWith("Failed to read or parse JSON response");
+        .hasMessageContaining("was retrieved with status code 200, but the body could not be succesfully read and parsed as a JSON document")
+        .hasRootCauseInstanceOf(IOException.class);
+  }
+
+  @Test
+  public void cause_should_be_present_in_HalApiClientException_for_malformed_200_response() throws Exception {
+
+    stubFaultyResponseWithStatusCode(200, Fault.MALFORMED_RESPONSE_CHUNK);
+
+    HalApiClientException ex = loadResourceAndExpectClientException();
+
+    assertThat(ex.getStatusCode())
+        .isNull();
+
+    assertThat(ex.getCause())
+        .isNotNull();
+  }
+
+  @Test
+  public void cause_should_be_present_in_HalApiClientException_for_connection_reset_on_200_response() throws Exception {
+
+    stubFaultyResponseWithStatusCode(200, Fault.CONNECTION_RESET_BY_PEER);
+
+    HalApiClientException ex = loadResourceAndExpectClientException();
+
+    assertThat(ex.getStatusCode())
+        .isNull();
+
+    assertThat(ex.getCause())
+        .isNotNull();
+  }
+
+  @Test
+  public void cause_should_be_present_in_HalApiClientException_for_random_data_on_200_response() throws Exception {
+
+    stubFaultyResponseWithStatusCode(200, Fault.RANDOM_DATA_THEN_CLOSE);
+
+    HalApiClientException ex = loadResourceAndExpectClientException();
+
+    assertThat(ex.getStatusCode())
+        .isNull();
+
+    assertThat(ex.getCause())
+        .isNotNull();
   }
 
   @Test

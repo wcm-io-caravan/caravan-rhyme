@@ -10,14 +10,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Ordering;
 
-class HttpHeadersParser {
+import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 
-  private static final Logger log = LoggerFactory.getLogger(HttpHeadersParser.class);
+/**
+ * Extracts the relevant information from the HTTP headers given to
+ * {@link HttpClientCallback#onHeadersAvailable(int, Map)}
+ */
+class HttpHeadersParser {
 
   private static final String MAX_AGE_REGEX = ".*max-age=([0-9]+).*";
 
