@@ -1,4 +1,4 @@
-package io.wcm.caravan.ryhme.testing.client;
+package io.wcm.caravan.rhyme.testing.client;
 
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 

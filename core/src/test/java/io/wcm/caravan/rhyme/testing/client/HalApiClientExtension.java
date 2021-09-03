@@ -1,4 +1,4 @@
-package io.wcm.caravan.ryhme.testing.client;
+package io.wcm.caravan.rhyme.testing.client;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;

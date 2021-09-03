@@ -42,8 +42,8 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ResourceStateTest.ResourceWithSingleState;
 import io.wcm.caravan.rhyme.testing.TestState;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class RelatedResourceTest {

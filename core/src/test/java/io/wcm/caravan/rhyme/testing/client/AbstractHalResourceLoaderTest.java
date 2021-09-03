@@ -1,4 +1,4 @@
-package io.wcm.caravan.ryhme.testing.client;
+package io.wcm.caravan.rhyme.testing.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;

@@ -42,9 +42,9 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.ErrorHandlingTest;
 import io.wcm.caravan.rhyme.impl.client.blocking.ResourceStateTest.ResourceWithRequiredState;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 /**
  * Variation of the tests in {@link io.wcm.caravan.rhyme.impl.client.RelatedResourceTest}

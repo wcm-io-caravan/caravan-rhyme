@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing.client;
+package io.wcm.caravan.rhyme.testing.client;
 
 import java.io.IOException;
 import java.io.InputStream;

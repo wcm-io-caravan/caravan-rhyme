@@ -28,7 +28,7 @@ import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.RelatedResourceTest.ResourceWithSingleRelated;
 import io.wcm.caravan.rhyme.impl.client.ResourceStateTest.ResourceWithSingleState;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class ToStringTest {
