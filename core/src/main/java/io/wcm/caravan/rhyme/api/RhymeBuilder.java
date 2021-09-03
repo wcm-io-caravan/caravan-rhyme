@@ -21,7 +21,9 @@ package io.wcm.caravan.rhyme.api;
 
 import org.osgi.annotation.versioning.ProviderType;
 
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
@@ -32,6 +34,11 @@ import io.wcm.caravan.rhyme.impl.RhymeBuilderImpl;
 /**
  * A builder to configure and create a {@link Rhyme} instance to be used throughout the lifecycle of the incoming
  * request.
+ * <p>
+ * If you are only using {@link Rhyme} as a HAL client library
+ * (but not to render HAL+JSON responses), you can also use {@link HalApiClient} directly.
+ * </p>
+ * @see Rhyme
  */
 @ProviderType
 public interface RhymeBuilder {
@@ -46,8 +53,18 @@ public interface RhymeBuilder {
   }
 
   /**
+   * Create a {@link RhymeBuilder} to build {@link Rhyme} instances that use a simple default HTTP client
+   * to load upstream resources. If you need to customize your HTTP request handling (e.g. authentication or caching),
+   * then use {@link #withResourceLoader(HalResourceLoader)} instead.
+   * @return the new instance
+   */
+  static RhymeBuilder create() {
+    return new RhymeBuilderImpl(HalResourceLoader.withDefaultHttpClient());
+  }
+
+  /**
    * Create a {@link RhymeBuilder} to build {@link Rhyme} instances that use the given {@link HalResourceLoader}
-   * @param resourceLoader to load resources from upstream services
+   * @param resourceLoader used to to load resources from upstream services
    * @return the new instance
    */
   static RhymeBuilder withResourceLoader(HalResourceLoader resourceLoader) {
@@ -55,9 +72,8 @@ public interface RhymeBuilder {
   }
 
   /**
-   * Enable generation of curie links (to HTML documentation generated with the rhyme-docs-maven-plugin)
-   * when rendering {@link HalResponse}s with
-   * {@link Rhyme#renderResponse(io.wcm.caravan.rhyme.api.resources.LinkableResource)}.
+   * Enable generation of "curies" links (to HTML documentation generated with the rhyme-docs-maven-plugin)
+   * when rendering {@link HalResponse}s with {@link Rhyme#renderResponse(LinkableResource)}.
    * If you call this method, you also have to ensure that you actually serve the generated HTML files using
    * {@link RhymeDocsSupport#loadGeneratedHtml(RhymeDocsSupport, String)}
    * @param rhymeDocsSupport the SPI instance that handles loading of the generated HTML
