@@ -158,29 +158,25 @@ But especially as long as you (or your team) are the sole consumers of your API 
 
 Now that you have a set of interfaces that represent your HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example no URL patterns are being exposed in the interfaces).
 
-To be able to retrieve HAL+JSON resources through HTTP you must first create an implementation of the [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) SPI interface. This is intentionally out of scope of the core framework, as the choice of HTTP client library should be entirely up to you.
 
-The interface however just consists of a single method that will load a HAL resource from a given URL, and emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
-
-```java
-Single<HalResponse> getHalResource(String uri);
-```
-
-Once you have a `HalResourceLoader` instance, it just requires a few lines of code to create a client implementation of your HAL API's entry point interface: 
+It just requires two lines of code to create a client implementation of your HAL API's entry point interface:
 
 ```java
+  // create a HalApiClient that uses a default HTTP implementation
+  private final HalApiClient client = HalApiClient.create();
+
   private ApiEntryPoint getApiEntryPoint() {
 
-    // create a Rhyme instance that knows how to load any external JSON resource
-    Rhyme rhyme = RhymeBuilder.withResourceLoader(resourceLoader)
-        .buildForRequestTo(incomingRequest.getUrl());
-
     // create a dynamic proxy that knows how to fetch the entry point from the given URL
-    return rhyme.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
+    return client.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
   }
 ```
 
-Using that proxy instance of your entry point you can easily navigate through all resources of the API by simply calling the methods defined in your interfaces: 
+If you are also using Rhyme to **render** your resources, you shouldn't create the `HalApiClient` yourself, but call the `Rhyme#getRemoteResource` method instead,
+which has the exact same signature and behaviour. This ensures that the same `HalApiClient` instance will be used throught your incoming request, and 
+this allows some caching and collection of performance metrics which is explained later.
+
+Using the proxy instance of your entry point you can easily navigate through all resources of the API by simply calling the methods defined in your interfaces: 
 ```java
     // obtaining a client proxy will not fetch the entry point resource yet (until you call a method on it)
     ApiEntryPoint api = getApiEntryPoint();
@@ -207,6 +203,27 @@ The proxy instance will take care of
  
 A local in-memory caching will ensure that the same resources are not fetched more than once (as long as you are using the same Rhyme instance).
 
+### Using a custom HTTP client implementation
+
+By default the HTTP requests will be executed using the JDK's `HttpURLConnection class. In many cases you will need to have more control over
+the configuration of the HTTP client.
+
+To be able to retrieve HAL+JSON resources with any other HTTP client library you must create an implementation of the [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) SPI interface. 
+
+The interface however just consists of a single method that will load a HAL resource from a given URL, and emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
+
+```java
+Single<HalResponse> getHalResource(String uri);
+```
+
+You can implement this interface completely by yourself, but this will require you to also implement the JSON parsing and exception handling according to the expectations of the framework. 
+
+A simpler way is to implement the callback-style [HttpClientSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HttpClientSupport.java)
+interface, and then call `HalResourceLoader#withCustomHttpClient()` to adapt it.
+In both cases, you should extend  the [AbstractHalResourceLoaderTest](src/test/java/io/wcm/caravan/ryhme/testing/client/AbstractHalResourceLoaderTest.java) 
+(to test your implementation against a Wiremock server), to ensure that all expectations regarding response and error handling are met.
+
+
 ## Rendering HAL resources in your web service 
 
 For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) facade to automatically render a HAL+JSON representation based on the annotation found in the interfaces.
@@ -215,7 +232,7 @@ What's important to note is that **you should only create a single `Rhyme` insta
 
 ```java
     // create a single Rhyme instance as early as possible in the request-cycle 
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader().buildForRequestTo(incomingRequest.getUrl());
+    Rhyme rhyme = RhymeBuilder.create().buildForRequestTo(incomingRequest.getUrl());
     
     // instantiate your server-side implementation of the requested @HalApiInterface resource
     ApiEntryPoint entryPoint = new ApiEntryPointImpl(database);
