@@ -32,8 +32,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 
 @ExtendWith(MockitoExtension.class)

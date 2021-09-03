@@ -1,0 +1,235 @@
+/*
+ * #%L
+ * wcm.io
+ * %%
+ * Copyright (C) 2021 wcm.io
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+package io.wcm.caravan.rhyme.impl.client.http;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleEmitter;
+import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
+import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
+
+/**
+ * An adapter class that implements {@link HalResourceLoader} using a {@link HttpClientSupport} implementation,
+ * and takes care that {@link #getHalResource} fails with a {@link HalApiClientException} containing status code and
+ * other error information if anything goes wrong
+ * @see HalResourceLoader
+ * @see HttpClientSupport
+ */
+public class HttpHalResourceLoader implements HalResourceLoader {
+
+  private static final Logger log = LoggerFactory.getLogger(HttpHalResourceLoader.class);
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final JsonFactory JSON_FACTORY = new JsonFactory(OBJECT_MAPPER);
+
+  private final HttpClientSupport client;
+
+  private HttpHalResourceLoader(HttpClientSupport client) {
+    this.client = client;
+  }
+
+  public static HttpHalResourceLoader withClientImplementation(HttpClientSupport client) {
+
+    return new HttpHalResourceLoader(client);
+  }
+
+  @Override
+  public Single<HalResponse> getHalResource(String uri) {
+
+    return Single.create(subscriber -> {
+
+      HttpClientCallbackImpl callback = new HttpClientCallbackImpl(uri, subscriber);
+
+      callback.executeRequestAndWaitForCallbacks();
+    });
+  }
+
+  private class HttpClientCallbackImpl implements HttpClientCallback {
+
+    private final SingleEmitter<HalResponse> subscriber;
+
+    private final AtomicBoolean responseOrErrorWasEmitted = new AtomicBoolean();
+
+    private final String originalUri;
+
+    private volatile URI actualUri;
+
+    private volatile HalResponse halResponse = new HalResponse();
+
+    HttpClientCallbackImpl(String uri, SingleEmitter<HalResponse> subscriber) {
+      this.subscriber = subscriber;
+      this.originalUri = uri;
+    }
+
+    void executeRequestAndWaitForCallbacks() {
+      try {
+        actualUri = URI.create(originalUri);
+
+        client.executeGetRequest(actualUri, this);
+      }
+      catch (RuntimeException ex) {
+
+        emitHalApiClientExceptionWithCause(ex);
+      }
+    }
+
+    private void updateStatusCode(Integer statusCode) {
+      halResponse = halResponse.withStatus(statusCode);
+    }
+
+    private void updateContentType(String contentType) {
+      halResponse = halResponse.withContentType(contentType);
+    }
+
+    private void updateMaxAge(Integer maxAge) {
+      halResponse = halResponse.withMaxAge(maxAge);
+    }
+
+    private void updateBody(JsonNode parsedJson) {
+      halResponse = halResponse.withBody(parsedJson);
+    }
+
+    private void emitHalResponse() {
+
+      if (responseOrErrorWasEmitted.compareAndSet(false, true)) {
+        subscriber.onSuccess(halResponse);
+      }
+      else {
+        log.warn("#onBodyAvailable wa called more than once, or after #onExceptionCaught was called ", new RuntimeException());
+      }
+    }
+
+    private void emitHalApiClientExceptionWithCause(Exception cause) {
+
+      if (responseOrErrorWasEmitted.compareAndSet(false, true)) {
+
+        String uri = actualUri != null ? actualUri.toString() : originalUri;
+        HalApiClientException ex = new HalApiClientException(halResponse, uri, cause);
+
+        subscriber.onError(ex);
+      }
+      else {
+        log.warn("An exception was caught after the response (or a previous exception) was already emitted ", cause);
+      }
+    }
+
+    @Override
+    public void onUrlModified(URI uri) {
+
+      actualUri = uri;
+    }
+
+    @Override
+    public void onHeadersAvailable(int statusCode, Map<String, ? extends Collection<String>> headers) {
+
+      // HttpURLConnection will sometimes return statusCode -1 for failed requests, which we don't want to forward
+      updateStatusCode(statusCode > 0 ? statusCode : null);
+
+      HttpHeadersParser parsedHeaders = new HttpHeadersParser(headers);
+
+      parsedHeaders.getContentType()
+          .ifPresent(this::updateContentType);
+
+      parsedHeaders.getMaxAge()
+          .ifPresent(this::updateMaxAge);
+    }
+
+    @Override
+    public void onBodyAvailable(InputStream is) {
+
+      if (halResponse.getStatus() == null) {
+        throw new HalApiDeveloperException("onHeadersAvailable() should be called before onBodyAvailable()");
+      }
+
+      String msgPrefix = "The response from " + actualUri + " was retrieved with status code " + halResponse.getStatus() + ", ";
+
+      boolean statusIsOk = halResponse.getStatus() == 200;
+
+      try {
+        // we try to parse the JSON and include it in the HalResponse even when the request failed
+        JsonNode parsedJson = parseJson(is);
+
+        updateBody(parsedJson);
+
+        if (statusIsOk) {
+          // this is the only case where the response was successfully retrieved and parsed
+          emitHalResponse();
+        }
+        else {
+          // the response code indicates that the request was *not* successfull
+          String msg = msgPrefix + "and a JSON body that may contain further information is present";
+          emitHalApiClientExceptionWithCause(new RuntimeException(msg));
+        }
+      }
+      catch (RuntimeException ex) {
+        if (statusIsOk) {
+          String msg = msgPrefix + "but the body could not be succesfully read and parsed as a JSON document";
+          updateStatusCode(null);
+          emitHalApiClientExceptionWithCause(new RuntimeException(msg, ex));
+        }
+        else {
+          // if JSON parsing failed for a non-ok response, we don't include that exception as a root cause,
+          // as we cannot expected the body to be JSON all the time, and don't want confusing information
+          String msg = msgPrefix + "but no JSON body with further information was found";
+          emitHalApiClientExceptionWithCause(new RuntimeException(msg));
+        }
+      }
+    }
+
+    @Override
+    public void onExceptionCaught(Exception ex) {
+
+      emitHalApiClientExceptionWithCause(ex);
+    }
+
+  }
+
+  private JsonNode parseJson(InputStream is) {
+
+    try (InputStream autoClosingStream = is) {
+      return JSON_FACTORY.createParser(autoClosingStream).readValueAsTree();
+    }
+    catch (JsonProcessingException ex) {
+      throw new RuntimeException("The response body was read completely, but it's not valid JSON.", ex);
+    }
+    catch (IOException ex) {
+      throw new RuntimeException("The response body could not be read completely from the input stream", ex);
+    }
+  }
+
+}

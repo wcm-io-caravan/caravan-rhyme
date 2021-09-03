@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.EmbeddedResourceProxyInvocationHandler;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
 public class HalApiReflectionUtilsTest {

@@ -120,7 +120,7 @@ If you want to provide a strongly **typed** API to your consumers, you should de
     public String title;
   }
 ```
-If you don't like this style with public mutable fields, you can define the class with private fields and access methods. But be aware that this class will have to be deserialized with Jackson on the client side, so you must use annotations (e.g. `@JsonCreator`) that allow instances with the properties from the parsed JSON to be created.
+If you don't like this style with public mutable fields, you can define the class with private fields and access methods or even use an interface. But be aware that instances of this class or interface will have to be deserialized with Jackson on the client side, so you must use annotations (e.g. `@JsonCreator`) that allow your resource state instances to be created from the parsed JSON.
 
 In the end, an actual HAL resource that matches the `ItemResource` interface defined above would look like this:
 
@@ -147,7 +147,7 @@ In the end, an actual HAL resource that matches the `ItemResource` interface def
 
 [*RESTafarians*](https://mikeschinkel.com/2006/whatisarestafarian/) may say that everything you have read in this section is a bad idea, as it's all about sharing out-of-band information about your API with your clients. However any consumer needs to have some reasonable expectations about the available links and data structures provided by your API to create reliable client code. The aim of those annotated interfaces is to specify exactly these kind of guarantees given by the API in a very concise way, that can directly be used in client-side code. At the same time, the interfaces don't expose too many implementation details (such as URL structures). 
 
-If you don't like the idea of using these interfaces in client code (as outlined in the next section), then keep in mind that this is entirely optional. Your API will still be using plain HAL+JSON data structures, and nothing forces you to use the **Rhyme** framework and these interfaces on *both* sides.
+If you don't like the idea of sharing the same interfaces in client and server code (as outlined in the next sections), then keep in mind that this is entirely optional. Your API will still be using plain HAL+JSON data structures, and nothing forces you to use the **Rhyme** framework and these interfaces on *both* sides.
 
 But especially as long as you (or your team) are the sole consumers of your API anyway, sharing these interfaces between your services will give you many benefits:
 - refactoring of your API (e.g. renaming relations) throughout a distributed system is very easy and reliable
@@ -158,29 +158,25 @@ But especially as long as you (or your team) are the sole consumers of your API 
 
 Now that you have a set of interfaces that represent your HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example no URL patterns are being exposed in the interfaces).
 
-To be able to retrieve HAL+JSON resources through HTTP you must first create an implementation of the [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) SPI interface. This is intentionally out of scope of the core framework, as the choice of HTTP client library should be entirely up to you.
 
-The interface however just consists of a single method that will load a HAL resource from a given URL, and emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
-
-```java
-Single<HalResponse> getHalResource(String uri);
-```
-
-Once you have a `HalResourceLoader` instance, it just requires a few lines of code to create a client implementation of your HAL API's entry point interface: 
+It just requires two lines of code to create a client implementation of your HAL API's entry point interface:
 
 ```java
+  // create a HalApiClient that uses a default HTTP implementation
+  private final HalApiClient client = HalApiClient.create();
+
   private ApiEntryPoint getApiEntryPoint() {
 
-    // create a Rhyme instance that knows how to load any external JSON resource
-    Rhyme rhyme = RhymeBuilder.withResourceLoader(resourceLoader)
-        .buildForRequestTo(incomingRequest.getUrl());
-
     // create a dynamic proxy that knows how to fetch the entry point from the given URL
-    return rhyme.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
+    return client.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
   }
 ```
 
-Using that proxy instance of your entry point you can easily navigate through all resources of the API by simply calling the methods defined in your interfaces: 
+If you are also using Rhyme to **render** your resources, you shouldn't create the `HalApiClient` yourself, but call the `Rhyme#getRemoteResource` method instead,
+which has the exact same signature and behaviour. This ensures that the same `HalApiClient` instance will be used throught your incoming request, and 
+this allows some caching and collection of performance metrics which is explained later.
+
+Using the proxy instance of your entry point you can easily navigate through all resources of the API by simply calling the methods defined in your interfaces: 
 ```java
     // obtaining a client proxy will not fetch the entry point resource yet (until you call a method on it)
     ApiEntryPoint api = getApiEntryPoint();
@@ -202,10 +198,31 @@ The proxy instance will take care of
 - fetching and parsing the resource
 - finding the links (or embedded resources) that correspond to the method being called (based on the relations defined in the interface methods' annotations)
 - expanding link templates with the parameters from the method invocation
-- fetching further linked resources as required
+- automatically fetching further linked resources as required (as soon as any method on a related resource instance is called)
 - keeping track of all resources that have been retrieved
  
-A local in-memory caching will ensure that the same resources are not fetched more than once (as long as you are using the same Rhyme instance).
+A local in-memory caching will ensure that the each resource is not fetched more than once, and repeated calls to the same method (with the same parameters) return a cached value immediately (as long as you are using the same `Rhyme` or `HalApiClient` instance).
+
+### Using a custom HTTP client implementation
+
+By default the HTTP requests will be executed using the JDK's `HttpURLConnection` class with default configuration. In many cases you will need to have more control over
+how exactly execute the HTTP request, and use a more sophisticated HTTP client library that is already used in your project or framework.
+
+To be able to retrieve HAL+JSON resources with any other HTTP client library you must create an implementation of the [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) SPI interface. 
+
+The interface just consists of a single method that will load a HAL resource from a given URL, and return an RxJava Single which emits a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when the response hass been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
+
+```java
+Single<HalResponse> getHalResource(String uri);
+```
+
+You can implement this interface completely by yourself, but this will require you to also implement the JSON parsing and exception handling according to the expectations of the framework. 
+
+A simpler way is to implement the callback-style [HttpClientSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HttpClientSupport.java)
+interface, and then call `HalResourceLoader#withCustomHttpClient()` to adapt it.
+In both cases, you should extend  the [AbstractHalResourceLoaderTest](src/test/java/io/wcm/caravan/ryhme/testing/client/AbstractHalResourceLoaderTest.java) 
+(from test test-jar) to test your implementation against a Wiremock server. These unit tests ensures that all expectations regarding response and error handling are met.
+
 
 ## Rendering HAL resources in your web service 
 
@@ -215,7 +232,7 @@ What's important to note is that **you should only create a single `Rhyme` insta
 
 ```java
     // create a single Rhyme instance as early as possible in the request-cycle 
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader().buildForRequestTo(incomingRequest.getUrl());
+    Rhyme rhyme = RhymeBuilder.create().buildForRequestTo(incomingRequest.getUrl());
     
     // instantiate your server-side implementation of the requested @HalApiInterface resource
     ApiEntryPoint entryPoint = new ApiEntryPointImpl(database);

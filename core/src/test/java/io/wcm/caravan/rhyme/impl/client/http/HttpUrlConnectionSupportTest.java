@@ -17,21 +17,17 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing;
+package io.wcm.caravan.rhyme.impl.client.http;
 
-import io.wcm.caravan.hal.resource.HalResource;
-import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 
-public final class ConversionFunctions {
 
-  private ConversionFunctions() {
-    // this class contains only static methods
-  }
+public class HttpUrlConnectionSupportTest extends AbstractHalResourceLoaderTest {
 
-  public static HalResponse toJsonResponse(HalResource resource) {
+  @Override
+  protected HalResourceLoader createLoaderUnderTest() {
 
-    return new HalResponse()
-        .withStatus(200)
-        .withBody(resource);
+    return HalResourceLoader.withCustomHttpClient(new HttpUrlConnectionSupport());
   }
 }

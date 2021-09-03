@@ -17,8 +17,16 @@
  * limitations under the License.
  * #L%
  */
-/**
- * Interfaces for client-side functionality
- */
-@org.osgi.annotation.versioning.Version("1.1.0")
-package io.wcm.caravan.rhyme.api.client;
+package io.wcm.caravan.rhyme.testing.resources;
+
+public class TestResourceState {
+
+  public String text;
+  public Integer number;
+
+  public TestResourceState withText(String value) {
+    this.text = value;
+    return this;
+  }
+}
+

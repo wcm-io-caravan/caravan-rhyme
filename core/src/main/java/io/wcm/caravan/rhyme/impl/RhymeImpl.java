@@ -24,12 +24,10 @@ import java.util.function.Supplier;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.Rhyme;
-import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
@@ -63,17 +61,6 @@ final class RhymeImpl implements Rhyme {
   }
 
   private HalApiClient createHalApiClient(HalApiTypeSupport typeSupport) {
-
-    if (resourceLoader == null) {
-      return new HalApiClient() {
-
-        @Override
-        public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
-          throw new HalApiDeveloperException("#getRemoteResource can only be used if you have provided a " + HalResourceLoader.class.getSimpleName()
-              + " when constructing your " + RhymeBuilder.class.getSimpleName());
-        }
-      };
-    }
 
     return new HalApiClientImpl(resourceLoader, metrics, typeSupport);
   }

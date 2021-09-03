@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing.resources;
+package io.wcm.caravan.rhyme.testing.resources;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

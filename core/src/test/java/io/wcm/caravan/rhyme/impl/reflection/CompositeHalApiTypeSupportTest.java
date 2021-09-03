@@ -47,7 +47,7 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
 
 @ExtendWith(MockitoExtension.class)
 public class CompositeHalApiTypeSupportTest {

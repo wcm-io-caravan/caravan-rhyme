@@ -17,16 +17,15 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing.resources;
+package io.wcm.caravan.rhyme.testing;
 
-public class TestResourceState {
+public final class TestRelations {
 
-  public String text;
-  public Integer number;
-
-  public TestResourceState withText(String value) {
-    this.text = value;
-    return this;
+  private TestRelations() {
+    // this class contains only constants
   }
-}
 
+  public static final String LINKED = "test:linked";
+
+  public static final String EMBEDDED = "test:embedded";
+}

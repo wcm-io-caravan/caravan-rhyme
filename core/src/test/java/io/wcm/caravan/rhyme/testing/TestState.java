@@ -17,16 +17,27 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing;
+package io.wcm.caravan.rhyme.testing;
 
-import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.annotations.ResourceLink;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+public class TestState {
 
-public interface LinkableTestResource extends TestResource, LinkableResource {
+  public String string;
+  public Integer number;
 
-  @Override
-  @ResourceLink
-  Link createLink();
+  public TestState() {
 
+  }
+
+  public TestState(String string) {
+    this.string = string;
+  }
+
+  public TestState(int number) {
+    this.number = number;
+  }
+
+  public TestState(String string, int number) {
+    this.string = string;
+    this.number = number;
+  }
 }

@@ -25,12 +25,20 @@ import java.util.function.Supplier;
 import org.osgi.annotation.versioning.ProviderType;
 
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator;
 
 /**
- * Keeps track of all upstream resource that have been fetched while handling the current-request, and collects
- * additional data for performance analyze and caching.
+ * Keeps track of all upstream resource that have been fetched while handling the current request, and collects
+ * additional data for performance analyze and caching. An instance of this interface is automatically created
+ * for each {@link Rhyme} instance. The collected information will be included in the
+ * responses created by {@link Rhyme#renderResponse(LinkableResource)}.
+ * <p>
+ * If you don't use that method (or {@link AsyncHalResponseRenderer} to render your responses, simply create a default
+ * implementation using {@link RequestMetricsCollector#create()}
+ * </p>
  */
 @ProviderType
 public interface RequestMetricsCollector {

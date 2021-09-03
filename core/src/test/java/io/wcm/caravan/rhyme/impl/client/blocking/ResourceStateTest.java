@@ -38,8 +38,8 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.ryhme.testing.ConversionFunctions;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
+import io.wcm.caravan.rhyme.testing.ConversionFunctions;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 /**
  * Variation of the tests in {@link io.wcm.caravan.rhyme.impl.client.ResourceStateTest}
