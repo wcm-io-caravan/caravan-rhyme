@@ -205,12 +205,12 @@ A local in-memory caching will ensure that the each resource is not fetched more
 
 ### Using a custom HTTP client implementation
 
-By default the HTTP requests will be executed using the JDK's `HttpURLConnection` class. In many cases you will need to have more control over
-the configuration of the HTTP client.
+By default the HTTP requests will be executed using the JDK's `HttpURLConnection` class with default configuration. In many cases you will need to have more control over
+how exactly execute the HTTP request, and use a more sophisticated HTTP client library that is already used in your project or framework.
 
 To be able to retrieve HAL+JSON resources with any other HTTP client library you must create an implementation of the [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) SPI interface. 
 
-The interface however just consists of a single method that will load a HAL resource from a given URL, and emit a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when it has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
+The interface just consists of a single method that will load a HAL resource from a given URL, and return an RxJava Single which emits a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when the response hass been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
 
 ```java
 Single<HalResponse> getHalResource(String uri);
