@@ -198,10 +198,10 @@ The proxy instance will take care of
 - fetching and parsing the resource
 - finding the links (or embedded resources) that correspond to the method being called (based on the relations defined in the interface methods' annotations)
 - expanding link templates with the parameters from the method invocation
-- fetching further linked resources as required
+- automatically fetching further linked resources as required (as soon as any method on a related resource instance is called)
 - keeping track of all resources that have been retrieved
  
-A local in-memory caching will ensure that the each resource is not fetched more than once, and repeated calls to the same method (with the same parameters) a cached return value instantly (as long as you are using the same `Rhyme` or `HalApiClient` instance).
+A local in-memory caching will ensure that the each resource is not fetched more than once, and repeated calls to the same method (with the same parameters) return a cached value immediately (as long as you are using the same `Rhyme` or `HalApiClient` instance).
 
 ### Using a custom HTTP client implementation
 
