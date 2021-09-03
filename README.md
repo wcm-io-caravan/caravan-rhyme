@@ -221,7 +221,7 @@ You can implement this interface completely by yourself, but this will require y
 A simpler way is to implement the callback-style [HttpClientSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HttpClientSupport.java)
 interface, and then call `HalResourceLoader#withCustomHttpClient()` to adapt it.
 In both cases, you should extend  the [AbstractHalResourceLoaderTest](src/test/java/io/wcm/caravan/ryhme/testing/client/AbstractHalResourceLoaderTest.java) 
-(from test test-jar) to test your implementation against a Wiremock server. This test suite ensures that all expectations regarding response and error handling are met.
+(from test test-jar) to test your implementation against a Wiremock server. These unit tests ensures that all expectations regarding response and error handling are met.
 
 
 ## Rendering HAL resources in your web service 
