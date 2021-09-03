@@ -120,7 +120,7 @@ If you want to provide a strongly **typed** API to your consumers, you should de
     public String title;
   }
 ```
-If you don't like this style with public mutable fields, you can define the class with private fields and access methods. But be aware that this class will have to be deserialized with Jackson on the client side, so you must use annotations (e.g. `@JsonCreator`) that allow instances with the properties from the parsed JSON to be created.
+If you don't like this style with public mutable fields, you can define the class with private fields and access methods or even use an interface. But be aware that instances of this class or interface will have to be deserialized with Jackson on the client side, so you must use annotations (e.g. `@JsonCreator`) that allow your resource state instances to be created from the parsed JSON.
 
 In the end, an actual HAL resource that matches the `ItemResource` interface defined above would look like this:
 
