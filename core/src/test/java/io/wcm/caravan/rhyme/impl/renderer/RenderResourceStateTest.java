@@ -39,7 +39,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.TestState;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
 
 public class RenderResourceStateTest {

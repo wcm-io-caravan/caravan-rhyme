@@ -37,7 +37,7 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.ryhme.testing.ConversionFunctions;
+import io.wcm.caravan.rhyme.testing.ConversionFunctions;
 import io.wcm.caravan.ryhme.testing.resources.TestResource;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 

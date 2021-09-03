@@ -49,8 +49,8 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport.SubscriberCounter;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestState;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class ProxyCachingTest {

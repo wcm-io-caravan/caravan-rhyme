@@ -17,16 +17,21 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing;
+package io.wcm.caravan.rhyme.testing;
 
-import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.annotations.ResourceLink;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.common.HalResponse;
 
-public interface LinkableTestResource extends TestResource, LinkableResource {
+public final class ConversionFunctions {
 
-  @Override
-  @ResourceLink
-  Link createLink();
+  private ConversionFunctions() {
+    // this class contains only static methods
+  }
 
+  public static HalResponse toJsonResponse(HalResource resource) {
+
+    return new HalResponse()
+        .withStatus(200)
+        .withBody(resource);
+  }
 }

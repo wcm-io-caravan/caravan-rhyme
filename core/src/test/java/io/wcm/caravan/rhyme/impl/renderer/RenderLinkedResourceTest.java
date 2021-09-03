@@ -21,7 +21,7 @@ package io.wcm.caravan.rhyme.impl.renderer;
 
 import static io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererTestUtil.createSingleExternalLinkedResource;
 import static io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererTestUtil.render;
-import static io.wcm.caravan.ryhme.testing.TestRelations.LINKED;
+import static io.wcm.caravan.rhyme.testing.TestRelations.LINKED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -41,8 +41,8 @@ import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestResource;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestResource;
 
 public class RenderLinkedResourceTest {
 

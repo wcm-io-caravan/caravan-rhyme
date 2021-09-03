@@ -17,21 +17,27 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing;
+package io.wcm.caravan.rhyme.testing;
 
-import io.wcm.caravan.hal.resource.HalResource;
-import io.wcm.caravan.rhyme.api.common.HalResponse;
+public class TestState {
 
-public final class ConversionFunctions {
+  public String string;
+  public Integer number;
 
-  private ConversionFunctions() {
-    // this class contains only static methods
+  public TestState() {
+
   }
 
-  public static HalResponse toJsonResponse(HalResource resource) {
+  public TestState(String string) {
+    this.string = string;
+  }
 
-    return new HalResponse()
-        .withStatus(200)
-        .withBody(resource);
+  public TestState(int number) {
+    this.number = number;
+  }
+
+  public TestState(String string, int number) {
+    this.string = string;
+    this.number = number;
   }
 }

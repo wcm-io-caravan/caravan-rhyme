@@ -46,8 +46,8 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.impl.renderer.blocking.RenderResourceStateTest.TestResourceWithRequiredState;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestState;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 
 public class RhymeImplTest {

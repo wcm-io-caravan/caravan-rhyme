@@ -31,7 +31,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
 @ExtendWith(MockitoExtension.class)

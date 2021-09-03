@@ -30,8 +30,8 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestState;
 
 
 public class ResourceConversionsTest {

@@ -41,7 +41,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.TestState;
 import io.wcm.caravan.ryhme.testing.resources.TestResource;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")

@@ -28,7 +28,7 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.TestState;
 
 
 public final class AsyncHalResourceRendererTestUtil {

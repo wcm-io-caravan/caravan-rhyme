@@ -17,15 +17,16 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.ryhme.testing;
+package io.wcm.caravan.rhyme.testing;
 
-public final class TestRelations {
+import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.annotations.ResourceLink;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
-  private TestRelations() {
-    // this class contains only constants
-  }
+public interface LinkableTestResource extends TestResource, LinkableResource {
 
-  public static final String LINKED = "test:linked";
+  @Override
+  @ResourceLink
+  Link createLink();
 
-  public static final String EMBEDDED = "test:embedded";
 }

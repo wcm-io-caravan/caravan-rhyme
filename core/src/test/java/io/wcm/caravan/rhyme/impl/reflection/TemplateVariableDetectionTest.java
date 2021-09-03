@@ -38,7 +38,7 @@ import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection.TemplateVariableWithTypeInfo;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
 public class TemplateVariableDetectionTest {

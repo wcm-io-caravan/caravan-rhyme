@@ -78,6 +78,7 @@ public class HttpHalResourceLoaderTest {
     String validUri = "http://foo.bar";
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+
       assertThat(uri.toString())
           .isEqualTo(validUri);
 

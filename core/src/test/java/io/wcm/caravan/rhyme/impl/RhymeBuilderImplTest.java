@@ -61,8 +61,8 @@ import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestState;
 import io.wcm.caravan.ryhme.testing.resources.TestResource;
 import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 
