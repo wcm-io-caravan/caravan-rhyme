@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,7 @@ import io.reactivex.rxjava3.core.SingleEmitter;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
@@ -88,6 +90,8 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     private final String originalUri;
 
     private volatile URI actualUri;
+
+    private volatile HttpHeadersParser parsedHeaders;
 
     private volatile HalResponse halResponse = new HalResponse();
 
@@ -160,7 +164,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
       // HttpURLConnection will sometimes return statusCode -1 for failed requests, which we don't want to forward
       updateStatusCode(statusCode > 0 ? statusCode : null);
 
-      HttpHeadersParser parsedHeaders = new HttpHeadersParser(headers);
+      parsedHeaders = new HttpHeadersParser(headers);
 
       parsedHeaders.getContentType()
           .ifPresent(this::updateContentType);
@@ -172,13 +176,13 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     @Override
     public void onBodyAvailable(InputStream is) {
 
-      if (halResponse.getStatus() == null) {
+      if (parsedHeaders == null) {
         throw new HalApiDeveloperException("onHeadersAvailable() should be called before onBodyAvailable()");
       }
 
-      String msgPrefix = "The response from " + actualUri + " was retrieved with status code " + halResponse.getStatus() + ", ";
-
-      boolean statusIsOk = halResponse.getStatus() == 200;
+      Integer status = halResponse.getStatus();
+      String msgPrefix = "An HTTP response with status code " + status + " was retrieved, ";
+      boolean statusIsOk = status != null && status == 200;
 
       try {
         // we try to parse the JSON and include it in the HalResponse even when the request failed
@@ -191,22 +195,29 @@ public class HttpHalResourceLoader implements HalResourceLoader {
           emitHalResponse();
         }
         else {
-          // the response code indicates that the request was *not* successfull
-          String msg = msgPrefix + "and a JSON body that may contain further information is present";
-          emitHalApiClientExceptionWithCause(new RuntimeException(msg));
+          // the response code indicates that the request was *not* successful even through the response could be parsed
+          String msg;
+          if (StringUtils.equals(halResponse.getContentType(), VndErrorResponseRenderer.CONTENT_TYPE)) {
+            msg = msgPrefix + "and a vnd.error body with the following server-side error details";
+          }
+          else {
+            msg = msgPrefix + "and a JSON body that may contain further information is present";
+          }
+          emitHalApiClientExceptionWithCause(new HttpClientSupportException(msg));
         }
       }
       catch (RuntimeException ex) {
         if (statusIsOk) {
           String msg = msgPrefix + "but the body could not be succesfully read and parsed as a JSON document";
-          updateStatusCode(null);
-          emitHalApiClientExceptionWithCause(new RuntimeException(msg, ex));
+
+          emitHalApiClientExceptionWithCause(new HttpClientSupportException(msg, ex));
         }
         else {
           // if JSON parsing failed for a non-ok response, we don't include that exception as a root cause,
           // as we cannot expected the body to be JSON all the time, and don't want confusing information
-          String msg = msgPrefix + "but no JSON body with further information was found";
-          emitHalApiClientExceptionWithCause(new RuntimeException(msg));
+          // in the stack trace
+          String msg = msgPrefix + "and no JSON body with further information was found";
+          emitHalApiClientExceptionWithCause(new HttpClientSupportException(msg));
         }
       }
     }
@@ -225,10 +236,23 @@ public class HttpHalResourceLoader implements HalResourceLoader {
       return JSON_FACTORY.createParser(autoClosingStream).readValueAsTree();
     }
     catch (JsonProcessingException ex) {
-      throw new RuntimeException("The response body was read completely, but it's not valid JSON.", ex);
+      throw new HttpClientSupportException("The response body was read completely, but it's not valid JSON.", ex);
     }
     catch (IOException ex) {
-      throw new RuntimeException("The response body could not be read completely from the input stream", ex);
+      throw new HttpClientSupportException("The response body could not be read completely from the input stream", ex);
+    }
+  }
+
+  static class HttpClientSupportException extends RuntimeException {
+
+    private static final long serialVersionUID = -1086569417284265963L;
+
+    HttpClientSupportException(String msg) {
+      super(msg);
+    }
+
+    HttpClientSupportException(String msg, Throwable cause) {
+      super(msg, cause);
     }
   }
 

@@ -67,7 +67,8 @@ public class HttpHalResourceLoaderTest {
 
     assertThat(ex)
         .isInstanceOf(HalApiClientException.class)
-        .hasMessageStartingWith("HTTP request failed with status code");
+        .hasMessageStartingWith("HAL client request to ")
+        .hasMessageContaining("has failed");
 
     return (HalApiClientException)ex;
   }

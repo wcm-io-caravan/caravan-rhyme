@@ -106,7 +106,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
     Throwable ex = catchThrowable(this::getHalResponse);
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
-        .hasMessage("HTTP request failed with status code 404");
+        .hasMessageContaining("has failed with status code 404");
   }
 
   @Test
@@ -117,7 +117,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
     Throwable ex = catchThrowable(this::getHalResponse);
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
-        .hasMessage("HTTP request failed with status code 502");
+        .hasMessageContaining("has failed with status code 502");
   }
 
   @Test
@@ -128,7 +128,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
     Throwable ex = catchThrowable(this::getHalResponse);
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
-        .hasMessage("HTTP request failed with status code 501");
+        .hasMessageContaining("has failed with status code 501");
   }
 
   @Test
@@ -139,7 +139,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
     Throwable ex = catchThrowable(this::getHalResponse);
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
-        .hasMessage("HTTP request failed with status code 500");
+        .hasMessageContaining("has failed with status code 500");
   }
 
   @Test
@@ -152,7 +152,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
     Throwable ex = catchThrowable(this::getHalResponse);
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
-        .hasMessage("HTTP request for /foo/bar failed without a status code (e.g. because of timeout, configuration or networking issues)");
+        .hasMessageContaining("has failed before a status code was available");
   }
 
 

@@ -349,7 +349,7 @@ public class AsyncHalResponseRendererImplTest {
 
     List<HalResource> causes = response.getBody().getEmbedded(ERRORS);
     assertThat(causes).hasSize(2);
-    assertThat(causes.get(0).getModel().path("message").asText()).isEqualTo("HTTP request failed with status code 501");
+    assertThat(causes.get(0).getModel().path("message").asText()).contains("has failed with status code 501");
     assertThat(causes.get(1).getModel().path("message").asText()).isEqualTo(upstreamMessage);
   }
 
@@ -405,6 +405,6 @@ public class AsyncHalResponseRendererImplTest {
 
     List<HalResource> causes = response.getBody().getEmbedded(ERRORS);
     assertThat(causes).hasSize(1);
-    assertThat(causes.get(0).getModel().path("message").asText()).isEqualTo("HTTP request failed with status code 404");
+    assertThat(causes.get(0).getModel().path("message").asText()).contains("has failed with status code 404");
   }
 }
