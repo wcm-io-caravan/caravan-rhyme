@@ -31,6 +31,7 @@ import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
+import io.wcm.caravan.rhyme.impl.client.cache.CachingHalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.http.HttpHalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.http.HttpUrlConnectionSupport;
 
@@ -74,6 +75,10 @@ public interface HalResourceLoader {
    *         with a {@link HalApiClientException}
    */
   Single<HalResponse> getHalResource(String uri);
+
+  default HalResourceLoader enableCaching() {
+    return CachingHalResourceLoader.createWithGuavaCache(this);
+  }
 
   /**
    * Create a {@link HalResourceLoader} that uses a {@link HttpURLConnection} with default configuration to

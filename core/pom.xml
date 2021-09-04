@@ -148,6 +148,12 @@
       <version>2.27.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.mercateo</groupId>
+      <artifactId>test-clock</artifactId>
+      <version>1.0.2</version>
+      <scope>test</scope>
+    </dependency>
     <!-- Apache HTTP clients for integration tests -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

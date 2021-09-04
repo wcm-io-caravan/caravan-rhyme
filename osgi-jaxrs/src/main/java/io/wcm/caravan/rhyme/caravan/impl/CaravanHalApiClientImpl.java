@@ -22,7 +22,6 @@ package io.wcm.caravan.rhyme.caravan.impl;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
-import java.time.Clock;
 import java.util.concurrent.ExecutionException;
 
 import org.osgi.service.component.annotations.Activate;
@@ -111,7 +110,11 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
 
     @Override
     public HalResourceLoader load(String serviceId) throws Exception {
-      return new CaravanGuavaResourceLoader(httpClient, serviceId, Clock.systemUTC());
+
+      CaravanResilientHttpSupport caravanSupport = new CaravanResilientHttpSupport(httpClient, serviceId);
+
+      return HalResourceLoader.withCustomHttpClient(caravanSupport)
+          .enableCaching();
     }
   }
 
