@@ -47,7 +47,6 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.impl.client.cache.CachingHalResourceLoader;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -84,14 +83,14 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  public void should_use_CachingHalResourceLoader_if_JsonPipeline_not_present_at_runtime() throws Exception {
+  public void should_use_CaravanGuavaResourceLoader_if_JsonPipeline_not_present_at_runtime() throws Exception {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
     HalResourceLoader resourceLoader = clientImpl.getOrCreateHalResourceLoader(SERVICE_ID);
 
     assertThat(resourceLoader)
-        .isInstanceOf(CachingHalResourceLoader.class);
+        .isInstanceOf(CaravanGuavaResourceLoader.class);
   }
 
   @Test
