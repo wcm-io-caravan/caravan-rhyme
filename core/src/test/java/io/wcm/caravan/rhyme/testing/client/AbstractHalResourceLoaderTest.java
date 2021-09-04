@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
+import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import wiremock.org.apache.http.client.utils.URIBuilder;
 
@@ -139,6 +140,14 @@ public abstract class AbstractHalResourceLoaderTest {
             .withBody("Foo")));
   }
 
+  private static void stub500VndErrorResponse() {
+
+    wireMockServer.stubFor(get(urlEqualTo(TEST_PATH))
+        .willReturn(aResponse()
+            .withStatus(500)
+            .withHeader(HttpHeaders.CONTENT_TYPE.toLowerCase(), VndErrorResponseRenderer.CONTENT_TYPE)
+            .withBody("{}")));
+  }
 
   private void stubEmptyResponseWithStatusCode(int statusCode) {
 
@@ -177,7 +186,8 @@ public abstract class AbstractHalResourceLoaderTest {
 
     assertThat(ex)
         .isInstanceOf(HalApiClientException.class)
-        .hasMessageStartingWith("HTTP request failed with status code");
+        .hasMessageStartingWith("HAL client request to")
+        .hasMessageContaining("has failed");
 
     return (HalApiClientException)ex;
   }
@@ -307,6 +317,28 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
+  public void content_type_should_be_set_for_500_vnd_error_response() throws Exception {
+
+    stub500VndErrorResponse();
+
+    HalApiClientException ex = loadResourceAndExpectClientException();
+
+    assertThat(ex.getErrorResponse().getContentType())
+        .isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
+  }
+
+  @Test
+  public void content_type_should_be_null_if_not_present_in_error_response() throws Exception {
+
+    stubErrorResponseWithoutContentType(501);
+
+    HalApiClientException ex = loadResourceAndExpectClientException();
+
+    assertThat(ex.getErrorResponse().getContentType())
+        .isNull();
+  }
+
+  @Test
   public void request_url_should_be_present_in_HalApiClientException_for_non_ok_response() throws Exception {
 
     stubHtmlResponseWithStatusCode(503);
@@ -362,14 +394,14 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void status_code_should_be_null_in_HalApiClientException_for_failure_to_parse_json() throws Exception {
+  public void status_code_should_be_200_in_HalApiClientException_for_failure_to_parse_json() throws Exception {
 
     stubHtmlResponseWithStatusCode(200);
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
     assertThat(ex.getStatusCode())
-        .isNull();
+        .isEqualTo(200);
   }
 
   @Test
@@ -394,7 +426,7 @@ public abstract class AbstractHalResourceLoaderTest {
         .hasRootCauseInstanceOf(JsonProcessingException.class);
 
     assertThat(ex.getCause())
-        .hasMessageContaining("was retrieved with status code 200, but the body could not be succesfully read and parsed as a JSON document")
+        .hasMessage("An HTTP response with status code 200 was retrieved, but the body could not be succesfully read and parsed as a JSON document")
         .hasRootCauseInstanceOf(IOException.class);
   }
 
@@ -405,11 +437,11 @@ public abstract class AbstractHalResourceLoaderTest {
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
-    assertThat(ex.getStatusCode())
-        .isNull();
-
-    assertThat(ex.getCause())
-        .isNotNull();
+    // the behaviour for this edge cases varies between implementations:
+    // sometimes the response code is sucessfully extracted, sometimes not.
+    // the only thing they have in common is that at some point, an IOException is caught
+    assertThat(ex)
+        .hasRootCauseInstanceOf(IOException.class);
   }
 
   @Test
@@ -420,10 +452,11 @@ public abstract class AbstractHalResourceLoaderTest {
     HalApiClientException ex = loadResourceAndExpectClientException();
 
     assertThat(ex.getStatusCode())
-        .isNull();
+        .isEqualTo(null);
 
-    assertThat(ex.getCause())
-        .isNotNull();
+    assertThat(ex)
+        .hasMessageContaining("has failed before a status code was available")
+        .hasRootCauseInstanceOf(IOException.class);
   }
 
   @Test
@@ -434,10 +467,10 @@ public abstract class AbstractHalResourceLoaderTest {
     HalApiClientException ex = loadResourceAndExpectClientException();
 
     assertThat(ex.getStatusCode())
-        .isNull();
+        .isEqualTo(null);
 
-    assertThat(ex.getCause())
-        .isNotNull();
+    assertThat(ex)
+        .hasMessageContaining("has failed before a status code was available");
   }
 
   @Test

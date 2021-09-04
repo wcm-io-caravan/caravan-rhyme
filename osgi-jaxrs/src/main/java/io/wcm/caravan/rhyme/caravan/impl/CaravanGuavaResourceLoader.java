@@ -186,7 +186,7 @@ class CaravanGuavaResourceLoader implements HalResourceLoader {
       return Single.error(new HalApiClientException(jsonResponse, uri, ex));
     }
 
-    String message = "HTTP request for " + uri + " failed without a status code (e.g. because of timeout, configuration or networking issues)";
+    String message = "HTTP request for " + uri + " has failed before a status code was available";
     return Single.error(new HalApiClientException(message, null, uri, ex));
   }
 

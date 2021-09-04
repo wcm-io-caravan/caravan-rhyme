@@ -83,13 +83,14 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  public void should_use_GuavaJsonResourceLoader_if_JsonPipeline_not_present_at_runtime() throws Exception {
+  public void should_use_CaravanGuavaResourceLoader_if_JsonPipeline_not_present_at_runtime() throws Exception {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
     HalResourceLoader resourceLoader = clientImpl.getOrCreateHalResourceLoader(SERVICE_ID);
 
-    assertThat(resourceLoader).isInstanceOf(CaravanGuavaResourceLoader.class);
+    assertThat(resourceLoader)
+        .isInstanceOf(CaravanGuavaResourceLoader.class);
   }
 
   @Test
@@ -101,7 +102,8 @@ public class CaravanHalApiClientImplTest {
 
     HalResourceLoader resourceLoader = clientImpl.getOrCreateHalResourceLoader(SERVICE_ID);
 
-    assertThat(resourceLoader).isInstanceOf(CaravanJsonPipelineResourceLoader.class);
+    assertThat(resourceLoader)
+        .isInstanceOf(CaravanJsonPipelineResourceLoader.class);
   }
 
   private LinkableTestResource getEntryPoint(CaravanHalApiClientImpl clientImpl) {

@@ -43,7 +43,7 @@ public class HalApiClientException extends RuntimeException {
    * @param cause the root cause for the failed HTTP request
    */
   public HalApiClientException(HalResponse errorResponse, String requestUrl, Throwable cause) {
-    super("HTTP request failed with status code " + errorResponse.getStatus(), cause);
+    super(createMessage(errorResponse, requestUrl), cause);
     this.errorResponse = errorResponse;
     this.requestUrl = requestUrl;
   }
@@ -71,6 +71,20 @@ public class HalApiClientException extends RuntimeException {
     super(message, cause);
     this.errorResponse = cause.getErrorResponse();
     this.requestUrl = cause.getRequestUrl();
+  }
+
+  private static String createMessage(HalResponse errorResponse, String requestUrl) {
+
+    String msg = "HAL client request to " + requestUrl + " has failed ";
+
+    if (errorResponse.getStatus() == null) {
+      return msg + "before a status code was available";
+    }
+    if (errorResponse.getStatus() == 200) {
+      return msg + " because the response body is malformed";
+    }
+
+    return msg + "with status code " + errorResponse.getStatus();
   }
 
   /**
