@@ -31,7 +31,6 @@ import org.osgi.service.component.annotations.Reference;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.pipeline.JsonPipelineFactory;
@@ -97,13 +96,13 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
     return client.getRemoteResource(uri, halApiInterface);
   }
 
-  @SuppressWarnings("PMD.PreserveStackTrace")
+
   HalResourceLoader getOrCreateHalResourceLoader(String serviceId) {
     try {
       return resourceLoaderCache.get(serviceId);
     }
-    catch (ExecutionException | UncheckedExecutionException ex) {
-      throw new HalApiDeveloperException("Failed to create resource loader for serviceId " + serviceId, ex.getCause());
+    catch (ExecutionException | RuntimeException ex) {
+      throw new HalApiDeveloperException("Failed to create resource loader for serviceId " + serviceId, ex);
     }
   }
 

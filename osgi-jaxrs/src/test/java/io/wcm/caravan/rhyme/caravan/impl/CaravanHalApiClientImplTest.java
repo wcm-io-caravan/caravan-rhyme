@@ -28,6 +28,7 @@ import java.time.Duration;
 
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.apache.sling.testing.mock.osgi.junit5.OsgiContextExtension;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +46,7 @@ import io.wcm.caravan.pipeline.impl.JsonPipelineFactoryImpl;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.cache.CachingHalResourceLoader;
@@ -66,6 +68,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   private CaravanHalApiClientImpl createAndActivateHalApiClient() {
+
     return context.registerInjectActivateService(new CaravanHalApiClientImpl());
   }
 
@@ -105,6 +108,17 @@ public class CaravanHalApiClientImplTest {
 
     assertThat(resourceLoader)
         .isInstanceOf(CaravanJsonPipelineResourceLoader.class);
+  }
+
+  @Test
+  public void should_fail_if_null_service_id_is_used() throws Exception {
+
+    CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
+
+    Throwable ex = Assertions.catchThrowable(() -> clientImpl.getOrCreateHalResourceLoader(null));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class);
   }
 
   private LinkableTestResource getEntryPoint(CaravanHalApiClientImpl clientImpl) {

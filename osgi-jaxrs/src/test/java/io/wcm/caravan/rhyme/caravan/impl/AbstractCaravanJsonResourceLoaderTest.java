@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 
+import org.apache.commons.io.Charsets;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
@@ -36,6 +37,8 @@ import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.io.http.IllegalResponseRuntimeException;
 import io.wcm.caravan.io.http.request.CaravanHttpRequest;
 import io.wcm.caravan.io.http.request.CaravanHttpRequestBuilder;
+import io.wcm.caravan.io.http.response.CaravanHttpResponse;
+import io.wcm.caravan.io.http.response.CaravanHttpResponseBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
@@ -64,6 +67,19 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
 
     when(httpClient.execute(ArgumentMatchers.any()))
         .thenReturn(Observable.error(ex));
+  }
+
+  private void mockExceptionReadingBody() {
+
+    CaravanHttpResponse response = new CaravanHttpResponseBuilder()
+        .status(200)
+        .reason("OK")
+        // the null body triggers an exception when calling CaravanHttpResponse.body().asInputStream().
+        .body(null, Charsets.US_ASCII)
+        .build();
+
+    when(httpClient.execute(ArgumentMatchers.any()))
+        .thenReturn(Observable.just(response));
   }
 
   protected HalResponse getHalResponse() {
@@ -160,6 +176,16 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
 
     when(httpClient.execute(ArgumentMatchers.any()))
         .thenReturn(Observable.error(new Error("Something really went wrong")));
+
+    Throwable ex = catchThrowable(this::getHalResponse);
+
+    assertThat(ex).isInstanceOf(HalApiClientException.class);
+  }
+
+  @Test
+  public void getHalResource_should_handle_errors_reading_body() throws Exception {
+
+    mockExceptionReadingBody();
 
     Throwable ex = catchThrowable(this::getHalResponse);
 
