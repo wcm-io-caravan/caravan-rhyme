@@ -46,7 +46,8 @@ import io.wcm.caravan.rhyme.caravan.api.CaravanHalApiClient;
 /**
  * Implementation of the {@link CaravanHalApiClient} OSGi service that will use the
  * {@link CaravanJsonPipelineResourceLoader} for caching if the caravan JSON pipeline bundles are available at runtime.
- * Otherwise, it will fall back to using the {@link CaravanGuavaResourceLoader})
+ * Otherwise, it will fall back to using the {@link CaravanResilientHttpSupport} with a default
+ * Guava cache.)
  */
 @Component
 public class CaravanHalApiClientImpl implements CaravanHalApiClient {

@@ -92,11 +92,6 @@ public class CaravanResilientHttpSupport implements HttpClientSupport {
 
   void handleException(HttpClientCallback callback, Throwable ex) throws Throwable {
 
-    if (!(ex instanceof Exception)) {
-      log.error("A fatal error was caught and re-thrown when executing HTTP request", ex);
-      throw ex;
-    }
-
     if (ex instanceof IllegalResponseRuntimeException) {
       IllegalResponseRuntimeException irre = (IllegalResponseRuntimeException)ex;
 
@@ -108,6 +103,6 @@ public class CaravanResilientHttpSupport implements HttpClientSupport {
       return;
     }
 
-    callback.onExceptionCaught((Exception)ex);
+    callback.onExceptionCaught(ex);
   }
 }

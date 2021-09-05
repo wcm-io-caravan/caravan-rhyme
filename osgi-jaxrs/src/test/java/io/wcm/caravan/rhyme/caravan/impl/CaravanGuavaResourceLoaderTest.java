@@ -29,6 +29,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.impl.client.cache.CachingConfiguration;
+import io.wcm.caravan.rhyme.impl.client.cache.CachingHalResourceLoader;
+import io.wcm.caravan.rhyme.impl.client.cache.GuavaCacheImplementation;
 
 @ExtendWith(MockitoExtension.class)
 public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
@@ -56,7 +60,19 @@ public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceL
 
   @BeforeEach
   void setUp() {
-    resourceLoader = new CaravanGuavaResourceLoader(httpClient, EXTERNAL_SERVICE_ID, clock);
+    CaravanResilientHttpSupport httpSupport = new CaravanResilientHttpSupport(httpClient, EXTERNAL_SERVICE_ID);
+
+    HalResourceLoader loader = HalResourceLoader.withCustomHttpClient(httpSupport);
+
+    CachingConfiguration config = new CachingConfiguration() {
+
+      @Override
+      public int getDefaultMaxAge(Optional<Integer> statusCode) {
+        return 0;
+      }
+
+    };
+    resourceLoader = new CachingHalResourceLoader(loader, new GuavaCacheImplementation(), config, clock);
   }
 
   void assertOkResponseWithMaxAge(Integer maxAge) {
@@ -108,11 +124,11 @@ public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceL
     ObjectNode body = JsonNodeFactory.instance.objectNode();
     mockHttpResponse(200, body, null);
 
-    assertOkResponseWithMaxAge(null);
+    assertOkResponseWithMaxAge(0);
 
     clock.advance(Duration.ofSeconds(70));
 
-    assertOkResponseWithMaxAge(null);
+    assertOkResponseWithMaxAge(0);
 
     // there should be two mocked http requests
     verify(httpClient, times(2)).execute(any());
@@ -126,7 +142,7 @@ public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceL
     Throwable ex = catchThrowable(this::getHalResponse);
 
     assertThat(ex).isInstanceOf(HalApiClientException.class);
-    assertThat(ex.getCause()).hasMessageStartingWith("Failed to parse HAL/JSON body");
+    assertThat(ex.getCause()).hasMessageContaining("but the body could not be successfully read and parsed");
   }
 
   static class MutableClock extends Clock {

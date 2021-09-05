@@ -57,7 +57,7 @@ public interface HttpClientCallback {
    * This *must* be called after {@link #onHeadersAvailable(int, Map)} and as soon as the response body is ready to be
    * read. It will ensure that {@link HalResponse#getBody()} will return the parsed HAL+JSON response.
    * <p>
-   * If you don't call this method, then you *must* call {@link #onExceptionCaught(Exception)} instead, so that
+   * If you don't call this method, then you *must* call {@link #onExceptionCaught(Throwable)} instead, so that
    * the framework knows that the request has actually been completed. You *should* call this method even if the
    * response
    * contained an error status code, so that the framework can try to parse the response body as JSON to retrieve
@@ -76,5 +76,5 @@ public interface HttpClientCallback {
    * that was already collected prior to the exception (e.g. status code).
    * @param ex the exception that was caught by your code
    */
-  void onExceptionCaught(Exception ex);
+  void onExceptionCaught(Throwable ex);
 }

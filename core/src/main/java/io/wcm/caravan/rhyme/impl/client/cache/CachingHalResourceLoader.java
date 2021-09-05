@@ -38,7 +38,7 @@ public class CachingHalResourceLoader implements HalResourceLoader {
 
   private final Clock clock;
 
-  CachingHalResourceLoader(HalResourceLoader upstream, HalResponseCache cache, CachingConfiguration configuration,
+  public CachingHalResourceLoader(HalResourceLoader upstream, HalResponseCache cache, CachingConfiguration configuration,
       Clock clock) {
     this.upstream = upstream;
     this.cache = cache;

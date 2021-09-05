@@ -45,7 +45,7 @@ public interface HttpClientSupport {
    * <li>{@link HttpClientCallback#onBodyAvailable(java.io.InputStream)} (required)</li>
    * </ul>
    * If any exception is thrown that prevents starting or completing the request, you must call
-   * {@link HttpClientCallback#onExceptionCaught(Exception)} once (and do not call any further methods).
+   * {@link HttpClientCallback#onExceptionCaught(Throwable)} once (and do not call any further methods).
    * @param uri the URI of the resource to load. This is usually a fully qualified HTTP(S) URL,but it could be any
    *          URI (depending on how the entry point was loaded and which kind of links are represented in the upstream
    *          resources)

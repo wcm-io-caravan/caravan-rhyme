@@ -25,17 +25,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 
 @ExtendWith(MockitoExtension.class)
-public class CaravanResilientHttpSupportTest extends AbstractHalResourceLoaderTest {
+public class CaravanResilientHttpSupportTest /*extends AbstractHalResourceLoaderTest*/ {
 
   protected static final String EXTERNAL_SERVICE_ID = "/external/service/id";
 
   @Mock
   protected CaravanHttpClient httpClient;
 
-  @Override
   protected HalResourceLoader createLoaderUnderTest() {
     CaravanResilientHttpSupport support = new CaravanResilientHttpSupport(httpClient, EXTERNAL_SERVICE_ID);
     return HalResourceLoader.withCustomHttpClient(support);

@@ -138,7 +138,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
       }
     }
 
-    private void emitHalApiClientExceptionWithCause(Exception cause) {
+    private void emitHalApiClientExceptionWithCause(Throwable cause) {
 
       if (responseOrErrorWasEmitted.compareAndSet(false, true)) {
 
@@ -208,7 +208,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
       }
       catch (RuntimeException ex) {
         if (statusIsOk) {
-          String msg = msgPrefix + "but the body could not be succesfully read and parsed as a JSON document";
+          String msg = msgPrefix + "but the body could not be successfully read and parsed as a JSON document";
 
           emitHalApiClientExceptionWithCause(new HttpClientSupportException(msg, ex));
         }
@@ -223,7 +223,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     }
 
     @Override
-    public void onExceptionCaught(Exception ex) {
+    public void onExceptionCaught(Throwable ex) {
 
       emitHalApiClientExceptionWithCause(ex);
     }

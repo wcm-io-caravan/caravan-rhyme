@@ -155,5 +155,15 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
         .hasMessageContaining("has failed before a status code was available");
   }
 
+  @Test
+  public void getHalResource_should_handle_fatal_errors() throws Exception {
+
+    when(httpClient.execute(ArgumentMatchers.any()))
+        .thenReturn(Observable.error(new Error("Something really went wrong")));
+
+    Throwable ex = catchThrowable(this::getHalResponse);
+
+    assertThat(ex).isInstanceOf(HalApiClientException.class);
+  }
 
 }
