@@ -144,6 +144,9 @@ public class JaxRsControllerProxyLinkBuilderTest {
     Throwable ex = catchThrowable(() -> buildLinkTo(resource -> resource.withoutAnnotation()));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("Failed to build link");
+
+    assertThat(ex.getCause())
         .hasMessageContaining("must have a @Path annotation");
   }
 
@@ -335,6 +338,19 @@ public class JaxRsControllerProxyLinkBuilderTest {
 
   public static final class FinalJaxRsComponent {
     // no code required as this fails on proxy instantiation
+  }
+
+  @Test
+  public void should_fail_with_HalApiDeveloperException_if_consumer_throws_exception() {
+
+    RuntimeException cause = new RuntimeException("failed");
+
+    Throwable t = catchThrowable(() -> buildLinkTo((res) -> {
+      throw cause;
+    }));
+
+    assertThat(t).isInstanceOf(HalApiDeveloperException.class)
+        .hasCauseReference(cause);
   }
 
   @Test

@@ -143,8 +143,8 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
 
       return new Link(url);
     }
-    catch (InstantiationException | IllegalAccessException ex) {
-      throw new RuntimeException("Failed to instantiate proxy for " + resourceClass.getName(), ex);
+    catch (InstantiationException | IllegalAccessException | RuntimeException ex) {
+      throw new HalApiDeveloperException("Failed to build link with proxy for " + resourceClass.getName(), ex);
     }
   }
 
