@@ -73,7 +73,7 @@ public class CachingHalResourceLoader implements HalResourceLoader {
   private HalResponse updateResponse(HalResponse response) {
 
     HalResponse updatedResponse = response
-        .withInstant(clock.instant());
+        .withTimestamp(clock.instant());
 
     if (response.getMaxAge() == null) {
       Optional<Integer> status = Optional.ofNullable(response.getStatus());
@@ -101,7 +101,7 @@ public class CachingHalResourceLoader implements HalResourceLoader {
 
     private int getSecondsInCache() {
 
-      Duration cachedFor = Duration.between(response.getInstant(), clock.instant());
+      Duration cachedFor = Duration.between(response.getTimestamp(), clock.instant());
 
       return (int)cachedFor.getSeconds();
     }

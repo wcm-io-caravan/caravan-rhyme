@@ -23,8 +23,21 @@ import java.util.Optional;
 
 import org.osgi.annotation.versioning.ConsumerType;
 
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+
+/**
+ * A configuration instance for the caching {@link HalResourceLoader} implementations created with
+ * {@link HalResourceLoaderBuilder}. It needs to be passed to
+ * {@link HalResourceLoaderBuilder#withCachingConfiguration(CachingConfiguration)} to become effective.
+ */
 @ConsumerType
 public interface CachingConfiguration {
 
+  /**
+   * Determines for how long a cached response that doesn't have a "cache-control: max-age" directive will be used
+   * (before it is considered stale and retrieved again)
+   * @param statusCode of the HTTP response (can be empty if the request failed without a status code)
+   * @return the number of seconds the response should be served from cache, or 0 if it shouldn't be cached at all
+   */
   int getDefaultMaxAge(Optional<Integer> statusCode);
 }

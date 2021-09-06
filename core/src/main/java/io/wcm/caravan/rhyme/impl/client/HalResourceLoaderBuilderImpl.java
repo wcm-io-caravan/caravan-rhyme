@@ -56,7 +56,7 @@ public class HalResourceLoaderBuilderImpl implements HalResourceLoaderBuilder {
   }
 
   @Override
-  public HalResourceLoaderBuilder withCustomLoader(HalResourceLoader customLoader) {
+  public HalResourceLoaderBuilder withExistingLoader(HalResourceLoader customLoader) {
 
     return new HalResourceLoaderBuilderImpl(customLoader, cachingConfig, cache, clock);
   }

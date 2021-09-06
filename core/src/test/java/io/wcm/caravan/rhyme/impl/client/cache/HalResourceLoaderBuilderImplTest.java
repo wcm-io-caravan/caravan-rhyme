@@ -61,10 +61,10 @@ public class HalResourceLoaderBuilderImplTest {
 
 
   @Test
-  public void withCustomLoader_should_use_custom_loader() throws Exception {
+  public void withExistingLoader_should_use_custom_loader() throws Exception {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
-        .withCustomLoader(mockLoader)
+        .withExistingLoader(mockLoader)
         .build();
 
     assertThat(loader)
