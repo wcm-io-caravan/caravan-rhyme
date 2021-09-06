@@ -256,4 +256,8 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     }
   }
 
+  public HttpClientSupport getClient() {
+    return client;
+  }
+
 }

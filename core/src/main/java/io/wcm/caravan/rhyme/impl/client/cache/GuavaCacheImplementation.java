@@ -31,11 +31,17 @@ import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 
 public class GuavaCacheImplementation implements HalResponseCache {
 
+  private final int maxNumItems;
+  private final Duration timeToIdle;
+
   private final Cache<String, HalResponse> cache;
 
   public GuavaCacheImplementation(int maxNumItems, Duration timeToIdle) {
 
-    cache = CacheBuilder.newBuilder()
+    this.maxNumItems = maxNumItems;
+    this.timeToIdle = timeToIdle;
+
+    this.cache = CacheBuilder.newBuilder()
         .maximumSize(maxNumItems)
         .expireAfterAccess(timeToIdle.getSeconds(), TimeUnit.SECONDS)
         .build();
@@ -53,6 +59,14 @@ public class GuavaCacheImplementation implements HalResponseCache {
   public void store(String uri, HalResponse entry) {
 
     cache.put(uri, entry);
+  }
+
+  int getMaxNumItems() {
+    return maxNumItems;
+  }
+
+  Duration getTimeToIdle() {
+    return timeToIdle;
   }
 
 }

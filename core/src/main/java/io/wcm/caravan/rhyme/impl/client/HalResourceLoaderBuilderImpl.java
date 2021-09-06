@@ -24,6 +24,7 @@ import java.time.Duration;
 
 import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
@@ -105,6 +106,11 @@ public class HalResourceLoaderBuilderImpl implements HalResourceLoaderBuilder {
 
     if (cache != null) {
       return new CachingHalResourceLoader(loader, cache, cachingConfig, clock);
+    }
+
+    if (!(cachingConfig instanceof DefaultCachingConfiguration)) {
+      throw new HalApiDeveloperException("You have only provided a " + CachingConfiguration.class.getSimpleName()
+          + ", but you must also actually enable caching by calling #withMemoryCache or #withCustomCache");
     }
 
     return loader;

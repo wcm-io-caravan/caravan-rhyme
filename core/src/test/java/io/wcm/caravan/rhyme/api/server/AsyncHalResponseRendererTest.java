@@ -98,6 +98,6 @@ public class AsyncHalResponseRendererTest {
       // we want to cover the default implementation here, so we don't override anything
     };
 
-    AsyncHalResponseRenderer.create(metrics, strategy, null, null, null);
+    AsyncHalResponseRenderer.create(metrics, strategy, null, null);
   }
 }

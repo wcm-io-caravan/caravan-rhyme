@@ -118,4 +118,24 @@ public class CachingHalResourceLoader implements HalResourceLoader {
     }
   }
 
+
+  HalResourceLoader getUpstream() {
+    return this.upstream;
+  }
+
+
+  HalResponseCache getCache() {
+    return this.cache;
+  }
+
+
+  CachingConfiguration getConfiguration() {
+    return this.configuration;
+  }
+
+
+  Clock getClock() {
+    return this.clock;
+  }
+
 }
