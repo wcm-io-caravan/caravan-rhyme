@@ -17,19 +17,14 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.impl.client.cache;
+package io.wcm.caravan.rhyme.api.client;
 
 import java.util.Optional;
 
+import org.osgi.annotation.versioning.ConsumerType;
+
+@ConsumerType
 public interface CachingConfiguration {
 
-  default int getDefaultMaxAge(Optional<Integer> statusCode) {
-
-    return statusCode.map(status -> {
-      if (status == 200) {
-        return 60;
-      }
-      return 0;
-    }).orElse(0);
-  }
+  int getDefaultMaxAge(Optional<Integer> statusCode);
 }

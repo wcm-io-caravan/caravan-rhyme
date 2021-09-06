@@ -47,12 +47,15 @@ import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
  * </p>
  * <p>
  * The {@link HalApiClient} instance will be caching the proxy objects (based on the URL of the corresponding
- * resources), and the return value of any method called on the proxy objets.
+ * resources), and the return value of any method called on the proxy objects.
  * This allows you to call the same methods multiple times without the overhead of repeated JSON parsing or
  * duplicate HTTP requests. On the other hand you shouldn't use the same {@link HalApiClient} instance
  * for too long (e.g. for multiple incoming requests to your server), since no invalidation of those caches
- * will take place as long as your are using the same {@link HalApiClient} instance. If you need more persistent
- * caching of the HAL responses, this needs to be implemented as a {@link HalResourceLoader} instead.
+ * will take place as long as your are using the same {@link HalApiClient} instance.
+ * </p>
+ * <p>
+ * A more persistent caching of the HAL responses, that does this needs to be implemented as a {@link HalResourceLoader}
+ * instead.
  * </p>
  * <p>
  * A {@link RequestMetricsCollector} instance can be used to track all upstream resources that have been retrieved,
@@ -85,14 +88,30 @@ public interface HalApiClient {
   <T> T getRemoteResource(String uri, Class<T> halApiInterface);
 
   /**
-   * Create a stand-alone {@link HalApiClient} (i.e. not to be used in the lifecycle of a {@link Rhyme} instance).
-   * If you need more control over how your HTTP requests are executed, use
-   * {@link #create(HalResourceLoader, RequestMetricsCollector)} instead.
+   * Create a stand-alone {@link HalApiClient} (i.e. not to be used in the lifecycle of a {@link Rhyme} instance)
+   * that is using a default, blocking HTTP client.
+   * If you need more control over how your HTTP requests are executed and cached, use
+   * {@link #create(HalResourceLoader)} instead.
    * @return an instance of {@link HalApiClient} that uses a default HTTP client implementation
    */
   static HalApiClient create() {
 
-    return HalApiClient.create(HalResourceLoader.withDefaultHttpClient(), RequestMetricsCollector.create());
+    return HalApiClient.create(HalResourceLoader.withDefaultHttpClient());
+  }
+
+  /**
+   * Create a stand-alone {@link HalApiClient} (i.e. not to be used in the lifecycle of a {@link Rhyme} instance)
+   * that executes the HTTP request with the given {@link HalResourceLoader}. That loader can be configured and build
+   * using a {@link HalResourceLoaderBuilder}.
+   * @param resourceLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
+   * @return an instance of {@link HalApiClient} that should be re-used for all upstream requests required by the
+   *         current incoming request
+   * @see HalResourceLoader
+   * @see HalResourceLoaderBuilder
+   */
+  static HalApiClient create(HalResourceLoader resourceLoader) {
+
+    return new HalApiClientImpl(resourceLoader, RequestMetricsCollector.create(), new DefaultHalApiTypeSupport());
   }
 
   /**
@@ -101,7 +120,9 @@ public interface HalApiClient {
    *          incoming request
    * @return an instance of {@link HalApiClient} that should be re-used for all upstream requests required by the
    *         current incoming request
+   * @deprecated to create a stand-alone instance use {@link #create(HalResourceLoader)} instead
    */
+  @Deprecated
   static HalApiClient create(HalResourceLoader resourceLoader, RequestMetricsCollector metrics) {
 
     return new HalApiClientImpl(resourceLoader, metrics, new DefaultHalApiTypeSupport());

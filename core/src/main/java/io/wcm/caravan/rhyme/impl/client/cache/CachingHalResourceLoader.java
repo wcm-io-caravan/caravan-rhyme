@@ -25,8 +25,10 @@ import java.util.Optional;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 
 public class CachingHalResourceLoader implements HalResourceLoader {
 
@@ -44,11 +46,6 @@ public class CachingHalResourceLoader implements HalResourceLoader {
     this.cache = cache;
     this.configuration = configuration;
     this.clock = clock;
-  }
-
-  public static HalResourceLoader createWithGuavaCache(HalResourceLoader upstream) {
-    return new CachingHalResourceLoader(upstream, new GuavaCacheImplementation(), new CachingConfiguration() {
-    }, Clock.systemUTC());
   }
 
   @Override
@@ -96,28 +93,28 @@ public class CachingHalResourceLoader implements HalResourceLoader {
 
   class CachedResponse {
 
-    private final HalResponse entry;
+    private final HalResponse response;
 
     private CachedResponse(HalResponse response) {
-      this.entry = response;
+      this.response = response;
     }
 
     private int getSecondsInCache() {
 
-      Duration cachedFor = Duration.between(entry.getInstant(), clock.instant());
+      Duration cachedFor = Duration.between(response.getInstant(), clock.instant());
 
       return (int)cachedFor.getSeconds();
     }
 
     boolean isFresh() {
 
-      return getSecondsInCache() < entry.getMaxAge();
+      return getSecondsInCache() < response.getMaxAge();
     }
 
     HalResponse getResponseWithAdjustedMaxAge() {
 
-      int newMaxAge = Math.max(0, entry.getMaxAge() - getSecondsInCache());
-      return entry.withMaxAge(newMaxAge);
+      int newMaxAge = Math.max(0, response.getMaxAge() - getSecondsInCache());
+      return response.withMaxAge(newMaxAge);
     }
   }
 

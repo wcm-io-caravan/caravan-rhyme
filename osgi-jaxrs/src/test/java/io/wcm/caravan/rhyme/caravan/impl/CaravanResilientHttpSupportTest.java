@@ -35,7 +35,9 @@ public class CaravanResilientHttpSupportTest /*extends AbstractHalResourceLoader
   protected CaravanHttpClient httpClient;
 
   protected HalResourceLoader createLoaderUnderTest() {
-    CaravanResilientHttpSupport support = new CaravanResilientHttpSupport(httpClient, EXTERNAL_SERVICE_ID);
-    return HalResourceLoader.withCustomHttpClient(support);
+
+    return HalResourceLoader.builder()
+        .withCustomHttpClient(new CaravanResilientHttpSupport(httpClient, EXTERNAL_SERVICE_ID))
+        .build();
   }
 }

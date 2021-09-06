@@ -24,6 +24,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 
@@ -34,6 +36,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
  * @see HttpClientSupport
  * @see HalResourceLoader
  */
+@ProviderType
 public interface HttpClientCallback {
 
   /**

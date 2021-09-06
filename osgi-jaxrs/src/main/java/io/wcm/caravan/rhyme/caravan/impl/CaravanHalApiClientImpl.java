@@ -111,10 +111,10 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
     @Override
     public HalResourceLoader load(String serviceId) throws Exception {
 
-      CaravanResilientHttpSupport caravanSupport = new CaravanResilientHttpSupport(httpClient, serviceId);
-
-      return HalResourceLoader.withCustomHttpClient(caravanSupport)
-          .enableCaching();
+      return HalResourceLoader.builder()
+          .withCustomHttpClient(new CaravanResilientHttpSupport(httpClient, serviceId))
+          .withMemoryCache()
+          .build();
     }
   }
 

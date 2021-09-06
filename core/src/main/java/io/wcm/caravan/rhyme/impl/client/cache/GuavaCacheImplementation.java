@@ -19,15 +19,27 @@
  */
 package io.wcm.caravan.rhyme.impl.client.cache;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 
 public class GuavaCacheImplementation implements HalResponseCache {
 
-  private final Cache<String, HalResponse> cache = CacheBuilder.newBuilder().build();
+  private final Cache<String, HalResponse> cache;
+
+  public GuavaCacheImplementation(int maxNumItems, Duration timeToIdle) {
+
+    cache = CacheBuilder.newBuilder()
+        .maximumSize(maxNumItems)
+        .expireAfterAccess(timeToIdle.getSeconds(), TimeUnit.SECONDS)
+        .build();
+  }
 
   @Override
   public Maybe<HalResponse> load(String uri) {

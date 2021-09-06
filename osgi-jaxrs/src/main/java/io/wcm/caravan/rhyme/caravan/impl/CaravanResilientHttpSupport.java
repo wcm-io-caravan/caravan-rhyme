@@ -26,8 +26,6 @@ import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 
@@ -42,8 +40,6 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 public class CaravanResilientHttpSupport implements HttpClientSupport {
-
-  private static final Logger log = LoggerFactory.getLogger(CaravanResilientHttpSupport.class);
 
   private final String serviceId;
   private final CaravanHttpClient client;
@@ -100,6 +96,7 @@ public class CaravanResilientHttpSupport implements HttpClientSupport {
       String body = StringUtils.defaultIfBlank(irre.getResponseBody(), "");
       InputStream bodyAsStream = IOUtils.toInputStream(body, Charsets.UTF_8);
       callback.onBodyAvailable(bodyAsStream);
+
       return;
     }
 

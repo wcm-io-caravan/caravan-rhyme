@@ -17,19 +17,23 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.impl.client.http;
+package io.wcm.caravan.rhyme.impl.client.cache;
 
-import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
+import java.util.Optional;
+
+import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 
 
-public class HttpUrlConnectionSupportTest extends AbstractHalResourceLoaderTest {
+public class DefaultCachingConfiguration implements CachingConfiguration {
 
   @Override
-  protected HalResourceLoader createLoaderUnderTest() {
+  public int getDefaultMaxAge(Optional<Integer> statusCode) {
 
-    return HalResourceLoader.builder()
-        .withCustomHttpClient(new HttpUrlConnectionSupport())
-        .build();
+    return statusCode.map(status -> {
+      if (status == 200) {
+        return 60;
+      }
+      return 0;
+    }).orElse(0);
   }
 }

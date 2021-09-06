@@ -39,12 +39,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.impl.client.cache.CachingConfiguration;
-import io.wcm.caravan.rhyme.impl.client.cache.CachingHalResourceLoader;
-import io.wcm.caravan.rhyme.impl.client.cache.GuavaCacheImplementation;
 
 @ExtendWith(MockitoExtension.class)
 public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
@@ -60,19 +58,20 @@ public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceL
 
   @BeforeEach
   void setUp() {
-    CaravanResilientHttpSupport httpSupport = new CaravanResilientHttpSupport(httpClient, EXTERNAL_SERVICE_ID);
 
-    HalResourceLoader loader = HalResourceLoader.withCustomHttpClient(httpSupport);
+    resourceLoader = HalResourceLoader.builder()
+        .withCustomHttpClient(new CaravanResilientHttpSupport(httpClient, EXTERNAL_SERVICE_ID))
+        .withMemoryCache()
+        .withCachingConfiguration(new CachingConfiguration() {
 
-    CachingConfiguration config = new CachingConfiguration() {
+          @Override
+          public int getDefaultMaxAge(Optional<Integer> statusCode) {
+            return 0;
+          }
 
-      @Override
-      public int getDefaultMaxAge(Optional<Integer> statusCode) {
-        return 0;
-      }
-
-    };
-    resourceLoader = new CachingHalResourceLoader(loader, new GuavaCacheImplementation(), config, clock);
+        })
+        .withClock(clock)
+        .build();
   }
 
   void assertOkResponseWithMaxAge(Integer maxAge) {

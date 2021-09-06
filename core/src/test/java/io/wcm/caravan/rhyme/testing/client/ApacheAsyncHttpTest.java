@@ -8,7 +8,9 @@ public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
 
-    return HalResourceLoader.withCustomHttpClient(new ApacheAsyncHttpSupport());
+    return HalResourceLoader.builder()
+        .withCustomHttpClient(new ApacheAsyncHttpSupport())
+        .build();
   }
 
 }

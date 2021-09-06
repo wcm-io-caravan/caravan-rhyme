@@ -39,7 +39,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mercateo.test.clock.TestClock;
 
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport.SubscriberCounter;
@@ -65,7 +67,7 @@ public class CachingHalResourceLoaderTest {
 
   @BeforeEach
   void setUp() {
-    cache = new GuavaCacheImplementation();
+    cache = new GuavaCacheImplementation(100, Duration.ofDays(1));
     loader = new CachingHalResourceLoader(upstream.getMockJsonLoader(), cache, config, clock);
   }
 

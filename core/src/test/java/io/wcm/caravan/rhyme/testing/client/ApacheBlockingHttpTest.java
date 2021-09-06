@@ -8,6 +8,8 @@ public class ApacheBlockingHttpTest extends AbstractHalResourceLoaderTest {
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
 
-    return HalResourceLoader.withCustomHttpClient(new ApacheBlockingHttpSupport());
+    return HalResourceLoader.builder()
+        .withCustomHttpClient(new ApacheBlockingHttpSupport())
+        .build();
   }
 }
