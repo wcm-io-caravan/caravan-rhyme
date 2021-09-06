@@ -56,6 +56,10 @@ public class JaxRsControllerProxyLinkBuilderTest {
     @QueryParam("bar")
     String bar;
 
+    @QueryParam("withDefault")
+    @DefaultValue("defaultValue")
+    String withDefault;
+
   }
 
   public static class JaxRsComponent {
@@ -310,19 +314,19 @@ public class JaxRsControllerProxyLinkBuilderTest {
   }
 
   @Test
-  public void one_unresolved_bean_param() throws Exception {
+  public void null_bean_param_should_result_in_full_template_to_be_written() throws Exception {
 
     assertLinkUrlFor(r -> r.withBeanParam(null))
-        .isEqualTo("/test/{foo}{?bar}");
+        .isEqualTo("/test/{foo}{?bar,withDefault}");
   }
 
   @Test
-  public void one_bean_param_with_null_values() throws Exception {
+  public void one_bean_param_should_result_in_full_template_to_be_written() throws Exception {
 
     ParamBean params = new ParamBean();
 
     assertLinkUrlFor(r -> r.withBeanParam(params))
-        .isEqualTo("/test/{foo}{?bar}");
+        .isEqualTo("/test/{foo}{?bar,withDefault}");
   }
 
   @Test
@@ -334,6 +338,18 @@ public class JaxRsControllerProxyLinkBuilderTest {
 
     assertLinkUrlFor(r -> r.withBeanParam(params))
         .isEqualTo("/test/123?bar=456");
+  }
+
+  @Test
+  public void one_bean_param_with_replacement_for_default_value() throws Exception {
+
+    ParamBean params = new ParamBean();
+    params.foo = "123";
+    params.bar = "456";
+    params.withDefault = "replacement";
+
+    assertLinkUrlFor(r -> r.withBeanParam(params))
+        .isEqualTo("/test/123?bar=456&withDefault=replacement");
   }
 
   public static final class FinalJaxRsComponent {
