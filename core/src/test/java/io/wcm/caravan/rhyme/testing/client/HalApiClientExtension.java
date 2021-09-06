@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
-import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 public class HalApiClientExtension implements ParameterResolver {
@@ -21,11 +20,11 @@ public class HalApiClientExtension implements ParameterResolver {
   public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
       throws ParameterResolutionException {
 
-    HalResourceLoader loader = HalResourceLoader.withCustomHttpClient(new ApacheAsyncHttpSupport());
+    HalResourceLoader loader = HalResourceLoader.builder()
+        .withCustomHttpClient(new ApacheAsyncHttpSupport())
+        .build();
 
-    RequestMetricsCollector metrics = RequestMetricsCollector.create();
-
-    return HalApiClient.create(loader, metrics);
+    return HalApiClient.create(loader);
   }
 
 }

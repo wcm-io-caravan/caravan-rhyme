@@ -64,7 +64,9 @@ public interface RhymeBuilder {
    */
   static RhymeBuilder create() {
 
-    return new RhymeBuilderImpl(HalResourceLoader.withDefaultHttpClient());
+    HalResourceLoader defaultLoader = HalResourceLoader.builder().build();
+
+    return new RhymeBuilderImpl(defaultLoader);
   }
 
   /**
@@ -73,6 +75,7 @@ public interface RhymeBuilder {
    * @return the new instance
    */
   static RhymeBuilder withResourceLoader(HalResourceLoader resourceLoader) {
+
     return new RhymeBuilderImpl(resourceLoader);
   }
 

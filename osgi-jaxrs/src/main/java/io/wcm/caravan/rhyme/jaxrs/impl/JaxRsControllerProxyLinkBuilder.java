@@ -143,8 +143,8 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
 
       return new Link(url);
     }
-    catch (InstantiationException | IllegalAccessException ex) {
-      throw new RuntimeException("Failed to instantiate proxy for " + resourceClass.getName(), ex);
+    catch (InstantiationException | IllegalAccessException | RuntimeException ex) {
+      throw new HalApiDeveloperException("Failed to build link with proxy for " + resourceClass.getName(), ex);
     }
   }
 
@@ -305,7 +305,12 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
 
       String[] varSpecs = parameters.stream()
           .filter(tp -> tp.query)
-          .filter(tp -> !allRequiredParametersResolved || tp.required || valueAvailableCheck.test(tp))
+          .filter(tp -> {
+            // a query template variable should be kept if....
+            return !allRequiredParametersResolved // not all required parameters have been set, so a full URI template is rendered
+                || tp.required // this specific template variable is required
+                || valueAvailableCheck.test(tp); // tis (optional) template variable does have a value
+          })
           .sorted(comparator)
           .map(TemplateParameter::getVarName)
           .toArray(String[]::new);

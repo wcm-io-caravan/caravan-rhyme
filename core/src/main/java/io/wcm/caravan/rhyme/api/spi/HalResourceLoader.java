@@ -28,11 +28,10 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
-import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.impl.client.http.HttpHalResourceLoader;
-import io.wcm.caravan.rhyme.impl.client.http.HttpUrlConnectionSupport;
+import io.wcm.caravan.rhyme.impl.client.HalResourceLoaderBuilderImpl;
 
 /**
  * An interface to delegate (or mock) the actual loading (and caching) of all JSON+HAL resources
@@ -40,23 +39,32 @@ import io.wcm.caravan.rhyme.impl.client.http.HttpUrlConnectionSupport;
  * client implementation. The implementation needs to be thread safe, and the same
  * instance can be re-used throughout your application life-cycle.
  * <p>
- * You can implement {@link #getHalResource(String)} directly, but this will require you to
+ * If you don't need any configuration options (e.g. authentication), caching or asynchronous request handling,
+ * you can can simply use {@link #withDefaultHttpClient()} to create an instance that is using
+ * {@link HttpURLConnection} to execute the HTTP requests while blocking the current request.
+ * </p>
+ * <p>
+ * If you need full control over the HTTP client implementation to be used, and/or want to enable
+ * caching of HAL responses, you should call {@link #builder()} to configure and build
+ * a {@link HalResourceLoader} instance with the methods from {@link HalResourceLoaderBuilderImpl}.
+ * For caching to work properly, it is important that you'll then store and re-use the same
+ * {@link HalResourceLoader} instance when creating {@link Rhyme} or {@link HalApiClient} objects
+ * </p>
+ * <p>
+ * You can also implement this interface yourself, but this will require you to
  * also implement the JSON parsing and exception handling according to the expectations of the
  * {@link HalApiClient} implementation. A simpler way is to implement the callback-style
- * {@link HttpClientSupport} interface, and then call {@link #withCustomHttpClient(HttpClientSupport)}
+ * {@link HttpClientSupport} interface, and then use
+ * {@link HalResourceLoaderBuilderImpl#withCustomHttpClient(HttpClientSupport)}
  * to adapt it. In both cases, you should extend
  * the io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest (from the test-jar)
  * to test your implementation against a Wiremock server, to ensure that all expectations
  * regarding response and error handling are met.
  * </p>
- * <p>
- * If you don't need any configuration options (e.g. authentication) or asynchronous request handling,
- * you can can simply use {@link #withDefaultHttpClient()} to create an instance that is using
- * {@link HttpURLConnection} to execute the HTTP requests while blocking the current request.
- * </p>
  * @see HttpClientSupport
+ * @see HalResourceLoaderBuilderImpl
  * @see RhymeBuilder#withResourceLoader(HalResourceLoader)
- * @see HalApiClient#create(HalResourceLoader, RequestMetricsCollector)
+ * @see HalApiClient#create(HalResourceLoader)
  */
 @FunctionalInterface
 @ConsumerType
@@ -75,6 +83,12 @@ public interface HalResourceLoader {
    */
   Single<HalResponse> getHalResource(String uri);
 
+
+  static HalResourceLoaderBuilder builder() {
+
+    return new HalResourceLoaderBuilderImpl();
+  }
+
   /**
    * Create a {@link HalResourceLoader} that uses a {@link HttpURLConnection} with default configuration to
    * load the upstream resources.
@@ -84,17 +98,8 @@ public interface HalResourceLoader {
    */
   static HalResourceLoader withDefaultHttpClient() {
 
-    return HttpHalResourceLoader.withClientImplementation(new HttpUrlConnectionSupport());
+    // if no further methods are called, the builder will create a loader that uses HttpURLConnection (and no caching)
+    return builder().build();
   }
 
-  /**
-   * Create a {@link HalResourceLoader} that uses a custom HTTP client implementation to load the upstream resources.
-   * @param httpClient the callback-style implementation to use
-   * @return a {@link HalResourceLoader} that delegates all requests to the given {@link HttpClientSupport}
-   *         instance, and implements the error handling and response header/body parsing
-   */
-  static HalResourceLoader withCustomHttpClient(HttpClientSupport httpClient) {
-
-    return HttpHalResourceLoader.withClientImplementation(httpClient);
-  }
 }

@@ -426,7 +426,7 @@ public abstract class AbstractHalResourceLoaderTest {
         .hasRootCauseInstanceOf(JsonProcessingException.class);
 
     assertThat(ex.getCause())
-        .hasMessage("An HTTP response with status code 200 was retrieved, but the body could not be succesfully read and parsed as a JSON document")
+        .hasMessage("An HTTP response with status code 200 was retrieved, but the body could not be successfully read and parsed as a JSON document")
         .hasRootCauseInstanceOf(IOException.class);
   }
 

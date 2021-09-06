@@ -80,7 +80,7 @@ public class ClientTestSupport {
     return new ResourceTreeClientTestSupport();
   }
 
-  static MockClientTestSupport withMocking() {
+  public static MockClientTestSupport withMocking() {
     return new MockClientTestSupport();
   }
 
@@ -95,18 +95,18 @@ public class ClientTestSupport {
     }
   }
 
-  static class MockClientTestSupport extends ClientTestSupport {
+  public static class MockClientTestSupport extends ClientTestSupport {
 
 
     MockClientTestSupport() {
       super(Mockito.mock(HalResourceLoader.class));
     }
 
-    HalResourceLoader getMockJsonLoader() {
+    public HalResourceLoader getMockJsonLoader() {
       return this.jsonLoader;
     }
 
-    void mockResponseWithSupplier(String uri, Supplier<Single<HalResponse>> supplier) {
+    public void mockResponseWithSupplier(String uri, Supplier<Single<HalResponse>> supplier) {
 
       when(jsonLoader.getHalResource(uri))
           .thenAnswer(new Answer<Single<HalResponse>>() {
@@ -118,7 +118,7 @@ public class ClientTestSupport {
           });
     }
 
-    SubscriberCounter mockResponseWithSingle(String uri, Single<HalResponse> value) {
+    public SubscriberCounter mockResponseWithSingle(String uri, Single<HalResponse> value) {
 
       SubscriberCounter counter = new SubscriberCounter(value);
 
@@ -128,14 +128,14 @@ public class ClientTestSupport {
       return counter;
     }
 
-    SubscriberCounter mockFailedResponse(String uri, Integer statusCode) {
+    public SubscriberCounter mockFailedResponse(String uri, Integer statusCode) {
 
       HalApiClientException hace = new HalApiClientException("Simulated failed response", statusCode, uri, null);
 
       return mockResponseWithSingle(uri, Single.error(hace));
     }
 
-    SingleSubject<HalResource> mockHalResponseWithSubject(String uri) {
+    public SingleSubject<HalResource> mockHalResponseWithSubject(String uri) {
 
       SingleSubject<HalResource> testSubject = SingleSubject.create();
 
@@ -144,14 +144,14 @@ public class ClientTestSupport {
       return testSubject;
     }
 
-    SubscriberCounter mockHalResponse(String uri, HalResource hal) {
+    public SubscriberCounter mockHalResponse(String uri, HalResource hal) {
 
       HalResponse response = ConversionFunctions.toJsonResponse(hal);
 
       return mockResponseWithSingle(uri, Single.just(response));
     }
 
-    SubscriberCounter mockHalResponseWithState(String uri, Object state) {
+    public SubscriberCounter mockHalResponseWithState(String uri, Object state) {
 
       HalResource hal = new HalResource(state, uri);
 
@@ -159,7 +159,7 @@ public class ClientTestSupport {
     }
 
 
-    static final class SubscriberCounter {
+    public static final class SubscriberCounter {
 
       private final AtomicInteger counter = new AtomicInteger();
 
@@ -179,11 +179,11 @@ public class ClientTestSupport {
         }
       }
 
-      Single<HalResponse> getCountingSingle() {
+      public Single<HalResponse> getCountingSingle() {
         return countingSingle;
       }
 
-      int getCount() {
+      public int getCount() {
         return counter.get();
       }
     }

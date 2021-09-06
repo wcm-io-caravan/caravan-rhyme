@@ -21,19 +21,25 @@ package io.wcm.caravan.rhyme.api.spi;
 
 import java.net.URI;
 
+import org.osgi.annotation.versioning.ConsumerType;
+
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.impl.client.http.HttpUrlConnectionSupport;
 
 /**
- * As simpler callback-style SPI interface that you can implement instead of {@link HalResourceLoader}
+ * A simpler callback-style SPI interface that you can implement instead of {@link HalResourceLoader}
  * if you want to enable {@link Rhyme} or {@link HalApiClient} instances
  * to fetch HTTP resources with a custom client library.
- * You can then use {@link HalResourceLoader#withCustomHttpClient(HttpClientSupport)} to adapt this instance
- * to {@link HalResourceLoader} that adds the additional response parsing and error handling.
+ * You can then use {@link HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)} to build
+ * to {@link HalResourceLoader} that uses your implementation, and adds the additional response parsing and error
+ * handling.
  * @see HalResourceLoader
+ * @see HalResourceLoaderBuilder
  * @see HttpUrlConnectionSupport
  */
+@ConsumerType
 public interface HttpClientSupport {
 
   /**
@@ -45,11 +51,11 @@ public interface HttpClientSupport {
    * <li>{@link HttpClientCallback#onBodyAvailable(java.io.InputStream)} (required)</li>
    * </ul>
    * If any exception is thrown that prevents starting or completing the request, you must call
-   * {@link HttpClientCallback#onExceptionCaught(Exception)} once (and do not call any further methods).
+   * {@link HttpClientCallback#onExceptionCaught(Throwable)} once (and do not call any further methods).
    * @param uri the URI of the resource to load. This is usually a fully qualified HTTP(S) URL,but it could be any
    *          URI (depending on how the entry point was loaded and which kind of links are represented in the upstream
    *          resources)
-   * @param callback defining the
+   * @param callback that handles the response when it is available
    */
   void executeGetRequest(URI uri, HttpClientCallback callback);
 }

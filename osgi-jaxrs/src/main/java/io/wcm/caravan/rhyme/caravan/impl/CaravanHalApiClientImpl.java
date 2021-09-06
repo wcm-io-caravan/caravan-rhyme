@@ -22,7 +22,6 @@ package io.wcm.caravan.rhyme.caravan.impl;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
-import java.time.Clock;
 import java.util.concurrent.ExecutionException;
 
 import org.osgi.service.component.annotations.Activate;
@@ -32,7 +31,6 @@ import org.osgi.service.component.annotations.Reference;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.pipeline.JsonPipelineFactory;
@@ -47,7 +45,8 @@ import io.wcm.caravan.rhyme.caravan.api.CaravanHalApiClient;
 /**
  * Implementation of the {@link CaravanHalApiClient} OSGi service that will use the
  * {@link CaravanJsonPipelineResourceLoader} for caching if the caravan JSON pipeline bundles are available at runtime.
- * Otherwise, it will fall back to using the {@link CaravanGuavaResourceLoader})
+ * Otherwise, it will fall back to using the {@link CaravanResilientHttpSupport} with a default
+ * Guava cache.)
  */
 @Component
 public class CaravanHalApiClientImpl implements CaravanHalApiClient {
@@ -97,13 +96,13 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
     return client.getRemoteResource(uri, halApiInterface);
   }
 
-  @SuppressWarnings("PMD.PreserveStackTrace")
+
   HalResourceLoader getOrCreateHalResourceLoader(String serviceId) {
     try {
       return resourceLoaderCache.get(serviceId);
     }
-    catch (ExecutionException | UncheckedExecutionException ex) {
-      throw new HalApiDeveloperException("Failed to create resource loader for serviceId " + serviceId, ex.getCause());
+    catch (ExecutionException | RuntimeException ex) {
+      throw new HalApiDeveloperException("Failed to create resource loader for serviceId " + serviceId, ex);
     }
   }
 
@@ -111,7 +110,11 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
 
     @Override
     public HalResourceLoader load(String serviceId) throws Exception {
-      return new CaravanGuavaResourceLoader(httpClient, serviceId, Clock.systemUTC());
+
+      return HalResourceLoader.builder()
+          .withCustomHttpClient(new CaravanResilientHttpSupport(httpClient, serviceId))
+          .withMemoryCache()
+          .build();
     }
   }
 
