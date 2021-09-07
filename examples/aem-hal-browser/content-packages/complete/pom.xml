@@ -124,7 +124,8 @@
                 io.wcm.caravan,
                 org.reactivestreams,
                 io.reactivex.rxjava3,
-                com.damnhandy
+                com.damnhandy,
+                com.fasterxml.jackson.datatype
               </groupId>
               <type>jar</type>
             </embedded>

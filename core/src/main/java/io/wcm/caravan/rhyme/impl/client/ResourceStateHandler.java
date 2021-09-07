@@ -24,10 +24,18 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.HalResource;
 
 class ResourceStateHandler {
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+      .registerModule(new GuavaModule()) // allows de-serialization of Guava collections
+      .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
   private static final Logger log = LoggerFactory.getLogger(HalApiInvocationHandler.class);
 
@@ -58,7 +66,7 @@ class ResourceStateHandler {
 
   private Object convertResourceProperties(Class<?> resourcePropertiesType) {
 
-    return contextResource.adaptTo(resourcePropertiesType);
+    return OBJECT_MAPPER.convertValue(contextResource.getModel(), resourcePropertiesType);
   }
 
 }
