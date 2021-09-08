@@ -206,7 +206,7 @@ A local in-memory caching will ensure that the each resource is not fetched more
 ### Using a custom HTTP client implementation
 
 By default the HTTP requests will be executed using the JDK's `HttpURLConnection` class with default configuration. In many cases you will need to have more control over
-how exactly execute the HTTP request, and use a more sophisticated HTTP client library that is already used in your project or framework.
+how exactly execute the HTTP request (e.g. add authentication), and use a more sophisticated HTTP client library that is already used in your project or framework.
 
 To be able to retrieve HAL+JSON resources with any other HTTP client library you must create an implementation of the [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) SPI interface. 
 
@@ -219,9 +219,12 @@ Single<HalResponse> getHalResource(String uri);
 You can implement this interface completely by yourself, but this will require you to also implement the JSON parsing and exception handling according to the expectations of the framework. 
 
 A simpler way is to implement the callback-style [HttpClientSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HttpClientSupport.java)
-interface, and then call `HalResourceLoader#withCustomHttpClient()` to adapt it.
-In both cases, you should extend  the [AbstractHalResourceLoaderTest](src/test/java/io/wcm/caravan/ryhme/testing/client/AbstractHalResourceLoaderTest.java) 
+interface, and then use the [HalResourceLoaderBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/client/HalResourceLoaderBuilder.java).
+
+In both cases, you should extend the [AbstractHalResourceLoaderTest](src/test/java/io/wcm/caravan/ryhme/testing/client/AbstractHalResourceLoaderTest.java) 
 (from test test-jar) to test your implementation against a Wiremock server. These unit tests ensures that all expectations regarding response and error handling are met.
+
+The `HalResourceLoaderBuilder` also has further method to enable persistent caching of responses which are explained in a later section.
 
 
 ## Rendering HAL resources in your web service 
@@ -404,19 +407,35 @@ All this is usually done once in the integration module for your platform. For e
 
 ## Controlling caching
 
-The `cache-control: max-age` header is probably the most useful way of controlling caching in a system of distributed stateless web services. It does not require clients to keep track of last-modified dates or Etags, and there is also good support for it in CDNs, browsers and caching proxies.
+The `cache-control: max-age` header is arguably the most useful way of controlling caching in a system of distributed stateless web services. It does not require clients to keep track of last-modified dates or Etags, and there is also good support for it in CDNs, browsers and caching proxies.
 
 Within your server-side implementation, you can call `Rhyme#setResponseMaxAge(Duration)` at any time to set this cache header in the respose. If you call it multiple times, the lowest duration will be used. 
 
 If you are building a service that is also fetching HAL+JSON responses from other services (which is the main use case for **Rhyme**), the `max-age` headers from these upstream responses should also be taken into account: If any of those responses are only to be cached for a short time, the derived response that you are creating must also not be cached any longer than that. Otherwise you'll run into issues that changes to these upstream resources won't become effective for your consumers. This will all happen automatically if you make sure to re-use the same `Rhyme` instance to fetch upstream resources and render your own response.
 
-The **Rhyme** core framework does not implement any client-side caching layer itself. If you need such a cache layer, it can be added to your [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) implementation. But you should make sure to respect and update the max-age information from the Hal Response being cached.
+To enable caching for your upstream requests executed with `Rhyme` or `HalApiClient`, you need to use the [HalResourceLoaderBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/client/HalResourceLoaderBuilder.java) and call either `#withMemoryCache` or `#withCustomCache` to create an instance of a caching `HalResourceLoader` implementation. This instance should then be shared and re-used across your application by passing it to the `RhymeBuilder#withResourceLoader` or `HalApiClient#create` methods.
+
+Any response retrieved by the **Rhyme** framework will then be stored in this cache, and following requests to the same URL will use the cached response instance. Again, the `max-age` cache directive will be taken into account:
+
+- if the response in the cache is older than the `max-age` value, it it considered stale and will not be used. A fresh copy will be loaded (and again stored in the cache) 
+- the 'max-age' value of responses taken from cache will be updated automatically: if an upstream response required by your resource had specified a max-age of 60 seconds, but was already requested and cached 55 seconds ago, calling `HalResponse#getMaxAge` will return 5 seconds
+- If you are using this cached response in a service that is also rendering HAL+JSON resources with Rhyme, this loading this cached response with the adjusted max-age will automatically reduce the max-age of your own response: Since your response depends on data that is about to go stale in 5 seconds, your consumers shouldn't cache your response for longer than that either. 
+
+For this to work best, you should build your API with the following pattern:
+- for the entry point resource to your HAL API you should set a short (but not zero!) max-age value via `Rhyme#setResponseMaxAge(Duration)`
+- you should ensure that the entry point resource is rendering quickly, as it will be requested often (since any interaction with your API start with requesting the entry point)
+- any links pointing to resources that are expensive to generate should contain some kind of fingerprint (e.g. a hash or timestamp) in the URL that changes whenever the data changes. 
+- when a resource with such a fingerprint in the URL is rendered, you can set the max-age to a very high value as they are now essentially immutable (because if data changes, the clients will fetch them with a different URL instead)
+- Consumers will now automatically "poll" the entry point repeatedly. But as long as the data (and therefore the URLs) doesn't change, they will continue to use the same fingerprinted URLs to fetch the more expensive resources (and there is a high chance that those can be found in cache)
+
+Your consumers will not have to anything to benefit from these immutable resoures, as the additional fingerprinting in your URLs is not exposed anywhere in your API. It's entirely up to the server-side implementation to decide for which links these fingerprints are added, and the clients will just pick it up by following the links.
+
 
 ## Data debugging and performance analysis
 
 There is another benefit of re-using the same `Rhyme` instance while handling an incoming request: Every upstream resource that is fetched, and every annotated method called by the framework will be tracked by the Rhyme instance.
 
-When a HAL response is rendered, it will include a small embedded resource (using the `caravan:metadata` relation) that allows you to inspect what exactly the framework did to generate the response.
+When a HAL response is rendered, it will include a small embedded resource (using the `rhyme:metadata` relation) that allows you to inspect what exactly the framework did to generate the response.
 
 This resource will contain the following information:
 - a list of `via` links to every HAL resource that was fetched from an upstream service. The `title` and `name` attributes from the original `self` links of those resources will be included as well, giving you a very nice overview which external resources were retrieved to generate your resource. This is super helpful to dive directly into the relevant source data of your upstream services.
@@ -455,7 +474,7 @@ Some exceptions may also be thrown **before** you are calling `Rhyme#renderRespo
 
 The benefit of rendering this vnd.error response body for any error is that clients using the `Rhyme` framework will be able to parse this body, and include the error information in the [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java). If an upstream service fails, your service will not only render the information from the exception that has been caught, but also all information extracted from the vnd.error response of the upstream service. Even if you have multiple layers of remote services, your vnd.error response will have a neat list of all exception classes and messages, up to the original root cause on the remote server. This may sound trivial, but is very helpful to immediately understand what went wrong, without having to look into the logs of several external services.
 
-The embedded `caravan:metadata` resource with `via` links to all upstream resources that were loaded (until the error occured) is also present in the vnd.error resource. This can be useful to investigate the root cause as often a runtime exception is caused by unexpected data in an upstream service.
+The embedded `rhyme:metadata` resource with `via` links to all upstream resources that were loaded (until the error occured) is also present in the vnd.error resource. This can be useful to investigate the root cause as often a runtime exception is caused by unexpected data in an upstream service.
 
 ## Using reactive types in your API
 
