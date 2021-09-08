@@ -459,6 +459,25 @@ This resource will contain the following information:
 
 While the overhead of using the **Rhyme** framework is usually neglible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
 
+If you do have a section of code that you suspect to be a hotspot for performance optimization, you can easily add your own metrics to the response metadata:
+
+```
+  class YourClass {
+
+    private void doExpensiveStuffWith(Object param) {
+
+      try (RequestMetricsStopwatch sw = rhyme.startStopwatch(YourClass.class, () -> "calls to #doExpensiveStuffWith(" + param + ")")) {
+        // ... actually do expensive stuff with param
+      }
+    }
+  }
+```
+
+This will make the **Rhyme** instance count the number of calls to your method, and sum up the overall execution time so you can check if it's worth optimizing this bit of code (or avoid that it's being called repeatedly). 
+
+The advantage to using an external profiler is that execution times for the same section of code with different parameters can be distinguished, and only execution times from the current request are taken into account.
+
+
 ## Retaining error information over service boundaries
 
 Any runtime exceptions that are thrown by your implementation classes (or any **Rhyme** framework code) during the execution of `Rhyme#renderResponse` will be caught and handled: Instead of the regular HAL+JSON response with 200 status code, the `renderResponse` method will render a response with an appropriate status code, and a JSON body according to the [vnd.error+json](https://github.com/blongden/vnd.error) media type. This media type is just a very simple convention how error information is represented in a HAL+JSON compatible format, and will include the exception classes and messages of the whole exception chain.
