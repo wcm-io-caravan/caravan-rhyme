@@ -125,7 +125,8 @@
                 org.reactivestreams,
                 io.reactivex.rxjava3,
                 com.damnhandy,
-                com.fasterxml.jackson.datatype
+                com.fasterxml.jackson.datatype,
+                commons-beanutils
               </groupId>
               <type>jar</type>
             </embedded>
