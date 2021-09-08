@@ -32,8 +32,6 @@ import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 @ExtendWith(AemContextExtension.class)
-
-
 public class ApacheHttpClientFactorySupportTest extends AbstractHalResourceLoaderTest {
 
   private AemContext context = AppAemContext.newAemContext();
