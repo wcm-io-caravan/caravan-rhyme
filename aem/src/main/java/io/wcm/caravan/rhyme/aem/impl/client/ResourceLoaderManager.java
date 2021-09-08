@@ -27,7 +27,7 @@ import io.wcm.caravan.commons.httpclient.HttpClientFactory;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
-@Component(service = ResourceLoaderManager.class)
+@Component(service = ResourceLoaderManager.class, immediate = true)
 public class ResourceLoaderManager {
 
   private HalResourceLoader resourceLoader;
