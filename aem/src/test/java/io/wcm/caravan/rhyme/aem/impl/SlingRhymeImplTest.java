@@ -2,8 +2,8 @@ package io.wcm.caravan.rhyme.aem.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
+
+import java.net.UnknownHostException;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -12,19 +12,16 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 
 import com.day.cq.wcm.api.Page;
 import com.google.common.collect.ImmutableMap;
 
-import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.testing.api.SlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.context.AppAemContext;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
@@ -364,41 +361,23 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void getRemoteResource_should_fail_if_no_JsonResourceLoader_has_been_registered() {
+  public void getRemoteResource_should_use_resource_loader_created_with_HttpClientFactory() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
     // obtaining the client proxy will still work
-    SlingTestResource resource = rhyme.getRemoteResource("http://localhost/foo", SlingTestResource.class);
+    SlingTestResource resource = rhyme.getRemoteResource("http://foo.bar", SlingTestResource.class);
 
     // but as soon as a method that triggers an HTTP request is called, things will fall apart
     Throwable ex = catchThrowable(() -> resource.getState());
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
         .hasMessageStartingWith("Failed to load an upstream resource that was requested by calling SlingTestResource#getState()")
-        .hasCauseInstanceOf(HalApiClientException.class);
+        .hasCauseInstanceOf(HalApiClientException.class)
+        .hasRootCauseInstanceOf(UnknownHostException.class);
 
     assertThat(ex.getCause())
-        .hasMessageStartingWith("No OSGi services implementing " + HalResourceLoader.class + " are running");
-  }
+        .hasMessageStartingWith("HAL client request to http://foo.bar has failed");
 
-  @Test
-  public void getRemoteResource_should_use_registered_JsonResourceLoader_instance() {
-
-    HalApiClientException clientException = new HalApiClientException("Simulated client failure", 403, null, null);
-
-    HalResourceLoader resourceLoader = mock(HalResourceLoader.class);
-    Mockito.when(resourceLoader.getHalResource(anyString()))
-        .thenReturn(Single.error(clientException));
-    context.registerService(HalResourceLoader.class, resourceLoader);
-
-    SlingRhyme rhyme = createRhymeInstance();
-
-    SlingTestResource resource = rhyme.getRemoteResource("http://localhost/foo", SlingTestResource.class);
-
-    Throwable ex = catchThrowable(() -> resource.getState());
-
-    assertThat(ex).isInstanceOf(HalApiClientException.class)
-        .hasCause(clientException);
   }
 }
