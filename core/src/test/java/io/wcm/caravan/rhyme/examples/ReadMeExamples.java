@@ -44,6 +44,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
@@ -450,5 +451,15 @@ public class ReadMeExamples {
       return allItems.size();
     }
 
+  }
+
+  class YourClass {
+
+    private void doExpensiveStuffWith(String param) {
+
+      try (RequestMetricsStopwatch sw = rhyme.startStopwatch(YourClass.class, () -> "calls to #doExpensiveStuff(" + param + ")")) {
+        // actually do expensiveStuff
+      }
+    }
   }
 }
