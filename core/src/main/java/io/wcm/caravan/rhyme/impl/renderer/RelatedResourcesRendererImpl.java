@@ -101,7 +101,8 @@ final class RelatedResourcesRendererImpl {
           if (!unsupportedClassNames.isEmpty()) {
             throw new HalApiDeveloperException("Your server side resource implementation classes must implement either "
                 + EmbeddableResource.class.getSimpleName() + " or " + LinkableResource.class.getSimpleName() + ". "
-                + " This is not the case for " + unsupportedClassNames);
+                + " This is not the case for " + unsupportedClassNames + ", which is linked from "
+                + resourceImplInstance.getClass() + " with relation " + relation);
           }
 
           return new RelationRenderResult(relation, links, embeddedResources, multiValue);

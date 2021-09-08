@@ -99,7 +99,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
     // CHECKSTYLE:OFF - we really want to catch any other possible runtime exceptions here to add additional information on the method being called
     catch (Exception e) {
       // CHECKSTYLE:ON
-      throw new RuntimeException("The invocation of " + invocation + " has failed with an unexpected exception", e);
+      throw new RuntimeException("The invocation of " + invocation + " on a client proxy has failed with an unexpected exception", e);
     }
   }
 

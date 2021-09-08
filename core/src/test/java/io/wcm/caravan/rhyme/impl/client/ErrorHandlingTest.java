@@ -230,7 +230,7 @@ public class ErrorHandlingTest {
     Throwable ex = catchThrowable(() -> entryPoint.getStream());
 
     assertThat(ex).isInstanceOf(RuntimeException.class)
-        .hasMessageStartingWith("The invocation of ResourceWithCustomReturnType#getStream() has failed with an unexpected exception")
+        .hasMessageStartingWith("The invocation of ResourceWithCustomReturnType#getStream() on a client proxy has failed with an unexpected exception")
         .hasCause(cause);
   }
 
