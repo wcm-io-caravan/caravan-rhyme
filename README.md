@@ -459,7 +459,7 @@ This resource will contain the following information:
 
 While the overhead of using the **Rhyme** framework is usually neglible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
 
-If you do have a section of code that you suspect to be a hotspot for performance optimization, you can easily add your own metrics to the response metadata:
+If you do have a section of yor own code that you suspect to be a hotspot for performance optimization, you can easily add your own metrics to the response metadata:
 
 ```
   class YourClass {
