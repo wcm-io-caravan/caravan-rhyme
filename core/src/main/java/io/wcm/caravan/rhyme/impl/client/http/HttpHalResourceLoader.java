@@ -34,6 +34,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Stopwatch;
 
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleEmitter;
@@ -83,6 +84,8 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
   private class HttpClientCallbackImpl implements HttpClientCallback {
 
+    private final Stopwatch stopwatch = Stopwatch.createStarted();
+
     private final SingleEmitter<HalResponse> subscriber;
 
     private final AtomicBoolean responseOrErrorWasEmitted = new AtomicBoolean();
@@ -131,6 +134,8 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     private void emitHalResponse() {
 
       if (responseOrErrorWasEmitted.compareAndSet(false, true)) {
+        log.debug("HTTP response from {} was retrieved in {}", actualUri, stopwatch);
+
         subscriber.onSuccess(halResponse);
       }
       else {
@@ -144,6 +149,8 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
         String uri = actualUri != null ? actualUri.toString() : originalUri;
         HalApiClientException ex = new HalApiClientException(halResponse, uri, cause);
+
+        log.debug("HTTP request to {} failed with status {} after {}", uri, halResponse.getStatus(), stopwatch);
 
         subscriber.onError(ex);
       }

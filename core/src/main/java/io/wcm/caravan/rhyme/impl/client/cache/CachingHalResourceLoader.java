@@ -23,6 +23,9 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
@@ -31,6 +34,8 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 
 public class CachingHalResourceLoader implements HalResourceLoader {
+
+  private static final Logger log = LoggerFactory.getLogger(CachingHalResourceLoader.class);
 
   private final HalResourceLoader upstream;
 
@@ -42,6 +47,9 @@ public class CachingHalResourceLoader implements HalResourceLoader {
 
   public CachingHalResourceLoader(HalResourceLoader upstream, HalResponseCache cache, CachingConfiguration configuration,
       Clock clock) {
+    log.info("{} was created using {} as a cache backend. "
+        + "If you are seeing this log message frequently, then you are not re-using your HalResourceLoader instance properly.",
+        getClass().getSimpleName(), cache.getClass());
     this.upstream = upstream;
     this.cache = cache;
     this.configuration = configuration;
@@ -60,7 +68,9 @@ public class CachingHalResourceLoader implements HalResourceLoader {
     return cache.load(uri)
         .map(CachedResponse::new)
         .filter(CachedResponse::isFresh)
-        .map(CachedResponse::getResponseWithAdjustedMaxAge);
+        .map(CachedResponse::getResponseWithAdjustedMaxAge)
+        .doOnSuccess(response -> log.debug("A fresh response for {} was as found in {} with remaining max-age of {}",
+            uri, cache.getClass().getSimpleName(), response.getMaxAge()));
   }
 
   private Single<HalResponse> loadFromUpstreamAndStoreInCache(String uri) {
@@ -87,6 +97,8 @@ public class CachingHalResourceLoader implements HalResourceLoader {
   private void storeInCache(String uri, HalResponse response) {
 
     if (response.getMaxAge() > 0) {
+      log.debug("Response for {} is being stored in {} with max-age={} seconds", uri, cache.getClass().getSimpleName(), response.getMaxAge());
+
       cache.store(uri, response);
     }
   }
@@ -108,7 +120,14 @@ public class CachingHalResourceLoader implements HalResourceLoader {
 
     boolean isFresh() {
 
-      return getSecondsInCache() < response.getMaxAge();
+      int secondsInCache = getSecondsInCache();
+      boolean fresh = secondsInCache < response.getMaxAge();
+
+      if (!fresh) {
+        log.debug("A response found in cache was considered stale, because it was stored {} seconds ago", secondsInCache);
+      }
+
+      return fresh;
     }
 
     HalResponse getResponseWithAdjustedMaxAge() {
@@ -118,24 +137,19 @@ public class CachingHalResourceLoader implements HalResourceLoader {
     }
   }
 
-
   HalResourceLoader getUpstream() {
-    return this.upstream;
+    return upstream;
   }
-
 
   HalResponseCache getCache() {
-    return this.cache;
+    return cache;
   }
-
 
   CachingConfiguration getConfiguration() {
-    return this.configuration;
+    return configuration;
   }
-
 
   Clock getClock() {
-    return this.clock;
+    return clock;
   }
-
 }

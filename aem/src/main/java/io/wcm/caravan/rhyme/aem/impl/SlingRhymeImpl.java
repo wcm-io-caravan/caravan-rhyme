@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.impl.client.ResourceLoaderManager;
 import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -45,7 +46,8 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   private final Rhyme rhyme;
 
   @Inject
-  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ModelFactory modelFactory, ResourceLoaderRegistry resourceLoaders, RhymeDocsOsgiBundleSupport rhymeDocs) {
+  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ModelFactory modelFactory, ResourceLoaderManager resourceLoaders,
+      RhymeDocsOsgiBundleSupport rhymeDocs) {
 
     this.modelFactory = modelFactory;
     this.request = request;
