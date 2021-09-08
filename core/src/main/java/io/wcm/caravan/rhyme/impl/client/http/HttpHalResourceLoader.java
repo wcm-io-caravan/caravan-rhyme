@@ -135,6 +135,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
       if (responseOrErrorWasEmitted.compareAndSet(false, true)) {
         log.debug("HTTP response from {} was retrieved in {}", actualUri, stopwatch);
+
         subscriber.onSuccess(halResponse);
       }
       else {
@@ -150,6 +151,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
         HalApiClientException ex = new HalApiClientException(halResponse, uri, cause);
 
         log.debug("HTTP request to {} failed with status {} after {}", uri, halResponse.getStatus(), stopwatch);
+
         subscriber.onError(ex);
       }
       else {

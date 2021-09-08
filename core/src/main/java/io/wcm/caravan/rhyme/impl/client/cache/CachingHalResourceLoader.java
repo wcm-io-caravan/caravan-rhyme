@@ -121,7 +121,6 @@ public class CachingHalResourceLoader implements HalResourceLoader {
     boolean isFresh() {
 
       int secondsInCache = getSecondsInCache();
-
       boolean fresh = secondsInCache < response.getMaxAge();
 
       if (!fresh) {
@@ -138,7 +137,6 @@ public class CachingHalResourceLoader implements HalResourceLoader {
     }
   }
 
-
   HalResourceLoader getUpstream() {
     return upstream;
   }
@@ -154,5 +152,4 @@ public class CachingHalResourceLoader implements HalResourceLoader {
   Clock getClock() {
     return clock;
   }
-
 }
