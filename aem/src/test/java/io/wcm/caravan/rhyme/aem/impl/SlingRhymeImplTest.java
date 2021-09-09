@@ -85,7 +85,7 @@ public class SlingRhymeImplTest {
     // the injected SlingRhyme instance is a different instance (because the current resource might be different)
     assertThat(model.slingRhyme).isNotSameAs(slingRhyme);
     // but they both should share the same caravan Rhyme instance
-    assertThat(((SlingRhymeImpl)model.slingRhyme).getCaravanRhyme()).isSameAs(slingRhyme.getCaravanRhyme());
+    assertThat(model.slingRhyme.getCoreRhyme()).isSameAs(slingRhyme.getCoreRhyme());
 
     // the current resource is set to the resource from which the new model was adapted
     assertThat(model.slingRhyme.getCurrentResource()).isSameAs(resourceToAdapt);

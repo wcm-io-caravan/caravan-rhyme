@@ -26,11 +26,9 @@ import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
-import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingHttpServletRequest.class, adapters = { SlingRhyme.class, SlingRhymeImpl.class })
@@ -78,7 +76,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     }
 
     if (resource != currentResource) {
-      SlingRhymeImpl slingRhymeWithNextResource = new SlingRhymeImpl(this, resource);
+      SlingRhyme slingRhymeWithNextResource = new SlingRhymeImpl(this, resource);
       return slingRhymeWithNextResource.adaptResource(resource, modelClass);
     }
 
@@ -193,20 +191,12 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     rhyme.setResponseMaxAge(duration);
   }
 
-  HalResponse renderResource(LinkableResource resourceImpl) {
-    return rhyme.renderResponse(resourceImpl).blockingGet();
-  }
-
-  HalResponse renderVndErrorResponse(Throwable error) {
-    return rhyme.renderVndErrorResponse(error);
-  }
-
-  public Rhyme getCaravanRhyme() {
+  @Override
+  public Rhyme getCoreRhyme() {
     return rhyme;
   }
 
   public UrlHandler getUrlHandler() {
     return urlHandler;
   }
-
 }

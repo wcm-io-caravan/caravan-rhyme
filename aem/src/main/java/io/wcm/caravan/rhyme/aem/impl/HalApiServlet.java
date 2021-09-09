@@ -67,13 +67,13 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
 
       LinkableResource requestedResource = adaptRequestedResourceToSlingModel(request, rhyme);
 
-      HalResponse halResponse = rhyme.renderResource(requestedResource);
+      HalResponse halResponse = rhyme.getCoreRhyme().renderResponse(requestedResource).blockingGet();
 
       writeHalResponse(request, halResponse, response);
     }
     catch (RuntimeException ex) {
 
-      HalResponse errorResponse = rhyme.renderVndErrorResponse(ex);
+      HalResponse errorResponse = rhyme.getCoreRhyme().renderVndErrorResponse(ex);
 
       writeHalResponse(request, errorResponse, response);
     }

@@ -112,4 +112,11 @@ public interface SlingRhyme extends Adaptable {
    */
   <T> @NotNull T getRemoteResource(String uri, Class<T> halApiInterface);
 
+  /**
+   * Provides access to the underlying {@link Rhyme} instance of the core framework, just in case you need
+   * to call one of the methods for which there doesn't exist a delegate in the {@link SlingRhyme} interface
+   * @return the single {@link Rhyme} instance that is used throughout the incoming request
+   */
+  Rhyme getCoreRhyme();
+
 }
