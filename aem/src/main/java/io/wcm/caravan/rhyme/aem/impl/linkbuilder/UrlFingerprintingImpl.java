@@ -33,6 +33,7 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import com.damnhandy.uri.template.UriTemplate;
+import com.damnhandy.uri.template.UriTemplateBuilder;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.FingerprintBuilder;
@@ -73,14 +74,26 @@ public class UrlFingerprintingImpl implements UrlFingerprinting {
   @Override
   public String appendIncomingFingerprintTo(String uri) {
 
-    UriTemplate template = UriTemplate
-        .buildFromTemplate(uri)
-        .query(LAST_MODIFIED)
-        .build();
+    UriTemplateBuilder builder = UriTemplate.buildFromTemplate(uri);
 
-    return template
-        .set(LAST_MODIFIED, lastModifiedFromRequest)
-        .expandPartial();
+    Map<String, Object> queryParams = getQueryParamsFromIncomingRequest();
+    queryParams.keySet().forEach(builder::query);
+
+    UriTemplate template = builder.build();
+    queryParams.forEach(template::set);
+
+    return template.expandPartial();
+  }
+
+  public Map<String, Object> getQueryParamsFromIncomingRequest() {
+
+    Map<String, Object> queryParams = new LinkedHashMap<>();
+
+    if (lastModifiedFromRequest != null) {
+      queryParams.put(LAST_MODIFIED, lastModifiedFromRequest);
+    }
+
+    return queryParams;
   }
 
   public Map<String, Object> getQueryParams(SlingLinkableResource slingModel) {
@@ -131,4 +144,6 @@ public class UrlFingerprintingImpl implements UrlFingerprinting {
       }
     }
   }
+
+
 }

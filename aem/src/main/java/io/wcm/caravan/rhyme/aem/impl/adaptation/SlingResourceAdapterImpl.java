@@ -20,6 +20,7 @@ import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.adaptation.PostAdaptationStage;
 import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
+import io.wcm.caravan.rhyme.aem.impl.SlingRhymeImpl;
 import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
 import io.wcm.caravan.rhyme.aem.impl.util.ResourceStreams;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
@@ -29,7 +30,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
 
   private static final Logger log = getLogger(SlingResourceAdapterImpl.class);
 
-  private final SlingRhyme slingRhyme;
+  private final SlingRhymeImpl slingRhyme;
   private final RhymeResourceRegistry registry;
 
   private final Resource fromResource;
@@ -39,7 +40,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   private final ResourceFilter resourceFilter;
 
   @Inject
-  public SlingResourceAdapterImpl(@Self SlingRhyme slingRhyme, RhymeResourceRegistry registry) {
+  public SlingResourceAdapterImpl(@Self SlingRhymeImpl slingRhyme, RhymeResourceRegistry registry) {
     this.slingRhyme = slingRhyme;
     this.registry = registry;
     this.fromResource = null;

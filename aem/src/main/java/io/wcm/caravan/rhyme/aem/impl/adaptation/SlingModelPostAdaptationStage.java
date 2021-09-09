@@ -40,6 +40,8 @@ final class SlingModelPostAdaptationStage<I, M extends I> implements PostAdaptat
   private final Class<M> clazz;
   private final List<Consumer<M>> instanceDecorators;
 
+  private boolean useFingerprintFromIncomingRequest;
+
   SlingModelPostAdaptationStage(SlingResourceAdapterImpl adapterImpl, Class<I> interfaze, Class<M> clazz) {
     this.adapterImpl = adapterImpl;
     this.interfaze = interfaze;
@@ -100,6 +102,11 @@ final class SlingModelPostAdaptationStage<I, M extends I> implements PostAdaptat
   }
 
   @Override
+  public PostAdaptationStage<I, M> withFingerprintFromIncomingRequest() {
+    throw new HalApiDeveloperException("#withFingerprintFromIncomingRequest can only be called if you selected a null resource path to create a template");
+  }
+
+  @Override
   public PostAdaptationStage<I, M> withQueryParameterTemplate(String... names) {
     throw new HalApiDeveloperException("#withQueryParameterTemplatecan can only be called if you selected a null resource path to create a template");
   }
@@ -151,5 +158,6 @@ final class SlingModelPostAdaptationStage<I, M extends I> implements PostAdaptat
 
     return model;
   }
+
 
 }

@@ -22,6 +22,8 @@ package io.wcm.caravan.rhyme.aem.impl.adaptation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -33,6 +35,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.adaptation.PostAdaptationStage;
 import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
+import io.wcm.caravan.rhyme.aem.impl.linkbuilder.UrlFingerprintingImpl;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.handler.url.UrlHandler;
@@ -48,6 +51,7 @@ final class TemplateProxyPostAdaptationStage<I, M extends I> implements PostAdap
   private String linkTitle;
   private String linkName;
   private String[] queryParameters;
+  private boolean useFingerprintFromIncomingRequest;
 
   TemplateProxyPostAdaptationStage(SlingResourceAdapterImpl adapterImpl, Class<I> halApiInterface, RhymeResourceRegistry registry) {
     this.adapterImpl = adapterImpl;
@@ -70,6 +74,12 @@ final class TemplateProxyPostAdaptationStage<I, M extends I> implements PostAdap
   @Override
   public PostAdaptationStage<I, M> withQueryParameterTemplate(String... names) {
     this.queryParameters = names;
+    return this;
+  }
+
+  @Override
+  public PostAdaptationStage<I, M> withFingerprintFromIncomingRequest() {
+    useFingerprintFromIncomingRequest = true;
     return this;
   }
 
@@ -122,11 +132,24 @@ final class TemplateProxyPostAdaptationStage<I, M extends I> implements PostAdap
 
     UriTemplateBuilder builder = UriTemplate.buildFromTemplate(baseTemplate);
 
+    Map<String, Object> fingerprintingParams = Collections.emptyMap();
+    if (useFingerprintFromIncomingRequest) {
+      UrlFingerprintingImpl fingerprinting = adapterImpl.getSlingRhyme().adaptTo(UrlFingerprintingImpl.class);
+
+      fingerprintingParams = fingerprinting.getQueryParamsFromIncomingRequest();
+
+      fingerprintingParams.keySet().forEach(builder::query);
+    }
+
     if (queryParameters != null) {
       builder.query(queryParameters);
     }
-    String uriTemplate = builder.build()
-        .getTemplate();
+
+    UriTemplate template = builder.build();
+
+    fingerprintingParams.forEach(template::set);
+
+    String uriTemplate = template.expandPartial();
 
     return new Link(uriTemplate)
         .setTitle(linkTitle)
@@ -144,4 +167,5 @@ final class TemplateProxyPostAdaptationStage<I, M extends I> implements PostAdap
         .extension(HalApiServlet.EXTENSION)
         .buildExternalLinkUrl();
   }
+
 }

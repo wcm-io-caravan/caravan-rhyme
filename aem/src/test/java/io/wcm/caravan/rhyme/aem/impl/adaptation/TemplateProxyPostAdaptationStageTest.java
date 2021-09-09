@@ -217,7 +217,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void adaptTo_should_not_allow_to_specify_model_class_if_selectResourceAt_was_called_with_null_path() throws Exception {
+  public void adaptTo_should_allow_to_specify_model_class_if_selectResourceAt_was_called_with_null_path() throws Exception {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
