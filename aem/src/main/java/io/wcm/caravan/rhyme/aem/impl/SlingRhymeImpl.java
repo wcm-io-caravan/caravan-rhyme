@@ -196,6 +196,10 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     return rhyme;
   }
 
+  public SlingHttpServletRequest getRequest() {
+    return request;
+  }
+
   public UrlHandler getUrlHandler() {
     return urlHandler;
   }

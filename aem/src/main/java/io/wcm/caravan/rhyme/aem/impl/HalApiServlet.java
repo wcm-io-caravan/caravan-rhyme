@@ -51,7 +51,7 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
 
   public static final String EXTENSION = "rhyme";
 
-  static final String QUERY_PARAM_EMBED_METADATA = "embedMetadata";
+  public static final String QUERY_PARAM_EMBED_METADATA = "embedMetadata";
 
   @Reference
   private RhymeResourceRegistry registry;
