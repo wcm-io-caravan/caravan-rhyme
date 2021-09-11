@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.rhyme.aem.impl.adaptation;
 
+import static io.wcm.caravan.rhyme.aem.impl.linkbuilder.UrlFingerprintingImpl.TIMESTAMP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -253,5 +254,61 @@ public class TemplateProxyPostAdaptationStageTest {
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageStartingWith("Unsupported call to getState method");
   }
+
+  @Test
+  public void withFingerprintFromIncomingRequest_adds_timestamp_from_request() throws Exception {
+
+    String incomingQuery = TIMESTAMP + "=foo";
+    context.request().setQueryString(incomingQuery);
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    SlingTestResource resource = adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .withFingerprintFromIncomingRequest()
+        .getInstance();
+
+    Link link = resource.createLink();
+
+    assertThat(link.getHref())
+        .isEqualTo("{+path}.selectortest.rhyme?" + incomingQuery);
+  }
+
+  @Test
+  public void withFingerprintFromIncomingRequest_adds_timestamp_before_query_parameters() throws Exception {
+
+    String incomingQuery = TIMESTAMP + "=foo";
+    context.request().setQueryString(incomingQuery);
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    SlingTestResource resource = adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .withFingerprintFromIncomingRequest()
+        .withQueryParameterTemplate("bar")
+        .getInstance();
+
+    Link link = resource.createLink();
+
+    assertThat(link.getHref())
+        .isEqualTo("{+path}.selectortest.rhyme?" + incomingQuery + "{&bar}");
+  }
+
+  @Test
+  public void withFingerprintFromIncomingRequest_should_not_expect_timestamp_to_be_present() throws Exception {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    SlingTestResource resource = adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .withFingerprintFromIncomingRequest()
+        .getInstance();
+
+    Link link = resource.createLink();
+
+    assertThat(link.getHref())
+        .isEqualTo("{+path}.selectortest.rhyme");
+  }
+
 
 }

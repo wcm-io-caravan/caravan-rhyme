@@ -138,6 +138,13 @@
     </dependency>
 
     <dependency>
+      <groupId>com.mercateo</groupId>
+      <artifactId>test-clock</artifactId>
+      <version>1.0.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
@@ -205,12 +212,21 @@
       <scope>test</scope>
       <version>1.4.0</version>
     </dependency>
+
+    <!-- for some reason we need to use a 3.x version of those mock bundles to use the ResourceResolverType.JCR_MOCK -->
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.testing.sling-mock.junit5</artifactId>
+      <version>3.1.0</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.sling</groupId>
       <artifactId>org.apache.sling.testing.osgi-mock.junit5</artifactId>
-      <version>2.4.16</version>
+      <version>3.1.4</version>
       <scope>test</scope>
     </dependency>
+
 
     <!-- required as a workaround for the unit-tests to run with Java 12+ - see https://issues.apache.org/jira/browse/FELIX-6157 -->
     <dependency>

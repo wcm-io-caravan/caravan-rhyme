@@ -160,7 +160,6 @@ public class SlingModelPostAdaptationStageTest {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
-
     Throwable ex = catchThrowable(() -> adapter.selectCurrentResource()
         .adaptTo(ClassThatDoesNotImplementSlingLinkableResource.class)
         .withQueryParameterTemplate("foo")
@@ -168,7 +167,20 @@ public class SlingModelPostAdaptationStageTest {
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageStartingWith("#withQueryParameterTemplatecan can only be called if you selected a null resource path to create a template");
+  }
 
+  @Test
+  public void withFingerprintFromIncomingRequest_fails_if_non_null_resource_path_was_selected() {
+
+    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+
+    Throwable ex = catchThrowable(() -> adapter.selectCurrentResource()
+        .adaptTo(ClassThatDoesNotImplementSlingLinkableResource.class)
+        .withFingerprintFromIncomingRequest()
+        .getInstance());
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("#withFingerprintFromIncomingRequest can only be called if you selected a null resource path to create a template");
   }
 
   @Test

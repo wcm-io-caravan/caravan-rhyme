@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.jetbrains.annotations.NotNull;
 
 import io.wcm.caravan.commons.httpclient.impl.HttpClientFactoryImpl;
@@ -42,6 +43,25 @@ public final class AppAemContext {
         .registerSlingModelsFromClassPath(true)
         .build();
 
+    registerRequiredServices(context);
+
+    return context;
+  }
+
+  public static AemContext newAemContextWithJcrMock() {
+
+    AemContext context = new AemContextBuilder(ResourceResolverType.JCR_MOCK)
+        .plugin(WCMIO_SLING, WCMIO_WCM)
+        .registerSlingModelsFromClassPath(true)
+        .build();
+
+    registerRequiredServices(context);
+
+    return context;
+  }
+
+  private static void registerRequiredServices(AemContext context) {
+
     context.registerInjectActivateService(new HttpClientFactoryImpl());
     context.registerInjectActivateService(new ResourceLoaderManager());
 
@@ -50,8 +70,6 @@ public final class AppAemContext {
     context.registerInjectActivateService(new RhymeResourceRegistry());
 
     context.registerInjectActivateService(new QueryParamInjector());
-
-    return context;
   }
 
   /**

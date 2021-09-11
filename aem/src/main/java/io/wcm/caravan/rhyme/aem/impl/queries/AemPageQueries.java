@@ -58,9 +58,12 @@ public class AemPageQueries {
     public Instant load(String rootPath) throws Exception {
 
       Session session = resolver.adaptTo(Session.class);
+      if (session == null) {
+        throw new HalApiDeveloperException("Could not adapt ResourceResolver to JCR Session");
+      }
       QueryManager queryManager = session.getWorkspace().getQueryManager();
 
-      String xpath = "/jcr:root" + rootPath + "//element(*, cq:PageContent) order by @cq:lastModified descending";
+      String xpath = getLastModifiedPageContentQuery(rootPath);
       Query query = queryManager.createQuery(xpath, "xpath");
 
       QueryResult result = query.execute();
@@ -74,6 +77,10 @@ public class AemPageQueries {
 
       return Instant.ofEpochMilli(lastModified.getTimeInMillis());
     }
+  }
+
+  public static String getLastModifiedPageContentQuery(String rootPath) {
+    return "/jcr:root" + rootPath + "//element(*, cq:PageContent) order by @cq:lastModified descending";
   }
 }
 

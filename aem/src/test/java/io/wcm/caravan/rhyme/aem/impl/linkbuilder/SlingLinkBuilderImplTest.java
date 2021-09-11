@@ -1,6 +1,8 @@
 package io.wcm.caravan.rhyme.aem.impl.linkbuilder;
 
+import static io.wcm.caravan.rhyme.aem.impl.linkbuilder.UrlFingerprintingImpl.TIMESTAMP;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.function.Consumer;
 
@@ -12,13 +14,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.api.linkbuilder.FingerprintBuilder;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.api.parameters.QueryParam;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
+import io.wcm.caravan.rhyme.aem.api.resources.ImmutableResource;
 import io.wcm.caravan.rhyme.aem.testing.context.AppAemContext;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.aem.testing.models.UnregisteredSlingTestResource;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
@@ -37,11 +42,11 @@ public class SlingLinkBuilderImplTest {
     return AppAemContext.createRhymeInstance(context, resourcePath);
   }
 
-  private SlingLinkBuilder createLinkBuilder(String resourcePath) {
+  private SlingLinkBuilderImpl createLinkBuilder(String resourcePath) {
 
     SlingRhyme slingRhyme = createRhymeInstance(resourcePath);
 
-    return slingRhyme.adaptTo(SlingLinkBuilder.class);
+    return slingRhyme.adaptTo(SlingLinkBuilderImpl.class);
   }
 
   @Test
@@ -234,6 +239,100 @@ public class SlingLinkBuilderImplTest {
     public void setString(String string) {
       this.string = string;
     }
+  }
+
+  @Test
+  public void createLinkToCurrentResource_can_append_timestamp_from_current_request() throws Exception {
+
+    String incomingQuery = TIMESTAMP + "=foo";
+    context.request().setQueryString(incomingQuery);
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    AbstractLinkableResource resource = new ResourceWithTimestampFromRequest();
+
+    Link link = linkBuilder.createLinkToCurrentResource(resource);
+
+    assertThat(link.getHref())
+        .isEqualTo("/content.rhyme?" + incomingQuery);
+  }
+
+  @Test
+  public void createLinkToCurrentResource_does_not_expect_timestamp_to_be_present_in_current_request() throws Exception {
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    AbstractLinkableResource resource = new ResourceWithTimestampFromRequest();
+
+    Link link = linkBuilder.createLinkToCurrentResource(resource);
+
+    assertThat(link.getHref())
+        .isEqualTo("/content.rhyme");
+  }
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ResourceWithTimestampFromRequest extends AbstractLinkableResource implements ImmutableResource {
+
+    @Override
+    public void buildFingerprint(FingerprintBuilder fingerprint) {
+
+      fingerprint.useFingerprintFromIncomingRequest();
+    }
+
+    @Override
+    protected String getDefaultLinkTitle() {
+      return "default link title";
+    }
+  }
+
+  @Test
+  public void createLinkToCurrentResource_fails_if_no_fingerprint_was_built() throws Exception {
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    AbstractLinkableResource resource = new ResourceWithIncompleteFingerprint();
+
+    Throwable ex = catchThrowable(() -> linkBuilder.createLinkToCurrentResource(resource));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageContaining("must call at least one of the methods from the builder");
+  }
+
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ResourceWithIncompleteFingerprint extends AbstractLinkableResource implements ImmutableResource {
+
+    @Override
+    public void buildFingerprint(FingerprintBuilder fingerprint) {
+
+      // we are not calling any method on the builder on purpose
+    }
+
+    @Override
+    protected String getDefaultLinkTitle() {
+      return "default link title";
+    }
+  }
+
+  @Test
+  public void createLinkToCurrentResource_fails_if_resource_is_not_a_JcrNode() throws Exception {
+
+    SlingLinkBuilderImpl linkBuilder = createLinkBuilder("/content");
+
+    AbstractLinkableResource resource = linkBuilder.getSlingRhyme()
+        .adaptTo(UrlFingerprintingImplTest.ResourceWithLastModifiedBelowContentTimestamp.class);
+
+    // this fails because unit-tests from this class are not using a AemContext using ResourceResolverType.JCR_MOCK
+    // the same test would work when executde UrlFingerPrintingImplTest which does use mocked JCR resources
+    Throwable ex = catchThrowable(() -> linkBuilder.createLinkToCurrentResource(resource));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessage("Failed to get most recent cq:lastModified below /content");
+
+    assertThat(ex)
+        .hasRootCauseMessage("Could not adapt ResourceResolver to JCR Session");
   }
 
 }

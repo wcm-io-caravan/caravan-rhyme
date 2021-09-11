@@ -15,6 +15,7 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 import com.damnhandy.uri.template.UriTemplate;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.SlingLinkBuilder;
 import io.wcm.caravan.rhyme.aem.api.resources.ImmutableResource;
 import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
@@ -131,6 +132,10 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
     return registry.getSelectorForModelClass(slingModel.getClass())
         .orElse(null);
+  }
+
+  SlingRhyme getSlingRhyme() {
+    return rhyme;
   }
 
 }

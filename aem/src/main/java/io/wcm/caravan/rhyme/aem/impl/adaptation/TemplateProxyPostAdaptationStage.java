@@ -23,9 +23,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.damnhandy.uri.template.UriTemplate;
@@ -50,8 +52,9 @@ final class TemplateProxyPostAdaptationStage<I, M extends I> implements PostAdap
 
   private String linkTitle;
   private String linkName;
-  private String[] queryParameters;
-  private boolean useFingerprintFromIncomingRequest;
+
+  private List<String> queryParameterNames = Collections.emptyList();
+  private Map<String, Object> fingerprintingParams = Collections.emptyMap();
 
   TemplateProxyPostAdaptationStage(SlingResourceAdapterImpl adapterImpl, Class<I> halApiInterface, RhymeResourceRegistry registry) {
     this.adapterImpl = adapterImpl;
@@ -73,13 +76,18 @@ final class TemplateProxyPostAdaptationStage<I, M extends I> implements PostAdap
 
   @Override
   public PostAdaptationStage<I, M> withQueryParameterTemplate(String... names) {
-    this.queryParameters = names;
+
+    this.queryParameterNames = Stream.of(names).collect(Collectors.toList());
     return this;
   }
 
   @Override
   public PostAdaptationStage<I, M> withFingerprintFromIncomingRequest() {
-    useFingerprintFromIncomingRequest = true;
+
+    UrlFingerprintingImpl fingerprinting = adapterImpl.getSlingRhyme().adaptTo(UrlFingerprintingImpl.class);
+
+    fingerprintingParams = fingerprinting.getQueryParamsFromIncomingRequest();
+
     return this;
   }
 
@@ -132,18 +140,9 @@ final class TemplateProxyPostAdaptationStage<I, M extends I> implements PostAdap
 
     UriTemplateBuilder builder = UriTemplate.buildFromTemplate(baseTemplate);
 
-    Map<String, Object> fingerprintingParams = Collections.emptyMap();
-    if (useFingerprintFromIncomingRequest) {
-      UrlFingerprintingImpl fingerprinting = adapterImpl.getSlingRhyme().adaptTo(UrlFingerprintingImpl.class);
-
-      fingerprintingParams = fingerprinting.getQueryParamsFromIncomingRequest();
-
-      fingerprintingParams.keySet().forEach(builder::query);
-    }
-
-    if (queryParameters != null) {
-      builder.query(queryParameters);
-    }
+    String[] paramNames = Stream.concat(fingerprintingParams.keySet().stream(), queryParameterNames.stream())
+        .toArray(String[]::new);
+    builder.query(paramNames);
 
     UriTemplate template = builder.build();
 

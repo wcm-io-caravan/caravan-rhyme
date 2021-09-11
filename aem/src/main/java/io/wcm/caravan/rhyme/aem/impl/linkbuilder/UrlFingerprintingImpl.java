@@ -24,16 +24,14 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
-
-import com.damnhandy.uri.template.UriTemplate;
-import com.damnhandy.uri.template.UriTemplateBuilder;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.linkbuilder.FingerprintBuilder;
@@ -42,11 +40,12 @@ import io.wcm.caravan.rhyme.aem.api.parameters.QueryParam;
 import io.wcm.caravan.rhyme.aem.api.resources.ImmutableResource;
 import io.wcm.caravan.rhyme.aem.api.resources.SlingLinkableResource;
 import io.wcm.caravan.rhyme.aem.impl.queries.AemPageQueries;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 @Model(adaptables = { SlingRhyme.class, SlingHttpServletRequest.class }, adapters = UrlFingerprinting.class, cache = true)
 public class UrlFingerprintingImpl implements UrlFingerprinting {
 
-  private static final String LAST_MODIFIED = "lastModified";
+  public static final String TIMESTAMP = "timestamp";
 
   @Self
   private AemPageQueries queries;
@@ -54,13 +53,13 @@ public class UrlFingerprintingImpl implements UrlFingerprinting {
   @Self
   private SlingRhyme rhyme;
 
-  @QueryParam(name = LAST_MODIFIED)
-  private String lastModifiedFromRequest;
+  @QueryParam(name = TIMESTAMP)
+  private String timestampFromRequest;
 
   @PostConstruct
   void activate() {
 
-    if (lastModifiedFromRequest != null) {
+    if (timestampFromRequest != null) {
       // if a lastModified query param was provided in the incoming request, this resource is considered to be immutable
       // (unless it is loading other resources with a lower max-age value)
       rhyme.setResponseMaxAge(Duration.ofDays(365));
@@ -74,23 +73,27 @@ public class UrlFingerprintingImpl implements UrlFingerprinting {
   @Override
   public String appendIncomingFingerprintTo(String uri) {
 
-    UriTemplateBuilder builder = UriTemplate.buildFromTemplate(uri);
-
     Map<String, Object> queryParams = getQueryParamsFromIncomingRequest();
-    queryParams.keySet().forEach(builder::query);
 
-    UriTemplate template = builder.build();
-    queryParams.forEach(template::set);
+    String queryString = queryParams.entrySet().stream()
+        .map(e -> e.getKey() + "=" + e.getValue())
+        .collect(Collectors.joining("&"));
 
-    return template.expandPartial();
+    if (StringUtils.isBlank(queryString)) {
+      return uri;
+    }
+    if (uri.contains("?")) {
+      return uri + "&" + queryString;
+    }
+    return uri + "?" + queryString;
   }
 
   public Map<String, Object> getQueryParamsFromIncomingRequest() {
 
     Map<String, Object> queryParams = new LinkedHashMap<>();
 
-    if (lastModifiedFromRequest != null) {
-      queryParams.put(LAST_MODIFIED, lastModifiedFromRequest);
+    if (timestampFromRequest != null) {
+      queryParams.put(TIMESTAMP, timestampFromRequest);
     }
 
     return queryParams;
@@ -98,35 +101,42 @@ public class UrlFingerprintingImpl implements UrlFingerprinting {
 
   public Map<String, Object> getQueryParams(SlingLinkableResource slingModel) {
 
-    FingerprintBuilderImpl fingerprint = new FingerprintBuilderImpl();
+    FingerprintBuilderImpl fingerprint = new FingerprintBuilderImpl(slingModel.getClass());
 
     ((ImmutableResource)slingModel).buildFingerprint(fingerprint);
 
     Map<String, Object> queryParams = new LinkedHashMap<>();
 
-    fingerprint.getLastModified()
-        .ifPresent(lastModified -> queryParams.put(LAST_MODIFIED, lastModified));
+    fingerprint.getTimestamp()
+        .ifPresent(timestamp -> queryParams.put(TIMESTAMP, timestamp));
 
     return queryParams;
   }
 
   class FingerprintBuilderImpl implements FingerprintBuilder {
 
+    private final Class<? extends SlingLinkableResource> modelClass;
+
     private boolean useFingerprintFromIncomingRequest;
 
     private Instant mostRecentModification;
 
-    Optional<String> getLastModified() {
+    FingerprintBuilderImpl(Class<? extends SlingLinkableResource> modelClass) {
+      this.modelClass = modelClass;
+    }
+
+    Optional<String> getTimestamp() {
 
       if (useFingerprintFromIncomingRequest) {
-        return Optional.ofNullable(lastModifiedFromRequest);
+        return Optional.ofNullable(timestampFromRequest);
       }
 
       if (mostRecentModification != null) {
         return Optional.of(mostRecentModification.toString());
       }
 
-      return Optional.empty();
+      throw new HalApiDeveloperException(
+          "Your implementation of #buildFingerprint() in " + modelClass + " must call at least one of the methods from the builder");
     }
 
     @Override
@@ -135,9 +145,9 @@ public class UrlFingerprintingImpl implements UrlFingerprinting {
     }
 
     @Override
-    public void addLastModifiedOfPagesBelow(Resource resource) {
+    public void addLastModifiedOfContentBelow(String path) {
 
-      Instant lastModified = queries.getLastModifiedDateBelow(resource.getPath());
+      Instant lastModified = queries.getLastModifiedDateBelow(path);
 
       if (mostRecentModification == null || lastModified.isAfter(mostRecentModification)) {
         mostRecentModification = lastModified;
