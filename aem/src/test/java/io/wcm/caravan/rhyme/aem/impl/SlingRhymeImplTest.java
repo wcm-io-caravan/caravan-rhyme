@@ -329,7 +329,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_fail_if_class_is_not_a_sling_model() throws Exception {
+  public void adaptResource_should_fail_if_class_is_not_an_adaptable_class() throws Exception {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -337,7 +337,8 @@ public class SlingRhymeImplTest {
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageStartingWith("Failed to adapt")
-        .hasMessageEndingWith(" to " + NotAnAdaptableClass.class.getSimpleName());
+        .hasMessageEndingWith(" to " + NotAnAdaptableClass.class.getSimpleName())
+        .hasRootCauseMessage("SlingRhyme#adaptTo(" + NotAnAdaptableClass.class.getName() + ") returned null, see previous log messages for the root cause");
   }
 
   static class NotAnAdaptableClass {
