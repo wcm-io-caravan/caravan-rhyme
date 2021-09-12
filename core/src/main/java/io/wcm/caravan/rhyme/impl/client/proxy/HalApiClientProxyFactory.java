@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.impl.client;
+package io.wcm.caravan.rhyme.impl.client.proxy;
 
 import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.isHalApiInterface;
 
@@ -48,7 +48,7 @@ import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
  * Contains static factory methods to create proxy implementations of a given interface annotated with
  * {@link HalApiInterface}
  */
-final class HalApiClientProxyFactory {
+public final class HalApiClientProxyFactory {
 
 
   private final Cache<String, Object> proxyCache = CacheBuilder.newBuilder().build();
@@ -57,13 +57,19 @@ final class HalApiClientProxyFactory {
   private final RequestMetricsCollector metrics;
   private final HalApiTypeSupport typeSupport;
 
-  HalApiClientProxyFactory(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
+  /**
+   * @param resourceLoader used to load/cache HAL+JSON resources
+   * @param metrics an instance of {@link RequestMetricsCollector} to collect performance relevant data for the current
+   *          incoming request
+   * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
+   */
+  public HalApiClientProxyFactory(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
     this.metrics = metrics;
     this.resourceLoader = resourceLoader;
     this.typeSupport = typeSupport;
   }
 
-  <T> T createProxyFromUrl(Class<T> relatedResourceType, String url) {
+  public <T> T createProxyFromUrl(Class<T> relatedResourceType, String url) {
 
     Single<HalResource> rxHal = loadHalResource(url, relatedResourceType);
 

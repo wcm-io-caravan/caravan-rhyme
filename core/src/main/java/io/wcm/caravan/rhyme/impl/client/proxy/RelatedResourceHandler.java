@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.impl.client;
+package io.wcm.caravan.rhyme.impl.client.proxy;
 
 import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.isHalApiInterface;
 

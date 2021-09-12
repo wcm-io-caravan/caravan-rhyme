@@ -18,7 +18,7 @@
  * #L%
  */
 
-package io.wcm.caravan.rhyme.impl.client;
+package io.wcm.caravan.rhyme.impl.client.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
