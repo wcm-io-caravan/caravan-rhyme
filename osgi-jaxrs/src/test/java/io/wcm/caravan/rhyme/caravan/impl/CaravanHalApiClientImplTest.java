@@ -20,6 +20,7 @@
 package io.wcm.caravan.rhyme.caravan.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -146,6 +147,31 @@ public class CaravanHalApiClientImplTest {
     // a second request to the same resource should not trigger another request
     LinkableTestResource secondResource = getEntryPoint(clientImpl);
     assertThat(secondResource.getState()).isNotNull();
+    verify(httpClient).execute(any());
+  }
+
+  @Test
+  public void should_use_configuration_that_caches_exceptions() throws Exception {
+
+    CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
+
+    HalResourceLoader resourceLoader = clientImpl.getOrCreateHalResourceLoader(SERVICE_ID);
+
+    CaravanHttpMockUtils.mockHttpResponse(httpClient, 500, "", Duration.ofSeconds(60));
+
+    assertThat(resourceLoader)
+        .isInstanceOf(CachingHalResourceLoader.class);
+
+    Throwable ex1 = catchThrowable(() -> resourceLoader.getHalResource("/").blockingGet());
+
+    assertThat(ex1.getCause())
+        .hasMessageStartingWith("An HTTP response with status code 500 was retrieved");
+
+    Throwable ex2 = catchThrowable(() -> resourceLoader.getHalResource("/").blockingGet());
+
+    assertThat(ex2.getCause())
+        .hasMessageStartingWith("An error response with status code 500 from a previous request was found in cache");
+
     verify(httpClient).execute(any());
   }
 
