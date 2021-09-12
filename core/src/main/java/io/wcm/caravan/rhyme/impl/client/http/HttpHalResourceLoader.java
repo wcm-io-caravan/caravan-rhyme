@@ -87,11 +87,9 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     private final Stopwatch stopwatch = Stopwatch.createStarted();
 
     private final SingleEmitter<HalResponse> subscriber;
-
     private final AtomicBoolean responseOrErrorWasEmitted = new AtomicBoolean();
 
     private final String originalUri;
-
     private volatile URI actualUri;
 
     private volatile HttpHeadersParser parsedHeaders;
@@ -237,7 +235,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
   }
 
-  private JsonNode parseJson(InputStream is) {
+  private static JsonNode parseJson(InputStream is) {
 
     try (InputStream autoClosingStream = is) {
       return JSON_FACTORY.createParser(autoClosingStream).readValueAsTree();
