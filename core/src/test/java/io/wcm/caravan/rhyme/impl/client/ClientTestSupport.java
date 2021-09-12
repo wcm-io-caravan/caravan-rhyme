@@ -130,7 +130,18 @@ public class ClientTestSupport {
 
     public SubscriberCounter mockFailedResponse(String uri, Integer statusCode) {
 
-      HalApiClientException hace = new HalApiClientException("Simulated failed response", statusCode, uri, null);
+      return this.mockFailedResponse(uri, statusCode, null);
+    }
+
+    public SubscriberCounter mockFailedResponse(String uri, Integer statusCode, Integer maxAge) {
+
+      HalResponse response = new HalResponse()
+          .withStatus(statusCode)
+          .withMaxAge(maxAge);
+
+      RuntimeException cause = new RuntimeException("A response with status code " + statusCode + " was mocked by " + MockClientTestSupport.class);
+
+      HalApiClientException hace = new HalApiClientException(response, uri, cause);
 
       return mockResponseWithSingle(uri, Single.error(hace));
     }

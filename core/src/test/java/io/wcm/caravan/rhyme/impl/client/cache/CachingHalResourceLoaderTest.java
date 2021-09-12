@@ -21,7 +21,9 @@ package io.wcm.caravan.rhyme.impl.client.cache;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
@@ -41,6 +43,8 @@ import com.mercateo.test.clock.TestClock;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
@@ -151,6 +155,155 @@ public class CachingHalResourceLoaderTest {
         .isEqualTo(40);
   }
 
+  @Test
+  public void should_not_cache_404_errors_by_default() throws Exception {
+
+    int statusCode = 404;
+
+    SubscriberCounter counter = mockHalApiClientExceptionWithMaxAge(statusCode, 60);
+
+    loadResourceAndExpectHalApiClientException(statusCode);
+
+    assertThat(counter.getCount())
+        .isEqualTo(1);
+
+    HalApiClientException hace = loadResourceAndExpectHalApiClientException(statusCode);
+
+    assertThat(hace.getCause())
+        .hasMessageStartingWith("A response with status code 404 was mocked by class");
+
+    assertThat(counter.getCount())
+        .isEqualTo(2);
+  }
+
+  @Test
+  public void should_cache_404_errors_if_enabled_in_configuration_and_max_age_is_present() throws Exception {
+
+    int statusCode = 404;
+
+    when(config.isCachingOfHalApiClientExceptionsEnabled())
+        .thenReturn(true);
+
+    SubscriberCounter counter = mockHalApiClientExceptionWithMaxAge(statusCode, 60);
+
+    loadResourceAndExpectHalApiClientException(statusCode);
+
+    assertThat(counter.getCount())
+        .isEqualTo(1);
+
+    HalApiClientException hace = loadResourceAndExpectHalApiClientException(statusCode);
+
+    assertThat(hace.getCause())
+        .hasMessageStartingWith("An error response with status code 404 from a previous request was found in cache");
+
+    assertThat(counter.getCount())
+        .isEqualTo(1);
+  }
+
+  @Test
+  public void should_cache_404_errors_if_enabled_in_configuration_and_default_max_age_is_present() throws Exception {
+
+    int statusCode = 404;
+    int defaultMaxAge = 30;
+
+    when(config.isCachingOfHalApiClientExceptionsEnabled())
+        .thenReturn(true);
+    when(config.getDefaultMaxAge(any()))
+        .thenReturn(defaultMaxAge);
+
+    SubscriberCounter counter = mockHalApiClientExceptionWithMaxAge(statusCode, null);
+
+    loadResourceAndExpectHalApiClientException(statusCode);
+
+    assertThat(counter.getCount())
+        .isEqualTo(1);
+
+    HalApiClientException hace = loadResourceAndExpectHalApiClientException(statusCode);
+
+    assertThat(hace.getCause())
+        .hasMessageStartingWith("An error response with status code 404 from a previous request was found in cache");
+
+    assertThat(hace.getErrorResponse().getMaxAge())
+        .isEqualTo(defaultMaxAge);
+
+    assertThat(counter.getCount())
+        .isEqualTo(1);
+  }
+
+  @Test
+  public void should_cache_errors_without_status_code_if_default_max_age_is_present() throws Exception {
+
+    Integer statusCode = null;
+    int defaultMaxAge = 50;
+
+    when(config.isCachingOfHalApiClientExceptionsEnabled())
+        .thenReturn(true);
+    when(config.getDefaultMaxAge(any()))
+        .thenReturn(defaultMaxAge);
+
+    SubscriberCounter counter = mockHalApiClientExceptionWithMaxAge(statusCode, null);
+
+    loadResourceAndExpectHalApiClientException(statusCode);
+
+    assertThat(counter.getCount())
+        .isEqualTo(1);
+
+    HalApiClientException hace = loadResourceAndExpectHalApiClientException(statusCode);
+
+    assertThat(hace.getErrorResponse().getMaxAge())
+        .isEqualTo(defaultMaxAge);
+
+    assertThat(hace.getCause())
+        .hasMessageStartingWith("An error response with status code null from a previous request was found in cache");
+
+    assertThat(counter.getCount())
+        .isEqualTo(1);
+  }
+
+  @Test
+  public void should_not_cache_other_errors() throws Exception {
+
+    lenient().when(config.isCachingOfHalApiClientExceptionsEnabled())
+        .thenReturn(true);
+    lenient().when(config.getDefaultMaxAge(any()))
+        .thenReturn(60);
+
+    Single<HalResponse> mockedError = Single.error(new HalApiDeveloperException("Something went wrong"));
+    SubscriberCounter counter = upstream.mockResponseWithSingle(URI, mockedError);
+
+    Throwable ex = catchThrowable(() -> loadResourceWithCaching());
+
+    assertThat(counter.getCount())
+        .isEqualTo(1);
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class);
+
+    Throwable ex2 = catchThrowable(() -> loadResourceWithCaching());
+
+    assertThat(counter.getCount())
+        .isEqualTo(2);
+
+    assertThat(ex2)
+        .isInstanceOf(HalApiDeveloperException.class);
+
+  }
+
+  HalApiClientException loadResourceAndExpectHalApiClientException(Integer statusCode) {
+
+    Throwable ex = catchThrowable(() -> loadResourceWithCaching());
+
+    assertThat(ex)
+        .isInstanceOf(HalApiClientException.class);
+
+    HalApiClientException hace = (HalApiClientException)ex;
+
+    assertThat(hace.getStatusCode())
+        .isEqualTo(statusCode);
+
+    return hace;
+  }
+
   private HalResponse loadResponseAndAssertTextIs(String text) {
 
     HalResponse response = loadResourceWithCaching();
@@ -185,6 +338,11 @@ public class CachingHalResourceLoaderTest {
     HalResponse response = createResponseWithTextAndMaxAge(text, maxAge);
 
     return upstream.mockResponseWithSingle(URI, Single.just(response));
+  }
+
+  private SubscriberCounter mockHalApiClientExceptionWithMaxAge(Integer status, Integer maxAge) {
+
+    return upstream.mockFailedResponse(URI, status, maxAge);
   }
 
   HalResponse createResponseWithTextAndMaxAge(String text, Integer maxAge) {

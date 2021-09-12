@@ -87,11 +87,9 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     private final Stopwatch stopwatch = Stopwatch.createStarted();
 
     private final SingleEmitter<HalResponse> subscriber;
-
     private final AtomicBoolean responseOrErrorWasEmitted = new AtomicBoolean();
 
     private final String originalUri;
-
     private volatile URI actualUri;
 
     private volatile HttpHeadersParser parsedHeaders;
@@ -205,7 +203,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
           // the response code indicates that the request was *not* successful even through the response could be parsed
           String msg;
           if (StringUtils.equals(halResponse.getContentType(), VndErrorResponseRenderer.CONTENT_TYPE)) {
-            msg = msgPrefix + "and a vnd.error body with the following server-side error details";
+            msg = msgPrefix + "which contains a vnd.error body with the following server-side error details";
           }
           else {
             msg = msgPrefix + "and a JSON body that may contain further information is present";
@@ -237,7 +235,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
   }
 
-  private JsonNode parseJson(InputStream is) {
+  private static JsonNode parseJson(InputStream is) {
 
     try (InputStream autoClosingStream = is) {
       return JSON_FACTORY.createParser(autoClosingStream).readValueAsTree();

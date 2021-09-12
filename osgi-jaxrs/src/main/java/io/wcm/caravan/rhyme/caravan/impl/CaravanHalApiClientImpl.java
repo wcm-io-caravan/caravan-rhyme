@@ -22,6 +22,7 @@ package io.wcm.caravan.rhyme.caravan.impl;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import org.osgi.service.component.annotations.Activate;
@@ -34,6 +35,7 @@ import com.google.common.cache.LoadingCache;
 
 import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.pipeline.JsonPipelineFactory;
+import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
@@ -114,7 +116,21 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
       return HalResourceLoader.builder()
           .withCustomHttpClient(new CaravanResilientHttpSupport(httpClient, serviceId))
           .withMemoryCache()
+          .withCachingConfiguration(new CaravanCachingConfiguration())
           .build();
+    }
+  }
+
+  private final static class CaravanCachingConfiguration implements CachingConfiguration {
+
+    @Override
+    public int getDefaultMaxAge(Optional<Integer> statusCode) {
+      return 60;
+    }
+
+    @Override
+    public boolean isCachingOfHalApiClientExceptionsEnabled() {
+      return true;
     }
   }
 
