@@ -40,7 +40,7 @@ public class DefaultCachingConfigurationTest {
   }
 
   @Test
-  public void getDefaultMaxAge_should_return_60_for_200_status_code() throws Exception {
+  public void getDefaultMaxAge_should_return_60_if_status_code_present() throws Exception {
 
     int maxAge = config.getDefaultMaxAge(Optional.of(200));
 
@@ -49,21 +49,12 @@ public class DefaultCachingConfigurationTest {
   }
 
   @Test
-  public void getDefaultMaxAge_should_return_0_for_400_status_code() throws Exception {
+  public void testIsCachingOfHalApiClientExceptionsEnabled() throws Exception {
 
-    int maxAge = config.getDefaultMaxAge(Optional.of(400));
+    boolean enabled = config.isCachingOfHalApiClientExceptionsEnabled();
 
-    assertThat(maxAge)
-        .isEqualTo(0);
-  }
-
-  @Test
-  public void getDefaultMaxAge_should_return_0_for_500_status_code() throws Exception {
-
-    int maxAge = config.getDefaultMaxAge(Optional.of(500));
-
-    assertThat(maxAge)
-        .isEqualTo(0);
+    assertThat(enabled)
+        .isFalse();
   }
 
 }

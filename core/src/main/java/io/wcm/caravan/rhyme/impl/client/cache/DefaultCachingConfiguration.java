@@ -29,11 +29,14 @@ public class DefaultCachingConfiguration implements CachingConfiguration {
   @Override
   public int getDefaultMaxAge(Optional<Integer> statusCode) {
 
-    return statusCode.map(status -> {
-      if (status == 200) {
-        return 60;
-      }
-      return 0;
-    }).orElse(0);
+    return statusCode
+        .map(status -> 60)
+        .orElse(0);
+  }
+
+  @Override
+  public boolean isCachingOfHalApiClientExceptionsEnabled() {
+
+    return false;
   }
 }

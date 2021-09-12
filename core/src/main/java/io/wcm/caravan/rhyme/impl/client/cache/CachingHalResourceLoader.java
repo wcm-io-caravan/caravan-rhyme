@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 
@@ -69,6 +70,7 @@ public class CachingHalResourceLoader implements HalResourceLoader {
         .map(CachedResponse::new)
         .filter(CachedResponse::isFresh)
         .map(CachedResponse::getResponseWithAdjustedMaxAge)
+        .flatMap(response -> throwExceptionForErrorStatusCodes(uri, response))
         .doOnSuccess(response -> log.debug("A fresh response for {} was as found in {} with remaining max-age of {}",
             uri, cache.getClass().getSimpleName(), response.getMaxAge()));
   }
@@ -76,22 +78,39 @@ public class CachingHalResourceLoader implements HalResourceLoader {
   private Single<HalResponse> loadFromUpstreamAndStoreInCache(String uri) {
 
     return upstream.getHalResource(uri)
-        .map(this::updateResponse)
-        .doOnSuccess(entry -> storeInCache(uri, entry));
+        .map(this::updateResponseWithTimestampAndDefaultMaxAge)
+        .doOnSuccess(entry -> storeInCache(uri, entry))
+        .doOnError(ex -> handleResourceLoaderException(uri, ex));
   }
 
-  private HalResponse updateResponse(HalResponse response) {
+  private Maybe<HalResponse> throwExceptionForErrorStatusCodes(String uri, HalResponse response) {
+
+    if (response.getStatus() != null && response.getStatus() < 400) {
+      return Maybe.just(response);
+    }
+
+    String msg = "An error response with status code " + response.getStatus() + " from a previous request was found in cache,"
+        + " which will still be used for the next " + response.getMaxAge() + " seconds.";
+
+    log.info(msg);
+
+    RuntimeException cause = new RuntimeException(msg);
+
+    return Maybe.error(new HalApiClientException(response, uri, cause));
+  }
+
+  private HalResponse updateResponseWithTimestampAndDefaultMaxAge(HalResponse response) {
 
     HalResponse updatedResponse = response
         .withTimestamp(clock.instant());
 
-    if (response.getMaxAge() == null) {
-      Optional<Integer> status = Optional.ofNullable(response.getStatus());
-      int maxAge = configuration.getDefaultMaxAge(status);
-      updatedResponse = updatedResponse.withMaxAge(maxAge);
+    if (updatedResponse.getMaxAge() != null) {
+      return updatedResponse;
     }
 
-    return updatedResponse;
+    Optional<Integer> status = Optional.ofNullable(updatedResponse.getStatus());
+    int maxAge = configuration.getDefaultMaxAge(status);
+    return updatedResponse.withMaxAge(maxAge);
   }
 
   private void storeInCache(String uri, HalResponse response) {
@@ -101,6 +120,19 @@ public class CachingHalResourceLoader implements HalResourceLoader {
 
       cache.store(uri, response);
     }
+  }
+
+  private void handleResourceLoaderException(String uri, Throwable ex) {
+
+    if (!(ex instanceof HalApiClientException) || !configuration.isCachingOfHalApiClientExceptionsEnabled()) {
+      return;
+    }
+
+    HalApiClientException hace = (HalApiClientException)ex;
+
+    HalResponse updatedResponse = updateResponseWithTimestampAndDefaultMaxAge(hace.getErrorResponse());
+
+    storeInCache(uri, updatedResponse);
   }
 
   class CachedResponse {

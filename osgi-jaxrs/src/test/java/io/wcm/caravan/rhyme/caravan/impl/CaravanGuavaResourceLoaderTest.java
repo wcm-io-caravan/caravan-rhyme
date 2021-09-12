@@ -69,6 +69,11 @@ public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceL
             return 0;
           }
 
+          @Override
+          public boolean isCachingOfHalApiClientExceptionsEnabled() {
+            return false;
+          }
+
         })
         .withClock(clock)
         .build();

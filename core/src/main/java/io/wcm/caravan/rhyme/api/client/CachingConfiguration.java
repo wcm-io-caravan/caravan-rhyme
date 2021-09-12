@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import org.osgi.annotation.versioning.ConsumerType;
 
+import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 /**
@@ -40,4 +41,11 @@ public interface CachingConfiguration {
    * @return the number of seconds the response should be served from cache, or 0 if it shouldn't be cached at all
    */
   int getDefaultMaxAge(Optional<Integer> statusCode);
+
+  /**
+   * Determines whether the cache should also cache non-successful responses, where a {@link HalApiClientException}
+   * was caught and will also throw such an exception on follow-up requests for the same URL
+   * @return true if error responses should be cached as well
+   */
+  boolean isCachingOfHalApiClientExceptionsEnabled();
 }
