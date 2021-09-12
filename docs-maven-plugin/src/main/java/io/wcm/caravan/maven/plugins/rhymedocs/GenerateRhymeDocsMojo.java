@@ -58,6 +58,9 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
   @Parameter(defaultValue = "${basedir}/src/main/java")
   protected String source;
 
+  @Parameter(defaultValue = "generated-rhyme-docs")
+  protected String generatedResourcesDirectory;
+
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -100,12 +103,7 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
 
   private Path createOutputDirectory() throws IOException {
 
-    // generate the .html files directly into a folder within the target/classes directory
-
-    // it would be better to generate them in a temporary folder right below target, but this
-    // was the easiest way to ensure they are also picked up by the spring-boot-maven-plugin when
-    // it builds the fat jar with all dependencies
-    Path outputDirectory = Paths.get(project.getBuild().getDirectory(), "classes", RhymeDocsSupport.FOLDER);
+    Path outputDirectory = Paths.get(project.getBuild().getDirectory(), generatedResourcesDirectory);
 
     Files.createDirectories(outputDirectory);
 

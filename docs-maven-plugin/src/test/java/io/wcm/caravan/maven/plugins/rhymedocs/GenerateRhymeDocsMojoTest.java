@@ -60,6 +60,7 @@ public class GenerateRhymeDocsMojoTest {
       super();
       super.project = projectMock;
       super.source = "src/main/java";
+      super.generatedResourcesDirectory = "generated-rhyme-docs";
     }
   }
 
