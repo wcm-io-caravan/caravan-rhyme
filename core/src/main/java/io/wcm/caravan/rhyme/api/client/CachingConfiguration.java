@@ -43,8 +43,10 @@ public interface CachingConfiguration {
   int getDefaultMaxAge(Optional<Integer> statusCode);
 
   /**
-   * Determines whether the cache should also cache non-successful responses, where a {@link HalApiClientException}
-   * was caught and will also throw such an exception on follow-up requests for the same URL
+   * Determines whether the cache should also cover non-successful responses, where a {@link HalApiClientException}
+   * was caught. Follow-up requests for the same URL will then immediately throw a {@link HalApiClientException} with
+   * the cached status code and body (unless the cached response is already stale according to the response's or default
+   * max-age value).
    * @return true if error responses should be cached as well
    */
   boolean isCachingOfHalApiClientExceptionsEnabled();
