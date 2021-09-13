@@ -419,7 +419,7 @@ Any response retrieved by the **Rhyme** framework will then be stored in this ca
 
 - if the response in the cache is older than the `max-age` value, it it considered stale and will not be used. A fresh copy will be loaded (and again stored in the cache) 
 - the 'max-age' value of responses taken from cache will be updated automatically: if an upstream response required by your resource had specified a max-age of 60 seconds, but was already requested and cached 55 seconds ago, calling `HalResponse#getMaxAge` will return 5 seconds
-- If you are using this cached response in a service that is also rendering HAL+JSON resources with Rhyme, this loading this cached response with the adjusted max-age will automatically reduce the max-age of your own response: Since your response depends on data that is about to go stale in 5 seconds, your consumers shouldn't cache your response for longer than that either. 
+- If you are using this cached response in a service that is also rendering HAL+JSON resources with Rhyme, loading this cached response with the adjusted max-age will automatically reduce the max-age of your own response: Since your response depends on data that is about to go stale in 5 seconds, your consumers shouldn't cache your response for longer than that either. 
 
 By default only responses with status code 200 will be cached, and a default max-age of 60 seconds will be used if no such directive is found in the upstream response headers. You can override these defaults by providing your own implementation of [CachingConfiguration](core/src/main/java/io/wcm/caravan/rhyme/api/client/CachingConfiguration.java) to `HalResourceLoaderBuilder#withCachingConfiguration`.
 
