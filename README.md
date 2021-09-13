@@ -222,7 +222,7 @@ A simpler way is to implement the callback-style [HttpClientSupport](core/src/ma
 interface, and then use the [HalResourceLoaderBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/client/HalResourceLoaderBuilder.java).
 
 In both cases, you should extend the [AbstractHalResourceLoaderTest](core/src/test/java/io/wcm/caravan/rhyme/testing/client/AbstractHalResourceLoaderTest.java) 
-(from test test-jar) to test your implementation against a Wiremock server. These unit tests ensures that all expectations regarding response and error handling are met.
+(from the test-jar of the core module) to test your implementation against a Wiremock server. These unit tests ensure that all expectations regarding response and error handling are met.
 
 The `HalResourceLoaderBuilder` also has further method to enable persistent caching of responses which are explained in a later section.
 
