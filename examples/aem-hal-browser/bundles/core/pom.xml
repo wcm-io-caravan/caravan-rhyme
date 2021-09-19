@@ -234,6 +234,32 @@
         </executions>
       </plugin>
 
+      <!-- Copy the HTML documentation into the classes folder so they are included in the JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>custom-resources</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes/RHYME-DOCS-INF</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>target/generated-rhyme-docs</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+              <encoding>UTF-8</encoding>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- ensure that parameter names are not stripped out from the class files, so they are available via reflection -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
