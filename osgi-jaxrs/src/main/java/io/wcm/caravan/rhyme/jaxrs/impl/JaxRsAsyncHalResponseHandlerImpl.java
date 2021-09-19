@@ -19,6 +19,9 @@
  */
 package io.wcm.caravan.rhyme.jaxrs.impl;
 
+import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
+import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.CacheControl;
@@ -39,6 +42,8 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsAsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.jaxrs.impl.docs.RhymeDocsOsgiBundleSupport;
 
@@ -57,13 +62,19 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRe
   @Reference
   private RhymeDocsOsgiBundleSupport rhymeDocsLoader;
 
+  @Reference(cardinality = OPTIONAL, policyOption = GREEDY)
+  private HalApiReturnTypeSupport returnTypeSupport;
+
+  @Reference(cardinality = OPTIONAL, policyOption = GREEDY)
+  private HalApiAnnotationSupport annotationSupport;
+
   @Override
   public void respondWith(LinkableResource resourceImpl, UriInfo uriInfo, AsyncResponse suspended, RequestMetricsCollector metrics) {
 
     try {
       // create a response renderer with a strategy that is able to extract the status code
       // from any JAX-RS WebApplicationException that might be thrown in the resource implementations
-      AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy, null, null, rhymeDocsLoader);
+      AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy, annotationSupport, returnTypeSupport, rhymeDocsLoader);
 
       // asynchronously render the given resource (or create a vnd.error response if any exceptions are thrown)
       String requestUri = getRequestUri(uriInfo);
