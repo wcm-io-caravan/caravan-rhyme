@@ -37,7 +37,8 @@ public class SpringRhymeImpl implements SpringRhyme {
   private ResponseEntity<JsonNode> renderedResponse;
 
   public SpringRhymeImpl(@Autowired HttpServletRequest httpRequest,
-      @Autowired(required = false) HalResourceLoader jsonLoader) {
+      @Autowired(required = false) HalResourceLoader jsonLoader,
+      @Autowired(required = true) SpringRhymeDocsIntegration rhymeDocs) {
 
     log.debug("{} was instantiated", this.getClass().getSimpleName());
 
@@ -45,6 +46,7 @@ public class SpringRhymeImpl implements SpringRhyme {
 
     this.rhyme = RhymeBuilder
         .withResourceLoader(jsonLoader)
+        .withRhymeDocsSupport(rhymeDocs)
         .withExceptionStrategy(EXCEPTION_STRATEGY)
         .buildForRequestTo(requestUrl);
   }

@@ -12,5 +12,5 @@ public interface ManagerResource extends LinkableResource {
 	Manager getState();
 
 	@Related("employees")
-	EmployeesResource getEmployees();
+	EmployeesResource getManagedEmployees();
 }

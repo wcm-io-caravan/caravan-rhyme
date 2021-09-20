@@ -62,7 +62,7 @@ class EmployeeController {
 	 * @param id
 	 */
 	@GetMapping("/employees/{id}")
-	public EmployeeResource findOne(@PathVariable long id) {
+	public EmployeeResource findOne(@PathVariable Long id) {
 
 		return new EmployeeResourceImpl(id, () -> repository.findById(id));
 	}
@@ -82,7 +82,7 @@ class EmployeeController {
 
 	private final class EmployeeResourceImpl extends AbstractEntityResource<Employee> implements EmployeeResource {
 
-		private EmployeeResourceImpl(long id, Supplier<Optional<Employee>> supplier) {
+		private EmployeeResourceImpl(Long id, Supplier<Optional<Employee>> supplier) {
 			super(id, supplier);
 		}
 

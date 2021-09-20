@@ -59,7 +59,12 @@
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
       <version>1.1.0-SNAPSHOT</version>
     </dependency>
-
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -67,6 +72,76 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- Generate HTML documentation into classpath resources-->
+      <plugin>
+        <groupId>io.wcm.caravan.maven.plugins</groupId>
+        <artifactId>rhyme-docs-maven-plugin</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-rhyme-docs</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Copy the HTML documentation into the classes folder so they are included in the JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>custom-resources</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes/RHYME-DOCS-INF</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>target/generated-rhyme-docs</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+              <encoding>UTF-8</encoding>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+     <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+     <plugin>
+       <groupId>org.eclipse.m2e</groupId>
+        <artifactId>lifecycle-mapping</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <lifecycleMappingMetadata>
+            <pluginExecutions>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>
+                    io.wcm.caravan.maven.plugins
+                  </groupId>
+                  <artifactId>
+                    rhyme-docs-maven-plugin
+                  </artifactId>
+                  <versionRange>
+                    [1.0.0-SNAPSHOT,)
+                  </versionRange>
+                  <goals>
+                    <goal>generate-rhyme-docs</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore></ignore>
+                </action>
+              </pluginExecution>
+            </pluginExecutions>
+          </lifecycleMappingMetadata>
+        </configuration>
       </plugin>
     </plugins>
   </build>

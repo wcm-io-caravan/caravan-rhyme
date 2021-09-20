@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Data
 @Entity
 @NoArgsConstructor
-class Employee {
+public class Employee {
 
 	@Id @GeneratedValue private Long id;
 	private String name;

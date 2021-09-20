@@ -54,10 +54,23 @@ class RootController {
 			}
 
 			@Override
+			public EmployeeResource getEmployeeById(Long id) {
+
+				return employees.findOne(id);
+			}
+
+			@Override
+			public ManagerResource getManagerById(Long id) {
+
+				return managers.findOne(id);
+			}
+
+			@Override
 			public Link createLink() {
 
 				return new Link(linkTo(methodOn(RootController.class).root()).toString());
 			}
+
 		};
 	}
 }

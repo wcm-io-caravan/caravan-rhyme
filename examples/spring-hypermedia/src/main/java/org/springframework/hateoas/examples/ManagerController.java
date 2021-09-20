@@ -93,7 +93,7 @@ class ManagerController {
 	 * @param id
 	 */
 	@GetMapping("/managers/{id}")
-	ManagerResource findOne(@PathVariable long id) {
+	ManagerResource findOne(@PathVariable Long id) {
 
 		return new ManagerResourceImpl(id, () -> repository.findById(id));
 	}
@@ -106,7 +106,7 @@ class ManagerController {
 	 * @return
 	 */
 	@GetMapping("/employees/{id}/manager")
-	ManagerResource findManager(@PathVariable long id) {
+	ManagerResource findManager(@PathVariable Long id) {
 
 		Manager manager = repository.findByEmployeesId(id);
 
@@ -115,7 +115,7 @@ class ManagerController {
 
 	private final class ManagerResourceImpl extends AbstractEntityResource<Manager> implements ManagerResource {
 
-		private ManagerResourceImpl(long id, Supplier<Optional<Manager>> manager) {
+		private ManagerResourceImpl(Long id, Supplier<Optional<Manager>> manager) {
 			super(id, manager);
 		}
 
@@ -129,7 +129,7 @@ class ManagerController {
 		}
 
 		@Override
-		public EmployeesResource getEmployees() {
+		public EmployeesResource getManagedEmployees() {
 
 			return employees.findEmployees(id);
 		}

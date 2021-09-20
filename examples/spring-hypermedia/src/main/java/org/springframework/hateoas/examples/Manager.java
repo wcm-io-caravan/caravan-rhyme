@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @NoArgsConstructor
-class Manager {
+public class Manager {
 
 	@Id
 	@GeneratedValue

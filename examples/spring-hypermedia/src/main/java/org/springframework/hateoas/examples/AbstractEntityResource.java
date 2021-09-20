@@ -11,13 +11,13 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 abstract class AbstractEntityResource<T> implements LinkableResource, EmbeddableResource {
 
-	protected final long id;
+	protected final Long id;
 
 	private final Lazy<T> state;
 
 	private final boolean embedded;
 
-	AbstractEntityResource(long id, Supplier<Optional<T>> supplier) {
+	AbstractEntityResource(Long id, Supplier<Optional<T>> supplier) {
 		this.id = id;
 		this.state = Lazy.of(() -> supplier.get()
 				.orElseThrow(() -> new HalApiServerException(404, "No entity was found with id " + id)));

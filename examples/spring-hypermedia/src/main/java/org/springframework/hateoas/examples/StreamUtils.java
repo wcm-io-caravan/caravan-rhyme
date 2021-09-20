@@ -5,7 +5,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class StreamUtils {
+public final class StreamUtils {
+
+	private StreamUtils() {
+		// this class contains only static utility methods
+	}
 
 	public static <T, U> List<U> transform(Iterable<T> entities, Function<T, U> resourceConstructor) {
 
