@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,9 +46,6 @@ class ManagerController {
 
 	/**
 	 * Look up all managers, and transform them into a REST collection resource
-	 * using
-	 * {@link ManagerRepresentationModelAssembler#toCollectionModel(Iterable)}. Then
-	 * return them through Spring Web's {@link ResponseEntity} fluent API.
 	 */
 	@GetMapping("/managers")
 	ManagersResource findAll() {
@@ -76,18 +72,15 @@ class ManagerController {
 
 			@Override
 			public Link createLink() {
+
 				return new Link(linkTo(methodOn(ManagerController.class).findAll()).toString())
 						.setTitle("A collection of all managers");
 			}
-
 		};
-
 	}
 
 	/**
 	 * Look up a single {@link Manager} and transform it into a REST resource using
-	 * {@link ManagerRepresentationModelAssembler#toModel(Object)}. Then return it
-	 * through Spring Web's {@link ResponseEntity} fluent API.
 	 *
 	 * @param id
 	 */
@@ -115,6 +108,7 @@ class ManagerController {
 
 			@Override
 			public Link createLink() {
+
 				return new Link(linkTo(methodOn(ManagerController.class).findManager(employeeId)).toString())
 						.setTitle("The manager (" + manager.getName() + ")  of the employee with id " + employeeId);
 			}
@@ -152,9 +146,8 @@ class ManagerController {
 		@Override
 		public Link createLink() {
 
-			return new Link(linkTo(methodOn(ManagerController.class).findOne(id)).toString())
-					.setTitle("The manager with id " + id);
+			return new Link(linkTo(methodOn(ManagerController.class).findOne(id)).toString()).setTitle(
+					id == null ? "A link template to load a single manage by ID" : "The manager with ID " + id);
 		}
 	}
-
 }

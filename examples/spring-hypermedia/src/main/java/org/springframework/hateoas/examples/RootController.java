@@ -42,13 +42,13 @@ class RootController {
 		return new RootResource() {
 
 			@Override
-			public EmployeesResource getEmployees() {
+			public EmployeesResource listAllEmployees() {
 
 				return employees.findAll();
 			}
 
 			@Override
-			public ManagersResource getManagers() {
+			public ManagersResource listAllManagers() {
 
 				return managers.findAll();
 			}
@@ -71,7 +71,6 @@ class RootController {
 				return new Link(linkTo(methodOn(RootController.class).root()).toString())
 						.setTitle("The entry point of the hypermedia example API");
 			}
-
 		};
 	}
 }

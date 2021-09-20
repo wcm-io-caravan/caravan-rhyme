@@ -15,17 +15,15 @@
  */
 package org.springframework.hateoas.examples;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.Optional;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Greg Turnquist

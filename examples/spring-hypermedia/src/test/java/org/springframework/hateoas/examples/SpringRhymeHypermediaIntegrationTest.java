@@ -10,7 +10,6 @@ import org.mockito.internal.util.collections.Iterables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.spring.testing.MockMvcJsonResourceLoader;
@@ -29,45 +28,47 @@ public class SpringRhymeHypermediaIntegrationTest {
 	@Autowired
 	private ManagerRepository managers;
 
-	private RootResource getRootResource() {
+	private RootResource getEntryPoint() {
 
 		HalApiClient apiClient = HalApiClient.create(resourceLoader);
 
 		return apiClient.getRemoteResource("/", RootResource.class);
 	}
 
-	@Test
-	public void rootResource_should_have_self_link() throws Exception {
+	private Long getIdOfFirstEmployee() {
 
-		Link link = getRootResource().createLink();
+		return Iterables.firstOf(employees.findAll()).getId();
+	}
 
-		assertThat(link).extracting(Link::getHref).isEqualTo("/");
+	private Long getIdOfFirstManager() {
+
+		return Iterables.firstOf(managers.findAll()).getId();
 	}
 
 	@Test
 	public void getEmployees_should_list_employees_in_order_of_creation() throws Exception {
 
-		List<EmployeeResource> employees = getRootResource().getEmployees().getEmployees();
+		List<EmployeeResource> employees = getEntryPoint().listAllEmployees().getEmployees();
 
 		assertThat(employees).hasSize(3)//
-				.extracting(e -> e.getState().getName()).containsExactly("Frodo", "Bilbo", "Sam");
+				.extracting(employee -> employee.getState().getName()).containsExactly("Frodo", "Bilbo", "Sam");
 	}
 
 	@Test
 	public void getManagers_should_list_managers_in_order_of_creation() throws Exception {
 
-		List<ManagerResource> managers = getRootResource().getManagers().getManagers();
+		List<ManagerResource> managers = getEntryPoint().listAllManagers().getManagers();
 
 		assertThat(managers).hasSize(2)//
-				.extracting(e -> e.getState().getName()).containsExactly("Gandalf", "Saruman");
+				.extracting(manager -> manager.getState().getName()).containsExactly("Gandalf", "Saruman");
 	}
 
 	@Test
 	public void getEmployeeById_should_find_existing_employee() throws Exception {
 
-		Long firstId = Iterables.firstOf(employees.findAll()).getId();
+		Long firstId = getIdOfFirstEmployee();
 
-		Employee firstEmployee = getRootResource().getEmployeeById(firstId).getState();
+		Employee firstEmployee = getEntryPoint().getEmployeeById(firstId).getState();
 
 		assertThat(firstEmployee.getId()).isEqualTo(firstId);
 		assertThat(firstEmployee.getName()).isEqualTo("Frodo");
@@ -78,7 +79,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 	public void getEmployeeById_should_respond_with_404_for_non_existing_id() throws Exception {
 
 		HalApiClientException ex = catchThrowableOfType(
-				() -> getRootResource().getEmployeeById(NON_EXISTANT_ID).getState(), HalApiClientException.class);
+				() -> getEntryPoint().getEmployeeById(NON_EXISTANT_ID).getState(), HalApiClientException.class);
 
 		assertThat(ex).isNotNull();
 		assertThat(ex.getStatusCode()).isEqualTo(404);
@@ -87,9 +88,9 @@ public class SpringRhymeHypermediaIntegrationTest {
 	@Test
 	public void getManager_should_find_manager_for_employee() throws Exception {
 
-		Long firstId = Iterables.firstOf(employees.findAll()).getId();
+		Long firstId = getIdOfFirstEmployee();
 
-		EmployeeResource firstEmployee = getRootResource().getEmployeeById(firstId);
+		EmployeeResource firstEmployee = getEntryPoint().getEmployeeById(firstId);
 		Manager managerOfFirstEmployee = firstEmployee.getManager().getState();
 
 		assertThat(managerOfFirstEmployee.getName()).isEqualTo("Gandalf");
@@ -98,9 +99,9 @@ public class SpringRhymeHypermediaIntegrationTest {
 	@Test
 	public void getManagerById_should_find_existing_employee() throws Exception {
 
-		Long firstId = Iterables.firstOf(managers.findAll()).getId();
+		Long firstId = getIdOfFirstManager();
 
-		Manager firstManager = getRootResource().getManagerById(firstId).getState();
+		Manager firstManager = getEntryPoint().getManagerById(firstId).getState();
 
 		assertThat(firstManager.getId()).isEqualTo(firstId);
 		assertThat(firstManager.getName()).isEqualTo("Gandalf");
@@ -110,7 +111,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 	public void getManagerById_should_respond_with_404_for_non_existing_id() throws Exception {
 
 		HalApiClientException ex = catchThrowableOfType(
-				() -> getRootResource().getManagerById(NON_EXISTANT_ID).getState(), HalApiClientException.class);
+				() -> getEntryPoint().getManagerById(NON_EXISTANT_ID).getState(), HalApiClientException.class);
 
 		assertThat(ex).isNotNull();
 		assertThat(ex.getStatusCode()).isEqualTo(404);
@@ -119,9 +120,9 @@ public class SpringRhymeHypermediaIntegrationTest {
 	@Test
 	public void getManagedEmployees_should_find_employees_of_manager() throws Exception {
 
-		Long firstId = Iterables.firstOf(managers.findAll()).getId();
+		Long firstId = getIdOfFirstManager();
 
-		ManagerResource firstManager = getRootResource().getManagerById(firstId);
+		ManagerResource firstManager = getEntryPoint().getManagerById(firstId);
 		List<EmployeeResource> employeesOfFirstManager = firstManager.getManagedEmployees();
 
 		assertThat(employeesOfFirstManager).extracting(e -> e.getState().getName()).containsExactly("Frodo", "Bilbo");

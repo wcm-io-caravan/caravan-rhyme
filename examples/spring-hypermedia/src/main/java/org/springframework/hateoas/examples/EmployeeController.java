@@ -20,11 +20,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,9 +49,35 @@ class EmployeeController {
 	 * 
 	 */
 	@GetMapping("/employees")
-	public EmployeesResource findAll() {
+	EmployeesResource findAll() {
 
-		return new EmployeeCollectionResourceImpl(() -> repository.findAll());
+		return new EmployeesResource() {
+
+			@Override
+			public List<EmployeeResource> getEmployees() {
+
+				return StreamUtils.transform(repository.findAll(), EmployeeResourceImpl::new);
+			}
+
+			@Override
+			public RootResource getRoot() {
+
+				return rootController.root();
+			}
+
+			@Override
+			public ManagersResource getManagers() {
+
+				return managers.findAll();
+			}
+
+			@Override
+			public Link createLink() {
+
+				return new Link(linkTo(methodOn(EmployeeController.class).findAll()).toString())
+						.setTitle("A collection of all employees");
+			}
+		};
 	}
 
 	/**
@@ -62,7 +86,7 @@ class EmployeeController {
 	 * @param id
 	 */
 	@GetMapping("/employees/{id}")
-	public EmployeeResource findOne(@PathVariable Long id) {
+	EmployeeResource findOne(@PathVariable Long id) {
 
 		return new EmployeeResourceImpl(id, () -> repository.findById(id));
 	}
@@ -84,48 +108,15 @@ class EmployeeController {
 
 		@Override
 		public ManagerResource getManager() {
+
 			return managers.findManager(id);
 		}
 
 		@Override
 		public Link createLink() {
-			return new Link(linkTo(methodOn(EmployeeController.class).findOne(id)).toString())
-					.setTitle("The employee with id " + id);
+
+			return new Link(linkTo(methodOn(EmployeeController.class).findOne(id)).toString()).setTitle(
+					id == null ? "A link template to load a single employee by ID" : "The employee with ID " + id);
 		}
-	}
-
-	private final class EmployeeCollectionResourceImpl implements EmployeesResource {
-
-		private final Lazy<Iterable<Employee>> employees;
-
-		public EmployeeCollectionResourceImpl(Supplier<Iterable<Employee>> employees) {
-			this.employees = Lazy.of(employees);
-		}
-
-		@Override
-		public List<EmployeeResource> getEmployees() {
-
-			return StreamUtils.transform(employees.get(), EmployeeResourceImpl::new);
-		}
-
-		@Override
-		public RootResource getRoot() {
-
-			return rootController.root();
-		}
-
-		@Override
-		public ManagersResource getManagers() {
-
-			return managers.findAll();
-		}
-
-		@Override
-		public Link createLink() {
-
-			return new Link(linkTo(methodOn(EmployeeController.class).findAll()).toString())
-					.setTitle("A collection of all employees");
-		}
-
 	}
 }
