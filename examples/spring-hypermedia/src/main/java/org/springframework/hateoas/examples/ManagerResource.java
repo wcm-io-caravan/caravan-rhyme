@@ -1,8 +1,12 @@
 package org.springframework.hateoas.examples;
 
+import java.util.List;
+import java.util.Optional;
+
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
+import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @HalApiInterface
@@ -12,5 +16,8 @@ public interface ManagerResource extends LinkableResource {
 	Manager getState();
 
 	@Related("employees")
-	EmployeesResource getManagedEmployees();
+	List<EmployeeResource> getManagedEmployees();
+
+	@Related(StandardRelations.CANONICAL)
+	Optional<ManagerResource> getCanonical();
 }

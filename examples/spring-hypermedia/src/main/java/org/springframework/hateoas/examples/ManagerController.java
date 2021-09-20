@@ -23,14 +23,12 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 
 /**
  * @author Greg Turnquist
@@ -78,7 +76,8 @@ class ManagerController {
 
 			@Override
 			public Link createLink() {
-				return new Link(linkTo(methodOn(ManagerController.class).findAll()).toString());
+				return new Link(linkTo(methodOn(ManagerController.class).findAll()).toString())
+						.setTitle("A collection of all managers");
 			}
 
 		};
@@ -108,12 +107,27 @@ class ManagerController {
 	@GetMapping("/employees/{id}/manager")
 	ManagerResource findManager(@PathVariable Long id) {
 
+		Long employeeId = id;
+
 		Manager manager = repository.findByEmployeesId(id);
 
-		return new ManagerResourceImpl(manager.getId(), () -> Optional.of(manager));
+		return new ManagerResourceImpl(manager.getId(), () -> Optional.of(manager)) {
+
+			@Override
+			public Link createLink() {
+				return new Link(linkTo(methodOn(ManagerController.class).findManager(employeeId)).toString())
+						.setTitle("The manager (" + manager.getName() + ")  of the employee with id " + employeeId);
+			}
+
+			@Override
+			public Optional<ManagerResource> getCanonical() {
+
+				return Optional.of(findOne(id));
+			}
+		};
 	}
 
-	private final class ManagerResourceImpl extends AbstractEntityResource<Manager> implements ManagerResource {
+	private class ManagerResourceImpl extends AbstractEntityResource<Manager> implements ManagerResource {
 
 		private ManagerResourceImpl(Long id, Supplier<Optional<Manager>> manager) {
 			super(id, manager);
@@ -124,14 +138,22 @@ class ManagerController {
 		}
 
 		@Override
-		public Link createLink() {
-			return new Link(linkTo(methodOn(ManagerController.class).findOne(id)).toString());
+		public List<EmployeeResource> getManagedEmployees() {
+
+			return employees.findEmployeesOfManager(id);
 		}
 
 		@Override
-		public EmployeesResource getManagedEmployees() {
+		public Optional<ManagerResource> getCanonical() {
 
-			return employees.findEmployees(id);
+			return Optional.empty();
+		}
+
+		@Override
+		public Link createLink() {
+
+			return new Link(linkTo(methodOn(ManagerController.class).findOne(id)).toString())
+					.setTitle("The manager with id " + id);
 		}
 	}
 

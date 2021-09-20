@@ -89,7 +89,8 @@ public class SpringRhymeHypermediaIntegrationTest {
 
 		Long firstId = Iterables.firstOf(employees.findAll()).getId();
 
-		Manager managerOfFirstEmployee = getRootResource().getEmployeeById(firstId).getManager().getState();
+		EmployeeResource firstEmployee = getRootResource().getEmployeeById(firstId);
+		Manager managerOfFirstEmployee = firstEmployee.getManager().getState();
 
 		assertThat(managerOfFirstEmployee.getName()).isEqualTo("Gandalf");
 	}
@@ -120,8 +121,8 @@ public class SpringRhymeHypermediaIntegrationTest {
 
 		Long firstId = Iterables.firstOf(managers.findAll()).getId();
 
-		List<EmployeeResource> employeesOfFirstManager = getRootResource().getManagerById(firstId).getManagedEmployees()
-				.getEmployees();
+		ManagerResource firstManager = getRootResource().getManagerById(firstId);
+		List<EmployeeResource> employeesOfFirstManager = firstManager.getManagedEmployees();
 
 		assertThat(employeesOfFirstManager).extracting(e -> e.getState().getName()).containsExactly("Frodo", "Bilbo");
 	}

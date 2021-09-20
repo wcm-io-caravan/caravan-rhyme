@@ -68,7 +68,8 @@ class RootController {
 			@Override
 			public Link createLink() {
 
-				return new Link(linkTo(methodOn(RootController.class).root()).toString());
+				return new Link(linkTo(methodOn(RootController.class).root()).toString())
+						.setTitle("The entry point of the hypermedia example API");
 			}
 
 		};

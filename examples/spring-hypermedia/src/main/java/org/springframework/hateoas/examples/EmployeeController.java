@@ -53,7 +53,7 @@ class EmployeeController {
 	@GetMapping("/employees")
 	public EmployeesResource findAll() {
 
-		return new EmployeeCollectionResourceImpl(() -> repository.findAll(), ctrl -> ctrl.findAll());
+		return new EmployeeCollectionResourceImpl(() -> repository.findAll());
 	}
 
 	/**
@@ -67,17 +67,9 @@ class EmployeeController {
 		return new EmployeeResourceImpl(id, () -> repository.findById(id));
 	}
 
-	/**
-	 * Find an {@link Employee}'s {@link Manager} based upon employee id. Turn it
-	 * into a context-based link.
-	 *
-	 * @param id
-	 * @return
-	 */
-	@GetMapping("/managers/{id}/employees")
-	public EmployeesResource findEmployees(@PathVariable long id) {
+	List<EmployeeResource> findEmployeesOfManager(long managerId) {
 
-		return new EmployeeCollectionResourceImpl(() -> repository.findByManagerId(id), ctrl -> ctrl.findEmployees(id));
+		return StreamUtils.transform(repository.findByManagerId(managerId), EmployeeResourceImpl::new);
 	}
 
 	private final class EmployeeResourceImpl extends AbstractEntityResource<Employee> implements EmployeeResource {
@@ -97,19 +89,17 @@ class EmployeeController {
 
 		@Override
 		public Link createLink() {
-			return new Link(linkTo(methodOn(EmployeeController.class).findOne(id)).toString());
+			return new Link(linkTo(methodOn(EmployeeController.class).findOne(id)).toString())
+					.setTitle("The employee with id " + id);
 		}
 	}
 
 	private final class EmployeeCollectionResourceImpl implements EmployeesResource {
 
 		private final Lazy<Iterable<Employee>> employees;
-		private final Function<EmployeeController, ?> controllerFunc;
 
-		public EmployeeCollectionResourceImpl(Supplier<Iterable<Employee>> employees,
-				Function<EmployeeController, ?> controllerFunc) {
+		public EmployeeCollectionResourceImpl(Supplier<Iterable<Employee>> employees) {
 			this.employees = Lazy.of(employees);
-			this.controllerFunc = controllerFunc;
 		}
 
 		@Override
@@ -133,7 +123,8 @@ class EmployeeController {
 		@Override
 		public Link createLink() {
 
-			return new Link(linkTo(controllerFunc.apply(methodOn(EmployeeController.class))).toString());
+			return new Link(linkTo(methodOn(EmployeeController.class).findAll()).toString())
+					.setTitle("A collection of all employees");
 		}
 
 	}
