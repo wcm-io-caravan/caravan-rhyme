@@ -28,7 +28,7 @@ class LinkableResourceMessageConverter extends AbstractHttpMessageConverter<Link
   private final SpringRhymeImpl rhyme;
 
   public LinkableResourceMessageConverter(@Autowired SpringRhymeImpl rhyme) {
-    super(MediaTypes.HAL_JSON);
+    super(MediaTypes.HAL_JSON, MediaTypes.HAL_FORMS_JSON);
     log.debug("{} was instantiated", this.getClass().getSimpleName());
 
     this.rhyme = rhyme;
