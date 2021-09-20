@@ -38,10 +38,4 @@ abstract class AbstractEntityResource<T> implements LinkableResource, Embeddable
 	public boolean isEmbedded() {
 		return embedded;
 	}
-
-	@Override
-	public boolean isLinkedWhenEmbedded() {
-		return false;
-	}
-
 }
