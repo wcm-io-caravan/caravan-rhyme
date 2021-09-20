@@ -47,6 +47,7 @@
     <module>examples/aem-hal-browser</module>
     <module>examples/osgi-jaxrs-example-launchpad</module>
     <module>examples/osgi-jaxrs-example-service</module>
+    <module>examples/spring-hypermedia</module>
     <module>parent</module>
 
   </modules>
