@@ -55,7 +55,7 @@ class ManagerController {
 			@Override
 			public List<ManagerResource> getManagers() {
 
-				return StreamUtils.transform(repository.findAll(), ManagerResourceImpl::new);
+				return StreamUtils.mapEntitiesToListOfResources(repository.findAll(), ManagerResourceImpl::new);
 			}
 
 			@Override

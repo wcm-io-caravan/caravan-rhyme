@@ -1,5 +1,6 @@
 package org.springframework.hateoas.examples;
 
+import static org.springframework.hateoas.examples.CompanyRelations.DETAILED_EMPLOYEE;
 import static org.springframework.hateoas.examples.CompanyRelations.EMPLOYEE;
 import static org.springframework.hateoas.examples.CompanyRelations.EMPLOYEES;
 import static org.springframework.hateoas.examples.CompanyRelations.MANAGER;
@@ -24,4 +25,7 @@ public interface RootResource extends LinkableResource {
 
 	@Related(MANAGER)
 	ManagerResource getManagerById(@TemplateVariable("id") Long id);
+
+	@Related(DETAILED_EMPLOYEE)
+	DetailedEmployeeResource getDetailedEmployeeById(@TemplateVariable("id") Long id);
 }

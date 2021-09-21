@@ -44,6 +44,9 @@ class EmployeeController {
 	@Autowired
 	private ManagerController managers;
 
+	@Autowired
+	private DetailedEmployeeController details;
+
 	/**
 	 * Look up all employees, and transform them into a REST collection resource
 	 * 
@@ -56,7 +59,7 @@ class EmployeeController {
 			@Override
 			public List<EmployeeResource> getEmployees() {
 
-				return StreamUtils.transform(repository.findAll(), EmployeeResourceImpl::new);
+				return StreamUtils.mapEntitiesToListOfResources(repository.findAll(), EmployeeResourceImpl::new);
 			}
 
 			@Override
@@ -93,7 +96,8 @@ class EmployeeController {
 
 	List<EmployeeResource> findEmployeesOfManager(long managerId) {
 
-		return StreamUtils.transform(repository.findByManagerId(managerId), EmployeeResourceImpl::new);
+		return StreamUtils.mapEntitiesToListOfResources(repository.findByManagerId(managerId),
+				EmployeeResourceImpl::new);
 	}
 
 	private final class EmployeeResourceImpl extends AbstractEntityResource<Employee> implements EmployeeResource {
@@ -113,10 +117,17 @@ class EmployeeController {
 		}
 
 		@Override
+		public DetailedEmployeeResource getDetails() {
+
+			return details.findOne(id);
+		}
+
+		@Override
 		public Link createLink() {
 
 			return new Link(linkTo(methodOn(EmployeeController.class).findOne(id)).toString()).setTitle(
 					id == null ? "A link template to load a single employee by ID" : "The employee with ID " + id);
 		}
+
 	}
 }

@@ -36,6 +36,9 @@ class RootController {
 	@Autowired
 	private ManagerController managers;
 
+	@Autowired
+	private DetailedEmployeeController details;
+
 	@GetMapping("/")
 	RootResource root() {
 
@@ -66,11 +69,18 @@ class RootController {
 			}
 
 			@Override
+			public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
+
+				return details.findOne(id);
+			}
+
+			@Override
 			public Link createLink() {
 
 				return new Link(linkTo(methodOn(RootController.class).root()).toString())
 						.setTitle("The entry point of the hypermedia example API");
 			}
+
 		};
 	}
 }

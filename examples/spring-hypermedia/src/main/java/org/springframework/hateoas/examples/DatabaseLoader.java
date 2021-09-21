@@ -48,8 +48,9 @@ class DatabaseLoader {
 			Manager saruman = managerRepository.save(new Manager("Saruman"));
 
 			Employee sam = employeeRepository.save(new Employee("Sam", "gardener", saruman));
+			Employee pippin = employeeRepository.save(new Employee("Pippin", "guard", saruman));
 
-			saruman.setEmployees(Arrays.asList(sam));
+			saruman.setEmployees(Arrays.asList(sam, pippin));
 
 			managerRepository.save(saruman);
 		};
