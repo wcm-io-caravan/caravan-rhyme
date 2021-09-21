@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.spring.testing.MockMvcJsonResourceLoader;
+import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
 
 @SpringBootTest
 public class SpringRhymeHypermediaIntegrationTest {
@@ -21,7 +21,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 	private static final long NON_EXISTANT_ID = 999l;
 
 	@Autowired
-	private MockMvcJsonResourceLoader resourceLoader;
+	private MockMvcHalResourceLoader resourceLoader;
 
 	@Autowired
 	private EmployeeRepository employees;
