@@ -3,8 +3,6 @@ package io.wcm.caravan.rhyme.spring.impl;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
