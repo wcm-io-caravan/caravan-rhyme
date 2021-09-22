@@ -5,16 +5,34 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.3.4.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
+    <groupId>io.wcm.maven</groupId>
+    <artifactId>io.wcm.maven.global-parent</artifactId>
+    <version>39</version>
+    <relativePath />
   </parent>
   
+  <properties>
+    <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
+  </properties>
+
   <groupId>io.wcm.caravan</groupId>
   <artifactId>io.wcm.caravan.rhyme.examples.spring-hypermedia</artifactId>
+  <version>1-SNAPSHOT</version>
   <name>Spring HATEOAS - Examples - Hypermedia</name>
   <packaging>jar</packaging>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <!-- Import dependency management from Spring Boot -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
 
@@ -83,6 +101,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
       </plugin>
 
       <!-- Generate HTML documentation into classpath resources-->
@@ -102,7 +121,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
         <executions>
           <execution>
             <id>custom-resources</id>
