@@ -27,11 +27,14 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
 
 /**
  * @author Greg Turnquist
@@ -90,47 +93,33 @@ class ManagerController {
   @GetMapping("/managers/{id}")
   ManagerResource findOne(@PathVariable Long id) {
 
-    return new ManagerResourceImpl(id, () -> repository.findById(id));
+    return new ManagerResourceImpl(id, () -> repository.findById(id)
+        .orElseThrow(() -> new HalApiServerException(404, "No entity was found with id " + id)));
   }
 
-  /**
-   * Find an {@link Employee}'s {@link Manager} based upon employee id. Turn it
-   * into a context-based link.
-   * @param id
-   * @return
-   */
-  @GetMapping("/employees/{id}/manager")
-  ManagerResource findManager(@PathVariable Long id) {
+  private class ManagerResourceImpl implements ManagerResource, EmbeddableResource {
 
-    Long employeeId = id;
+    private final Long id;
+    private final Lazy<Manager> state;
 
-    Manager manager = repository.findByEmployeesId(id);
+    private final boolean embedded;
 
-    return new ManagerResourceImpl(manager.getId(), () -> Optional.of(manager)) {
-
-      @Override
-      public Link createLink() {
-
-        return new Link(linkTo(methodOn(ManagerController.class).findManager(employeeId)).toString())
-            .setTitle("The manager (" + manager.getName() + ")  of the employee with id " + employeeId);
-      }
-
-      @Override
-      public Optional<ManagerResource> getCanonical() {
-
-        return Optional.of(findOne(id));
-      }
-    };
-  }
-
-  private class ManagerResourceImpl extends AbstractEntityResource<Manager> implements ManagerResource {
-
-    private ManagerResourceImpl(Long id, Supplier<Optional<Manager>> manager) {
-      super(id, manager);
+    protected ManagerResourceImpl(Long id, Supplier<Manager> stateSupplier) {
+      this.id = id;
+      this.state = Lazy.of(stateSupplier);
+      this.embedded = false;
     }
 
     private ManagerResourceImpl(Manager manager) {
-      super(manager.getId(), manager);
+      this.id = manager.getId();
+      this.state = Lazy.of(manager);
+      this.embedded = true;
+    }
+
+    @Override
+    public Manager getState() {
+
+      return state.get();
     }
 
     @Override
@@ -146,10 +135,46 @@ class ManagerController {
     }
 
     @Override
+    public boolean isEmbedded() {
+
+      return embedded;
+    }
+
+    @Override
     public Link createLink() {
 
       return new Link(linkTo(methodOn(ManagerController.class).findOne(id)).toString()).setTitle(
-          id == null ? "A link template to load a single manage by ID" : "The manager with ID " + id);
+          id == null ? "A link template to load a single manager by ID" : "The manager with ID " + id);
     }
+  }
+
+  /**
+   * Find an {@link Employee}'s {@link Manager} based upon employee id. Turn it
+   * into a context-based link.
+   * @param id
+   * @return
+   */
+  @GetMapping("/employees/{id}/manager")
+  ManagerResource findManager(@PathVariable Long id) {
+
+    Long employeeId = id;
+
+    Manager manager = repository.findByEmployeesId(id);
+
+    return new ManagerResourceImpl(manager.getId(), () -> manager) {
+
+      @Override
+      public Optional<ManagerResource> getCanonical() {
+
+        return Optional.of(findOne(id));
+      }
+
+      @Override
+      public Link createLink() {
+
+        return new Link(linkTo(methodOn(ManagerController.class).findManager(employeeId)).toString())
+            .setTitle("The manager (" + manager.getName() + ")  of the employee with id " + employeeId);
+      }
+    };
   }
 }

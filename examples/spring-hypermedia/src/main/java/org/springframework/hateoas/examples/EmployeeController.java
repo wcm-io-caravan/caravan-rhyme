@@ -23,15 +23,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
 
 /**
  * @author Greg Turnquist
@@ -93,7 +95,8 @@ class EmployeeController {
   @GetMapping("/employees/{id}")
   EmployeeResource findOne(@PathVariable Long id) {
 
-    return new EmployeeResourceImpl(id, () -> repository.findById(id));
+    return new EmployeeResourceImpl(id, () -> repository.findById(id)
+        .orElseThrow(() -> new HalApiServerException(404, "No entity was found with id " + id)));
   }
 
   List<EmployeeResource> findEmployeesOfManager(long managerId) {
@@ -102,14 +105,29 @@ class EmployeeController {
         EmployeeResourceImpl::new);
   }
 
-  private final class EmployeeResourceImpl extends AbstractEntityResource<Employee> implements EmployeeResource {
+  private final class EmployeeResourceImpl implements EmployeeResource, EmbeddableResource {
 
-    private EmployeeResourceImpl(Long id, Supplier<Optional<Employee>> supplier) {
-      super(id, supplier);
+    private final Long id;
+    private final Lazy<Employee> state;
+
+    private final boolean embedded;
+
+    private EmployeeResourceImpl(Long id, Supplier<Employee> stateSupplier) {
+      this.id = id;
+      this.state = Lazy.of(stateSupplier);
+      this.embedded = false;
     }
 
     private EmployeeResourceImpl(Employee employee) {
-      super(employee.getId(), employee);
+      this.id = employee.getId();
+      this.state = Lazy.of(employee);
+      this.embedded = true;
+    }
+
+    @Override
+    public Employee getState() {
+
+      return state.get();
     }
 
     @Override
@@ -125,11 +143,18 @@ class EmployeeController {
     }
 
     @Override
+    public boolean isEmbedded() {
+
+      return embedded;
+    }
+
+    @Override
     public Link createLink() {
 
       return new Link(linkTo(methodOn(EmployeeController.class).findOne(id)).toString()).setTitle(
           id == null ? "A link template to load a single employee by ID" : "The employee with ID " + id);
     }
-
   }
+
+
 }
