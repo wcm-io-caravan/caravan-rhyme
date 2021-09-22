@@ -155,6 +155,4 @@ class EmployeeController {
           id == null ? "A link template to load a single employee by ID" : "The employee with ID " + id);
     }
   }
-
-
 }

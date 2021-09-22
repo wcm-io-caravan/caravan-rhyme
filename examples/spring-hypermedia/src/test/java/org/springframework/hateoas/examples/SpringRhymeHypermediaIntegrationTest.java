@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Iterables;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,16 +38,16 @@ import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
 @SpringBootTest
 public class SpringRhymeHypermediaIntegrationTest {
 
-  private static final long NON_EXISTANT_ID = 999l;
+  private static final long NON_EXISTANT_ID = 999L;
 
   @Autowired
   private MockMvcHalResourceLoader resourceLoader;
 
   @Autowired
-  private EmployeeRepository employees;
+  private EmployeeRepository employeeRepository;
 
   @Autowired
-  private ManagerRepository managers;
+  private ManagerRepository managerRepository;
 
   private RootResource getEntryPoint() {
 
@@ -57,12 +58,20 @@ public class SpringRhymeHypermediaIntegrationTest {
 
   private Long getIdOfFirstEmployee() {
 
-    return Iterables.firstOf(employees.findAll()).getId();
+    return Iterables.firstOf(employeeRepository.findAll()).getId();
   }
 
   private Long getIdOfFirstManager() {
 
-    return Iterables.firstOf(managers.findAll()).getId();
+    return Iterables.firstOf(managerRepository.findAll()).getId();
+  }
+
+  private void assertThatClientFailsWith404(ThrowingCallable codeThatThrows) {
+
+    HalApiClientException ex = catchThrowableOfType(codeThatThrows, HalApiClientException.class);
+
+    assertThat(ex).isNotNull();
+    assertThat(ex.getStatusCode()).isEqualTo(404);
   }
 
   @Test
@@ -98,11 +107,8 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Test
   public void getEmployeeById_should_respond_with_404_for_non_existing_id() throws Exception {
 
-    HalApiClientException ex = catchThrowableOfType(
-        () -> getEntryPoint().getEmployeeById(NON_EXISTANT_ID).getState(), HalApiClientException.class);
-
-    assertThat(ex).isNotNull();
-    assertThat(ex.getStatusCode()).isEqualTo(404);
+    assertThatClientFailsWith404(
+        () -> getEntryPoint().getEmployeeById(NON_EXISTANT_ID).getState());
   }
 
   @Test
@@ -130,11 +136,8 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Test
   public void getManagerById_should_respond_with_404_for_non_existing_id() throws Exception {
 
-    HalApiClientException ex = catchThrowableOfType(
-        () -> getEntryPoint().getManagerById(NON_EXISTANT_ID).getState(), HalApiClientException.class);
-
-    assertThat(ex).isNotNull();
-    assertThat(ex.getStatusCode()).isEqualTo(404);
+    assertThatClientFailsWith404(
+        () -> getEntryPoint().getManagerById(NON_EXISTANT_ID).getState());
   }
 
   @Test
@@ -163,11 +166,8 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Test
   public void getDetailedEmployeeById_should_respond_with_404_for_non_existing_id() throws Exception {
 
-    HalApiClientException ex = catchThrowableOfType(
-        () -> getEntryPoint().getDetailedEmployeeById(NON_EXISTANT_ID).getState(), HalApiClientException.class);
-
-    assertThat(ex).isNotNull();
-    assertThat(ex.getStatusCode()).isEqualTo(404);
+    assertThatClientFailsWith404(
+        () -> getEntryPoint().getDetailedEmployeeById(NON_EXISTANT_ID).getState());
   }
 
   @Test

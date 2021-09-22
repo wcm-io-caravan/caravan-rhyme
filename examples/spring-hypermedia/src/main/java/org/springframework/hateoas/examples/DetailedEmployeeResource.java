@@ -29,15 +29,30 @@ import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
+/**
+ * An extension of the {@link EmployeeResource} that contains details of the employee's manager,
+ * and its direct colleagues as embedded resources. The main point of this resource is to show
+ * how the {@link DetailedEmployeeController} is implementing this interface by combining data loaded
+ * via HTTP from several other resources.
+ */
 @HalApiInterface
 public interface DetailedEmployeeResource extends LinkableResource {
 
+  /**
+   * @return an {@link Employee} entity object suitable for JSON (de)serialization
+   */
   @ResourceState
   Employee getState();
 
+  /**
+   * @return an embedded resource for the manager of this employee
+   */
   @Related(MANAGER)
   ManagerResource getManager();
 
+  /**
+   * @return embedded resources for every other employee with the same manager
+   */
   @Related(COLLEAGUE)
   Stream<EmployeeResource> getColleagues();
 }

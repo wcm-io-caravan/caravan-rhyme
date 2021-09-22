@@ -40,6 +40,7 @@ class DatabaseLoader {
       Employee bilbo = employeeRepository.save(new Employee("Bilbo", "burglar", gandalf));
 
       gandalf.setEmployees(Arrays.asList(frodo, bilbo));
+
       managerRepository.save(gandalf);
 
       /*
