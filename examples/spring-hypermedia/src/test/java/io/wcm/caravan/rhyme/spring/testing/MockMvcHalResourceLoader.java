@@ -29,53 +29,54 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 @Primary
 public class MockMvcHalResourceLoader implements HalResourceLoader {
 
-	private final HalResourceLoader delegate;
+  private final HalResourceLoader delegate;
 
-	public MockMvcHalResourceLoader(@Autowired WebApplicationContext applicationContext) {
+  public MockMvcHalResourceLoader(@Autowired WebApplicationContext applicationContext) {
 
-		MockMvcClient mockMvcClient = new MockMvcClient(applicationContext);
+    MockMvcClient mockMvcClient = new MockMvcClient(applicationContext);
 
-		delegate = HalResourceLoaderBuilder.create().withCustomHttpClient(mockMvcClient).build();
-	}
+    delegate = HalResourceLoaderBuilder.create().withCustomHttpClient(mockMvcClient).build();
+  }
 
-	@Override
-	public Single<HalResponse> getHalResource(String uri) {
+  @Override
+  public Single<HalResponse> getHalResource(String uri) {
 
-		return delegate.getHalResource(uri);
-	}
+    return delegate.getHalResource(uri);
+  }
 
-	private static class MockMvcClient implements HttpClientSupport {
+  private static class MockMvcClient implements HttpClientSupport {
 
-		private final MockMvc mockMvc;
+    private final MockMvc mockMvc;
 
-		public MockMvcClient(WebApplicationContext applicationContext) {
+    public MockMvcClient(WebApplicationContext applicationContext) {
 
-			this.mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext).build();
-		}
+      this.mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext).build();
+    }
 
-		@Override
-		public void executeGetRequest(URI uri, HttpClientCallback callback) {
-			try {
-				MvcResult result = mockMvc.perform(get(uri)).andReturn();
+    @Override
+    public void executeGetRequest(URI uri, HttpClientCallback callback) {
+      try {
+        MvcResult result = mockMvc.perform(get(uri)).andReturn();
 
-				MockHttpServletResponse response = result.getResponse();
+        MockHttpServletResponse response = result.getResponse();
 
-				callback.onHeadersAvailable(response.getStatus(), createHeadersMap(response));
+        callback.onHeadersAvailable(response.getStatus(), createHeadersMap(response));
 
-				callback.onBodyAvailable(new ByteArrayInputStream(response.getContentAsByteArray()));
+        callback.onBodyAvailable(new ByteArrayInputStream(response.getContentAsByteArray()));
 
-			} catch (Exception e) {
-				callback.onExceptionCaught(e);
-			}
-		}
+      }
+      catch (Exception e) {
+        callback.onExceptionCaught(e);
+      }
+    }
 
-		private Map<String, Collection<String>> createHeadersMap(MockHttpServletResponse response) {
+    private Map<String, Collection<String>> createHeadersMap(MockHttpServletResponse response) {
 
-			LinkedHashMultimap<String, String> headers = LinkedHashMultimap.create();
+      LinkedHashMultimap<String, String> headers = LinkedHashMultimap.create();
 
-			response.getHeaderNames().forEach(name -> headers.putAll(name, response.getHeaders(name)));
+      response.getHeaderNames().forEach(name -> headers.putAll(name, response.getHeaders(name)));
 
-			return headers.asMap();
-		}
-	}
+      return headers.asMap();
+    }
+  }
 }

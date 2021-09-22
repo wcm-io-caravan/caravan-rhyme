@@ -30,57 +30,57 @@ import io.wcm.caravan.hal.resource.Link;
 @RestController
 class RootController {
 
-	@Autowired
-	private EmployeeController employees;
+  @Autowired
+  private EmployeeController employees;
 
-	@Autowired
-	private ManagerController managers;
+  @Autowired
+  private ManagerController managers;
 
-	@Autowired
-	private DetailedEmployeeController details;
+  @Autowired
+  private DetailedEmployeeController details;
 
-	@GetMapping("/")
-	RootResource root() {
+  @GetMapping("/")
+  RootResource root() {
 
-		return new RootResource() {
+    return new RootResource() {
 
-			@Override
-			public EmployeesResource listAllEmployees() {
+      @Override
+      public EmployeesResource listAllEmployees() {
 
-				return employees.findAll();
-			}
+        return employees.findAll();
+      }
 
-			@Override
-			public ManagersResource listAllManagers() {
+      @Override
+      public ManagersResource listAllManagers() {
 
-				return managers.findAll();
-			}
+        return managers.findAll();
+      }
 
-			@Override
-			public EmployeeResource getEmployeeById(Long id) {
+      @Override
+      public EmployeeResource getEmployeeById(Long id) {
 
-				return employees.findOne(id);
-			}
+        return employees.findOne(id);
+      }
 
-			@Override
-			public ManagerResource getManagerById(Long id) {
+      @Override
+      public ManagerResource getManagerById(Long id) {
 
-				return managers.findOne(id);
-			}
+        return managers.findOne(id);
+      }
 
-			@Override
-			public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
+      @Override
+      public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
 
-				return details.findOne(id);
-			}
+        return details.findOne(id);
+      }
 
-			@Override
-			public Link createLink() {
+      @Override
+      public Link createLink() {
 
-				return new Link(linkTo(methodOn(RootController.class).root()).toString())
-						.setTitle("The entry point of the hypermedia example API");
-			}
+        return new Link(linkTo(methodOn(RootController.class).root()).toString())
+            .setTitle("The entry point of the hypermedia example API");
+      }
 
-		};
-	}
+    };
+  }
 }

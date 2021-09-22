@@ -21,10 +21,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * @author Greg Turnquist
  */
-@SpringBootApplication(scanBasePackages = { "io.wcm.caravan.rhyme.spring", "org.springframework.hateoas.examples"})
+@SpringBootApplication(scanBasePackages = { "io.wcm.caravan.rhyme.spring", "org.springframework.hateoas.examples" })
 public class SpringRhymeHypermediaApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringRhymeHypermediaApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(SpringRhymeHypermediaApplication.class, args);
+  }
 }

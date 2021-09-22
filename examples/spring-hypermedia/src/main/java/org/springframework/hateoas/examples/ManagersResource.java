@@ -13,12 +13,12 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 @HalApiInterface
 public interface ManagersResource extends LinkableResource {
 
-	@Related(MANAGER)
-	List<ManagerResource> getManagers();
-	
-	@Related(ROOT)
-	RootResource getRoot();
-	
-	@Related(EMPLOYEES)
-	EmployeesResource getEmployees();
+  @Related(MANAGER)
+  List<ManagerResource> getManagers();
+
+  @Related(ROOT)
+  RootResource getRoot();
+
+  @Related(EMPLOYEES)
+  EmployeesResource getEmployees();
 }

@@ -36,21 +36,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Manager {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-	private String name;
+  @Id
+  @GeneratedValue
+  private Long id;
+  private String name;
 
-	/**
-	 * To break the recursive, bi-directional interface, don't serialize
-	 * {@literal employees}.
-	 */
-	@JsonIgnore //
-	@OneToMany(mappedBy = "manager") //
-	private List<Employee> employees = new ArrayList<>();
+  /**
+   * To break the recursive, bi-directional interface, don't serialize
+   * {@literal employees}.
+   */
+  @JsonIgnore //
+  @OneToMany(mappedBy = "manager") //
+  private List<Employee> employees = new ArrayList<>();
 
-	Manager(String name) {
-		this.name = name;
-	}
+  Manager(String name) {
+    this.name = name;
+  }
 
 }

@@ -24,6 +24,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 interface EmployeeRepository extends CrudRepository<Employee, Long> {
 
-	List<Employee> findByManagerId(Long id);
+  List<Employee> findByManagerId(Long id);
 
 }

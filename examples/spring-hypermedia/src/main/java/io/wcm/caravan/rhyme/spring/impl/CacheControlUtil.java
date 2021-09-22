@@ -6,21 +6,22 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 public class CacheControlUtil {
-	private static final String REGEX = ".*max-age=([0-9]+).*";
 
-	private static final Pattern pattern = Pattern.compile(REGEX);
+  private static final String REGEX = ".*max-age=([0-9]+).*";
 
-	public static Integer parseMaxAge(String cacheControl) {
+  private static final Pattern pattern = Pattern.compile(REGEX);
 
-		if (StringUtils.isBlank(cacheControl)) {
-			return null;
-		}
+  public static Integer parseMaxAge(String cacheControl) {
 
-		Matcher matcher = pattern.matcher(cacheControl);
-		if (!matcher.matches()) {
-			return null;
-		}
+    if (StringUtils.isBlank(cacheControl)) {
+      return null;
+    }
 
-		return Integer.parseInt(matcher.group(1));
-	}
+    Matcher matcher = pattern.matcher(cacheControl);
+    if (!matcher.matches()) {
+      return null;
+    }
+
+    return Integer.parseInt(matcher.group(1));
+  }
 }

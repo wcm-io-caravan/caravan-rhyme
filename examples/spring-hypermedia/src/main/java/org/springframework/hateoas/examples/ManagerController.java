@@ -35,119 +35,117 @@ import io.wcm.caravan.hal.resource.Link;
 @RestController
 class ManagerController {
 
-	@Autowired
-	private ManagerRepository repository;
+  @Autowired
+  private ManagerRepository repository;
 
-	@Autowired
-	private RootController rootController;
+  @Autowired
+  private RootController rootController;
 
-	@Autowired
-	private EmployeeController employees;
+  @Autowired
+  private EmployeeController employees;
 
-	/**
-	 * Look up all managers, and transform them into a REST collection resource
-	 */
-	@GetMapping("/managers")
-	ManagersResource findAll() {
+  /**
+   * Look up all managers, and transform them into a REST collection resource
+   */
+  @GetMapping("/managers")
+  ManagersResource findAll() {
 
-		return new ManagersResource() {
+    return new ManagersResource() {
 
-			@Override
-			public List<ManagerResource> getManagers() {
+      @Override
+      public List<ManagerResource> getManagers() {
 
-				return StreamUtils.mapEntitiesToListOfResources(repository.findAll(), ManagerResourceImpl::new);
-			}
+        return StreamUtils.mapEntitiesToListOfResources(repository.findAll(), ManagerResourceImpl::new);
+      }
 
-			@Override
-			public RootResource getRoot() {
+      @Override
+      public RootResource getRoot() {
 
-				return rootController.root();
-			}
+        return rootController.root();
+      }
 
-			@Override
-			public EmployeesResource getEmployees() {
+      @Override
+      public EmployeesResource getEmployees() {
 
-				return employees.findAll();
-			}
+        return employees.findAll();
+      }
 
-			@Override
-			public Link createLink() {
+      @Override
+      public Link createLink() {
 
-				return new Link(linkTo(methodOn(ManagerController.class).findAll()).toString())
-						.setTitle("A collection of all managers");
-			}
-		};
-	}
+        return new Link(linkTo(methodOn(ManagerController.class).findAll()).toString())
+            .setTitle("A collection of all managers");
+      }
+    };
+  }
 
-	/**
-	 * Look up a single {@link Manager} and transform it into a REST resource using
-	 *
-	 * @param id
-	 */
-	@GetMapping("/managers/{id}")
-	ManagerResource findOne(@PathVariable Long id) {
+  /**
+   * Look up a single {@link Manager} and transform it into a REST resource using
+   * @param id
+   */
+  @GetMapping("/managers/{id}")
+  ManagerResource findOne(@PathVariable Long id) {
 
-		return new ManagerResourceImpl(id, () -> repository.findById(id));
-	}
+    return new ManagerResourceImpl(id, () -> repository.findById(id));
+  }
 
-	/**
-	 * Find an {@link Employee}'s {@link Manager} based upon employee id. Turn it
-	 * into a context-based link.
-	 *
-	 * @param id
-	 * @return
-	 */
-	@GetMapping("/employees/{id}/manager")
-	ManagerResource findManager(@PathVariable Long id) {
+  /**
+   * Find an {@link Employee}'s {@link Manager} based upon employee id. Turn it
+   * into a context-based link.
+   * @param id
+   * @return
+   */
+  @GetMapping("/employees/{id}/manager")
+  ManagerResource findManager(@PathVariable Long id) {
 
-		Long employeeId = id;
+    Long employeeId = id;
 
-		Manager manager = repository.findByEmployeesId(id);
+    Manager manager = repository.findByEmployeesId(id);
 
-		return new ManagerResourceImpl(manager.getId(), () -> Optional.of(manager)) {
+    return new ManagerResourceImpl(manager.getId(), () -> Optional.of(manager)) {
 
-			@Override
-			public Link createLink() {
+      @Override
+      public Link createLink() {
 
-				return new Link(linkTo(methodOn(ManagerController.class).findManager(employeeId)).toString())
-						.setTitle("The manager (" + manager.getName() + ")  of the employee with id " + employeeId);
-			}
+        return new Link(linkTo(methodOn(ManagerController.class).findManager(employeeId)).toString())
+            .setTitle("The manager (" + manager.getName() + ")  of the employee with id " + employeeId);
+      }
 
-			@Override
-			public Optional<ManagerResource> getCanonical() {
+      @Override
+      public Optional<ManagerResource> getCanonical() {
 
-				return Optional.of(findOne(id));
-			}
-		};
-	}
+        return Optional.of(findOne(id));
+      }
+    };
+  }
 
-	private class ManagerResourceImpl extends AbstractEntityResource<Manager> implements ManagerResource {
+  private class ManagerResourceImpl extends AbstractEntityResource<Manager> implements ManagerResource {
 
-		private ManagerResourceImpl(Long id, Supplier<Optional<Manager>> manager) {
-			super(id, manager);
-		}
+    private ManagerResourceImpl(Long id, Supplier<Optional<Manager>> manager) {
+      super(id, manager);
+    }
 
-		private ManagerResourceImpl(Manager manager) {
-			super(manager.getId(), manager);
-		}
+    private ManagerResourceImpl(Manager manager) {
+      super(manager.getId(), manager);
+    }
 
-		@Override
-		public List<EmployeeResource> getManagedEmployees() {
+    @Override
+    public List<EmployeeResource> getManagedEmployees() {
 
-			return employees.findEmployeesOfManager(id);
-		}
+      return employees.findEmployeesOfManager(id);
+    }
 
-		@Override
-		public Optional<ManagerResource> getCanonical() {
+    @Override
+    public Optional<ManagerResource> getCanonical() {
 
-			return Optional.empty();
-		}
+      return Optional.empty();
+    }
 
-		@Override
-		public Link createLink() {
+    @Override
+    public Link createLink() {
 
-			return new Link(linkTo(methodOn(ManagerController.class).findOne(id)).toString()).setTitle(
-					id == null ? "A link template to load a single manage by ID" : "The manager with ID " + id);
-		}
-	}
+      return new Link(linkTo(methodOn(ManagerController.class).findOne(id)).toString()).setTitle(
+          id == null ? "A link template to load a single manage by ID" : "The manager with ID " + id);
+    }
+  }
 }

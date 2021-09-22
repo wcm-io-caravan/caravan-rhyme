@@ -35,51 +35,51 @@ import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 @RestController
 class DetailedEmployeeController {
 
-	@Autowired
-	private SpringRhyme rhyme;
+  @Autowired
+  private SpringRhyme rhyme;
 
-	@GetMapping("/employees/{id}/detailed")
-	DetailedEmployeeResource findOne(@PathVariable Long id) {
+  @GetMapping("/employees/{id}/detailed")
+  DetailedEmployeeResource findOne(@PathVariable Long id) {
 
-		return new DetailedEmployeeResource() {
+    return new DetailedEmployeeResource() {
 
-			private final RootResource root = rhyme.getRemoteResource("http://localhost:8081", RootResource.class);
+      private final RootResource root = rhyme.getRemoteResource("http://localhost:8081", RootResource.class);
 
-			private EmployeeResource getEmployee() {
+      private EmployeeResource getEmployee() {
 
-				return root.getEmployeeById(id);
-			}
+        return root.getEmployeeById(id);
+      }
 
-			@Override
-			public Employee getState() {
+      @Override
+      public Employee getState() {
 
-				return getEmployee().getState();
-			}
+        return getEmployee().getState();
+      }
 
-			@Override
-			public ManagerResource getManager() {
+      @Override
+      public ManagerResource getManager() {
 
-				ManagerResource manager = getEmployee().getManager();
+        ManagerResource manager = getEmployee().getManager();
 
-				return ResourceConversions.asEmbeddedResourceWithoutLink(manager);
-			}
+        return ResourceConversions.asEmbeddedResourceWithoutLink(manager);
+      }
 
-			@Override
-			public Stream<EmployeeResource> getColleagues() {
+      @Override
+      public Stream<EmployeeResource> getColleagues() {
 
-				return getEmployee().getManager().getManagedEmployees().stream()
-						.filter(employee -> employee.getState().getId() != id)
-						.map(ResourceConversions::asEmbeddedResourceWithoutLink);
-			}
+        return getEmployee().getManager().getManagedEmployees().stream()
+            .filter(employee -> employee.getState().getId() != id)
+            .map(ResourceConversions::asEmbeddedResourceWithoutLink);
+      }
 
-			@Override
-			public Link createLink() {
+      @Override
+      public Link createLink() {
 
-				return new Link(linkTo(methodOn(DetailedEmployeeController.class).findOne(id)).toString())
-						.setTitle(id == null ? "A link template to detailed data for single employee by ID"
-								: "The employee with ID " + id
-										+ ", with embedded resources for her managers and colleagues");
-			}
-		};
-	}
+        return new Link(linkTo(methodOn(DetailedEmployeeController.class).findOne(id)).toString())
+            .setTitle(id == null ? "A link template to detailed data for single employee by ID"
+                : "The employee with ID " + id
+                    + ", with embedded resources for her managers and colleagues");
+      }
+    };
+  }
 }

@@ -35,99 +35,97 @@ import io.wcm.caravan.hal.resource.Link;
 @RestController
 class EmployeeController {
 
-	@Autowired
-	private EmployeeRepository repository;
+  @Autowired
+  private EmployeeRepository repository;
 
-	@Autowired
-	private RootController rootController;
+  @Autowired
+  private RootController rootController;
 
-	@Autowired
-	private ManagerController managers;
+  @Autowired
+  private ManagerController managers;
 
-	@Autowired
-	private DetailedEmployeeController details;
+  @Autowired
+  private DetailedEmployeeController details;
 
-	/**
-	 * Look up all employees, and transform them into a REST collection resource
-	 * 
-	 */
-	@GetMapping("/employees")
-	EmployeesResource findAll() {
+  /**
+   * Look up all employees, and transform them into a REST collection resource
+   */
+  @GetMapping("/employees")
+  EmployeesResource findAll() {
 
-		return new EmployeesResource() {
+    return new EmployeesResource() {
 
-			@Override
-			public List<EmployeeResource> getEmployees() {
+      @Override
+      public List<EmployeeResource> getEmployees() {
 
-				return StreamUtils.mapEntitiesToListOfResources(repository.findAll(), EmployeeResourceImpl::new);
-			}
+        return StreamUtils.mapEntitiesToListOfResources(repository.findAll(), EmployeeResourceImpl::new);
+      }
 
-			@Override
-			public RootResource getRoot() {
+      @Override
+      public RootResource getRoot() {
 
-				return rootController.root();
-			}
+        return rootController.root();
+      }
 
-			@Override
-			public ManagersResource getManagers() {
+      @Override
+      public ManagersResource getManagers() {
 
-				return managers.findAll();
-			}
+        return managers.findAll();
+      }
 
-			@Override
-			public Link createLink() {
+      @Override
+      public Link createLink() {
 
-				return new Link(linkTo(methodOn(EmployeeController.class).findAll()).toString())
-						.setTitle("A collection of all employees");
-			}
-		};
-	}
+        return new Link(linkTo(methodOn(EmployeeController.class).findAll()).toString())
+            .setTitle("A collection of all employees");
+      }
+    };
+  }
 
-	/**
-	 * Look up a single {@link Employee} and transform it into a REST resource
-	 *
-	 * @param id
-	 */
-	@GetMapping("/employees/{id}")
-	EmployeeResource findOne(@PathVariable Long id) {
+  /**
+   * Look up a single {@link Employee} and transform it into a REST resource
+   * @param id
+   */
+  @GetMapping("/employees/{id}")
+  EmployeeResource findOne(@PathVariable Long id) {
 
-		return new EmployeeResourceImpl(id, () -> repository.findById(id));
-	}
+    return new EmployeeResourceImpl(id, () -> repository.findById(id));
+  }
 
-	List<EmployeeResource> findEmployeesOfManager(long managerId) {
+  List<EmployeeResource> findEmployeesOfManager(long managerId) {
 
-		return StreamUtils.mapEntitiesToListOfResources(repository.findByManagerId(managerId),
-				EmployeeResourceImpl::new);
-	}
+    return StreamUtils.mapEntitiesToListOfResources(repository.findByManagerId(managerId),
+        EmployeeResourceImpl::new);
+  }
 
-	private final class EmployeeResourceImpl extends AbstractEntityResource<Employee> implements EmployeeResource {
+  private final class EmployeeResourceImpl extends AbstractEntityResource<Employee> implements EmployeeResource {
 
-		private EmployeeResourceImpl(Long id, Supplier<Optional<Employee>> supplier) {
-			super(id, supplier);
-		}
+    private EmployeeResourceImpl(Long id, Supplier<Optional<Employee>> supplier) {
+      super(id, supplier);
+    }
 
-		private EmployeeResourceImpl(Employee employee) {
-			super(employee.getId(), employee);
-		}
+    private EmployeeResourceImpl(Employee employee) {
+      super(employee.getId(), employee);
+    }
 
-		@Override
-		public ManagerResource getManager() {
+    @Override
+    public ManagerResource getManager() {
 
-			return managers.findManager(id);
-		}
+      return managers.findManager(id);
+    }
 
-		@Override
-		public DetailedEmployeeResource getDetails() {
+    @Override
+    public DetailedEmployeeResource getDetails() {
 
-			return details.findOne(id);
-		}
+      return details.findOne(id);
+    }
 
-		@Override
-		public Link createLink() {
+    @Override
+    public Link createLink() {
 
-			return new Link(linkTo(methodOn(EmployeeController.class).findOne(id)).toString()).setTitle(
-					id == null ? "A link template to load a single employee by ID" : "The employee with ID " + id);
-		}
+      return new Link(linkTo(methodOn(EmployeeController.class).findOne(id)).toString()).setTitle(
+          id == null ? "A link template to load a single employee by ID" : "The employee with ID " + id);
+    }
 
-	}
+  }
 }

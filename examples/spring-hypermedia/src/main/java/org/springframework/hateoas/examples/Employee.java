@@ -33,20 +33,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Employee {
 
-	@Id @GeneratedValue private Long id;
-	private String name;
-	private String role;
+  @Id
+  @GeneratedValue
+  private Long id;
+  private String name;
+  private String role;
 
-	/**
-	 * To break the recursive, bi-directional relationship, don't serialize {@literal manager}.
-	 */
-	@JsonIgnore @OneToOne private Manager manager;
+  /**
+   * To break the recursive, bi-directional relationship, don't serialize {@literal manager}.
+   */
+  @JsonIgnore
+  @OneToOne
+  private Manager manager;
 
-	Employee(String name, String role, Manager manager) {
+  Employee(String name, String role, Manager manager) {
 
-		this.name = name;
-		this.role = role;
-		this.manager = manager;
-	}
+    this.name = name;
+    this.role = role;
+    this.manager = manager;
+  }
 
 }

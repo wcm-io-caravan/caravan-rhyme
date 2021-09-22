@@ -27,32 +27,32 @@ import org.springframework.stereotype.Component;
 @Component
 class DatabaseLoader {
 
-	@Bean
-	CommandLineRunner initDatabase(EmployeeRepository employeeRepository, ManagerRepository managerRepository) {
-		return args -> {
+  @Bean
+  CommandLineRunner initDatabase(EmployeeRepository employeeRepository, ManagerRepository managerRepository) {
+    return args -> {
 
-			/*
-			 * Gather Gandalf's team
-			 */
-			Manager gandalf = managerRepository.save(new Manager("Gandalf"));
+      /*
+       * Gather Gandalf's team
+       */
+      Manager gandalf = managerRepository.save(new Manager("Gandalf"));
 
-			Employee frodo = employeeRepository.save(new Employee("Frodo", "ring bearer", gandalf));
-			Employee bilbo = employeeRepository.save(new Employee("Bilbo", "burglar", gandalf));
+      Employee frodo = employeeRepository.save(new Employee("Frodo", "ring bearer", gandalf));
+      Employee bilbo = employeeRepository.save(new Employee("Bilbo", "burglar", gandalf));
 
-			gandalf.setEmployees(Arrays.asList(frodo, bilbo));
-			managerRepository.save(gandalf);
+      gandalf.setEmployees(Arrays.asList(frodo, bilbo));
+      managerRepository.save(gandalf);
 
-			/*
-			 * Put together Saruman's team
-			 */
-			Manager saruman = managerRepository.save(new Manager("Saruman"));
+      /*
+       * Put together Saruman's team
+       */
+      Manager saruman = managerRepository.save(new Manager("Saruman"));
 
-			Employee sam = employeeRepository.save(new Employee("Sam", "gardener", saruman));
-			Employee pippin = employeeRepository.save(new Employee("Pippin", "guard", saruman));
+      Employee sam = employeeRepository.save(new Employee("Sam", "gardener", saruman));
+      Employee pippin = employeeRepository.save(new Employee("Pippin", "guard", saruman));
 
-			saruman.setEmployees(Arrays.asList(sam, pippin));
+      saruman.setEmployees(Arrays.asList(sam, pippin));
 
-			managerRepository.save(saruman);
-		};
-	}
+      managerRepository.save(saruman);
+    };
+  }
 }
