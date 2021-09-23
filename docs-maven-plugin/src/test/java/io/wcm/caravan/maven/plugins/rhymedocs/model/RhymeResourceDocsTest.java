@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithLinksInJavadoc;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestEntryPoint;
 
 public class RhymeResourceDocsTest {
@@ -44,6 +45,15 @@ public class RhymeResourceDocsTest {
 
     assertThat(entryPointDocs.getDescription())
         .isEqualTo("Javadoc for entrypoint interface");
+  }
+
+  @Test
+  public void getDescription_should_replace_links_to_classes() {
+
+    RhymeResourceDocs entryPointDocs = getDocsFor(ResourceWithLinksInJavadoc.class);
+
+    assertThat(entryPointDocs.getDescription())
+        .isEqualTo("A link to ResourceWithFieldProperties or Optional#get() should be removed.");
   }
 
   @Test

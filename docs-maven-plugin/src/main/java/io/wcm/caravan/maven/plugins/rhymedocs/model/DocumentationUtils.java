@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.google.common.collect.ImmutableList;
 import com.thoughtworks.qdox.JavaProjectBuilder;
@@ -119,15 +120,24 @@ final class DocumentationUtils {
 
     String comment = javaMethod.getComment();
     if (StringUtils.isNotBlank(comment)) {
-      return comment;
+      return removeLinks(comment);
     }
 
     DocletTag returnTag = javaMethod.getTagByName("return", true);
     if (returnTag != null) {
-      return returnTag.getValue();
+      return removeLinks(returnTag.getValue());
     }
 
     return "";
+  }
+
+  public static String findJavaDocForField(JavaProjectBuilder builder, Class stateType, String name) {
+
+    return FieldUtils.getAllFieldsList(stateType).stream()
+        .filter(field -> field.getName().equals(name))
+        .map(field -> findJavaDocForField(builder, stateType, field))
+        .findFirst()
+        .orElse("");
   }
 
   static String findJavaDocForField(JavaProjectBuilder builder, Class dtoClass, Field dtoField) {
@@ -147,7 +157,7 @@ final class DocumentationUtils {
       }
     }
 
-    return desc;
+    return removeLinks(desc);
   }
 
   static Stream<PropertyDescriptor> getBeanProperties(Class<?> type) {
@@ -157,22 +167,46 @@ final class DocumentationUtils {
     try {
       return Stream.of(Introspector.getBeanInfo(type).getPropertyDescriptors())
           .filter(property -> property.getReadMethod() != null)
-          .filter(property -> !propertyDenyList.contains(property.getName()));
+          .filter(property -> !propertyDenyList.contains(property.getName()))
+          .filter(property -> !hasJsonIgnoreAnnotation(type, property));
     }
     catch (IntrospectionException | RuntimeException ex) {
       throw new RuntimeException("Failed to lookup bean properties for " + type, ex);
     }
   }
 
+  private static boolean hasJsonIgnoreAnnotation(Class<?> type, PropertyDescriptor property) {
+
+    if (property.getReadMethod().getAnnotation(JsonIgnore.class) != null) {
+      return true;
+    }
+
+    // the JsonIgnore annotation can also be attached to a field with the same name as the property
+    return Stream.of(FieldUtils.getAllFields(type))
+        .filter(field -> field.getName().equals(property.getName()))
+        .anyMatch(field -> field.getAnnotation(JsonIgnore.class) != null);
+  }
+
   static Stream<Field> getPublicFields(Class<?> type) {
     try {
       return Stream.of(FieldUtils.getAllFields(type))
           .filter(field -> Modifier.isPublic(field.getModifiers()))
-          .filter(field -> !Modifier.isStatic(field.getModifiers()));
+          .filter(field -> !Modifier.isStatic(field.getModifiers()))
+          .filter(field -> field.getAnnotation(JsonIgnore.class) == null);
     }
     catch (RuntimeException ex) {
       throw new RuntimeException("Failed to lookup fields for " + type, ex);
     }
   }
+
+  public static String removeLinks(String javadoc) {
+
+    if (javadoc == null) {
+      return null;
+    }
+
+    return javadoc.replaceAll("\\{\\@link (.*?)\\}", "$1");
+  }
+
 
 }

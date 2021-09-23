@@ -31,6 +31,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -533,6 +534,97 @@ public class RhymePropertiesDocsTest {
         // just to check that bean properties without getters are ignored
       }
 
+
+    }
+  }
+
+  @Test
+  public void getProperties_should_ignore_fields_and_methods_with_json_ignore() {
+
+    RhymeResourceDocs docs = getDocsFor(ResourceWithJsonIgnoreAnnotation.class);
+
+    assertThat(docs.getProperties())
+        .extracting(RhymePropertyDocs::getJsonPointer)
+        .containsExactly(
+            "/foo");
+  }
+
+  @HalApiInterface
+  interface ResourceWithJsonIgnoreAnnotation {
+
+    @ResourceState
+    FieldProperties getState();
+
+    class FieldProperties {
+
+      private String foo;
+
+      @JsonIgnore
+      private String jsonIgnoreOnField;
+
+      private String jsonIgnoreOnGetter;
+
+      @JsonIgnore
+      public String jsonIgnoreOnPublicField;
+
+      public String getFoo() {
+        return this.foo;
+      }
+
+      public String getJsonIgnoreOnField() {
+        return jsonIgnoreOnField;
+      }
+
+      @JsonIgnore
+      public String getJsonIgnoreOnGetter() {
+        return jsonIgnoreOnGetter;
+      }
+
+    }
+  }
+
+  @Test
+  public void getProperties_should_also_use_javadocs_from_private_fields() {
+
+    RhymeResourceDocs docs = getDocsFor(ResourceWithPrivateFieldsAndBeanProperties.class);
+
+    assertThat(docs.getProperties())
+        .extracting(RhymePropertyDocs::getJsonPointer)
+        .containsExactly(
+            "/javadocInField", "/javadocInGetter");
+
+    assertThat(findDocsForProperty("/javadocInField", docs).getDescription())
+        .isEqualTo("Javadoc from field");
+
+    assertThat(findDocsForProperty("/javadocInGetter", docs).getDescription())
+        .isEqualTo("Javadoc from getter");
+  }
+
+  @HalApiInterface
+  interface ResourceWithPrivateFieldsAndBeanProperties {
+
+    @ResourceState
+    FieldProperties getState();
+
+    class FieldProperties {
+
+      /**
+       * Javadoc from field
+       */
+      private Integer javadocInField;
+
+      private Integer javadocInGetter;
+
+      public Integer getJavadocInField() {
+        return javadocInField;
+      }
+
+      /**
+       * @return Javadoc from getter
+       */
+      public Integer getJavadocInGetter() {
+        return javadocInGetter;
+      }
 
     }
   }

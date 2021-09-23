@@ -19,30 +19,14 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.interfaces;
 
-import java.util.List;
+import java.util.Optional;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
-import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 
+/**
+ * A link to {@link ResourceWithFieldProperties} or {@link Optional#get()} should be removed.
+ */
 @HalApiInterface
-public interface ResourceWithFieldProperties {
+public interface ResourceWithLinksInJavadoc {
 
-  @ResourceState
-  FieldProperties getState();
-
-  class FieldProperties {
-
-    public String foo;
-
-    /**
-     * Javadoc for bar
-     */
-    public Integer bar;
-
-    /**
-     * Javadoc for list
-     */
-    public List<Boolean> list;
-
-  }
 }

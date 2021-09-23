@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithFieldProperties;
+import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithLinksInJavadoc;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRxBeanProperties;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestEntryPoint;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestResource;
@@ -41,6 +42,7 @@ public class RhymeApiDocsTest {
       RhymeDocTestResource.class,
       ResourceWithFieldProperties.class,
       ResourceWithRxBeanProperties.class,
+      ResourceWithLinksInJavadoc.class,
       RhymePropertiesDocsTest.ResourceWithNestedProperties.class,
       RhymePropertiesDocsTest.ResourceWithRepeatedObjectTypes.class,
       RhymePropertiesDocsTest.ResourceWithRecursiveObjectTypes.class,
@@ -49,7 +51,9 @@ public class RhymeApiDocsTest {
       RhymePropertiesDocsTest.ResourceWithEdgeCaseProperties.class,
       RhymePropertiesDocsTest.ResourceWithArrayProperties.class,
       RhymePropertiesDocsTest.ResourceWithPropertiesWithoutSource.class,
-      RhymePropertiesDocsTest.ResourceWithAnnotatedProperties.class
+      RhymePropertiesDocsTest.ResourceWithAnnotatedProperties.class,
+      RhymePropertiesDocsTest.ResourceWithJsonIgnoreAnnotation.class,
+      RhymePropertiesDocsTest.ResourceWithPrivateFieldsAndBeanProperties.class
   };
 
   static RhymeApiDocs getApiDocs() {

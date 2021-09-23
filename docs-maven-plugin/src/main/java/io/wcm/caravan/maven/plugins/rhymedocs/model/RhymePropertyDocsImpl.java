@@ -241,7 +241,11 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
 
     @Override
     public String getDescription() {
-      return DocumentationUtils.findJavaDocForMethod(builder, stateType, readMethod);
+      String description = DocumentationUtils.findJavaDocForMethod(builder, stateType, readMethod);
+      if (StringUtils.isBlank(description)) {
+        description = DocumentationUtils.findJavaDocForField(builder, stateType, property.getName());
+      }
+      return description;
     }
   }
 
