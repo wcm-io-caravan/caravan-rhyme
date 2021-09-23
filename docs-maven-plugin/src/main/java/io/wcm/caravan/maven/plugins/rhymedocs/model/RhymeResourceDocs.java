@@ -51,7 +51,7 @@ public class RhymeResourceDocs {
 
   public String getDescription() {
 
-    return apiInterface.getComment();
+    return DocumentationUtils.removeLinks(apiInterface.getComment());
   }
 
   public String getCanonicalClassName() {
