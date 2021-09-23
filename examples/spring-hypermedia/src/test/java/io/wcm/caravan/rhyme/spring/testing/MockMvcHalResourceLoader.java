@@ -95,7 +95,6 @@ public class MockMvcHalResourceLoader implements HalResourceLoader {
         callback.onHeadersAvailable(response.getStatus(), createHeadersMap(response));
 
         callback.onBodyAvailable(new ByteArrayInputStream(response.getContentAsByteArray()));
-
       }
       catch (Exception e) {
         callback.onExceptionCaught(e);
