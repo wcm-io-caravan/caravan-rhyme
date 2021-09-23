@@ -30,7 +30,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * An extension of the {@link EmployeeResource} that contains details of the employee's manager,
+ * An extension of {@link EmployeeResource} that also provides details of the employee's manager,
  * and its direct colleagues as embedded resources. The main point of this resource is to show
  * how the {@link DetailedEmployeeController} is implementing this interface by combining data loaded
  * via HTTP from several other resources.

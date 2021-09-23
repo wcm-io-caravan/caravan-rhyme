@@ -62,7 +62,7 @@ class EmployeeController {
     return new EmployeesResource() {
 
       @Override
-      public List<EmployeeResource> getEmployees() {
+      public List<EmployeeResource> getAll() {
 
         return StreamUtils.mapEntitiesToListOfResources(repository.findAll(), EmployeeResourceImpl::new);
       }
@@ -70,7 +70,7 @@ class EmployeeController {
       @Override
       public RootResource getRoot() {
 
-        return rootController.root();
+        return rootController.createEntryPoint();
       }
 
       @Override

@@ -77,7 +77,7 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Test
   public void getEmployees_should_list_employees_in_order_of_creation() throws Exception {
 
-    List<EmployeeResource> employees = getEntryPoint().listAllEmployees().getEmployees();
+    List<EmployeeResource> employees = getEntryPoint().getEmployees().getAll();
 
     assertThat(employees).extracting(employee -> employee.getState().getName())//
         .containsExactly("Frodo", "Bilbo", "Sam", "Pippin");
@@ -86,7 +86,7 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Test
   public void getManagers_should_list_managers_in_order_of_creation() throws Exception {
 
-    List<ManagerResource> managers = getEntryPoint().listAllManagers().getManagers();
+    List<ManagerResource> managers = getEntryPoint().getManagers().getAll();
 
     assertThat(managers).extracting(manager -> manager.getState().getName())//
         .containsExactly("Gandalf", "Saruman");

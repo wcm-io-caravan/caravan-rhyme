@@ -60,7 +60,7 @@ class ManagerController {
     return new ManagersResource() {
 
       @Override
-      public List<ManagerResource> getManagers() {
+      public List<ManagerResource> getAll() {
 
         return StreamUtils.mapEntitiesToListOfResources(repository.findAll(), ManagerResourceImpl::new);
       }
@@ -68,7 +68,8 @@ class ManagerController {
       @Override
       public RootResource getRoot() {
 
-        return rootController.root();
+        // This creates a link back to the entry point of the API
+        return rootController.createEntryPoint();
       }
 
       @Override

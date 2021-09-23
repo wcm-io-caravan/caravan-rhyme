@@ -28,23 +28,53 @@ import static org.springframework.hateoas.examples.CompanyRelations.MANAGERS;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
+/**
+ * The single entry point for the example HAL API. It contains link templates for every available resource,
+ * and additional resolved links to discover all employees and managers without knowing their IDs.
+ */
 @HalApiInterface
 public interface RootResource extends LinkableResource {
 
+  /**
+   * @return a collection of all employees in the company database
+   */
   @Related(EMPLOYEES)
-  EmployeesResource listAllEmployees();
+  EmployeesResource getEmployees();
 
+  /**
+   * @return a collection of all managers in the company database
+   */
   @Related(MANAGERS)
-  ManagersResource listAllManagers();
+  ManagersResource getManagers();
 
+  /**
+   * A link template to load an employee entity with a known ID.
+   * @param id the generated primary key in the database
+   * @return an {@link EmployeeResource}
+   * @throws HalApiClientException with 404 status code if no employee was found with the given ID
+   */
   @Related(EMPLOYEE)
   EmployeeResource getEmployeeById(@TemplateVariable("id") Long id);
 
+  /**
+   * A link template to load a manager entity with a known ID.
+   * @param id the generated primary key in the database
+   * @return a {@link ManagerResource}
+   * @throws HalApiClientException with 404 status code if no manager was found with the given ID
+   */
   @Related(MANAGER)
   ManagerResource getManagerById(@TemplateVariable("id") Long id);
 
+  /**
+   * A link template to load a more detailed representation of an employee, which also embeds the entities of his
+   * manager and all of his colleagues.
+   * @param id the generated primary key in the database
+   * @return a {@link DetailedEmployeeResource}
+   * @throws HalApiClientException with 404 status code if no employee was found with the given ID
+   */
   @Related(DETAILED_EMPLOYEE)
   DetailedEmployeeResource getDetailedEmployeeById(@TemplateVariable("id") Long id);
 }

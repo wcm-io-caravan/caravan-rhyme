@@ -37,8 +37,8 @@ import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 
 /**
  * An example for a controller that does not create the resources directly from the database,
- * but is instead loading other {@link EmployeeResource} and {@link ManagerResource} by HTTP,
- * and combines them into a {@link DetailedEmployeeResource} with embedded resources, so all of this information
+ * but is instead loading other {@link EmployeeResource} and {@link ManagerResource} by HTTP.
+ * It combines them into a {@link DetailedEmployeeResource} with embedded resources, so all of this information
  * can be fetched with a single request.
  * While this is a bit over-complicated here (where the repositories are also available locally) all this would work
  * the same way if you wanted to aggregate or enrich resources from an external API.
@@ -49,23 +49,27 @@ class DetailedEmployeeController {
 
   /**
    * Inject the same request-scoped {@link SpringRhyme} component that is also used to render the resource.
-   * This allows to embed detailed information about all HTTP requests executed by this controller in the
-   * "rhyme:metadata" resource, and also ensures that the max-age cache directives of this controller's response are
-   * properly calculated.
+   * This allows to include detailed information about all HTTP requests executed by this controller in the
+   * embedded "rhyme:metadata" resource. It also ensures that the max-age cache directives of this controller's
+   * response are properly calculated (i.e. the max-age of upstream resources and cached content is taken
+   * into account)
    */
   @Autowired
   private SpringRhyme rhyme;
 
   /**
-   * A controller method to create a {@link DetailedEmployeeResource} for a specific employee.
-   * @param id of the employee, or null if this method is called to use the link template in the {@link RootResource}
-   * @return an implementation of {@link DetailedEmployeeResource} to be rendered as a HTTP response (or linked
-   *         from another resource)
+   * A controller method to create a {@link DetailedEmployeeResource} for a specific employee. This is called
+   * to render this resource for an incoming HTTP request, but also to render all links to this kind of resource.
+   * @param id of the employee, or null if this method is called to create the link template in the {@link RootResource}
+   * @return a server-side implementation of {@link DetailedEmployeeResource}
    * @throws HalApiClientException if any of the required resources failed to load through HTTP
    */
   @GetMapping("/employees/{id}/detailed") //  Note that this is the only location (including tests) where the path of this resource is specified.
   DetailedEmployeeResource findOne(@PathVariable Long id) {
 
+    // Create and return an implementation of the HAL API interface which defines the resource structure.
+    // All methods will be automatically invoked later, when the response is being rendered
+    // by the LinkableResourceMessageConverter.
     return new DetailedEmployeeResource() {
 
       // Create a dynamic client proxy that can load the API's entry point (and all related resources) by HTTP.
@@ -76,7 +80,7 @@ class DetailedEmployeeController {
       private EmployeeResource getEmployee() {
 
         // Load the entry point and expand the "company:employee" link template in the with the given ID,
-        // creating yet another proxy object that knows how to fetch the EmployeeResource from the expanded URL.
+        // creating another proxy object that knows how to fetch the EmployeeResource from the expanded URL.
         return root.getEmployeeById(id);
       }
 
@@ -96,7 +100,7 @@ class DetailedEmployeeController {
         // since repeated method calls with the same parameter will quickly return the same proxy instance.
         ManagerResource manager = getEmployee().getManager();
 
-        // We could return this resource proxy directly, but then it would only be linked.
+        // We could return this resource proxy directly, but then only a link to the upstream resource would be added.
         // Since we want to embed the manager resource, we need to convert it to another proxy that also implements EmbeddableResource.
         return ResourceConversions.asEmbeddedResourceWithoutLink(manager);
       }
@@ -116,7 +120,7 @@ class DetailedEmployeeController {
       public Link createLink() {
         // This is the single location where links (or link templates) to this kind of resource are being generated.
 
-        // Most of the logic for link construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
+        // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
         return new Link(linkTo(methodOn(DetailedEmployeeController.class).findOne(id)).toString())
             // In addition, we specify different titles to be used for link templates and resolved links (including the self-link)
             .setTitle(id == null ? "A link template to detailed data for single employee by ID"

@@ -33,7 +33,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 public interface ManagersResource extends LinkableResource {
 
   @Related(MANAGER)
-  List<ManagerResource> getManagers();
+  List<ManagerResource> getAll();
 
   @Related(ROOT)
   RootResource getRoot();

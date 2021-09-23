@@ -61,7 +61,7 @@ public class SpringRhymeDocsIntegration implements RhymeDocsSupport {
   @Override
   public boolean isFragmentAppendedToCuriesLink() {
 
-    return true;
+    return false;
   }
 
 }
