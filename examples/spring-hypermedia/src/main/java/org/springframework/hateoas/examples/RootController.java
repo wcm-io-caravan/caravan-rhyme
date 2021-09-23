@@ -37,13 +37,10 @@ import io.wcm.caravan.rhyme.api.client.HalApiClient;
 public class RootController {
 
   // inject the controllers for all resources that are linked from the entry point
-
   @Autowired
   private EmployeeController employees;
-
   @Autowired
   private ManagerController managers;
-
   @Autowired
   private DetailedEmployeeController details;
 
