@@ -12,8 +12,8 @@
 **Rhyme** stands for **R**eactive **Hy**per**me**dia, as it fully supports asynchronous generation and retrieval of HAL+JSON resources (using [RxJava 3](https://github.com/ReactiveX/RxJava) internally). Using reactive types however is (almost) entirely optional. In this document, we'll mostly stick to using the simpler blocking code examples, but there is a section that explains how reactive types can be used.
 
 The key concepts and features of **Rhyme** are:
-- HAL APIs are represented as type-safe **annotated Java interfaces**.
-- These interfaces are shared with the consumers, which can use them as a **highly abstracted client API**.
+- HAL APIs are represented as type-safe **annotated Java interfaces** that define the structure of the resource state, and the available related resources
+- These interfaces can be shared with the consumers as a **highly abstracted client API**, providing convenient client access using any HTTP library.
 - The same interfaces are also used to **keep the server-side implementation well structured**, and always in sync with the API interfaces.
 - simple and transparent support for **embedded resources**
 - generation and integration of **HTML API documentation** from the annotated interfaces
