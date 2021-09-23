@@ -26,30 +26,44 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
+import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 
-
+/**
+ * This strategy will be passed to {@link RhymeBuilder#withExceptionStrategy(ExceptionStatusAndLoggingStrategy)}
+ * so that the {@link VndErrorResponseRenderer} from the core framework now how to handle some spring-specific
+ * exceptions that happen while rendering the resource.
+ * see {@link VndErrorHandlingControllerAdvice}
+ */
 class SpringExceptionStatusAndLoggingStrategy implements ExceptionStatusAndLoggingStrategy {
 
   @Override
   public Integer extractStatusCode(Throwable error) {
+
     if (error instanceof ResponseStatusException) {
       return ((ResponseStatusException)error).getStatus().value();
     }
-    if (error instanceof MissingServletRequestParameterException) {
-      return HttpStatus.BAD_REQUEST.value();
-    }
-    if (error instanceof NoHandlerFoundException) {
-      return HttpStatus.NOT_FOUND.value();
-    }
+
     if (error.getClass().isAnnotationPresent(ResponseStatus.class)) {
       return error.getClass().getAnnotation(ResponseStatus.class).code().value();
     }
+
+    if (error instanceof MissingServletRequestParameterException) {
+      return HttpStatus.BAD_REQUEST.value();
+    }
+
+    if (error instanceof NoHandlerFoundException) {
+      return HttpStatus.NOT_FOUND.value();
+    }
+
     return null;
   }
 
   @Override
   public String getErrorMessageWithoutRedundantInformation(Throwable error) {
+
+    // we don't want the repeated messages the causing exception that appear in some spring exceptions
     return StringUtils.substringBefore(error.getMessage(), "; nested exception is");
   }
 

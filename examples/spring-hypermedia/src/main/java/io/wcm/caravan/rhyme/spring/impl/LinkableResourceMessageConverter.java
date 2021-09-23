@@ -21,39 +21,47 @@ package io.wcm.caravan.rhyme.spring.impl;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Charsets;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
+/**
+ * This {@link HttpMessageConverter} is the essential component that allows to simply return instances of
+ * {@link LinkableResource} in a {@link RestController} method. This converter will render those resource
+ * using the request-scoped {@link SpringRhymeImpl} bean.
+ * @see SpringRhymeImpl#renderResponse(LinkableResource)
+ * @see LinkableResourceStatusCodeAdvice
+ * @see VndErrorHandlingControllerAdvice
+ */
 @Component
 class LinkableResourceMessageConverter extends AbstractHttpMessageConverter<LinkableResource> {
 
-  private final Logger log = LoggerFactory.getLogger(LinkableResourceMessageConverter.class);
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private final SpringRhymeImpl rhyme;
 
-  public LinkableResourceMessageConverter(@Autowired SpringRhymeImpl rhyme) {
+  LinkableResourceMessageConverter(@Autowired SpringRhymeImpl rhyme) {
     super(MediaTypes.HAL_JSON, MediaTypes.HAL_FORMS_JSON);
-    log.debug("{} was instantiated", this.getClass().getSimpleName());
 
     this.rhyme = rhyme;
   }
 
   @Override
   protected boolean supports(Class<?> clazz) {
+
     return LinkableResource.class.isAssignableFrom(clazz);
   }
 
@@ -69,9 +77,7 @@ class LinkableResourceMessageConverter extends AbstractHttpMessageConverter<Link
 
     ResponseEntity<JsonNode> entity = rhyme.renderResponse(resourceImpl);
 
-    outputMessage.getHeaders().addAll(entity.getHeaders());
-
-    String jsonString = entity.getBody().toString();
-    outputMessage.getBody().write(jsonString.getBytes(Charsets.UTF_8));
+    OBJECT_MAPPER.writer()
+        .writeValue(outputMessage.getBody(), entity.getBody());
   }
 }

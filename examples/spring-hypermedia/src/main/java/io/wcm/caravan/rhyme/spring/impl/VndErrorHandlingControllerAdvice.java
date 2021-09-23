@@ -29,13 +29,25 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 
+/**
+ * This advice renders a vnd.error response for all exceptions that aren't covered yet by the error handling within
+ * {@link Rhyme#renderResponse(io.wcm.caravan.rhyme.api.resources.LinkableResource)} (e.g. because the exceptions occur
+ * before the resources are being created).
+ * @see SpringExceptionStatusAndLoggingStrategy
+ * @see VndErrorResponseRenderer
+ */
 @RestControllerAdvice
 class VndErrorHandlingControllerAdvice {
 
-  @Autowired
-  private SpringRhymeImpl rhyme;
+  private final SpringRhymeImpl rhyme;
+
+  VndErrorHandlingControllerAdvice(@Autowired SpringRhymeImpl rhyme) {
+    this.rhyme = rhyme;
+  }
 
   private ResponseEntity<JsonNode> renderAsBadRequest(String msg, Throwable ex) {
 
@@ -55,4 +67,5 @@ class VndErrorHandlingControllerAdvice {
 
     return rhyme.renderVndErrorResponse(ex);
   }
+
 }

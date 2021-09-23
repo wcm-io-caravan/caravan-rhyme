@@ -38,11 +38,18 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 
+/**
+ * The default implementation of {@link HalResourceLoader} to use in a spring boot context,
+ * which uses {@link WebClient} to executed asynchronous HTTP requests.
+ */
 @Component
 public class WebClientHalResourceLoader implements HalResourceLoader {
 
   private final HalResourceLoader delegate;
 
+  /**
+   * Default constructor that enables in-memory caching
+   */
   public WebClientHalResourceLoader() {
     this(true);
   }
@@ -65,10 +72,12 @@ public class WebClientHalResourceLoader implements HalResourceLoader {
     return delegate.getHalResource(uri);
   }
 
-  private final static class WebClientSupport implements HttpClientSupport {
+  private static final class WebClientSupport implements HttpClientSupport {
 
     private final ConnectionProvider connectionProvider = ConnectionProvider
-        .builder(WebClientHalResourceLoader.class.getSimpleName()).maxConnections(5000).build();
+        .builder(WebClientHalResourceLoader.class.getSimpleName())
+        .maxConnections(5000)
+        .build();
 
     private WebClient createWebClient() {
 

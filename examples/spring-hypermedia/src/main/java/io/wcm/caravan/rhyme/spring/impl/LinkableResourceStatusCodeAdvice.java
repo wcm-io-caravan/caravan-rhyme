@@ -33,14 +33,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
+/**
+ * This {@link ResponseBodyAdvice} is required to set the status code for non-successful responses,
+ * which isn't possible anymore in the related {@link LinkableResourceMessageConverter}
+ */
 @RestControllerAdvice
 class LinkableResourceStatusCodeAdvice implements ResponseBodyAdvice<LinkableResource> {
 
-  @Autowired
-  private SpringRhymeImpl rhyme;
+  private final SpringRhymeImpl rhyme;
+
+  LinkableResourceStatusCodeAdvice(@Autowired SpringRhymeImpl rhyme) {
+    this.rhyme = rhyme;
+  }
 
   @Override
   public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+
     return LinkableResourceMessageConverter.class.isAssignableFrom(converterType);
   }
 

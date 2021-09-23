@@ -22,10 +22,15 @@ package org.springframework.hateoas.examples;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
+/**
+ * The application class to configure and start the example service
+ */
 @SpringBootApplication(scanBasePackages = { "io.wcm.caravan.rhyme.spring", "org.springframework.hateoas.examples" })
 public class SpringRhymeHypermediaApplication {
 
+  /**
+   * @param args command line arguments
+   */
   public static void main(String[] args) {
     SpringApplication.run(SpringRhymeHypermediaApplication.class, args);
   }

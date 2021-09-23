@@ -63,11 +63,11 @@ public class MockMvcHalResourceLoader implements HalResourceLoader {
     return delegate.getHalResource(uri);
   }
 
-  private static class MockMvcClient implements HttpClientSupport {
+  private static final class MockMvcClient implements HttpClientSupport {
 
     private final MockMvc mockMvc;
 
-    public MockMvcClient(WebApplicationContext applicationContext) {
+    private MockMvcClient(WebApplicationContext applicationContext) {
 
       this.mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext).build();
     }

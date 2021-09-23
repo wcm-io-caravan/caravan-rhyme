@@ -30,16 +30,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
+/**
+ * A {@link RestController} that serves the Rhyme HTML API documentation files which are generated
+ * into the application jar files. It's also passed to {@link RhymeBuilder#withRhymeDocsSupport(RhymeDocsSupport)}
+ * by {@link SpringRhymeImpl} to enable generation of curies link using the same base path.
+ */
 @RestController
 @RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 public class SpringRhymeDocsIntegration implements RhymeDocsSupport {
 
-  private static final String PATH = "/docs/rhyme/api/";
+  private static final String BASE_PATH = "/docs/rhyme/api/";
 
-  @GetMapping(path = PATH + "{fileName}")
-  public String getHtml(@PathVariable("fileName") String fileName) {
+  /**
+   * @param fileName of a HTML documentation file
+   * @return the content of that HTML file from the class path
+   */
+  @GetMapping(path = BASE_PATH + "{fileName}")
+  String getHtml(@PathVariable("fileName") String fileName) {
 
     return RhymeDocsSupport.loadGeneratedHtml(this, fileName);
   }
@@ -47,7 +57,7 @@ public class SpringRhymeDocsIntegration implements RhymeDocsSupport {
   @Override
   public String getRhymeDocsBaseUrl() {
 
-    return SpringRhymeDocsIntegration.PATH;
+    return BASE_PATH;
   }
 
   @Override
@@ -61,6 +71,8 @@ public class SpringRhymeDocsIntegration implements RhymeDocsSupport {
   @Override
   public boolean isFragmentAppendedToCuriesLink() {
 
+    // even though it would be nice for the curies links to point directly to the relevant relation
+    // using a link fragment, this is causing some weird scrolling issues in the HAL browser, so it's disabled for now
     return false;
   }
 

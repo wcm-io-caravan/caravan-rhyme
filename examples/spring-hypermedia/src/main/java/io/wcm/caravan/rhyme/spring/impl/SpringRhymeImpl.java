@@ -45,7 +45,7 @@ import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 
 @Component
 @RequestScope
-public class SpringRhymeImpl implements SpringRhyme {
+class SpringRhymeImpl implements SpringRhyme {
 
   private static final Logger log = LoggerFactory.getLogger(SpringRhymeImpl.class);
 
@@ -55,27 +55,30 @@ public class SpringRhymeImpl implements SpringRhyme {
 
   private ResponseEntity<JsonNode> renderedResponse;
 
-  public SpringRhymeImpl(@Autowired HttpServletRequest httpRequest,
-      @Autowired(required = false) HalResourceLoader jsonLoader,
-      @Autowired(required = true) SpringRhymeDocsIntegration rhymeDocs) {
+  SpringRhymeImpl(@Autowired HttpServletRequest httpRequest,
+      @Autowired(required = false) HalResourceLoader resourceLoader,
+      @Autowired SpringRhymeDocsIntegration rhymeDocs) {
 
     log.debug("{} was instantiated", this.getClass().getSimpleName());
 
     String requestUrl = getRequestUrl(httpRequest);
 
     this.rhyme = RhymeBuilder
-        .withResourceLoader(jsonLoader)
+        .withResourceLoader(resourceLoader)
         .withRhymeDocsSupport(rhymeDocs)
         .withExceptionStrategy(EXCEPTION_STRATEGY)
         .buildForRequestTo(requestUrl);
   }
 
   private static String getRequestUrl(HttpServletRequest httpRequest) {
+
     StringBuffer requestUrl = httpRequest.getRequestURL();
+
     if (httpRequest.getQueryString() != null) {
       requestUrl.append("?");
       requestUrl.append(httpRequest.getQueryString());
     }
+
     return requestUrl.toString();
   }
 
@@ -91,6 +94,12 @@ public class SpringRhymeImpl implements SpringRhyme {
     rhyme.setResponseMaxAge(duration);
   }
 
+  @Override
+  public Rhyme getCoreRhyme() {
+
+    return rhyme;
+  }
+
   ResponseEntity<JsonNode> renderVndErrorResponse(Throwable ex) {
 
     HalResponse response = rhyme.renderVndErrorResponse(ex);
@@ -100,6 +109,10 @@ public class SpringRhymeImpl implements SpringRhyme {
 
   ResponseEntity<JsonNode> renderResponse(LinkableResource resourceImpl) {
 
+    // LinkableResourceMessageConverter and LinkableResourceStatusCodeAdvice are both calling this method
+    // for the same request, as they need access to the rendered response entity.
+    // We are assuming here that no one else is calling this method (with a different resource) and
+    // make sure that the second call just gets the same instance as the first call
     if (renderedResponse != null) {
       return renderedResponse;
     }
@@ -111,6 +124,11 @@ public class SpringRhymeImpl implements SpringRhyme {
     return renderedResponse;
   }
 
+  /**
+   * Convert the response rendered by the core Rhyme framework into a Spring {@link ResponseEntity}
+   * @param halResponse a {@link HalResponse}
+   * @return a {@link ResponseEntity} with status, contentType and cache-control header set
+   */
   private ResponseEntity<JsonNode> createResponseEntity(HalResponse halResponse) {
 
     BodyBuilder builder = ResponseEntity.status(halResponse.getStatus());
@@ -125,4 +143,5 @@ public class SpringRhymeImpl implements SpringRhyme {
 
     return builder.body(halResponse.getBody().getModel());
   }
+
 }
