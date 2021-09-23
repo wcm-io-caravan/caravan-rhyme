@@ -22,9 +22,7 @@ package org.springframework.hateoas.examples;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * @author Greg Turnquist
- */
+
 @SpringBootApplication(scanBasePackages = { "io.wcm.caravan.rhyme.spring", "org.springframework.hateoas.examples" })
 public class SpringRhymeHypermediaApplication {
 

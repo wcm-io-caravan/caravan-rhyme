@@ -62,10 +62,10 @@ class DetailedEmployeeController {
    * to render this resource for an incoming HTTP request, but also to render all links to this kind of resource.
    * @param id of the employee, or null if this method is called to create the link template in the {@link RootResource}
    * @return a server-side implementation of {@link DetailedEmployeeResource}
-   * @throws HalApiClientException if any of the required resources failed to load through HTTP
+   * @throws HalApiClientException if any of the HTTP requests to load required resources failed
    */
   @GetMapping("/employees/{id}/detailed") //  Note that this is the only location (including tests) where the path of this resource is specified.
-  DetailedEmployeeResource findOne(@PathVariable Long id) {
+  DetailedEmployeeResource findById(@PathVariable Long id) {
 
     // Create and return an implementation of the HAL API interface which defines the resource structure.
     // All methods will be automatically invoked later, when the response is being rendered
@@ -75,13 +75,15 @@ class DetailedEmployeeController {
       // Create a dynamic client proxy that can load the API's entry point (and all related resources) by HTTP.
       // Even though all resource implementations should be constructed as fast as possible, it doesn't hurt to create the proxy right here.
       // This is because the actual HTTP requests will only be executed when a method on a proxy is called.
-      private final RootResource root = rhyme.getRemoteResource("http://localhost:8081", RootResource.class);
+      private final RootResource entryPoint = rhyme.getRemoteResource("http://localhost:8081", RootResource.class);
 
+      /**
+       * Load the entry point and expand the "company:employee" link template with the given ID,
+       * @return another proxy object that knows how to fetch the EmployeeResource from the expanded URL.
+       */
       private EmployeeResource getEmployee() {
 
-        // Load the entry point and expand the "company:employee" link template in the with the given ID,
-        // creating another proxy object that knows how to fetch the EmployeeResource from the expanded URL.
-        return root.getEmployeeById(id);
+        return entryPoint.getEmployeeById(id);
       }
 
       @Override
@@ -121,7 +123,7 @@ class DetailedEmployeeController {
         // This is the single location where links (or link templates) to this kind of resource are being generated.
 
         // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
-        return new Link(linkTo(methodOn(DetailedEmployeeController.class).findOne(id)).toString())
+        return new Link(linkTo(methodOn(DetailedEmployeeController.class).findById(id)).toString())
             // In addition, we specify different titles to be used for link templates and resolved links (including the self-link)
             .setTitle(id == null ? "A link template to detailed data for single employee by ID"
                 : "The employee with ID " + id + ", with embedded resources for her managers and colleagues");

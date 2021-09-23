@@ -19,25 +19,33 @@
  */
 package org.springframework.hateoas.examples;
 
-import static org.springframework.hateoas.examples.CompanyRelations.EMPLOYEE;
-import static org.springframework.hateoas.examples.CompanyRelations.MANAGERS;
-import static org.springframework.hateoas.examples.CompanyRelations.ROOT;
-
 import java.util.List;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
+/**
+ * A HAL resource with embedded data for multiple managers
+ */
 @HalApiInterface
-public interface EmployeesResource extends LinkableResource {
+public interface ManagerCollectionResource extends LinkableResource {
 
-  @Related(EMPLOYEE)
-  List<EmployeeResource> getAll();
+  /**
+   * @return all individual managers
+   */
+  @Related("company:manager")
+  List<ManagerResource> getAll();
 
-  @Related(ROOT)
+  /**
+   * @return a link back to the entry point of the API
+   */
+  @Related("company:root")
   RootResource getRoot();
 
-  @Related(MANAGERS)
-  ManagersResource getManagers();
+  /**
+   * @return a link to a similar collection of all employees
+   */
+  @Related("company:employees")
+  EmployeeCollectionResource getEmployees();
 }

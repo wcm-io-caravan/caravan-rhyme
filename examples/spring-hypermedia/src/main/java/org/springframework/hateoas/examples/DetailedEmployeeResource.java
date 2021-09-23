@@ -19,9 +19,6 @@
  */
 package org.springframework.hateoas.examples;
 
-import static org.springframework.hateoas.examples.CompanyRelations.COLLEAGUE;
-import static org.springframework.hateoas.examples.CompanyRelations.MANAGER;
-
 import java.util.stream.Stream;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -47,12 +44,12 @@ public interface DetailedEmployeeResource extends LinkableResource {
   /**
    * @return an embedded resource for the manager of this employee
    */
-  @Related(MANAGER)
+  @Related("company:manager")
   ManagerResource getManager();
 
   /**
    * @return embedded resources for every other employee with the same manager
    */
-  @Related(COLLEAGUE)
+  @Related("company:colleague")
   Stream<EmployeeResource> getColleagues();
 }

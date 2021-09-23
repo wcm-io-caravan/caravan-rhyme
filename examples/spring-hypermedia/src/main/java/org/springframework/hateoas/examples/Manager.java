@@ -36,9 +36,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Manager {
 
+  /** a generated ID (to be used in all the link templates) */
   @Id
   @GeneratedValue
   private Long id;
+
+  /** the first name */
   private String name;
 
   /**

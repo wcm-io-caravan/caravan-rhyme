@@ -19,12 +19,6 @@
  */
 package org.springframework.hateoas.examples;
 
-import static org.springframework.hateoas.examples.CompanyRelations.DETAILED_EMPLOYEE;
-import static org.springframework.hateoas.examples.CompanyRelations.EMPLOYEE;
-import static org.springframework.hateoas.examples.CompanyRelations.EMPLOYEES;
-import static org.springframework.hateoas.examples.CompanyRelations.MANAGER;
-import static org.springframework.hateoas.examples.CompanyRelations.MANAGERS;
-
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
@@ -41,40 +35,40 @@ public interface RootResource extends LinkableResource {
   /**
    * @return a collection of all employees in the company database
    */
-  @Related(EMPLOYEES)
-  EmployeesResource getEmployees();
+  @Related("company:employees")
+  EmployeeCollectionResource getEmployees();
 
   /**
    * @return a collection of all managers in the company database
    */
-  @Related(MANAGERS)
-  ManagersResource getManagers();
+  @Related("company:managers")
+  ManagerCollectionResource getManagers();
 
   /**
-   * A link template to load an employee entity with a known ID.
+   * a link template to load an employee entity with a known ID.
    * @param id the generated primary key in the database
    * @return an {@link EmployeeResource}
    * @throws HalApiClientException with 404 status code if no employee was found with the given ID
    */
-  @Related(EMPLOYEE)
+  @Related("company:employee")
   EmployeeResource getEmployeeById(@TemplateVariable("id") Long id);
 
   /**
-   * A link template to load a manager entity with a known ID.
+   * a link template to load a manager entity with a known ID.
    * @param id the generated primary key in the database
    * @return a {@link ManagerResource}
    * @throws HalApiClientException with 404 status code if no manager was found with the given ID
    */
-  @Related(MANAGER)
+  @Related("company:manager")
   ManagerResource getManagerById(@TemplateVariable("id") Long id);
 
   /**
-   * A link template to load a more detailed representation of an employee, which also embeds the entities of his
+   * a link template to load a more detailed representation of an employee, which also embeds the entities of his
    * manager and all of his colleagues.
    * @param id the generated primary key in the database
    * @return a {@link DetailedEmployeeResource}
    * @throws HalApiClientException with 404 status code if no employee was found with the given ID
    */
-  @Related(DETAILED_EMPLOYEE)
+  @Related("company:detailedEmployee")
   DetailedEmployeeResource getDetailedEmployeeById(@TemplateVariable("id") Long id);
 }

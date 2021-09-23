@@ -19,23 +19,33 @@
  */
 package org.springframework.hateoas.examples;
 
-import static org.springframework.hateoas.examples.CompanyRelations.DETAILED_EMPLOYEE;
-import static org.springframework.hateoas.examples.CompanyRelations.MANAGER;
-
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
+/**
+ * A HAL resource that represents a single employee
+ */
 @HalApiInterface
 public interface EmployeeResource extends LinkableResource {
 
+  /**
+   * @return an {@link Employee} entity object suitable for JSON (de)serialization
+   */
   @ResourceState
   Employee getState();
 
-  @Related(MANAGER)
+  /**
+   * @return a link to the manager of this employee
+   */
+  @Related("company:manager")
   ManagerResource getManager();
 
-  @Related(DETAILED_EMPLOYEE)
+  /**
+   * @return a link to a more detailed resource for this employee, which embeds full details on the employee's manager
+   *         and colleagues
+   */
+  @Related("company:detailedEmployee")
   DetailedEmployeeResource getDetails();
 }

@@ -20,7 +20,6 @@
 package org.springframework.hateoas.examples;
 
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.CANONICAL;
-import static org.springframework.hateoas.examples.CompanyRelations.EMPLOYEE;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,15 +29,28 @@ import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
+/**
+ * A HAL resource that represents a single manager
+ */
 @HalApiInterface
 public interface ManagerResource extends LinkableResource {
 
+  /**
+   * @return an {@link Manager} entity object suitable for JSON (de)serialization
+   */
   @ResourceState
   Manager getState();
 
-  @Related(EMPLOYEE)
+  /**
+   * @return the employees that are assigned to this manager
+   */
+  @Related("company:employee")
   List<EmployeeResource> getManagedEmployees();
 
+  /**
+   * @return an optional link to the preferred URL for this resource, that is only present when this resource was loaded
+   *         through the company:manager link of an {@link EmployeeResource}
+   */
   @Related(CANONICAL)
   Optional<ManagerResource> getCanonical();
 }

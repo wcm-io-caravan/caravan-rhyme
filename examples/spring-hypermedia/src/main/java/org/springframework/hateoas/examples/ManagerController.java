@@ -37,7 +37,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
 
 /**
- * @author Greg Turnquist
+ * The controller that creates server-side {@link ManagerResource} and {@link ManagerCollectionResource} instances
  */
 @RestController
 class ManagerController {
@@ -45,24 +45,27 @@ class ManagerController {
   @Autowired
   private ManagerRepository repository;
 
+  // inject the controllers for all related resources
   @Autowired
   private RootController rootController;
-
   @Autowired
   private EmployeeController employees;
 
   /**
-   * Look up all managers, and transform them into a REST collection resource
+   * A controller method to create a {@link ManagerCollectionResource} that lists all managers in the database. This
+   * method is called to render that resource for an incoming HTTP request, but also to render any link to this kind of
+   * resource.
+   * @return a server-side implementation of {@link ManagerCollectionResource}
    */
   @GetMapping("/managers")
-  ManagersResource findAll() {
+  ManagerCollectionResource findAll() {
 
-    return new ManagersResource() {
+    return new ManagerCollectionResource() {
 
       @Override
       public List<ManagerResource> getAll() {
 
-        return StreamUtils.mapEntitiesToListOfResources(repository.findAll(), ManagerResourceImpl::new);
+        return StreamUtils.createResourcesFrom(repository.findAll(), ManagerResourceImpl::new);
       }
 
       @Override
@@ -73,7 +76,7 @@ class ManagerController {
       }
 
       @Override
-      public EmployeesResource getEmployees() {
+      public EmployeeCollectionResource getEmployees() {
 
         return employees.findAll();
       }
@@ -88,16 +91,25 @@ class ManagerController {
   }
 
   /**
-   * Look up a single {@link Manager} and transform it into a REST resource using
-   * @param id
+   * A controller method to create a {@link ManagerResource} for a specific employee. This is called
+   * to render this resource for an incoming HTTP request, but also to render all links to this kind of resource.
+   * @param id of the employee, or null if this method is called to create the link template in the {@link RootResource}
+   * @return a server-side implementation of {@link ManagerResource}
    */
   @GetMapping("/managers/{id}")
-  ManagerResource findOne(@PathVariable Long id) {
+  ManagerResource findById(@PathVariable Long id) {
 
+    // Create and return server-side implementation of the resource
     return new ManagerResourceImpl(id, () -> repository.findById(id)
+        // If no entity is found with the given ID, throwing an exception from which a status code can be extracted
+        // will make the VndErrorHandlingControllerAdvice return a vnd.error response with that status code
         .orElseThrow(() -> new HalApiServerException(404, "No entity was found with id " + id)));
   }
 
+  /**
+   * The server-side implementation of the {@link ManagerResource} interface, which also allows for this resource
+   * to be embedded in the context from which it was created.
+   */
   private class ManagerResourceImpl implements ManagerResource, EmbeddableResource {
 
     private final Long id;
@@ -105,12 +117,23 @@ class ManagerController {
 
     private final boolean embedded;
 
-    protected ManagerResourceImpl(Long id, Supplier<Manager> stateSupplier) {
+    /**
+     * A constructor that defers loading of the {@link Manager} to when {@link #getState()} is called by the renderer.
+     * This is important because instance creation should be as fast as possible, as it also happens when only
+     * a link to an employee with a given ID is rendered (for which we don't need the full Manager entity).
+     * @param id of the manager
+     * @param entityLoader a function that loads the manager from the {@link ManagerRepository}
+     */
+    protected ManagerResourceImpl(Long id, Supplier<Manager> entityLoader) {
       this.id = id;
-      this.state = Lazy.of(stateSupplier);
+      this.state = Lazy.of(entityLoader);
       this.embedded = false;
     }
 
+    /**
+     * The constructor to create an *embedded* resource for an employee that was already loaded from the database
+     * @param manager an entity loaded from the {@link ManagerRepository}
+     */
     private ManagerResourceImpl(Manager manager) {
       this.id = manager.getId();
       this.state = Lazy.of(manager);
@@ -119,62 +142,63 @@ class ManagerController {
 
     @Override
     public Manager getState() {
-
       return state.get();
     }
 
     @Override
     public List<EmployeeResource> getManagedEmployees() {
-
-      return employees.findEmployeesOfManager(id);
+      return employees.findEmployeesOfManagerWithId(id);
     }
 
     @Override
     public Optional<ManagerResource> getCanonical() {
-
+      // the canonical link is only present for variations of this resource
+      // (which can be done by subclassing as you can in #findManagerOfEmployeeWithId)
       return Optional.empty();
     }
 
     @Override
     public boolean isEmbedded() {
-
       return embedded;
     }
 
     @Override
     public Link createLink() {
 
-      return new Link(linkTo(methodOn(ManagerController.class).findOne(id)).toString()).setTitle(
+      // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
+      return new Link(linkTo(methodOn(ManagerController.class).findById(id)).toString()).setTitle(
+          // In addition, we specify different titles to be used for link templates and resolved links (including the self-link)
           id == null ? "A link template to load a single manager by ID" : "The manager with ID " + id);
     }
   }
 
   /**
-   * Find an {@link Employee}'s {@link Manager} based upon employee id. Turn it
-   * into a context-based link.
-   * @param id
-   * @return
+   * A controller method to create a {@link ManagerResource} for the manager of a given employee (with a path below the
+   * path of the employee)
+   * @param id of the employee,
+   * @return a server-side implementation of {@link ManagerResource}
    */
   @GetMapping("/employees/{id}/manager")
-  ManagerResource findManager(@PathVariable Long id) {
+  ManagerResource findManagerOfEmployeeWithId(@PathVariable Long id) {
 
-    Long employeeId = id;
-
+    // find the manager in the repository
     Manager manager = repository.findByEmployeesId(id);
 
+    // Create a resource implementation (but don't use the constructor used to create embedded resources)
     return new ManagerResourceImpl(manager.getId(), () -> manager) {
 
       @Override
       public Optional<ManagerResource> getCanonical() {
-
-        return Optional.of(findOne(id));
+        // include a link to the version of this resource that uses a path with the manager's id
+        return Optional.of(findById(id));
       }
 
       @Override
       public Link createLink() {
-
-        return new Link(linkTo(methodOn(ManagerController.class).findManager(employeeId)).toString())
-            .setTitle("The manager (" + manager.getName() + ")  of the employee with id " + employeeId);
+        // overridden so that the path from this controller method is used
+        return new Link(linkTo(methodOn(ManagerController.class).findManagerOfEmployeeWithId(id)).toString())
+            // since the manager instance was already loaded, we can also give a bit more context in the link title for this resource
+            .setTitle("The manager (" + manager.getName() + ")  of the employee with id " + id);
       }
     };
   }

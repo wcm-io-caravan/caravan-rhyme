@@ -30,9 +30,18 @@ final class StreamUtils {
     // this class contains only static utility methods
   }
 
-  static <T, U> List<U> mapEntitiesToListOfResources(Iterable<T> entities, Function<T, U> resourceConstructor) {
+  /**
+   * Creates a resource implementation instance for each of the given entities.
+   * @param <T> entity type
+   * @param <U> resource implementation type
+   * @param entities loaded from the repository
+   * @param resourceConstructor creates a resource implementation for a given entity
+   * @return a list with one resource for each entity
+   */
+  static <T, U> List<U> createResourcesFrom(Iterable<T> entities, Function<T, U> resourceConstructor) {
 
-    return StreamSupport.stream(entities.spliterator(), false).map(resourceConstructor)
+    return StreamSupport.stream(entities.spliterator(), false)
+        .map(resourceConstructor)
         .collect(Collectors.toList());
   }
 }

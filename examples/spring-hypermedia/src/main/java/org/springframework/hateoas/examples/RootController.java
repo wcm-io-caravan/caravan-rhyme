@@ -31,7 +31,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 
 /**
- * The controller to create {@link RootResource} instances defining the entry point of the API.
+ * The controller that creates server-side {@link RootResource} instances, which define the entry point of the API.
  */
 @RestController
 public class RootController {
@@ -70,13 +70,13 @@ public class RootController {
       // method declaration in the RootResource interface)
 
       @Override
-      public EmployeesResource getEmployees() {
+      public EmployeeCollectionResource getEmployees() {
 
         return employees.findAll();
       }
 
       @Override
-      public ManagersResource getManagers() {
+      public ManagerCollectionResource getManagers() {
 
         return managers.findAll();
       }
@@ -94,19 +94,19 @@ public class RootController {
         // to also be called directly by API consumers in the same application (which do know the ID of
         // the entity they are looking for).
 
-        return employees.findOne(id);
+        return employees.findById(id);
       }
 
       @Override
       public ManagerResource getManagerById(Long id) {
 
-        return managers.findOne(id);
+        return managers.findById(id);
       }
 
       @Override
       public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
 
-        return details.findOne(id);
+        return details.findById(id);
       }
 
       @Override
