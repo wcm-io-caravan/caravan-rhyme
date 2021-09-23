@@ -43,14 +43,14 @@ import reactor.netty.resources.ConnectionProvider;
  * which uses {@link WebClient} to executed asynchronous HTTP requests.
  */
 @Component
-public class WebClientHalResourceLoader implements HalResourceLoader {
+class WebClientHalResourceLoader implements HalResourceLoader {
 
   private final HalResourceLoader delegate;
 
   /**
    * Default constructor that enables in-memory caching
    */
-  public WebClientHalResourceLoader() {
+  WebClientHalResourceLoader() {
     this(true);
   }
 

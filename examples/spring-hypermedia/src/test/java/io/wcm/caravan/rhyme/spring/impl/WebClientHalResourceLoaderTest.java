@@ -22,6 +22,9 @@ package io.wcm.caravan.rhyme.spring.impl;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 
+/**
+ * Runs a set of tests for the {@link WebClientHalResourceLoader} against a Wiremock server
+ */
 public class WebClientHalResourceLoaderTest extends AbstractHalResourceLoaderTest {
 
   @Override

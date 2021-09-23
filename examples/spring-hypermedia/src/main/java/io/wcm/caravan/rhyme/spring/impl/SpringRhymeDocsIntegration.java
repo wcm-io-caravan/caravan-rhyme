@@ -40,7 +40,7 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
  */
 @RestController
 @RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
-public class SpringRhymeDocsIntegration implements RhymeDocsSupport {
+class SpringRhymeDocsIntegration implements RhymeDocsSupport {
 
   private static final String BASE_PATH = "/docs/rhyme/api/";
 

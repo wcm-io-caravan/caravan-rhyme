@@ -38,14 +38,27 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.common.collect.LinkedHashMultimap;
 
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
+/**
+ * An implementation of {@link HalResourceLoader} for integration-tests that is using the {@link MockMvc} class
+ * to fetch resources from the currently running {@link WebApplicationContext}. It allows you to create
+ * a {@link HalApiClient} to navigate through your resources running in your application the same way as an external
+ * client would. These tests can cover all of the following aspects with very little code:
+ * <ul>
+ * <li>the calls to the controller methods that create your server-side resource implementations</li>
+ * <li>the rendering / serialization of these resources to the HAL+JSON format</li>
+ * <li>parsing these responses as HAL+JSON with the {@link HalApiClient}</li>
+ * <li>expanding link templates and following links to other resources</li>
+ * </ul>
+ */
 @Component
-@Primary
+@Primary // this ensures that this component is also used for any HTTP requests initiated via SpringRhyme#getRemoteResource
 public class MockMvcHalResourceLoader implements HalResourceLoader {
 
   private final HalResourceLoader delegate;

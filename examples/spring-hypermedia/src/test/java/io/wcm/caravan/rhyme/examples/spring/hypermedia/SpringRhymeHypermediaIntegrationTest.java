@@ -42,17 +42,16 @@ public class SpringRhymeHypermediaIntegrationTest {
   private static final long NON_EXISTANT_ID = 999L;
 
   @Autowired
-  private MockMvcHalResourceLoader resourceLoader;
-
-  @Autowired
   private EmployeeRepository employeeRepository;
-
   @Autowired
   private ManagerRepository managerRepository;
 
+  @Autowired
+  private MockMvcHalResourceLoader mockMvcResourceLoader;
+
   private RootResource getEntryPoint() {
 
-    HalApiClient apiClient = HalApiClient.create(resourceLoader);
+    HalApiClient apiClient = HalApiClient.create(mockMvcResourceLoader);
 
     return apiClient.getRemoteResource("/", RootResource.class);
   }
@@ -80,7 +79,8 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     List<EmployeeResource> employees = getEntryPoint().getEmployees().getAll();
 
-    assertThat(employees).extracting(employee -> employee.getState().getName())//
+    assertThat(employees)
+        .extracting(employee -> employee.getState().getName())
         .containsExactly("Frodo", "Bilbo", "Sam", "Pippin");
   }
 
@@ -89,7 +89,8 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     List<ManagerResource> managers = getEntryPoint().getManagers().getAll();
 
-    assertThat(managers).extracting(manager -> manager.getState().getName())//
+    assertThat(managers)
+        .extracting(manager -> manager.getState().getName())
         .containsExactly("Gandalf", "Saruman");
   }
 
@@ -176,7 +177,8 @@ public class SpringRhymeHypermediaIntegrationTest {
     ManagerResource firstManager = getEntryPoint().getManagerById(firstId);
     List<EmployeeResource> employeesOfFirstManager = firstManager.getManagedEmployees();
 
-    assertThat(employeesOfFirstManager).extracting(employee -> employee.getState().getName())
+    assertThat(employeesOfFirstManager)
+        .extracting(employee -> employee.getState().getName())
         .containsExactly("Frodo", "Bilbo");
   }
 
@@ -205,7 +207,8 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Stream<EmployeeResource> colleagues = getEntryPoint().getDetailedEmployeeById(firstId).getColleagues();
 
-    assertThat(colleagues).extracting(colleague -> colleague.getState().getName())//
+    assertThat(colleagues)
+        .extracting(colleague -> colleague.getState().getName())
         .containsExactly("Bilbo");
   }
 

@@ -120,7 +120,6 @@ class DetailedEmployeeController {
 
       @Override
       public Link createLink() {
-        // This is the single location where links (or link templates) to this kind of resource are being generated.
 
         // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
         return new Link(linkTo(methodOn(DetailedEmployeeController.class).findById(id)).toString())
