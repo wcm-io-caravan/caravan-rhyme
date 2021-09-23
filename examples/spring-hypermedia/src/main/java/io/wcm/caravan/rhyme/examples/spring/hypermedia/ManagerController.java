@@ -190,7 +190,7 @@ class ManagerController {
       @Override
       public Optional<ManagerResource> getCanonical() {
         // include a link to the version of this resource that uses a path with the manager's id
-        return Optional.of(findById(id));
+        return Optional.of(findById(manager.getId()));
       }
 
       @Override

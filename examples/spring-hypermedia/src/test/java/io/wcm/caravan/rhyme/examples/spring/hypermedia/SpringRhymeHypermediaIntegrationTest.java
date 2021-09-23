@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -123,6 +124,23 @@ public class SpringRhymeHypermediaIntegrationTest {
   }
 
   @Test
+  public void getCanonical_returns_same_instance_with_different_url() throws Exception {
+
+    Long firstId = getIdOfFirstEmployee();
+
+    ManagerResource manager = getEntryPoint().getEmployeeById(firstId).getManager();
+    Optional<ManagerResource> canonical = manager.getCanonical();
+
+    assertThat(canonical).isPresent();
+
+    assertThat(canonical.get().getState())
+        .isEqualTo(manager.getState());
+
+    assertThat(canonical.get().createLink().getHref())
+        .isNotEqualTo(manager.createLink().getHref());
+  }
+
+  @Test
   public void getManagerById_should_find_existing_manager() throws Exception {
 
     Long firstId = getIdOfFirstManager();
@@ -138,6 +156,16 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     assertThatClientFailsWith404(
         () -> getEntryPoint().getManagerById(NON_EXISTANT_ID).getState());
+  }
+
+  @Test
+  public void getCanonical_is_empty_if_manager_was_loaded_by_id() throws Exception {
+
+    Long firstId = getIdOfFirstManager();
+
+    Optional<ManagerResource> canonical = getEntryPoint().getManagerById(firstId).getCanonical();
+
+    assertThat(canonical).isEmpty();
   }
 
   @Test
