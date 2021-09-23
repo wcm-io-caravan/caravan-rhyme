@@ -73,9 +73,9 @@ class EmployeeController {
         return StreamUtils.createResourcesFrom(repository.findAll(), EmployeeResourceImpl::new);
       }
 
-      // The links to the other resources are created by simply returning a server-side
+      // The links to the other resources are generated simply by returning a server-side
       // resource implementation created by the corresponding controllers. The renderer will
-      // the call #createLink() on these resources to create the links
+      // then call #createLink() on these resources to create the links
 
       @Override
       public RootResource getRoot() {
