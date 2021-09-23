@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package org.springframework.hateoas.examples;
+package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
 import java.util.List;
 
@@ -26,16 +26,16 @@ import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * A HAL resource with embedded data for multiple employees
+ * A HAL resource with embedded data for multiple managers
  */
 @HalApiInterface
-public interface EmployeeCollectionResource extends LinkableResource {
+public interface ManagerCollectionResource extends LinkableResource {
 
   /**
-   * @return all individual employees
+   * @return all individual managers
    */
-  @Related("company:employee")
-  List<EmployeeResource> getAll();
+  @Related("company:manager")
+  List<ManagerResource> getAll();
 
   /**
    * @return a link back to the entry point of the API
@@ -44,8 +44,8 @@ public interface EmployeeCollectionResource extends LinkableResource {
   RootResource getRoot();
 
   /**
-   * @return a link to a similar collection of all managers
+   * @return a link to a similar collection of all employees
    */
-  @Related("company:managers")
-  ManagerCollectionResource getManagers();
+  @Related("company:employees")
+  EmployeeCollectionResource getEmployees();
 }

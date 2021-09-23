@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package org.springframework.hateoas.examples;
+package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * The application class to configure and start the example service
  */
-@SpringBootApplication(scanBasePackages = { "io.wcm.caravan.rhyme.spring", "org.springframework.hateoas.examples" })
+@SpringBootApplication(scanBasePackages = { "io.wcm.caravan.rhyme.spring", "io.wcm.caravan.rhyme.examples.spring.hypermedia" })
 public class SpringRhymeHypermediaApplication {
 
   /**

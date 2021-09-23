@@ -17,35 +17,35 @@
  * limitations under the License.
  * #L%
  */
-package org.springframework.hateoas.examples;
-
-import java.util.List;
+package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
+import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * A HAL resource with embedded data for multiple managers
+ * A HAL resource that represents a single employee
  */
 @HalApiInterface
-public interface ManagerCollectionResource extends LinkableResource {
+public interface EmployeeResource extends LinkableResource {
 
   /**
-   * @return all individual managers
+   * @return an {@link Employee} entity object suitable for JSON (de)serialization
+   */
+  @ResourceState
+  Employee getState();
+
+  /**
+   * @return a link to the manager of this employee
    */
   @Related("company:manager")
-  List<ManagerResource> getAll();
+  ManagerResource getManager();
 
   /**
-   * @return a link back to the entry point of the API
+   * @return a link to a more detailed resource for this employee, which embeds full details on the employee's manager
+   *         and colleagues
    */
-  @Related("company:root")
-  RootResource getRoot();
-
-  /**
-   * @return a link to a similar collection of all employees
-   */
-  @Related("company:employees")
-  EmployeeCollectionResource getEmployees();
+  @Related("company:detailedEmployee")
+  DetailedEmployeeResource getDetails();
 }

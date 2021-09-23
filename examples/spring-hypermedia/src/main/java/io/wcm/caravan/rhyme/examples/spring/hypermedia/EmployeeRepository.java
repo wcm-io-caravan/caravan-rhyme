@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.hateoas.examples;
+package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
 import java.util.List;
 
