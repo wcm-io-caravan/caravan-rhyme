@@ -19,12 +19,12 @@ import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
  * </ul>
  * <p>
  * Note that these tests don't really look at the URIs or relations of the links being
- * generated in the HAL representation. Whether these links are all correct is tested
+ * present in the HAL representation. Whether these links are all correct is tested
  * indirectly by *following* them (exactly as a client would do) and then verify the
  * resource that is being retrieved. This allows the URL structure to be changed at any time
  * without having to adjust the tests. For an API that strictly sticks to the HATEOAS principles,
  * the paths in the URL are only an implementation detail that can be changed (as long as the
- * link relation and template variables in the URI remain the same).
+ * link relation and template variables in the API remain the same).
  * </p>
  * <p>
  * The tests also don't make any assumptions on whether specific resources are embedded or not.
@@ -37,7 +37,7 @@ public class ClientSideIntegrationTest extends AbstractCompanyApiIntegrationTest
   private MockMvcHalResourceLoader mockMvcResourceLoader;
 
   @Override
-  protected CompanyApi getApi() {
+  protected CompanyApi getApiImplementionOrClientProxy() {
 
     // Create a HalApiClient that is using spring's MockMvc to simulate actual HTTP requests
     // going into the currently running WebApplicationContext.
@@ -45,7 +45,7 @@ public class ClientSideIntegrationTest extends AbstractCompanyApiIntegrationTest
 
     // Return a dynamic client proxy that can fetch the API's entry point resource from the root path
     return apiClient.getRemoteResource("/", CompanyApi.class);
-    
+
     // All of the tests in the superclass will now start with fetching that single entry point
     // with an HTTP request to the CompanyApiController (exactly as an external consumer would),
     // and then follow links to other resources as required, which will trigger additional

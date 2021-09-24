@@ -51,6 +51,9 @@ class ManagerController {
   @Autowired
   private EmployeeController employees;
 
+  @Autowired
+  private TimestampedLinkBuilder linkBuilder;
+
   /**
    * A controller method to create a {@link ManagerCollectionResource} that lists all managers in the database. This
    * method is called to render that resource for an incoming HTTP request, but also to render any link to this kind of
@@ -81,9 +84,10 @@ class ManagerController {
       @Override
       public Link createLink() {
 
-        // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
-        return new Link(linkTo(methodOn(ManagerController.class).findAll()).toString())
-            .setTitle("A collection of all managers");
+        // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+        return linkBuilder.create(linkTo(methodOn(ManagerController.class).findAll()))
+            .withTitle("A collection of all managers")
+            .build();
       }
     };
   }
@@ -163,10 +167,11 @@ class ManagerController {
     @Override
     public Link createLink() {
 
-      // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
-      return new Link(linkTo(methodOn(ManagerController.class).findById(id)).toString()).setTitle(
-          // In addition, we specify different titles to be used for link templates and resolved links (including the self-link)
-          id == null ? "A link template to load a single manager by ID" : "The manager with ID " + id);
+      // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+      return linkBuilder.create(linkTo(methodOn(ManagerController.class).findById(id)))
+          .withTitle("The manager with ID " + id)
+          .withTemplateTitle("A link template to load a single manager by ID")
+          .build();
     }
   }
 
@@ -194,9 +199,10 @@ class ManagerController {
       @Override
       public Link createLink() {
         // overridden so that the path from this controller method is used
-        return new Link(linkTo(methodOn(ManagerController.class).findManagerOfEmployeeWithId(id)).toString())
+        return linkBuilder.create(linkTo(methodOn(ManagerController.class).findManagerOfEmployeeWithId(id)))
             // since the manager instance was already loaded, we can also give a bit more context in the link title for this resource
-            .setTitle("The manager (" + manager.getName() + ")  of the employee with id " + id);
+            .withTitle("The manager (" + manager.getName() + ")  of the employee with id " + id)
+            .build();
       }
     };
   }

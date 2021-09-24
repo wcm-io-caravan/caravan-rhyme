@@ -14,7 +14,7 @@ public class ServerSideIntegrationTest extends AbstractCompanyApiIntegrationTest
   private CompanyApi api;
 
   @Override
-  protected CompanyApi getApi() {
+  protected CompanyApi getApiImplementionOrClientProxy() {
     return api;
   }
 }

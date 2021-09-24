@@ -52,6 +52,9 @@ class EmployeeController {
   @Autowired
   private DetailedEmployeeController detailedEmployees;
 
+  @Autowired
+  private TimestampedLinkBuilder linkBuilder;
+
   /**
    * A controller method to create a {@link EmployeeCollectionResource} that lists all employees in the database. This
    * method is called to render that resource for an incoming HTTP request, but also to render any link to this kind of
@@ -90,9 +93,10 @@ class EmployeeController {
       @Override
       public Link createLink() {
 
-        // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
-        return new Link(linkTo(methodOn(EmployeeController.class).findAll()).toString())
-            .setTitle("A collection of all employees");
+        // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+        return linkBuilder.create(linkTo(methodOn(EmployeeController.class).findAll()))
+            .withTitle("A collection of all employees")
+            .build();
       }
     };
   }
@@ -180,10 +184,11 @@ class EmployeeController {
     @Override
     public Link createLink() {
 
-      // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
-      return new Link(linkTo(methodOn(EmployeeController.class).findById(id)).toString())
-          // In addition, we specify different titles to be used for link templates and resolved links (including the self-link)
-          .setTitle(id == null ? "A link template to load a single employee by ID" : "The employee with ID " + id);
+      // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+      return linkBuilder.create(linkTo(methodOn(EmployeeController.class).findById(id)))
+          .withTitle("The employee with ID " + id)
+          .withTemplateTitle("A link template to load a single employee by ID")
+          .build();
     }
   }
 }

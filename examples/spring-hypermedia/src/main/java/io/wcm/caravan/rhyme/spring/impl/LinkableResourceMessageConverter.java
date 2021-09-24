@@ -77,6 +77,8 @@ class LinkableResourceMessageConverter extends AbstractHttpMessageConverter<Link
 
     ResponseEntity<JsonNode> entity = rhyme.renderResponse(resourceImpl);
 
+    outputMessage.getHeaders().addAll(entity.getHeaders());
+
     OBJECT_MAPPER.writer()
         .writeValue(outputMessage.getBody(), entity.getBody());
   }

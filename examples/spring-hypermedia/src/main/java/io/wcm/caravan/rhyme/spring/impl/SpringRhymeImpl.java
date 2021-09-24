@@ -59,7 +59,7 @@ class SpringRhymeImpl implements SpringRhyme {
       @Autowired(required = false) HalResourceLoader resourceLoader,
       @Autowired SpringRhymeDocsIntegration rhymeDocs) {
 
-    log.debug("{} was instantiated", this.getClass().getSimpleName());
+    log.debug("{} was instantiated for request to {}", this, httpRequest.getRequestURI());
 
     String requestUrl = getRequestUrl(httpRequest);
 

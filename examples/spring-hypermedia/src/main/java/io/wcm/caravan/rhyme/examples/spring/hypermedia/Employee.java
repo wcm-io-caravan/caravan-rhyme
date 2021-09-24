@@ -16,6 +16,7 @@
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
@@ -30,6 +31,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @Entity
+@EntityListeners(RepositoryModificationListener.class)
 @NoArgsConstructor
 public class Employee {
 

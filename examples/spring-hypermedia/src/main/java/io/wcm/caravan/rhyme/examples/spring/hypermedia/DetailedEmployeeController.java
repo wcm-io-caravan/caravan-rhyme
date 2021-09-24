@@ -57,6 +57,9 @@ class DetailedEmployeeController {
   @Autowired
   private SpringRhyme rhyme;
 
+  @Autowired
+  private TimestampedLinkBuilder linkBuilder;
+
   /**
    * A controller method to create a {@link DetailedEmployeeResource} for a specific employee. This is called
    * to render this resource for an incoming HTTP request, but also to render all links to this kind of resource.
@@ -72,17 +75,19 @@ class DetailedEmployeeController {
     // by the LinkableResourceMessageConverter.
     return new DetailedEmployeeResource() {
 
-      // Create a dynamic client proxy that can load the API's entry point (and all related resources) by HTTP.
-      // Even though all resource implementations should be constructed as fast as possible, it doesn't hurt to create the proxy right here.
-      // This is because the actual HTTP requests will only be executed when a method on a proxy is called.
-      private final CompanyApi entryPoint = rhyme.getRemoteResource("http://localhost:8081", CompanyApi.class);
-
       /**
-       * Load the entry point and expand the "company:employee" link template with the given ID,
-       * @return another proxy object that knows how to fetch the EmployeeResource from the expanded URL.
+       * Load an employee by HTTP from localhost using a {@link HalApiClient}
+       * @return a client proxy that knows how to fetch the EmployeeResource from the expanded URL.
        */
       private EmployeeResource getEmployee() {
 
+        // Construct the URL to the CompanyApiController
+        String entryPointUrl = linkBuilder.getLocalEntryPointUrl();
+
+        // Create a dynamic client proxy that can load the API's entry point (and all related resources) by HTTP.
+        CompanyApi entryPoint = rhyme.getRemoteResource(entryPointUrl, CompanyApi.class);
+
+        // load the entry point, expand the "company:employee" link template with the given ID and create a new proxy
         return entryPoint.getEmployeeById(id);
       }
 
@@ -98,8 +103,8 @@ class DetailedEmployeeController {
       public ManagerResource getManager() {
 
         // Get a resource client proxy that follows the link to the manager of the employee.
-        // Even though getEmployee() is called multiple times in this class, it's not required to store that proxy instance anywhere,
-        // since repeated method calls with the same parameter will quickly return the same proxy instance.
+        // Even though getEmployee() is called multiple times in this class, it's not required to store that proxy instance anywhere.
+        // This is because the client proxies for each URL are already cached within the Rhyme instance.
         ManagerResource manager = getEmployee().getManager();
 
         // We could return this resource proxy directly, but then only a link to the upstream resource would be added.
@@ -121,11 +126,11 @@ class DetailedEmployeeController {
       @Override
       public Link createLink() {
 
-        // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
-        return new Link(linkTo(methodOn(DetailedEmployeeController.class).findById(id)).toString())
-            // In addition, we specify different titles to be used for link templates and resolved links (including the self-link)
-            .setTitle(id == null ? "A link template to detailed data for a single employee by ID"
-                : "The employee with ID " + id + ", with embedded resources for her managers and colleagues");
+        // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+        return linkBuilder.create(linkTo(methodOn(DetailedEmployeeController.class).findById(id)))
+            .withTitle("The employee with ID " + id + ", with embedded resources for her managers and colleagues")
+            .withTemplateTitle("A link template to detailed data for a single employee by ID")
+            .build();
       }
     };
   }

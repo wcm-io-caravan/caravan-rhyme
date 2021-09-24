@@ -53,6 +53,9 @@ class CompanyApiController implements CompanyApi {
   @Autowired
   private DetailedEmployeeController detailedEmployees;
 
+  @Autowired
+  private TimestampedLinkBuilder linkBuilder;
+
   /**
    * A controller method used to render the entry point of the API as a HAL+JSON response.
    * @return a server-side implementation of {@link CompanyApi}
@@ -115,9 +118,9 @@ class CompanyApiController implements CompanyApi {
   @Override
   public Link createLink() {
 
-    // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
-    return new Link(linkTo(methodOn(CompanyApiController.class).get()).toString())
-        // We only add a title to be shown for each link to the entry point (including the self link)
-        .setTitle("The entry point of the hypermedia example API");
+    // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+    return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
+        .withTitle("The entry point of the hypermedia example API")
+        .build();
   }
 }

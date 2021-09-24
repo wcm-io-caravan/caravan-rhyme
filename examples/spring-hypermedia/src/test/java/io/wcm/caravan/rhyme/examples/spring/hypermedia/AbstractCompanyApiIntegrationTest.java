@@ -55,8 +55,7 @@ abstract class AbstractCompanyApiIntegrationTest {
 
   @BeforeEach
   void setUp() {
-
-    api = getApi();
+    api = getApiImplementionOrClientProxy();
   }
 
   /**
@@ -65,7 +64,7 @@ abstract class AbstractCompanyApiIntegrationTest {
    * with a HTTP request.
    * @return the implementation of {@link CompanyApi} used to run the tests
    */
-  protected abstract CompanyApi getApi();
+  protected abstract CompanyApi getApiImplementionOrClientProxy();
 
   // The repositories are initialized with the same DatabaseLoader then
   // is used when the application is started. For the tests that need to
