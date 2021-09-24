@@ -10,15 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ServerSideIntegrationTest extends AbstractCompanyApiIntegrationTest {
 
-  /**
-   * This will inject the {@link CompanyApiController} as it directly implements that interface
-   */
-  @Autowired
+  @Autowired // This will inject the {@link CompanyApiController} as it directly implements that interface
   private CompanyApi api;
 
   @Override
   protected CompanyApi getApi() {
-
     return api;
   }
 }
