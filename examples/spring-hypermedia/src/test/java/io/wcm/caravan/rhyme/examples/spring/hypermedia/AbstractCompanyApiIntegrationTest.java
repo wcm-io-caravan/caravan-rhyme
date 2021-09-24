@@ -20,24 +20,29 @@
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Iterables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 
+/**
+ * Defines a set of tests that cover most of the API's functionality,
+ * but is only using the HAL API interfaces to navigate through resources.
+ */
 @SpringBootTest
-public class SpringRhymeHypermediaIntegrationTest {
+abstract class AbstractCompanyApiIntegrationTest {
 
   private static final long NON_EXISTANT_ID = 999L;
 
@@ -46,19 +51,25 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Autowired
   private ManagerRepository managerRepository;
 
-  @Autowired
-  private MockMvcHalResourceLoader mockMvcResourceLoader;
+  private CompanyApi api;
 
-  private CompanyApi getEntryPoint() {
+  @BeforeEach
+  void setUp() {
 
-    // Create a HalApiClient that is using spring's MockMvc to simulate actual HTTP requests
-    // coming into the currently running WebApplicationContext.
-    HalApiClient apiClient = HalApiClient.create(mockMvcResourceLoader);
-
-    // All of these tests in this class will start with fetching the single entry point
-    // (exactly as an external consumer would), and then follow links to other resources as required.
-    return apiClient.getRemoteResource("/", CompanyApi.class);
+    api = getApi();
   }
+
+  /**
+   * This will be overridden in the subclasses to return either the server-side implementation of
+   * the {@link CompanyApi} interface, or a dynamic client proxy that fetches the entry point
+   * with a HTTP request.
+   * @return the implementation of {@link CompanyApi} used to run the tests
+   */
+  protected abstract CompanyApi getApi();
+
+  // The repositories are initialized with the same DatabaseLoader then
+  // is used when the application is started. For the tests that need to
+  // know an existing ID, we just pick the first one that exists in each repo.
 
   private Long getIdOfFirstEmployee() {
 
@@ -70,18 +81,10 @@ public class SpringRhymeHypermediaIntegrationTest {
     return Iterables.firstOf(managerRepository.findAll()).getId();
   }
 
-  private void assertThatClientFailsWith404(ThrowingCallable codeThatThrows) {
-
-    HalApiClientException ex = catchThrowableOfType(codeThatThrows, HalApiClientException.class);
-
-    assertThat(ex).isNotNull();
-    assertThat(ex.getStatusCode()).isEqualTo(404);
-  }
-
   @Test
   public void getEmployees_should_list_employees_in_order_of_creation() throws Exception {
 
-    List<EmployeeResource> employees = getEntryPoint().getEmployees().getAll();
+    List<EmployeeResource> employees = api.getEmployees().getAll();
 
     assertThat(employees)
         .extracting(employee -> employee.getState().getName())
@@ -91,7 +94,7 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Test
   public void getManagers_should_list_managers_in_order_of_creation() throws Exception {
 
-    List<ManagerResource> managers = getEntryPoint().getManagers().getAll();
+    List<ManagerResource> managers = api.getManagers().getAll();
 
     assertThat(managers)
         .extracting(manager -> manager.getState().getName())
@@ -103,7 +106,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Long firstId = getIdOfFirstEmployee();
 
-    Employee firstEmployee = getEntryPoint().getEmployeeById(firstId).getState();
+    Employee firstEmployee = api.getEmployeeById(firstId).getState();
 
     assertThat(firstEmployee.getId()).isEqualTo(firstId);
     assertThat(firstEmployee.getName()).isEqualTo("Frodo");
@@ -113,8 +116,8 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Test
   public void getEmployeeById_should_respond_with_404_for_non_existing_id() throws Exception {
 
-    assertThatClientFailsWith404(
-        () -> getEntryPoint().getEmployeeById(NON_EXISTANT_ID).getState());
+    assertThat404isReturnedFor(
+        () -> api.getEmployeeById(NON_EXISTANT_ID).getState());
   }
 
   @Test
@@ -122,7 +125,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Long firstId = getIdOfFirstEmployee();
 
-    EmployeeResource firstEmployee = getEntryPoint().getEmployeeById(firstId);
+    EmployeeResource firstEmployee = api.getEmployeeById(firstId);
     Manager managerOfFirstEmployee = firstEmployee.getManager().getState();
 
     assertThat(managerOfFirstEmployee.getName()).isEqualTo("Gandalf");
@@ -133,13 +136,13 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Long firstId = getIdOfFirstEmployee();
 
-    ManagerResource manager = getEntryPoint().getEmployeeById(firstId).getManager();
+    ManagerResource manager = api.getEmployeeById(firstId).getManager();
     Optional<ManagerResource> canonical = manager.getCanonical();
 
     assertThat(canonical).isPresent();
 
-    assertThat(canonical.get().getState())
-        .isEqualTo(manager.getState());
+    assertThat(canonical.get().getState().getId())
+        .isEqualTo(manager.getState().getId());
 
     assertThat(canonical.get().createLink().getHref())
         .isNotEqualTo(manager.createLink().getHref());
@@ -150,7 +153,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Long firstId = getIdOfFirstManager();
 
-    Manager firstManager = getEntryPoint().getManagerById(firstId).getState();
+    Manager firstManager = api.getManagerById(firstId).getState();
 
     assertThat(firstManager.getId()).isEqualTo(firstId);
     assertThat(firstManager.getName()).isEqualTo("Gandalf");
@@ -159,8 +162,8 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Test
   public void getManagerById_should_respond_with_404_for_non_existing_id() throws Exception {
 
-    assertThatClientFailsWith404(
-        () -> getEntryPoint().getManagerById(NON_EXISTANT_ID).getState());
+    assertThat404isReturnedFor(
+        () -> api.getManagerById(NON_EXISTANT_ID).getState());
   }
 
   @Test
@@ -168,7 +171,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Long firstId = getIdOfFirstManager();
 
-    Optional<ManagerResource> canonical = getEntryPoint().getManagerById(firstId).getCanonical();
+    Optional<ManagerResource> canonical = api.getManagerById(firstId).getCanonical();
 
     assertThat(canonical).isEmpty();
   }
@@ -178,7 +181,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Long firstId = getIdOfFirstManager();
 
-    ManagerResource firstManager = getEntryPoint().getManagerById(firstId);
+    ManagerResource firstManager = api.getManagerById(firstId);
     List<EmployeeResource> employeesOfFirstManager = firstManager.getManagedEmployees();
 
     assertThat(employeesOfFirstManager)
@@ -191,7 +194,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Long firstId = getIdOfFirstEmployee();
 
-    Employee firstEmployee = getEntryPoint().getDetailedEmployeeById(firstId).getState();
+    Employee firstEmployee = api.getDetailedEmployeeById(firstId).getState();
 
     assertThat(firstEmployee.getId()).isEqualTo(firstId);
     assertThat(firstEmployee.getName()).isEqualTo("Frodo");
@@ -200,8 +203,8 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Test
   public void getDetailedEmployeeById_should_respond_with_404_for_non_existing_id() throws Exception {
 
-    assertThatClientFailsWith404(
-        () -> getEntryPoint().getDetailedEmployeeById(NON_EXISTANT_ID).getState());
+    assertThat404isReturnedFor(
+        () -> api.getDetailedEmployeeById(NON_EXISTANT_ID).getState());
   }
 
   @Test
@@ -209,7 +212,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Long firstId = getIdOfFirstEmployee();
 
-    Stream<EmployeeResource> colleagues = getEntryPoint().getDetailedEmployeeById(firstId).getColleagues();
+    Stream<EmployeeResource> colleagues = api.getDetailedEmployeeById(firstId).getColleagues();
 
     assertThat(colleagues)
         .extracting(colleague -> colleague.getState().getName())
@@ -221,8 +224,28 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     Long firstId = getIdOfFirstEmployee();
 
-    Manager manager = getEntryPoint().getDetailedEmployeeById(firstId).getManager().getState();
+    Manager manager = api.getDetailedEmployeeById(firstId).getManager().getState();
 
     assertThat(manager.getName()).isEqualTo("Gandalf");
+  }
+
+  private void assertThat404isReturnedFor(ThrowingCallable codeThatThrows) {
+
+    Throwable ex = catchThrowable(codeThatThrows);
+
+    assertThat(ex).isNotNull()
+        .withFailMessage("No exception was thrown by the given callable");
+
+    if (ex instanceof HalApiClientException) {
+      assertThat(((HalApiClientException)ex).getStatusCode())
+          .isEqualTo(404);
+    }
+    else if (ex instanceof HalApiServerException) {
+      assertThat(((HalApiServerException)ex).getStatusCode())
+          .isEqualTo(404);
+    }
+    else {
+      fail("An unexpected exception was thrown", ex);
+    }
   }
 }
