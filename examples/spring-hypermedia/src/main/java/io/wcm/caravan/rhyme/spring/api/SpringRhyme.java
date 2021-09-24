@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.spring.impl.UrlFingerprinting;
 
 /**
  * A request-scoped {@link Component} that you need to inject into your controllers if you want to
@@ -55,6 +56,14 @@ public interface SpringRhyme {
    * @param duration the max cache time
    */
   void setResponseMaxAge(Duration duration);
+
+  /**
+   * Enables support for timestamp based URL fingerprinting for the current request.
+   * @return a {@link UrlFingerprinting} instance that you need to configure and then build the links for all resources
+   *         in your project
+   * @see UrlFingerprinting
+   */
+  UrlFingerprinting enableUrlFingerprinting();
 
   /**
    * Provides access to the underlying {@link Rhyme} instance of the core framework to be used for the current request,

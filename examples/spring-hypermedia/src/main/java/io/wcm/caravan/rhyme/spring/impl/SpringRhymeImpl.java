@@ -51,6 +51,8 @@ class SpringRhymeImpl implements SpringRhyme {
 
   private static final SpringExceptionStatusAndLoggingStrategy EXCEPTION_STRATEGY = new SpringExceptionStatusAndLoggingStrategy();
 
+  private final HttpServletRequest request;
+
   private final Rhyme rhyme;
 
   private ResponseEntity<JsonNode> renderedResponse;
@@ -60,6 +62,8 @@ class SpringRhymeImpl implements SpringRhyme {
       @Autowired SpringRhymeDocsIntegration rhymeDocs) {
 
     log.debug("{} was instantiated for request to {}", this, httpRequest.getRequestURI());
+
+    this.request = httpRequest;
 
     String requestUrl = getRequestUrl(httpRequest);
 
@@ -92,6 +96,12 @@ class SpringRhymeImpl implements SpringRhyme {
   public void setResponseMaxAge(Duration duration) {
 
     rhyme.setResponseMaxAge(duration);
+  }
+
+  @Override
+  public UrlFingerprinting enableUrlFingerprinting() {
+
+    return new UrlFingerprinting(request, this);
   }
 
   @Override
@@ -143,5 +153,4 @@ class SpringRhymeImpl implements SpringRhyme {
 
     return builder.body(halResponse.getBody().getModel());
   }
-
 }
