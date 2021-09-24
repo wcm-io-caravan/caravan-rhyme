@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * This test verifies the API functionality when being used directly from within the same application.
  * It executes all tests defined in {@link AbstractCompanyApiIntegrationTest} directly against the server-side
- * implementations. It does not verify the link generation or JSON (de)serialization as the
+ * resource implementations. It does not verify the link generation or JSON (de)serialization as the
  * {@link ClientSideIntegrationTest} does.
  */
 public class ServerSideIntegrationTest extends AbstractCompanyApiIntegrationTest {
