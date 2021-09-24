@@ -28,7 +28,7 @@ import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
  * </p>
  * <p>
  * The tests also don't make any assumptions on whether specific resources are embedded or not.
- * This is also something that can be changed on the server side without breaking API compatibility
+ * This is also something that can be changed on the server side without breaking API compatibility.
  * </p>
  */
 public class ClientSideIntegrationTest extends AbstractCompanyApiIntegrationTest {
@@ -40,13 +40,15 @@ public class ClientSideIntegrationTest extends AbstractCompanyApiIntegrationTest
   protected CompanyApi getApi() {
 
     // Create a HalApiClient that is using spring's MockMvc to simulate actual HTTP requests
-    // coming into the currently running WebApplicationContext.
+    // going into the currently running WebApplicationContext.
     HalApiClient apiClient = HalApiClient.create(mockMvcResourceLoader);
 
-    // All of the tests in the superclass will now start with fetching the single entry point
+    // Return a dynamic client proxy that can fetch the API's entry point resource from the root path
+    return apiClient.getRemoteResource("/", CompanyApi.class);
+    
+    // All of the tests in the superclass will now start with fetching that single entry point
     // with an HTTP request to the CompanyApiController (exactly as an external consumer would),
     // and then follow links to other resources as required, which will trigger additional
     // requests to the other controllers.
-    return apiClient.getRemoteResource("/", CompanyApi.class);
   }
 }
