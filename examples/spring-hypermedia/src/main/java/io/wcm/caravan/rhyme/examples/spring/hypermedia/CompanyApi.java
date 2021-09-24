@@ -29,8 +29,6 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
  * The single entry point for this hypermedia example HAL API. When it's rendered as a HAL resource, it contains link
  * templates for every other available resource, and additional resolved links to discover all employees and managers
  * without knowing their IDs.
- * <p>
- * </p>
  */
 @HalApiInterface
 public interface CompanyApi extends LinkableResource {

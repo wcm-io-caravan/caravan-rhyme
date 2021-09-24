@@ -124,7 +124,7 @@ class DetailedEmployeeController {
         // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
         return new Link(linkTo(methodOn(DetailedEmployeeController.class).findById(id)).toString())
             // In addition, we specify different titles to be used for link templates and resolved links (including the self-link)
-            .setTitle(id == null ? "A link template to detailed data for single employee by ID"
+            .setTitle(id == null ? "A link template to detailed data for a single employee by ID"
                 : "The employee with ID " + id + ", with embedded resources for her managers and colleagues");
       }
     };
