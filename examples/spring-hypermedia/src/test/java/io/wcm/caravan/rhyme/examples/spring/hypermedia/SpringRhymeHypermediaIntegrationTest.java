@@ -49,7 +49,7 @@ public class SpringRhymeHypermediaIntegrationTest {
   @Autowired
   private MockMvcHalResourceLoader mockMvcResourceLoader;
 
-  private RootResource getEntryPoint() {
+  private CompanyApi getEntryPoint() {
 
     // Create a HalApiClient that is using spring's MockMvc to simulate actual HTTP requests
     // coming into the currently running WebApplicationContext.
@@ -57,7 +57,7 @@ public class SpringRhymeHypermediaIntegrationTest {
 
     // All of these tests in this class will start with fetching the single entry point
     // (exactly as an external consumer would), and then follow links to other resources as required.
-    return apiClient.getRemoteResource("/", RootResource.class);
+    return apiClient.getRemoteResource("/", CompanyApi.class);
   }
 
   private Long getIdOfFirstEmployee() {

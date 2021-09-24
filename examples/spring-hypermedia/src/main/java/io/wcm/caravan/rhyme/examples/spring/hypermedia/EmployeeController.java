@@ -46,7 +46,7 @@ class EmployeeController {
 
   // inject the controllers for all related resources
   @Autowired
-  private RootController rootController;
+  private CompanyApi api;
   @Autowired
   private ManagerController managers;
   @Autowired
@@ -78,14 +78,12 @@ class EmployeeController {
       // then call #createLink() on these resources to create the links
 
       @Override
-      public RootResource getRoot() {
-
-        return rootController.createEntryPoint();
+      public CompanyApi getApi() {
+        return api;
       }
 
       @Override
       public ManagerCollectionResource getManagers() {
-
         return managers.findAll();
       }
 
@@ -102,7 +100,7 @@ class EmployeeController {
   /**
    * A controller method to create a {@link EmployeeResource} for a specific employee. This is called
    * to render this resource for an incoming HTTP request, but also to render all links to this kind of resource.
-   * @param id of the employee, or null if this method is called to create the link template in the {@link RootResource}
+   * @param id of the employee, or null if this method is called to create the link template in the {@link CompanyApi}
    * @return a server-side implementation of {@link EmployeeResource}
    */
   @GetMapping("/employees/{id}")
@@ -183,9 +181,9 @@ class EmployeeController {
     public Link createLink() {
 
       // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
-      return new Link(linkTo(methodOn(EmployeeController.class).findById(id)).toString()).setTitle(
+      return new Link(linkTo(methodOn(EmployeeController.class).findById(id)).toString())
           // In addition, we specify different titles to be used for link templates and resolved links (including the self-link)
-          id == null ? "A link template to load a single employee by ID" : "The employee with ID " + id);
+          .setTitle(id == null ? "A link template to load a single employee by ID" : "The employee with ID " + id);
     }
   }
 }

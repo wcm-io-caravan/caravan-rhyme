@@ -60,7 +60,7 @@ class DetailedEmployeeController {
   /**
    * A controller method to create a {@link DetailedEmployeeResource} for a specific employee. This is called
    * to render this resource for an incoming HTTP request, but also to render all links to this kind of resource.
-   * @param id of the employee, or null if this method is called to create the link template in the {@link RootResource}
+   * @param id of the employee, or null if this method is called to create the link template in the {@link CompanyApi}
    * @return a server-side implementation of {@link DetailedEmployeeResource}
    * @throws HalApiClientException if any of the HTTP requests to load required resources failed
    */
@@ -75,7 +75,7 @@ class DetailedEmployeeController {
       // Create a dynamic client proxy that can load the API's entry point (and all related resources) by HTTP.
       // Even though all resource implementations should be constructed as fast as possible, it doesn't hurt to create the proxy right here.
       // This is because the actual HTTP requests will only be executed when a method on a proxy is called.
-      private final RootResource entryPoint = rhyme.getRemoteResource("http://localhost:8081", RootResource.class);
+      private final CompanyApi entryPoint = rhyme.getRemoteResource("http://localhost:8081", CompanyApi.class);
 
       /**
        * Load the entry point and expand the "company:employee" link template with the given ID,

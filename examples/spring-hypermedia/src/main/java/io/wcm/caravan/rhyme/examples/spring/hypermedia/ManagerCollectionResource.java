@@ -40,8 +40,8 @@ public interface ManagerCollectionResource extends LinkableResource {
   /**
    * @return a link back to the entry point of the API
    */
-  @Related("company:root")
-  RootResource getRoot();
+  @Related("company:api")
+  CompanyApi getApi();
 
   /**
    * @return a link to a similar collection of all employees

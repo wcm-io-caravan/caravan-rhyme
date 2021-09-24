@@ -47,7 +47,7 @@ class ManagerController {
 
   // inject the controllers for all related resources
   @Autowired
-  private RootController rootController;
+  private CompanyApi api;
   @Autowired
   private EmployeeController employees;
 
@@ -69,21 +69,19 @@ class ManagerController {
       }
 
       @Override
-      public RootResource getRoot() {
-
-        // This creates a link back to the entry point of the API
-        return rootController.createEntryPoint();
+      public CompanyApi getApi() {
+        return api;
       }
 
       @Override
       public EmployeeCollectionResource getEmployees() {
-
         return employees.findAll();
       }
 
       @Override
       public Link createLink() {
 
+        // All logic for URL construction is handled by Sprint HATEOAS' WebMvcLinkBuilder.
         return new Link(linkTo(methodOn(ManagerController.class).findAll()).toString())
             .setTitle("A collection of all managers");
       }
@@ -93,7 +91,7 @@ class ManagerController {
   /**
    * A controller method to create a {@link ManagerResource} for a specific employee. This is called
    * to render this resource for an incoming HTTP request, but also to render all links to this kind of resource.
-   * @param id of the employee, or null if this method is called to create the link template in the {@link RootResource}
+   * @param id of the employee, or null if this method is called to create the link template in the {@link CompanyApi}
    * @return a server-side implementation of {@link ManagerResource}
    */
   @GetMapping("/managers/{id}")

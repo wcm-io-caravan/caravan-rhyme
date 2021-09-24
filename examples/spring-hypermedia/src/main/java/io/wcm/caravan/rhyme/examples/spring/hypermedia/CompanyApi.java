@@ -26,11 +26,14 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * The single entry point for the example HAL API. It contains link templates for every available resource,
- * and additional resolved links to discover all employees and managers without knowing their IDs.
+ * The single entry point for this hypermedia example HAL API. When it's rendered as a HAL resource, it contains link
+ * templates for every other available resource, and additional resolved links to discover all employees and managers
+ * without knowing their IDs.
+ * <p>
+ * </p>
  */
 @HalApiInterface
-public interface RootResource extends LinkableResource {
+public interface CompanyApi extends LinkableResource {
 
   /**
    * @return a collection of all employees in the company database
