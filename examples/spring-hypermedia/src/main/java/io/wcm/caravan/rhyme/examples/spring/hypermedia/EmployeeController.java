@@ -113,7 +113,7 @@ class EmployeeController {
     // Create and return server-side implementation of the resource
     return new EmployeeResourceImpl(id, () -> repository.findById(id)
         // If no entity is found with the given ID, throwing an exception from which a status code can be extracted
-        // will make the VndErrorHandlingControllerAdvice return a vnd.error response with that status code
+        // will make Rhyme#renderResponse return a vnd.error response with that status code
         .orElseThrow(() -> new HalApiServerException(404, "No entity was found with id " + id)));
   }
 

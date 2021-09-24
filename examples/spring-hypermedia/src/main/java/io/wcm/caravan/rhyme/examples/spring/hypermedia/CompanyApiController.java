@@ -63,7 +63,7 @@ class CompanyApiController implements CompanyApi {
   @GetMapping("/")
   CompanyApi get() {
 
-    // Since in this case, the controller class is directly implementing the CompanyApi we can simply return this.
+    // Since in this case, the controller class is directly implementing the CompanyApi interface we can simply return this.
     // All methods from the interface will be automatically invoked later, when the response is being rendered
     // by the LinkableResourceMessageConverter.
     return this;
