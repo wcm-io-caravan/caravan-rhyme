@@ -7,10 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -32,6 +34,8 @@ public class HalCrawler {
 
   private int limit = 1000;
 
+  private Consumer<UriComponentsBuilder> urlModifier;
+
   /**
    * @param resourceLoader for integration tests, this is usually a {@link MockMvcHalResourceLoader}
    */
@@ -46,7 +50,7 @@ public class HalCrawler {
    */
   public HalCrawler withEntryPoint(String url) {
 
-    urlsLeftToCrawl.add(url);
+    addUrlUnlessAlreadyProcessed(url);
     return this;
   }
 
@@ -58,6 +62,16 @@ public class HalCrawler {
   public HalCrawler withLimit(int maxNumResources) {
 
     limit = maxNumResources;
+    return this;
+  }
+
+  /**
+   * @param function to be applied to every URI before it will be crawled
+   * @return this
+   */
+  public HalCrawler withModifiedUrls(Consumer<UriComponentsBuilder> function) {
+
+    urlModifier = function;
     return this;
   }
 
@@ -79,10 +93,24 @@ public class HalCrawler {
     }
   }
 
+  private void addUrlUnlessAlreadyProcessed(String url) {
+
+    String urlToCrawl = url;
+    if (urlModifier != null) {
+      UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
+      urlModifier.accept(builder);
+      urlToCrawl = builder.build().toUriString();
+    }
+
+    if (!crawledUrlsAndResponses.containsKey(urlToCrawl)) {
+      urlsLeftToCrawl.add(urlToCrawl);
+    }
+  }
+
   private void crawlResourcesRecursively() {
 
     if (urlsLeftToCrawl.isEmpty()) {
-      urlsLeftToCrawl.add("/");
+      addUrlUnlessAlreadyProcessed("/");
     }
 
     while (!urlsLeftToCrawl.isEmpty()) {
@@ -90,8 +118,7 @@ public class HalCrawler {
       String nextUrl = urlsLeftToCrawl.pop();
 
       fetchResourceAndExtractResolvedLinks(nextUrl)
-          .filter(linkedUrl -> !crawledUrlsAndResponses.containsKey(linkedUrl))
-          .forEach(urlsLeftToCrawl::add);
+          .forEach(this::addUrlUnlessAlreadyProcessed);
 
       if (crawledUrlsAndResponses.size() >= limit) {
         log.warn("The limit of {} resources to crawl has been reached", limit);

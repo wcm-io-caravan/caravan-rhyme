@@ -10,34 +10,43 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
 import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
+import wiremock.com.google.common.collect.Iterables;
 
 @SpringBootTest
 public class UrlFingerprintingTest {
 
+  private static final int SHORT_MAX_AGE_SECONDS = 10;
+  private static final int LONG_MAX_AGE_SECONDS = (int)Duration.ofDays(100).getSeconds();
+
   @Autowired
   private MockMvcHalResourceLoader mockMvcResourceLoader;
-
 
   private HalResponse getResponse(String uri) {
 
     return mockMvcResourceLoader.getHalResource(uri).blockingGet();
   }
 
-  private List<UriComponents> getAllLinksAsUriComponents(HalResponse entryPoint) {
+  private List<String> getAllLinkHrefsFrom(HalResponse entryPoint) {
 
     return entryPoint.getBody().getLinks().entries().stream()
         .filter(entry -> !entry.getKey().equals("curies"))
         .map(Entry::getValue)
         .map(Link::getHref)
-        .map(UriComponentsBuilder::fromUriString)
-        .map(UriComponentsBuilder::build)
         .collect(Collectors.toList());
+  }
+
+  private String getTimestampQueryParamFromUri(String uri) {
+
+    return UriComponentsBuilder.fromUriString(uri)
+        .build()
+        .getQueryParams()
+        .getFirst("timestamp");
   }
 
   @Test
@@ -46,7 +55,7 @@ public class UrlFingerprintingTest {
     Integer maxAge = getResponse("/").getMaxAge();
 
     assertThat(maxAge)
-        .isEqualTo(10);
+        .isEqualTo(SHORT_MAX_AGE_SECONDS);
   }
 
   @Test
@@ -55,7 +64,7 @@ public class UrlFingerprintingTest {
     Integer maxAge = getResponse("/?timestamp=foo").getMaxAge();
 
     assertThat(maxAge)
-        .isEqualTo(Duration.ofDays(100).getSeconds());
+        .isEqualTo(LONG_MAX_AGE_SECONDS);
   }
 
   @Test
@@ -63,11 +72,11 @@ public class UrlFingerprintingTest {
 
     HalResponse entryPoint = getResponse("/");
 
-    List<UriComponents> linkUris = getAllLinksAsUriComponents(entryPoint);
+    List<String> linkUris = getAllLinkHrefsFrom(entryPoint);
 
     assertThat(linkUris)
-        .extracting(UriComponents::getQueryParams)
-        .allMatch(queryParams -> !queryParams.getFirst("timestamp").isEmpty());
+        .extracting(this::getTimestampQueryParamFromUri)
+        .doesNotContainNull();
   }
 
   @Test
@@ -75,33 +84,43 @@ public class UrlFingerprintingTest {
 
     HalResponse entryPoint = getResponse("/?timestamp=foo");
 
-    List<UriComponents> linkUris = getAllLinksAsUriComponents(entryPoint);
+    List<String> linkUris = getAllLinkHrefsFrom(entryPoint);
 
     assertThat(linkUris)
-        .extracting(UriComponents::getQueryParams)
-        .allMatch(queryParams -> "foo".equals(queryParams.getFirst("timestamp")));
-  }
-
-  // it's worth repeating the max-age tests for the resource that
-  // uses the HAL client internally to fetch other resources, because
-  // the max-age will depend on the max-age of those upstream resources
-
-  @Test
-  void max_age_of_detailed_employee_without_timestamp_should_be_short() {
-
-    Integer maxAge = getResponse("/employees/6/detailed").getMaxAge();
-
-    assertThat(maxAge)
-        .isEqualTo(10);
+        .extracting(this::getTimestampQueryParamFromUri)
+        .containsOnly("foo");
   }
 
   @Test
-  void max_age_of_detailed_employee_with_timestamp_should_be_long() {
+  void all_other_resources_should_have_long_max_age_and_timestamp() {
 
-    Integer maxAge = getResponse("/employees/6/detailed?timestamp=foo").getMaxAge();
+    HalCrawler crawler = new HalCrawler(mockMvcResourceLoader);
 
-    assertThat(maxAge)
-        .isEqualTo(Duration.ofDays(100).getSeconds());
+    List<HalResponse> responses = crawler.getAllResponses();
+
+    Iterable<HalResponse> responsesWithoutEntrypoint = Iterables.skip(responses, 1);
+
+    assertThat(responsesWithoutEntrypoint)
+        .extracting(HalResponse::getMaxAge)
+        .containsOnly(LONG_MAX_AGE_SECONDS);
+
+    assertThat(responsesWithoutEntrypoint)
+        .extracting(HalResponse::getUri)
+        .extracting(this::getTimestampQueryParamFromUri)
+        .doesNotContainNull();
+  }
+
+  @Test
+  void all_resources_should_have_short_max_age_if_called_without_query() {
+
+    HalCrawler crawlerThatRemovesQuery = new HalCrawler(mockMvcResourceLoader)
+        .withModifiedUrls(uri -> uri.replaceQuery(null));
+
+    List<HalResponse> responses = crawlerThatRemovesQuery.getAllResponses();
+
+    assertThat(responses)
+        .extracting(HalResponse::getMaxAge)
+        .containsOnly(SHORT_MAX_AGE_SECONDS);
   }
 
 }
