@@ -82,7 +82,11 @@ public class HalApiClientExtension implements ParameterResolver {
           int statusCode = result.getStatusLine().getStatusCode();
           String contentType = result.getEntity().getContentType().getValue();
 
-          HalResponse response = new HalResponse().withStatus(statusCode).withContentType(contentType).withBody(hal);
+          HalResponse response = new HalResponse()
+              .withUri(uri)
+              .withStatus(statusCode)
+              .withContentType(contentType)
+              .withBody(hal);
 
           if (statusCode == 200) {
             if (!StringUtils.equals(contentType, HalResource.CONTENT_TYPE)) {
@@ -92,7 +96,7 @@ public class HalApiClientExtension implements ParameterResolver {
             responseSubject.onSuccess(response);
           }
           else {
-            responseSubject.onError(new HalApiClientException(response, uri, null));
+            responseSubject.onError(new HalApiClientException(response, null));
           }
         }
 

@@ -56,9 +56,9 @@ public class GuavaCacheImplementation implements HalResponseCache {
   }
 
   @Override
-  public void store(String uri, HalResponse entry) {
+  public void store(HalResponse response) {
 
-    cache.put(uri, entry);
+    cache.put(response.getUri(), response);
   }
 
   int getMaxNumItems() {

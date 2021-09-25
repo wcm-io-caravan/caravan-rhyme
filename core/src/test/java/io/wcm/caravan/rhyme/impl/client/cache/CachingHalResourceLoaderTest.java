@@ -335,7 +335,7 @@ public class CachingHalResourceLoaderTest {
 
   private SubscriberCounter mockOkResponseWithTextAndMaxAge(String text, Integer maxAge) {
 
-    HalResponse response = createResponseWithTextAndMaxAge(text, maxAge);
+    HalResponse response = createResponseWithTextAndMaxAge(URI, text, maxAge);
 
     return upstream.mockResponseWithSingle(URI, Single.just(response));
   }
@@ -345,9 +345,10 @@ public class CachingHalResourceLoaderTest {
     return upstream.mockFailedResponse(URI, status, maxAge);
   }
 
-  HalResponse createResponseWithTextAndMaxAge(String text, Integer maxAge) {
+  HalResponse createResponseWithTextAndMaxAge(String uri, String text, Integer maxAge) {
 
     return new HalResponse()
+        .withUri(uri)
         .withBody(createBody(text))
         .withStatus(SC_OK)
         .withMaxAge(maxAge);

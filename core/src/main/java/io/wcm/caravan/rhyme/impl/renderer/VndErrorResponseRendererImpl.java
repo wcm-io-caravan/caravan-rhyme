@@ -79,6 +79,7 @@ public class VndErrorResponseRendererImpl implements VndErrorResponseRenderer {
     logError(error, requestUri, status);
 
     return new HalResponse()
+        .withUri(requestUri)
         .withStatus(status)
         .withContentType(VndErrorResponseRenderer.CONTENT_TYPE)
         .withBody(vndResource);

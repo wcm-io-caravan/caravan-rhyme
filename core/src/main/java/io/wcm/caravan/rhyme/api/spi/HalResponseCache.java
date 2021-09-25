@@ -50,9 +50,8 @@ public interface HalResponseCache {
   /**
    * Store a HAL response in the cache. It is essential that all fields from the {@link HalResponse} are stored, and
    * retrieved later without modifications.
-   * @param uri the absolute URI of the resource
    * @param response the {@link HalResponse} to store
    */
-  void store(String uri, HalResponse response);
+  void store(HalResponse response);
 
 }
