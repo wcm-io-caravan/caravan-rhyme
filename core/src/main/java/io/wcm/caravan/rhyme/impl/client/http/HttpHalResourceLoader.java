@@ -103,6 +103,8 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
     void executeRequestAndWaitForCallbacks() {
       try {
+        updateUri(originalUri);
+
         actualUri = URI.create(originalUri);
 
         client.executeGetRequest(actualUri, this);
@@ -111,6 +113,10 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
         emitHalApiClientExceptionWithCause(ex);
       }
+    }
+
+    private void updateUri(String uri) {
+      halResponse = halResponse.withUri(uri);
     }
 
     private void updateStatusCode(Integer statusCode) {
@@ -145,10 +151,9 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
       if (responseOrErrorWasEmitted.compareAndSet(false, true)) {
 
-        String uri = actualUri != null ? actualUri.toString() : originalUri;
-        HalApiClientException ex = new HalApiClientException(halResponse, uri, cause);
+        HalApiClientException ex = new HalApiClientException(halResponse, cause);
 
-        log.debug("HTTP request to {} failed with status {} after {}", uri, halResponse.getStatus(), stopwatch);
+        log.debug("HTTP request to {} failed with status {} after {}", halResponse.getUri(), halResponse.getStatus(), stopwatch);
 
         subscriber.onError(ex);
       }
@@ -161,6 +166,8 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     public void onUrlModified(URI uri) {
 
       actualUri = uri;
+
+      updateUri(uri.toString());
     }
 
     @Override

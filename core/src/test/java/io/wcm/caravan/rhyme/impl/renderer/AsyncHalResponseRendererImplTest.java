@@ -88,6 +88,16 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
+  public void response_should_have_uri_set_if_resource_was_rendered_succesfully() throws Exception {
+
+    mockRenderedResource();
+
+    HalResponse response = renderResponse();
+
+    assertThat(response.getUri()).isEqualTo(REQUEST_URI);
+  }
+
+  @Test
   public void response_should_have_status_200_if_resource_was_rendered_succesfully() throws Exception {
 
     mockRenderedResource();
@@ -170,6 +180,17 @@ public class AsyncHalResponseRendererImplTest {
 
     assertThat(response.getMaxAge()).isEqualTo(99);
   }
+
+  @Test
+  public void error_response_should_contain_uri() {
+
+    mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
+
+    HalResponse response = renderResponse();
+
+    assertThat(response.getUri()).isEqualTo(REQUEST_URI);
+  }
+
 
   @Test
   public void error_response_should_have_status_code_500_for_unknown_exceptions() {
@@ -326,10 +347,11 @@ public class AsyncHalResponseRendererImplTest {
     vndErrorResource.getModel().put("message", message);
 
     HalResponse upstreamResponse = new HalResponse()
+        .withUri("/failed/upstream/url")
         .withStatus(status)
         .withBody(vndErrorResource);
 
-    HalApiClientException cause = new HalApiClientException(upstreamResponse, "/failed/upstream/url", null);
+    HalApiClientException cause = new HalApiClientException(upstreamResponse, null);
     RuntimeException ex = new RuntimeException(cause);
     return ex;
   }
@@ -383,10 +405,11 @@ public class AsyncHalResponseRendererImplTest {
   private RuntimeException createWrappedHalClientExceptionWithEmptyBody(int status) {
 
     HalResponse upstreamResponse = new HalResponse()
+        .withUri("/failed/upstream/url")
         .withStatus(status)
         .withBody(new HalResource());
 
-    HalApiClientException cause = new HalApiClientException(upstreamResponse, "/failed/upstream/url", null);
+    HalApiClientException cause = new HalApiClientException(upstreamResponse, null);
     RuntimeException ex = new RuntimeException(cause);
     return ex;
   }

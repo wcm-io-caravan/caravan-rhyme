@@ -47,12 +47,10 @@ public class HttpHalResourceLoaderTest {
 
   private static final String VALID_URI = "/foo";
 
-
   private HttpHalResourceLoader createLoader(HttpClientSupport client) {
 
     return HttpHalResourceLoader.withClientImplementation(client);
   }
-
 
   HalResponse executeGetRequestWith(String uri, HttpHalResourceLoader loader) {
 
@@ -103,6 +101,26 @@ public class HttpHalResourceLoaderTest {
 
     assertThat(ex)
         .hasRootCauseInstanceOf(URISyntaxException.class);
+  }
+
+  @Test
+  public void should_use_modified_URI_in_response() throws Exception {
+
+    URI baseUri = URI.create("http://foo.bar");
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+
+      URI modifiedUri = baseUri.resolve(uri);
+
+      callback.onUrlModified(modifiedUri);
+      callback.onHeadersAvailable(200, Collections.emptyMap());
+      callback.onBodyAvailable(createUtf8Stream("{}"));
+    });
+
+    HalResponse response = executeGetRequestWith(VALID_URI, loader);
+
+    assertThat(response.getUri())
+        .isEqualTo("http://foo.bar/foo");
   }
 
   @Test
@@ -223,6 +241,9 @@ public class HttpHalResourceLoaderTest {
     });
 
     HalResponse response = executeGetRequestWith(VALID_URI, loader);
+
+    assertThat(response.getUri())
+        .isEqualTo(VALID_URI);
 
     assertThat(response.getStatus())
         .isEqualTo(200);

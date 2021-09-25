@@ -55,7 +55,7 @@ public class LinkRewriting {
   }
 
   /**
-   * Rewrites all relative link URLs in the given to become absolute URLs, using protocal, hostname port
+   * Rewrites all relative link URLs in the given to become absolute URLs, using protocol, hostname port
    * etc. from the context URL given in the constructor.
    * If that context URL isn't absolute, then the links remain unchanged.
    * @param response from which the links in the body will be rewritten

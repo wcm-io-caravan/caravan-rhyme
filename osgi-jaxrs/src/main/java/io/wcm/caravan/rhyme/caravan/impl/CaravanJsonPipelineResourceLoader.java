@@ -80,12 +80,12 @@ class CaravanJsonPipelineResourceLoader implements HalResourceLoader {
   }
 
   private HalResponse createSuccessResponse(JsonPipelineOutput pipelineOutput) {
-    HalResponse response = new HalResponse()
+
+    return new HalResponse()
+        .withUri(pipelineOutput.getRequests().get(0).getUrl())
         .withStatus(pipelineOutput.getStatusCode())
         .withBody(pipelineOutput.getPayload())
         .withMaxAge(pipelineOutput.getMaxAge());
-
-    return response;
   }
 
   private SingleSource<HalResponse> rethrowAsHalApiClientException(Throwable ex, String uri) {
@@ -99,10 +99,11 @@ class CaravanJsonPipelineResourceLoader implements HalResourceLoader {
     JsonNode responseNode = tryToReadResponseBodyFromException(jpie);
 
     HalResponse errorResponse = new HalResponse()
+        .withUri(uri)
         .withStatus(jpie.getStatusCode())
         .withBody(responseNode);
 
-    return Single.error(new HalApiClientException(errorResponse, uri, ex));
+    return Single.error(new HalApiClientException(errorResponse, ex));
   }
 
   private JsonNode tryToReadResponseBodyFromException(JsonPipelineInputException jpie) {

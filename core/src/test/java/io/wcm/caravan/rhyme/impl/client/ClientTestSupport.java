@@ -136,12 +136,13 @@ public class ClientTestSupport {
     public SubscriberCounter mockFailedResponse(String uri, Integer statusCode, Integer maxAge) {
 
       HalResponse response = new HalResponse()
+          .withUri(uri)
           .withStatus(statusCode)
           .withMaxAge(maxAge);
 
       RuntimeException cause = new RuntimeException("A response with status code " + statusCode + " was mocked by " + MockClientTestSupport.class);
 
-      HalApiClientException hace = new HalApiClientException(response, uri, cause);
+      HalApiClientException hace = new HalApiClientException(response, cause);
 
       return mockResponseWithSingle(uri, Single.error(hace));
     }
@@ -157,7 +158,8 @@ public class ClientTestSupport {
 
     public SubscriberCounter mockHalResponse(String uri, HalResource hal) {
 
-      HalResponse response = ConversionFunctions.toJsonResponse(hal);
+      HalResponse response = ConversionFunctions.toJsonResponse(hal)
+          .withUri(uri);
 
       return mockResponseWithSingle(uri, Single.just(response));
     }

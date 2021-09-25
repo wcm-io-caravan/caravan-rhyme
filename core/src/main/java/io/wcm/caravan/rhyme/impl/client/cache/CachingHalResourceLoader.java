@@ -70,7 +70,7 @@ public class CachingHalResourceLoader implements HalResourceLoader {
         .map(CachedResponse::new)
         .filter(CachedResponse::isFresh)
         .map(CachedResponse::getResponseWithAdjustedMaxAge)
-        .flatMap(response -> throwExceptionForErrorStatusCodes(uri, response))
+        .flatMap(this::throwExceptionForErrorStatusCodes)
         .doOnSuccess(response -> log.debug("A fresh response for {} was as found in {} with remaining max-age of {}",
             uri, cache.getClass().getSimpleName(), response.getMaxAge()));
   }
@@ -79,11 +79,11 @@ public class CachingHalResourceLoader implements HalResourceLoader {
 
     return upstream.getHalResource(uri)
         .map(this::updateResponseWithTimestampAndDefaultMaxAge)
-        .doOnSuccess(entry -> storeInCache(uri, entry))
-        .doOnError(ex -> handleResourceLoaderException(uri, ex));
+        .doOnSuccess(this::storeInCache)
+        .doOnError(this::handleResourceLoaderException);
   }
 
-  private Maybe<HalResponse> throwExceptionForErrorStatusCodes(String uri, HalResponse response) {
+  private Maybe<HalResponse> throwExceptionForErrorStatusCodes(HalResponse response) {
 
     if (response.getStatus() != null && response.getStatus() < 400) {
       return Maybe.just(response);
@@ -96,7 +96,7 @@ public class CachingHalResourceLoader implements HalResourceLoader {
 
     RuntimeException cause = new RuntimeException(msg);
 
-    return Maybe.error(new HalApiClientException(response, uri, cause));
+    return Maybe.error(new HalApiClientException(response, cause));
   }
 
   private HalResponse updateResponseWithTimestampAndDefaultMaxAge(HalResponse response) {
@@ -113,16 +113,16 @@ public class CachingHalResourceLoader implements HalResourceLoader {
     return updatedResponse.withMaxAge(maxAge);
   }
 
-  private void storeInCache(String uri, HalResponse response) {
+  private void storeInCache(HalResponse response) {
 
     if (response.getMaxAge() > 0) {
-      log.debug("Response for {} is being stored in {} with max-age={} seconds", uri, cache.getClass().getSimpleName(), response.getMaxAge());
+      log.debug("Response for {} is being stored in {} with max-age={} seconds", response.getUri(), cache.getClass().getSimpleName(), response.getMaxAge());
 
-      cache.store(uri, response);
+      cache.store(response);
     }
   }
 
-  private void handleResourceLoaderException(String uri, Throwable ex) {
+  private void handleResourceLoaderException(Throwable ex) {
 
     if (!(ex instanceof HalApiClientException) || !configuration.isCachingOfHalApiClientExceptionsEnabled()) {
       return;
@@ -132,7 +132,7 @@ public class CachingHalResourceLoader implements HalResourceLoader {
 
     HalResponse updatedResponse = updateResponseWithTimestampAndDefaultMaxAge(hace.getErrorResponse());
 
-    storeInCache(uri, updatedResponse);
+    storeInCache(updatedResponse);
   }
 
   class CachedResponse {
