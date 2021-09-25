@@ -1,8 +1,14 @@
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import java.util.List;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.spring.testing.MockMvcHalCrawler;
 import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
 
 /**
@@ -36,6 +42,9 @@ public class ClientSideIntegrationTest extends AbstractCompanyApiIntegrationTest
   @Autowired
   private MockMvcHalResourceLoader mockMvcResourceLoader;
 
+  @Autowired
+  private MockMvcHalCrawler crawler;
+
   @Override
   protected CompanyApi getApiImplementionOrClientProxy() {
 
@@ -50,5 +59,17 @@ public class ClientSideIntegrationTest extends AbstractCompanyApiIntegrationTest
     // with an HTTP request to the CompanyApiController (exactly as an external consumer would),
     // and then follow links to other resources as required, which will trigger additional
     // requests to the other controllers.
+  }
+
+  @Test
+  void all_resolved_links_should_lead_to_a_valid_hal_resource() {
+
+    // in addition to the detailed tests in the superclass we also do a quick smoke test here
+    // that verifies if any resource that can be reached from the entry point by following
+    // resolved links can actually be retrieved
+    List<HalResource> allLinkedResources = crawler.getAllResources("/");
+
+    Assertions.assertThat(allLinkedResources)
+        .hasSize(18); // this number is expected to change if more test data or resources are added
   }
 }
