@@ -1,14 +1,17 @@
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
-import io.wcm.caravan.rhyme.spring.testing.MockMvcHalCrawler;
+import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
 import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
 
 /**
@@ -42,9 +45,6 @@ public class ClientSideIntegrationTest extends AbstractCompanyApiIntegrationTest
   @Autowired
   private MockMvcHalResourceLoader mockMvcResourceLoader;
 
-  @Autowired
-  private MockMvcHalCrawler crawler;
-
   @Override
   protected CompanyApi getApiImplementionOrClientProxy() {
 
@@ -62,14 +62,29 @@ public class ClientSideIntegrationTest extends AbstractCompanyApiIntegrationTest
   }
 
   @Test
-  void all_resolved_links_should_lead_to_a_valid_hal_resource() {
+  void all_resolved_links_should_lead_to_a_valid_hal_resource_with_titled_self_link() {
 
     // in addition to the detailed tests in the superclass we also do a quick smoke test here
-    // that verifies if any resource that can be reached from the entry point by following
-    // resolved links can actually be retrieved
-    List<HalResource> allLinkedResources = crawler.getAllResources("/");
+    // that verifies if any resource that can be reached from the entry point (by following
+    // resolved links) can actually be retrieved
+    HalCrawler crawler = new HalCrawler(mockMvcResourceLoader);
 
-    Assertions.assertThat(allLinkedResources)
+    List<HalResponse> allResponses = crawler.getAllResponses();
+
+    assertThat(allResponses)
         .hasSize(18); // this number is expected to change if more test data or resources are added
+
+    assertThat(allResponses)
+        .extracting(HalResponse::getContentType)
+        .containsOnly(HalResource.CONTENT_TYPE);
+
+    for (HalResponse response : allResponses) {
+
+      Link selfLink = response.getBody().getLink();
+
+      assertThat(selfLink.getTitle())
+          .describedAs("self link title of resource at " + response.getUri())
+          .isNotNull();
+    }
   }
 }
