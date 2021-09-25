@@ -8,20 +8,26 @@ import org.springframework.web.util.UriComponentsBuilder;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.spring.api.RhymeLinkBuilder;
 
+/**
+ * Returned by {@link UrlFingerprintingImpl#createLinkWith(WebMvcLinkBuilder)} to finish
+ * building a link with URL fingerprinting.
+ */
 class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
+  private final Link link;
   private final Map<String, String> timestampParameters;
 
-  private final Link link;
-  private boolean withTimestamps = true;
+  private boolean withFingerprinting = true;
 
-  SpringRhymeLinkBuilder(WebMvcLinkBuilder linkBuilder, Map<String, String> timestampParameters) {
+  SpringRhymeLinkBuilder(WebMvcLinkBuilder webMvcLinkBuilder, Map<String, String> timestampParameters) {
+
+    this.link = new Link(webMvcLinkBuilder.toString());
     this.timestampParameters = timestampParameters;
-    this.link = new Link(linkBuilder.toString());
   }
 
   @Override
   public SpringRhymeLinkBuilder withTitle(String title) {
+
     if (!link.isTemplated() || link.getTitle() == null) {
       link.setTitle(title);
     }
@@ -30,6 +36,7 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
   @Override
   public SpringRhymeLinkBuilder withTemplateTitle(String title) {
+
     if (link.isTemplated()) {
       link.setTitle(title);
     }
@@ -38,13 +45,15 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
   @Override
   public SpringRhymeLinkBuilder withName(String name) {
+
     link.setName(name);
     return this;
   }
 
   @Override
   public SpringRhymeLinkBuilder withFingerprintingOnlyIf(boolean value) {
-    withTimestamps = value;
+
+    withFingerprinting = value;
     return this;
   }
 
@@ -53,7 +62,7 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(link.getHref());
 
-    if (withTimestamps) {
+    if (withFingerprinting) {
       timestampParameters.forEach(
           (name, value) -> uriBuilder.queryParam(name, value));
     }
