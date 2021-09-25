@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 
 /**
  * This strategy will be passed to {@link RhymeBuilder#withExceptionStrategy(ExceptionStatusAndLoggingStrategy)}
- * so that the {@link VndErrorResponseRenderer} from the core framework now how to handle some spring-specific
+ * so that the {@link VndErrorResponseRenderer} from the core framework knows how to handle some spring-specific
  * exceptions that happen while rendering the resource.
  * see {@link VndErrorHandlingControllerAdvice}
  */
@@ -63,7 +63,7 @@ class SpringExceptionStatusAndLoggingStrategy implements ExceptionStatusAndLoggi
   @Override
   public String getErrorMessageWithoutRedundantInformation(Throwable error) {
 
-    // we don't want the repeated messages the causing exception that appear in some spring exceptions
+    // we don't want the repeated messages from the cause that appear in some Spring exceptions
     return StringUtils.substringBefore(error.getMessage(), "; nested exception is");
   }
 
