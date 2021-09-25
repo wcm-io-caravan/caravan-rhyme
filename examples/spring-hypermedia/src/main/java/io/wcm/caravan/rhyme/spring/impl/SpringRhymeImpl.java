@@ -44,6 +44,13 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
 
+/**
+ * Implementation of the request-scoped {@link SpringRhyme} interface that creates a single {@link Rhyme} instance
+ * using a caching {@link WebClientHalResourceLoader}, {@link SpringExceptionStatusAndLoggingStrategy} and the
+ * {@link SpringRhymeDocsIntegration}. It also contains methods to render a {@link LinkableResource} (or any exception),
+ * as a Spring {@link ResponseEntity}, but these methods are not made public because these conversions are handled by
+ * the {@link LinkableResourceMessageConverter} and {@link VndErrorHandlingControllerAdvice}.
+ */
 @Component
 @RequestScope
 class SpringRhymeImpl implements SpringRhyme {
