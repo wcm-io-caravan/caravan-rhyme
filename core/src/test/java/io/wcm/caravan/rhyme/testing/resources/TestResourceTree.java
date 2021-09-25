@@ -76,6 +76,7 @@ public class TestResourceTree implements HalResourceLoader {
     }
 
     HalResponse response = new HalResponse()
+        .withUri(uri)
         .withStatus(status)
         .withBody(requestedResource.asHalResource())
         .withMaxAge(requestedResource.getMaxAge());

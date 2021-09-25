@@ -17,8 +17,30 @@
  * limitations under the License.
  * #L%
  */
-/**
- * Exception classes
- */
-@org.osgi.annotation.versioning.Version("1.1.0")
 package io.wcm.caravan.rhyme.api.exceptions;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+
+import io.wcm.caravan.rhyme.api.common.HalResponse;
+
+
+public class HalApiClientExceptionTest {
+
+  @Test
+  public void deprecated_constructor_should_use_given_URI() throws Exception {
+
+    String requestUrl = "/foo";
+    HalResponse response = new HalResponse().withStatus(404);
+
+    HalApiClientException ex = new HalApiClientException(response, requestUrl, null);
+
+    assertThat(ex.getRequestUrl())
+        .isEqualTo(requestUrl);
+
+    assertThat(ex.getErrorResponse().getUri())
+        .isEqualTo(requestUrl);
+  }
+
+}

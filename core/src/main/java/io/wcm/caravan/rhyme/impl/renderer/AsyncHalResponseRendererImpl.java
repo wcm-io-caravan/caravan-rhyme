@@ -80,7 +80,7 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
 
     try {
       return renderer.renderResource(resourceImpl)
-          .map(halResource -> createResponse(resourceImpl, halResource))
+          .map(halResource -> createResponse(requestUri, resourceImpl, halResource))
           // for async HalApiInterfaces, errors are usually emitted from the Single...
           .onErrorReturn(ex -> errorRenderer.renderError(requestUri, resourceImpl, ex, metrics));
     }
@@ -91,7 +91,7 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
     }
   }
 
-  HalResponse createResponse(LinkableResource resourceImpl, HalResource halResource) {
+  HalResponse createResponse(String requestUri, LinkableResource resourceImpl, HalResource halResource) {
 
     Class<?> halApiInterface = HalApiReflectionUtils.findHalApiInterface(resourceImpl, annotationSupport);
 
@@ -104,6 +104,7 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
     String contentType = getContentTypeFromAnnotation(halApiInterface);
 
     HalResponse response = new HalResponse()
+        .withUri(requestUri)
         .withStatus(200)
         .withContentType(contentType)
         .withBody(halResource)

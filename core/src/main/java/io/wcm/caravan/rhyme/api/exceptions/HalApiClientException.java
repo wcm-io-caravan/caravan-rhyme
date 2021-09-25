@@ -34,18 +34,28 @@ public class HalApiClientException extends RuntimeException {
   private static final long serialVersionUID = -2265405683402689209L;
 
   private final HalResponse errorResponse;
-  private final String requestUrl;
+
+  /**
+   * Kept for backward compatibility
+   * @param errorResponse the error response as received from the upstream service
+   * @param requestUrl the URI of the request that failed
+   * @param cause the root cause for the failed HTTP request
+   * @deprecated use {@link HalApiClientException#HalApiClientException(HalResponse, Throwable)} instead, and make
+   *             sure that {@link HalResponse#withUri(String)} was called
+   */
+  @Deprecated
+  public HalApiClientException(HalResponse errorResponse, String requestUrl, Throwable cause) {
+    this(errorResponse.withUri(requestUrl), cause);
+  }
 
   /**
    * Constructor to use if the request failed with a non-successful HTTP status code
    * @param errorResponse the error response as received from the upstream service
-   * @param requestUrl the URI of the request that failed
    * @param cause the root cause for the failed HTTP request
    */
-  public HalApiClientException(HalResponse errorResponse, String requestUrl, Throwable cause) {
-    super(createMessage(errorResponse, requestUrl), cause);
+  public HalApiClientException(HalResponse errorResponse, Throwable cause) {
+    super(createMessage(errorResponse), cause);
     this.errorResponse = errorResponse;
-    this.requestUrl = requestUrl;
   }
 
   /**
@@ -58,8 +68,9 @@ public class HalApiClientException extends RuntimeException {
    */
   public HalApiClientException(String message, Integer statusCode, String requestUrl, Throwable cause) {
     super(message, cause);
-    this.errorResponse = new HalResponse().withStatus(statusCode);
-    this.requestUrl = requestUrl;
+    this.errorResponse = new HalResponse()
+        .withStatus(statusCode)
+        .withUri(requestUrl);
   }
 
   /**
@@ -70,12 +81,11 @@ public class HalApiClientException extends RuntimeException {
   public HalApiClientException(String message, HalApiClientException cause) {
     super(message, cause);
     this.errorResponse = cause.getErrorResponse();
-    this.requestUrl = cause.getRequestUrl();
   }
 
-  private static String createMessage(HalResponse errorResponse, String requestUrl) {
+  private static String createMessage(HalResponse errorResponse) {
 
-    String msg = "HAL client request to " + requestUrl + " has failed ";
+    String msg = "HAL client request to " + errorResponse.getUri() + " has failed ";
 
     if (errorResponse.getStatus() == null) {
       return msg + "before a status code was available";
@@ -107,7 +117,7 @@ public class HalApiClientException extends RuntimeException {
    * @return the URI of the request that failed
    */
   public String getRequestUrl() {
-    return requestUrl;
+    return getErrorResponse().getUri();
   }
 
 }

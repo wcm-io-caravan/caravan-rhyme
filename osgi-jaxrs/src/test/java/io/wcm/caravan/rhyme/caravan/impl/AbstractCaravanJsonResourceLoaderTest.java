@@ -97,6 +97,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
 
     assertThat(response.getStatus()).isEqualTo(200);
     assertThat(response.getBody().getModel()).isEqualTo(body);
+    assertThat(response.getUri()).isEqualTo(REQUEST_URL);
   }
 
   @Test
@@ -123,6 +124,9 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
         .hasMessageContaining("has failed with status code 404");
+
+    assertThat(((HalApiClientException)ex).getErrorResponse().getUri())
+        .isEqualTo(REQUEST_URL);
   }
 
   @Test
@@ -134,6 +138,9 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
         .hasMessageContaining("has failed with status code 502");
+
+    assertThat(((HalApiClientException)ex).getErrorResponse().getUri())
+        .isEqualTo(REQUEST_URL);
   }
 
   @Test
@@ -169,6 +176,9 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
         .hasMessageContaining("has failed before a status code was available");
+
+    assertThat(((HalApiClientException)ex).getErrorResponse().getUri())
+        .isEqualTo(REQUEST_URL);
   }
 
   @Test
