@@ -46,14 +46,14 @@ class EmployeeController {
 
   // inject the controllers for all related resources
   @Autowired
-  private CompanyApi api;
+  private CompanyApiController api;
   @Autowired
   private ManagerController managers;
   @Autowired
   private DetailedEmployeeController detailedEmployees;
 
   @Autowired
-  private TimestampedLinkBuilder linkBuilder;
+  private CompanyApiLinkBuilder linkBuilder;
 
   /**
    * A controller method to create a {@link EmployeeCollectionResource} that lists all employees in the database. This
@@ -93,7 +93,7 @@ class EmployeeController {
       @Override
       public Link createLink() {
 
-        // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+        // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
         return linkBuilder.create(linkTo(methodOn(EmployeeController.class).findAll()))
             .withTitle("A collection of all employees")
             .build();
@@ -110,10 +110,10 @@ class EmployeeController {
   @GetMapping("/employees/{id}")
   EmployeeResource findById(@PathVariable Long id) {
 
-    // Create and return server-side implementation of the resource
+    // Create and return the resource instance (implemented as an inner class) that can load the entity from the repository
     return new EmployeeResourceImpl(id, () -> repository.findById(id)
-        // If no entity is found with the given ID, throwing an exception from which a status code can be extracted
-        // will make Rhyme#renderResponse return a vnd.error response with that status code
+        // If no entity is found with the given ID, then throw an exception from which a status code can be extracted.
+        // This will make Rhyme#renderResponse return a vnd.error response with that status code.
         .orElseThrow(() -> new HalApiServerException(404, "No entity was found with id " + id)));
   }
 
@@ -184,7 +184,7 @@ class EmployeeController {
     @Override
     public Link createLink() {
 
-      // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+      // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
       return linkBuilder.create(linkTo(methodOn(EmployeeController.class).findById(id)))
           .withTitle("The employee with ID " + id)
           .withTemplateTitle("A link template to load a single employee by ID")

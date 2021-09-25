@@ -54,7 +54,7 @@ class CompanyApiController implements CompanyApi {
   private DetailedEmployeeController detailedEmployees;
 
   @Autowired
-  private TimestampedLinkBuilder linkBuilder;
+  private CompanyApiLinkBuilder linkBuilder;
 
   /**
    * A controller method used to render the entry point of the API as a HAL+JSON response.
@@ -63,7 +63,7 @@ class CompanyApiController implements CompanyApi {
   @GetMapping("/")
   CompanyApi get() {
 
-    // Since in this case, the controller class is directly implementing the CompanyApi interface we can simply return this.
+    // Since the controller class is directly implementing the CompanyApi interface we can simply return this.
     // All methods from the interface will be automatically invoked later, when the response is being rendered
     // by the LinkableResourceMessageConverter.
     return this;
@@ -118,7 +118,7 @@ class CompanyApiController implements CompanyApi {
   @Override
   public Link createLink() {
 
-    // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+    // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
     return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
         .withTitle("The entry point of the hypermedia example API")
         .build();

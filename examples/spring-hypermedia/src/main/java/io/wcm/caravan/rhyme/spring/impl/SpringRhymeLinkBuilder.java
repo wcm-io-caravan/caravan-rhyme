@@ -6,8 +6,9 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.spring.api.RhymeLinkBuilder;
 
-public final class SpringRhymeLinkBuilder {
+class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
   private final Map<String, String> timestampParameters;
 
@@ -19,6 +20,7 @@ public final class SpringRhymeLinkBuilder {
     this.link = new Link(linkBuilder.toString());
   }
 
+  @Override
   public SpringRhymeLinkBuilder withTitle(String title) {
     if (!link.isTemplated() || link.getTitle() == null) {
       link.setTitle(title);
@@ -26,6 +28,7 @@ public final class SpringRhymeLinkBuilder {
     return this;
   }
 
+  @Override
   public SpringRhymeLinkBuilder withTemplateTitle(String title) {
     if (link.isTemplated()) {
       link.setTitle(title);
@@ -33,16 +36,19 @@ public final class SpringRhymeLinkBuilder {
     return this;
   }
 
+  @Override
   public SpringRhymeLinkBuilder withName(String name) {
     link.setName(name);
     return this;
   }
 
-  public SpringRhymeLinkBuilder withTimestamps(boolean value) {
+  @Override
+  public SpringRhymeLinkBuilder withFingerprintingOnlyIf(boolean value) {
     withTimestamps = value;
     return this;
   }
 
+  @Override
   public Link build() {
 
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(link.getHref());

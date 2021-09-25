@@ -47,12 +47,12 @@ class ManagerController {
 
   // inject the controllers for all related resources
   @Autowired
-  private CompanyApi api;
+  private CompanyApiController api;
   @Autowired
   private EmployeeController employees;
 
   @Autowired
-  private TimestampedLinkBuilder linkBuilder;
+  private CompanyApiLinkBuilder linkBuilder;
 
   /**
    * A controller method to create a {@link ManagerCollectionResource} that lists all managers in the database. This
@@ -84,7 +84,7 @@ class ManagerController {
       @Override
       public Link createLink() {
 
-        // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+        // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
         return linkBuilder.create(linkTo(methodOn(ManagerController.class).findAll()))
             .withTitle("A collection of all managers")
             .build();
@@ -93,7 +93,7 @@ class ManagerController {
   }
 
   /**
-   * A controller method to create a {@link ManagerResource} for a specific employee. This is called
+   * A controller method to create a {@link ManagerResource} for a specific manager. This is called
    * to render this resource for an incoming HTTP request, but also to render all links to this kind of resource.
    * @param id of the employee, or null if this method is called to create the link template in the {@link CompanyApi}
    * @return a server-side implementation of {@link ManagerResource}
@@ -101,10 +101,10 @@ class ManagerController {
   @GetMapping("/managers/{id}")
   ManagerResource findById(@PathVariable Long id) {
 
-    // Create and return server-side implementation of the resource
+    // Create and return the resource instance (implemented as an inner class) that can load the entity from the repository
     return new ManagerResourceImpl(id, () -> repository.findById(id)
-        // If no entity is found with the given ID, throwing an exception from which a status code can be extracted
-        // will make Rhyme#renderResponse return a vnd.error response with that status code
+        // If no entity is found with the given ID, then throw an exception from which a status code can be extracted.
+        // This will make Rhyme#renderResponse return a vnd.error response with that status code.
         .orElseThrow(() -> new HalApiServerException(404, "No entity was found with id " + id)));
   }
 
@@ -167,7 +167,7 @@ class ManagerController {
     @Override
     public Link createLink() {
 
-      // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+      // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
       return linkBuilder.create(linkTo(methodOn(ManagerController.class).findById(id)))
           .withTitle("The manager with ID " + id)
           .withTemplateTitle("A link template to load a single manager by ID")
@@ -192,12 +192,13 @@ class ManagerController {
 
       @Override
       public Optional<ManagerResource> getCanonical() {
-        // include a link to the version of this resource that uses a path with the manager's id
+        // include a link to the version of this resource that uses the /managers/{id} path
         return Optional.of(findById(manager.getId()));
       }
 
       @Override
       public Link createLink() {
+
         // overridden so that the path from this controller method is used
         return linkBuilder.create(linkTo(methodOn(ManagerController.class).findManagerOfEmployeeWithId(id)))
             // since the manager instance was already loaded, we can also give a bit more context in the link title for this resource

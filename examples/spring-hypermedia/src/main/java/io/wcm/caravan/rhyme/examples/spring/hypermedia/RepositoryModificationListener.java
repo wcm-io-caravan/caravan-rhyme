@@ -10,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
+
 /**
- * Keeps track of any modifications to the repository, so that timestamped URLs can be created by the
- * {@link TimestampedLinkBuilder}
+ * Keeps track of any modifications to the repositories for {@link Employee} and {@link Manager} entities, so that
+ * timestamped URLs can be created by the {@link CompanyApiLinkBuilder} using {@link UrlFingerprinting}.
  */
 @Component
 class RepositoryModificationListener {
@@ -25,6 +27,7 @@ class RepositoryModificationListener {
   @PostUpdate
   @PostRemove
   private void afterAnyUpdate(Object entity) {
+
     log.debug("An update was detected for {}", entity);
 
     lastModified = Instant.now();

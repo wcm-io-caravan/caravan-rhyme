@@ -58,7 +58,7 @@ class DetailedEmployeeController {
   private SpringRhyme rhyme;
 
   @Autowired
-  private TimestampedLinkBuilder linkBuilder;
+  private CompanyApiLinkBuilder linkBuilder;
 
   /**
    * A controller method to create a {@link DetailedEmployeeResource} for a specific employee. This is called
@@ -126,7 +126,7 @@ class DetailedEmployeeController {
       @Override
       public Link createLink() {
 
-        // every link to the controller for this type of resource is created here, with the help of Spring's MvcLinkBuilder
+        // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
         return linkBuilder.create(linkTo(methodOn(DetailedEmployeeController.class).findById(id)))
             .withTitle("The employee with ID " + id + ", with embedded resources for her managers and colleagues")
             .withTemplateTitle("A link template to detailed data for a single employee by ID")

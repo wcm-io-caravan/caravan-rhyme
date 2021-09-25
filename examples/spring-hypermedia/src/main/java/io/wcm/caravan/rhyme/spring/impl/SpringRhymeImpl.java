@@ -42,6 +42,7 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
+import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
 
 @Component
 @RequestScope
@@ -101,7 +102,7 @@ class SpringRhymeImpl implements SpringRhyme {
   @Override
   public UrlFingerprinting enableUrlFingerprinting() {
 
-    return new UrlFingerprinting(request, this);
+    return new UrlFingerprintingImpl(request, rhyme);
   }
 
   @Override
