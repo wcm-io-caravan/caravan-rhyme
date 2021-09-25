@@ -39,8 +39,10 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 
 /**
- * The default implementation of {@link HalResourceLoader} to use in a spring boot context,
- * which uses {@link WebClient} to executed asynchronous HTTP requests.
+ * The default implementation of {@link HalResourceLoader} to use in a Spring Boot context,
+ * which uses a {@link WebClient} to execute asynchronous HTTP requests and enables in-memory caching with
+ * default settings.
+ * @see HalResourceLoaderBuilder#withMemoryCache()
  */
 @Component
 class WebClientHalResourceLoader implements HalResourceLoader {
@@ -83,9 +85,9 @@ class WebClientHalResourceLoader implements HalResourceLoader {
 
       HttpClient httpClient = HttpClient.create(connectionProvider);
 
-      return WebClient.builder()//
-          .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))//
-          .clientConnector(new ReactorClientHttpConnector(httpClient))//
+      return WebClient.builder()
+          .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
+          .clientConnector(new ReactorClientHttpConnector(httpClient))
           .build();
     }
 
