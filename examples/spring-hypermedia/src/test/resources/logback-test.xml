@@ -10,7 +10,7 @@
   </appender>
 
   <root level="info">
-  <!--
+  <!-- Disable all logging while unit-test are being executed
     <appender-ref ref="STDOUT" />
   -->
   </root>
