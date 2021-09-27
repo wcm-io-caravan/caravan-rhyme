@@ -155,7 +155,7 @@ class ManagerController {
     @Override
     public Optional<ManagerResource> getCanonical() {
       // the canonical link is only present for variations of this resource
-      // (which can be done by subclassing as you can in #findManagerOfEmployeeWithId)
+      // (which can be done by subclassing as you can see in #findManagerOfEmployeeWithId)
       return Optional.empty();
     }
 
