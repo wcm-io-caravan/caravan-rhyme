@@ -36,6 +36,14 @@ The key concepts and features of **Rhyme** are:
 
 Another example for usage with Spring Boot can be found at https://github.com/feffef/reactive-hal-spring-example.
 
+## Build from sources
+
+Using **JDK 8 or 11** and **Apache Maven 3.6.0** (or higher) you should be able to build all modules from the root directory:
+
+```
+mvn clean install
+```
+
 # Key concepts explained
 
 ## Define a HAL API with annotated interfaces
@@ -554,16 +562,3 @@ Issues: https://wcm-io.atlassian.net/projects/WCARAV/<br/>
 Wiki: https://wcm-io.atlassian.net/wiki/<br/>
 Continuous Integration: https://github.com/wcm-io-caravan/caravan-rhyme/actions<br/>
 Commercial support: https://wcm.io/commercial-support.html
-
-
-# Build from sources
-
-If you want to build wcm.io Caravan Rhyme from sources make sure you have configured all [Maven Repositories](https://caravan.wcm.io/maven.html) in your settings.xml.
-
-See [Maven Settings](https://github.com/wcm-io-caravan/caravan-rhyme/blob/develop/.maven-settings.xml) for an example with a full configuration.
-
-Then you can build using
-
-```
-mvn clean install
-```
