@@ -34,8 +34,8 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
-import io.wcm.caravan.rhyme.api.annotations.ResourceLink;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 
 public class LazyLoadingTest {
@@ -130,21 +130,13 @@ public class LazyLoadingTest {
     stateObserver.assertComplete();
   }
 
-
-  @HalApiInterface
-  interface LinkableResource {
-
-    @ResourceLink
-    Link createLink();
-  }
-
   @Test
   public void lazy_loading_should_not_be_triggered_by_calling_resource_link_proxy_method_on_entry_point() throws Exception {
 
     SingleSubject<HalResource> mockJsonResponse = client.mockHalResponseWithSubject(ENTRY_POINT_URI);
 
     // calling createLink on the proxy should return the link
-    Link link = client.createProxy(LinkableResource.class).createLink();
+    Link link = client.createProxy(SimpleLinkedResource.class).createLink();
     assertThat(link.getHref()).isEqualTo(ENTRY_POINT_URI);
 
     // but no subscriber should have been added yet to to the subject providing the JSON
@@ -152,10 +144,15 @@ public class LazyLoadingTest {
   }
 
   @HalApiInterface
+  interface SimpleLinkedResource extends LinkableResource {
+    // we need to extend LinkableResource because client proxies need a @HalApiInterface to be present to work
+  }
+
+  @HalApiInterface
   interface LinkingEntryPoint {
 
     @Related(ITEM)
-    Single<LinkableResource> getLinked();
+    Single<SimpleLinkedResource> getLinked();
   }
 
   @Test
@@ -166,7 +163,7 @@ public class LazyLoadingTest {
 
     // calling createLink on the linked resource proxy should return the single
     Single<Link> link = client.createProxy(LinkingEntryPoint.class).getLinked()
-        .map(LinkableResource::createLink);
+        .map(SimpleLinkedResource::createLink);
 
     // but no subscriber should have been added yet to to the subjects providing the JSON
     assertThat(mockEntryPoint.hasObservers()).isFalse();
