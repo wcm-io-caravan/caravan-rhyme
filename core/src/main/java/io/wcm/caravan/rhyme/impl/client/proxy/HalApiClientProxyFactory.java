@@ -97,22 +97,29 @@ public final class HalApiClientProxyFactory {
     // This is because i should still be possible to create a proxy just to get a URI template
     // by calling a method annotated with @ResourceLink.
     return Single.just(resourceUrl)
-        .flatMap(url -> {
-          Link link = new Link(url);
-          if (link.isTemplated()) {
-            throw new HalApiDeveloperException("Cannot follow the link template to " + link.getHref()
-                + " because it has not been expanded."
-                + " If you are calling a proxy method with parameters then make sure to provide at least one parameter "
-                + "(unless you are only interested in obtaining the link template by calling the method annotated with @" + ResourceLink.class.getSimpleName()
-                + ")");
-          }
-
-          return resourceLoader.getHalResource(url)
-              .map(HalResponse::getBody);
-        })
+        .flatMap(this::validateUrlAndLoadResourceBody)
         .compose(EmissionStopwatch.collectMetrics(() -> "fetching " + relatedResourceType.getSimpleName() + " from upstream server (or cache)", metrics));
+
   }
 
+  private Single<HalResource> validateUrlAndLoadResourceBody(String url) {
+
+    Link link = new Link(url);
+    if (link.isTemplated()) {
+      throw new HalApiDeveloperException("Cannot follow the link template to " + link.getHref()
+          + " because it has not been expanded."
+          + " If you are calling a proxy method with parameters then make sure to provide at least one parameter "
+          + "(unless you are only interested in obtaining the link template by calling the method annotated with @" + ResourceLink.class.getSimpleName()
+          + ")");
+    }
+
+    try (RequestMetricsStopwatch sw = metrics.startStopwatch(HalApiClient.class,
+        () -> "assembling a Single<HalResource> with the HalResourceLoader")) {
+
+      return resourceLoader.getHalResource(url)
+          .map(HalResponse::getBody);
+    }
+  }
 
   @SuppressWarnings("unchecked")
   private <T> T getProxy(Class<T> relatedResourceType, Single<HalResource> rxHal, Link linkToResource) {
