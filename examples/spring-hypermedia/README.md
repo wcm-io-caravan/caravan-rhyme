@@ -7,7 +7,7 @@ This is an example project that shows how to use Caravan Rhyme in a [Spring Boot
 to render and consume [HAL+JSON](https://stateless.group/hal_specification.html) resources.
 
 It's based on the [Spring HATEOAS - Hypermedia Example](https://github.com/spring-projects/spring-hateoas-examples/tree/main/hypermedia)
-project by [Greg L. Turnquist](https://github.com/gregturn) and meant to explain the similarities and differences to using only [Spring HATEOAS](https://spring.io/projects/spring-hateoas).
+project by [Greg L. Turnquist](https://github.com/gregturn) and shows the similarities and differences to a plain [Spring HATEOAS](https://spring.io/projects/spring-hateoas) application.
 
 One area where it differs is that the meaning of the`company:detailedEmployee` relation was changed to become an example for how a service built with **Rhyme** 
 can easily create a resource based on other HAL+JSON resources retrieved by HTTP from an upstream service. Make sure not to miss loading this resource when you run the example, and have a look at the embedded `rhyme:metadata` resource to see how the core Rhyme framework keeps track of those requests to the upstream service (as explained [here](https://github.com/wcm-io-caravan/caravan-rhyme#data-debugging-and-performance-analysis) in the root README)
