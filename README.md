@@ -13,7 +13,7 @@
 
 The key concepts and features of **Rhyme** are:
 - HAL APIs are represented as type-safe **annotated Java interfaces** that define the structure of the resource state, and the available related resources
-- These interfaces can be shared with the consumers as a **highly abstracted client API**, providing convenient client access using any HTTP library.
+- These interfaces can be shared with the consumers as a **highly abstracted client API**, providing convenient client access using any Java HTTP library.
 - The same interfaces are also used to **keep the server-side implementation well structured**, and always in sync with the API interfaces.
 - simple and transparent support for **embedded resources**
 - generation and integration of **HTML API documentation** from the annotated interfaces
@@ -38,11 +38,13 @@ Another example for usage with Spring Boot can be found at https://github.com/fe
 
 ## Build from sources
 
-Using **JDK 8 or 11** and **Apache Maven 3.6.0** (or higher) you should be able to build all modules from the root directory:
+Using **JDK 8 or 11** and **Apache Maven 3.6.0** (or higher) you should be able to build all modules (and run the integration tests) from the root directory:
 
 ```
 mvn clean install
 ```
+
+If this build fails on your machine, please open an issue on github or [Jira](https://wcm-io.atlassian.net/projects/WCARAV/) and include the full stack trace after running the Maven build again with the `-e` switch.
 
 # Key concepts explained
 
