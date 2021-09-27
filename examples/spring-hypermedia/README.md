@@ -29,7 +29,7 @@ You can then open http://localhost:8081/browser/index.html in your web browser t
 
 The **docs** icons in the HAL browser will link to a context-sensitive HTML documentation for each resource and relation.
 
-# Source Structure
+# Source Code Structure
 
 ## Example Service Code
 The package [io.wcm.caravan.rhyme.examples.spring.hypermedia](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia) 
