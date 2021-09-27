@@ -27,10 +27,12 @@ The key concepts and features of **Rhyme** are:
 ## Modules in this repository
 
 - [api-interfaces](api-interfaces) - contains only annotations, interfaces and dependencies to be used in your API interface definitions
-- [core](core) - the core framework that can be integrated within any Java web service
-- [osgi-jaxrs](osgi-jaxrs) - additional code for implementing HAL web services using the [OSGi R7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
+- [core](core) - the core framework that can be integrated within any Java project
+- [osgi-jaxrs](osgi-jaxrs) - integration module for implementing HAL web services using the [OSGi R7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
+- [aem](aem) - integration module for Adobe Experience Manager (work in progress and not yet released)
+- [examples/aem-hal-browser](examples/aem-hal-browser) - an example project for AEM that shows how HAL resources can be implemented as sling models (work in progress)
 - [examples/osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
-- [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the example service (and run some integration tests)
+- [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
 
 Another example for usage with Spring Boot can be found at https://github.com/feffef/reactive-hal-spring-example.
 
