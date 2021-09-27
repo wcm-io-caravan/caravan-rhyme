@@ -51,8 +51,8 @@ using only the interfaces from the [io.wcm.caravan.rhyme.spring.api](src/main/ja
 
 ## Integration Tests
 The test package [io.wcm.caravan.rhyme.examples.spring.hypermedia](src/test/java/io/wcm/caravan/rhyme/examples/spring/hypermedia) contains simple yet extensive tests for
-for the example service. One key thing to note here is that all tests defined in `AbstractCompanyApiIntegrationTest` are using only the `CompanyApi` entry point interface
-to access the resources under test. This allows the same set of tests to be run twice (by the two subclasses): directly testing the server-side implementations of those interfaces, and by executing actual HTTP requests to your controllers using a 'HalApiClient' instance.
+for the example service. One key thing to note here is that all test cases defined in `AbstractCompanyApiIntegrationTest` are using only the `CompanyApi` entry point interface
+to access the resources under test. This allows the same set of tests to be run twice (by the two subclasses): directly testing the server-side implementations of those interfaces, and executing actual HTTP requests to your controllers, parsing the response and following links as required using a 'HalApiClient' instance.
 
 
 
