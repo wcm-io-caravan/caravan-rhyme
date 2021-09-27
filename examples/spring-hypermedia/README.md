@@ -10,7 +10,7 @@ It's based on the [Spring HATEOAS - Hypermedia Example](https://github.com/sprin
 project by [Greg L. Turnquist](https://github.com/gregturn) and meant to explain the similarities and differences to using only [Spring HATEOAS](https://spring.io/projects/spring-hateoas).
 
 One area where it differs is that the meaning of the`company:detailedEmployee` relation was changed to become an example for how a service built with **Rhyme** 
-can easily create a resource based on other HAL+JSON resources retrieved by HTTP from an upstream service. Make sure not to miss loading this resource when you run the example, and have a look at the embedded `rhyme:metadata` resource to see how the core Rhyme framework keeps track of those requests to the upstream service.
+can easily create a resource based on other HAL+JSON resources retrieved by HTTP from an upstream service. Make sure not to miss loading this resource when you run the example, and have a look at the embedded `rhyme:metadata` resource to see how the core Rhyme framework keeps track of those requests to the upstream service (as explained [here](https://github.com/wcm-io-caravan/caravan-rhyme#data-debugging-and-performance-analysis) in the root README)
 
 # Build and Run
 
