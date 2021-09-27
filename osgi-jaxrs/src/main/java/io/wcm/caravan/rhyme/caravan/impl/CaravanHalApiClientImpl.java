@@ -38,6 +38,7 @@ import io.wcm.caravan.pipeline.JsonPipelineFactory;
 import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
@@ -91,13 +92,15 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
   @Override
   public <T> T getEntryPoint(String serviceId, String uri, Class<T> halApiInterface, RequestMetricsCollector metrics) {
 
-    HalResourceLoader halLoader = getOrCreateHalResourceLoader(serviceId);
+    try (RequestMetricsStopwatch sw = metrics.startStopwatch(HalApiClient.class, () -> "creating a HalApiClient for serviceId " + serviceId)) {
 
-    HalApiClient client = HalApiClient.create(halLoader, metrics, annotationSupport, returnTypeSupport);
+      HalResourceLoader halLoader = getOrCreateHalResourceLoader(serviceId);
 
-    return client.getRemoteResource(uri, halApiInterface);
+      HalApiClient client = HalApiClient.create(halLoader, metrics, annotationSupport, returnTypeSupport);
+
+      return client.getRemoteResource(uri, halApiInterface);
+    }
   }
-
 
   HalResourceLoader getOrCreateHalResourceLoader(String serviceId) {
     try {
@@ -121,7 +124,7 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
     }
   }
 
-  private final static class CaravanCachingConfiguration implements CachingConfiguration {
+  private static final class CaravanCachingConfiguration implements CachingConfiguration {
 
     @Override
     public int getDefaultMaxAge(Optional<Integer> statusCode) {
