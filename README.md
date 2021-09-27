@@ -13,7 +13,7 @@
 
 The key concepts and features of **Rhyme** are:
 - HAL APIs are represented as type-safe **annotated Java interfaces** that define the structure of the resource state, and the available related resources
-- These interfaces can be shared with the consumers as a **highly abstracted client API**, providing convenient client access using any HTTP library.
+- These interfaces can be shared with the consumers as a **highly abstracted client API**, providing convenient client access using any Java HTTP library.
 - The same interfaces are also used to **keep the server-side implementation well structured**, and always in sync with the API interfaces.
 - simple and transparent support for **embedded resources**
 - generation and integration of **HTML API documentation** from the annotated interfaces
@@ -35,6 +35,16 @@ The key concepts and features of **Rhyme** are:
 - [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
 
 Another example for usage with Spring Boot can be found at https://github.com/feffef/reactive-hal-spring-example.
+
+## Build from sources
+
+Using **JDK 8 or 11** and **Apache Maven 3.6.0** (or higher) you should be able to build all modules (and run the integration tests) from the root directory:
+
+```
+mvn clean install
+```
+
+If this build fails on your machine, please open an issue on github or [Jira](https://wcm-io.atlassian.net/projects/WCARAV/) and include the full stack trace after running the Maven build again with the `-e` switch.
 
 # Key concepts explained
 
@@ -554,16 +564,3 @@ Issues: https://wcm-io.atlassian.net/projects/WCARAV/<br/>
 Wiki: https://wcm-io.atlassian.net/wiki/<br/>
 Continuous Integration: https://github.com/wcm-io-caravan/caravan-rhyme/actions<br/>
 Commercial support: https://wcm.io/commercial-support.html
-
-
-# Build from sources
-
-If you want to build wcm.io Caravan Rhyme from sources make sure you have configured all [Maven Repositories](https://caravan.wcm.io/maven.html) in your settings.xml.
-
-See [Maven Settings](https://github.com/wcm-io-caravan/caravan-rhyme/blob/develop/.maven-settings.xml) for an example with a full configuration.
-
-Then you can build using
-
-```
-mvn clean install
-```
