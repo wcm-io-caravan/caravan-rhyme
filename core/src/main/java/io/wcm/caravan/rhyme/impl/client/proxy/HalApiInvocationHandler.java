@@ -130,7 +130,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
           .map(hal -> new ResourceStateHandler(hal))
           .flatMapMaybe(handler -> handler.handleMethodInvocation(invocation));
 
-      return RxJavaReflectionUtils.convertAndCacheReactiveType(state, invocation.getReturnType(), metrics, invocation.getDescription(), typeSupport);
+      return RxJavaReflectionUtils.convertAndCacheReactiveType(state, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
     }
 
     if (invocation.isForMethodAnnotatedWithRelatedResource()) {
@@ -140,7 +140,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
           .map(hal -> new RelatedResourceHandler(hal, proxyFactory, typeSupport))
           .flatMapObservable(handler -> handler.handleMethodInvocation(invocation));
 
-      return RxJavaReflectionUtils.convertAndCacheReactiveType(relatedProxies, invocation.getReturnType(), metrics, invocation.getDescription(), typeSupport);
+      return RxJavaReflectionUtils.convertAndCacheReactiveType(relatedProxies, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
     }
 
     if (invocation.isForMethodAnnotatedWithResourceLink()) {
@@ -156,7 +156,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
           .map(hal -> new ResourceRepresentationHandler(hal))
           .flatMap(handler -> handler.handleMethodInvocation(invocation));
 
-      return RxJavaReflectionUtils.convertAndCacheReactiveType(representation, invocation.getReturnType(), metrics, invocation.getDescription(), typeSupport);
+      return RxJavaReflectionUtils.convertAndCacheReactiveType(representation, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
     }
 
     if (invocation.toString().endsWith("#toString()")) {
