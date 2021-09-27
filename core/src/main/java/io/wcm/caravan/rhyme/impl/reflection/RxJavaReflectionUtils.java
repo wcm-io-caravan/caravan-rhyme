@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
 
@@ -127,11 +128,11 @@ public final class RxJavaReflectionUtils {
    * @return an instance of the target type that will replay (and cache!) the items emitted by the given reactive
    *         instance
    */
-  public static Observable<?> convertAndCacheReactiveType(Object reactiveInstance, Class<?> targetType, RequestMetricsCollector metrics, String description,
-      HalApiReturnTypeSupport typeSupport) {
+  public static Observable<?> convertAndCacheReactiveType(Object reactiveInstance, Class<?> targetType, RequestMetricsCollector metrics,
+      Supplier<String> description, HalApiReturnTypeSupport typeSupport) {
 
     Observable<?> observable = convertToObservable(reactiveInstance, typeSupport)
-        .compose(EmissionStopwatch.collectMetrics(() -> description, metrics));
+        .compose(EmissionStopwatch.collectMetrics(description, metrics));
 
     // do not use Observable#cache() here, because we want consumers to be able to use Observable#retry()
     Observable<?> cached = observable.compose(RxJavaTransformers.cacheIfCompleted());
