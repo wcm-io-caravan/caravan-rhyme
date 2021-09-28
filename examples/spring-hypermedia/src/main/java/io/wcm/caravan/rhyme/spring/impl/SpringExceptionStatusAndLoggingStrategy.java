@@ -63,7 +63,7 @@ class SpringExceptionStatusAndLoggingStrategy implements ExceptionStatusAndLoggi
   @Override
   public String getErrorMessageWithoutRedundantInformation(Throwable error) {
 
-    // we don't want the repeated messages from the cause that appear in some Spring exceptions
+    // we don't want to log the repeated messages from the cause that appear in some Spring exceptions
     return StringUtils.substringBefore(error.getMessage(), "; nested exception is");
   }
 
