@@ -75,14 +75,14 @@ class DetailedEmployeeController {
     // by the LinkableResourceMessageConverter.
     return new DetailedEmployeeResource() {
 
+      // Construct the URL to the CompanyApiController running on localhost
+      private final String entryPointUrl = linkBuilder.getLocalEntryPointUrl();
+
       /**
        * Load an employee by HTTP from localhost using a {@link HalApiClient}
        * @return a client proxy that knows how to fetch the EmployeeResource from the expanded URL.
        */
       private EmployeeResource getEmployee() {
-
-        // Construct the URL to the CompanyApiController
-        String entryPointUrl = linkBuilder.getLocalEntryPointUrl();
 
         // Create a dynamic client proxy that can load the API's entry point (and all related resources) by HTTP.
         CompanyApi entryPoint = rhyme.getRemoteResource(entryPointUrl, CompanyApi.class);
