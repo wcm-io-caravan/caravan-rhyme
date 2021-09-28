@@ -66,7 +66,7 @@ abstract class AbstractCompanyApiIntegrationTest {
    */
   protected abstract CompanyApi getApiImplementionOrClientProxy();
 
-  // The repositories are initialized with the same DatabaseLoader then
+  // The repositories are initialized with the same DatabaseLoader that
   // is used when the application is started. For the tests that need to
   // know an existing ID, we just pick the first one that exists in each repo.
 
