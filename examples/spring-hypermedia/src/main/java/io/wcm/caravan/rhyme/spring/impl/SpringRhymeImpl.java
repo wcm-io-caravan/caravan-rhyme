@@ -66,20 +66,18 @@ class SpringRhymeImpl implements SpringRhyme {
   private ResponseEntity<JsonNode> renderedResponse;
 
   SpringRhymeImpl(@Autowired HttpServletRequest httpRequest,
-      @Autowired(required = false) HalResourceLoader resourceLoader,
+      @Autowired HalResourceLoader resourceLoader,
       @Autowired SpringRhymeDocsIntegration rhymeDocs) {
 
     log.debug("{} was instantiated for request to {}", this, httpRequest.getRequestURI());
 
     this.request = httpRequest;
 
-    String requestUrl = getRequestUrl(httpRequest);
-
     this.rhyme = RhymeBuilder
         .withResourceLoader(resourceLoader)
         .withRhymeDocsSupport(rhymeDocs)
         .withExceptionStrategy(EXCEPTION_STRATEGY)
-        .buildForRequestTo(requestUrl);
+        .buildForRequestTo(getRequestUrl(httpRequest));
   }
 
   private static String getRequestUrl(HttpServletRequest httpRequest) {
