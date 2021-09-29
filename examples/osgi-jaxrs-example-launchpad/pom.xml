@@ -218,14 +218,6 @@
   </dependencies>
   
   <build>
-    <!-- use maven's resource filtering to replace the base URL in the provisioning file-->
-    <outputDirectory>${project.build.directory}/provisioning</outputDirectory>
-    <resources>
-      <resource>
-        <directory>src/main/provisioning</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
     <plugins>
 
       <plugin>
@@ -243,8 +235,21 @@
           </execution>
         </executions>
         <configuration>
-          <!--  use the filtered version of the provisioning file -->
-          <modelDirectory>${basedir}/target/provisioning</modelDirectory>
+          <!-- configurations for the provisioning model are inlined here, because we want to use the maven properties for the server url -->
+          <model>
+[feature name=caravan-configuration]
+
+[configurations]
+  io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig-localhost
+    serviceId="localhost"
+    ribbonHosts=["${launchpad.http.server.url}"]
+
+[configurations]
+  io.wcm.caravan.commons.httpclient.impl.HttpClientConfigImpl-localhost
+    hostPatterns=["localhost"]
+    maxConnectionsPerHost="5000"
+    maxTotalConnections="5000"
+          </model>
           <usePomDependencies>true</usePomDependencies>
           <usePomVariables>true</usePomVariables>
           <servers>
