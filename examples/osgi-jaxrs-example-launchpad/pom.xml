@@ -39,9 +39,11 @@
   </description>
 
   <properties>
-    <!-- hostname for integration tests -->
+    <!-- hostname and port for integration tests -->
     <test.host>localhost</test.host>
     <http.port>8080</http.port>
+
+    <launchpad.http.server.url>http://${test.host}:${http.port}</launchpad.http.server.url>
 
     <!--
         Set this to true to stop mvn once the integration test Jetty instance is
@@ -135,31 +137,31 @@
       <version>0.7.0</version>
     </dependency>
 
-    <!-- Apache HTTP Client -->
+    <!-- Apache HTTP Client (version overrides are required by the io.wcm.caravan.io.http bundle) -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.5.10</version>
+      <version>4.5.10</version><!--$NO-MVN-MAN-VER$-->
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.4.12</version>
+      <version>4.4.12</version><!--$NO-MVN-MAN-VER$-->
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
-      <version>4.5.10</version>
+      <version>4.5.10</version><!--$NO-MVN-MAN-VER$-->
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore-osgi</artifactId>
-      <version>4.4.12</version>
+      <version>4.4.12</version><!--$NO-MVN-MAN-VER$-->
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient-osgi</artifactId>
-      <version>4.1.4</version>
+      <version>4.1.4</version><!--$NO-MVN-MAN-VER$-->
     </dependency>
     
     <!-- actual dependencies -->
@@ -233,6 +235,21 @@
           </execution>
         </executions>
         <configuration>
+          <!-- configurations for the provisioning model are inlined here, because we want to use the maven properties for the server url -->
+          <model>
+[feature name=caravan-configuration]
+
+[configurations]
+  io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig-localhost
+    serviceId="localhost"
+    ribbonHosts=["${launchpad.http.server.url}"]
+
+[configurations]
+  io.wcm.caravan.commons.httpclient.impl.HttpClientConfigImpl-localhost
+    hostPatterns=["localhost"]
+    maxConnectionsPerHost="5000"
+    maxTotalConnections="5000"
+          </model>
           <usePomDependencies>true</usePomDependencies>
           <usePomVariables>true</usePomVariables>
           <servers>
@@ -246,7 +263,17 @@
         </configuration>
       </plugin>
 
-      <!-- do not into maven repository -->
+      <!-- expose the server base url as a single system property  -->
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <launchpad.http.server.url>${launchpad.http.server.url}</launchpad.http.server.url>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+      <!-- do not deploy into maven repository -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
