@@ -73,7 +73,7 @@
 [configurations]
   io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig-localhost
     serviceId="localhost"
-    ribbonHosts=["localhost:8080"]
+    ribbonHosts=["${launchpad.http.server.url}"]
 
 [configurations]
   io.wcm.caravan.commons.httpclient.impl.HttpClientConfigImpl-localhost

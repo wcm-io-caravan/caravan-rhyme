@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.ENTRY_POINT_PATH;
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVER_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -29,10 +27,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.relations.VndErrorRelations;
-import io.wcm.caravan.rhyme.osgi.it.extensions.HalApiClientExtension;
+import io.wcm.caravan.rhyme.osgi.it.IntegrationTestEnvironment;
 import io.wcm.caravan.rhyme.osgi.it.extensions.WaitForServerStartupExtension;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorParameters;
@@ -40,44 +37,19 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ErrorParametersBean;
 
 
-@ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
+@ExtendWith({ WaitForServerStartupExtension.class })
 public class ServerSideErrorResourcesIT {
 
-  private final ExamplesEntryPointResource entryPoint;
+  private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
   private final ErrorParametersBean defaultParams;
 
-  public ServerSideErrorResourcesIT(HalApiClient halApiClient) {
-
-    this.entryPoint = halApiClient.getRemoteResource(ENTRY_POINT_PATH, ExamplesEntryPointResource.class);
+  public ServerSideErrorResourcesIT() {
 
     this.defaultParams = new ErrorParametersBean()
         .withStatusCode(503)
         .withMessage("Something went wrong")
         .withWrapException(false);
-  }
-
-  private HalApiClientException executeRequestAndGetExpectedHalApiClientException(Integer statusCode, String message, Boolean wrapException) {
-
-    ErrorParameters parameters = new ErrorParameters() {
-
-      @Override
-      public Boolean getWrapException() {
-        return wrapException;
-      }
-
-      @Override
-      public Integer getStatusCode() {
-        return statusCode;
-      }
-
-      @Override
-      public String getMessage() {
-        return message;
-      }
-    };
-
-    return catchExceptionForRequestWith(parameters);
   }
 
   HalApiClientException catchExceptionForRequestWith(ErrorParameters parameters) {
@@ -119,7 +91,7 @@ public class ServerSideErrorResourcesIT {
     assertThat(aboutLink)
         .isNotNull();
     assertThat(aboutLink.getHref())
-        .isEqualTo(SERVER_URL + ex.getRequestUrl());
+        .isEqualTo(ex.getRequestUrl());
   }
 
   @Test

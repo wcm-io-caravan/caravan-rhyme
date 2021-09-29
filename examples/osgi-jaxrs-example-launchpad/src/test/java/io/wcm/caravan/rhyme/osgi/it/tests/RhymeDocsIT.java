@@ -19,7 +19,6 @@
  */
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.ENTRY_POINT_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
@@ -36,20 +35,14 @@ import com.google.common.base.Charsets;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
-import io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants;
-import io.wcm.caravan.rhyme.osgi.it.extensions.HalApiClientExtension;
+import io.wcm.caravan.rhyme.osgi.it.IntegrationTestEnvironment;
 import io.wcm.caravan.rhyme.osgi.it.extensions.WaitForServerStartupExtension;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 
-@ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
+@ExtendWith({ WaitForServerStartupExtension.class })
 public class RhymeDocsIT {
 
-  private final ExamplesEntryPointResource entryPoint;
-
-  public RhymeDocsIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getRemoteResource(ENTRY_POINT_PATH, ExamplesEntryPointResource.class);
-  }
+  private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
   @Test
   public void entry_point_should_contain_curies_link() {
@@ -68,8 +61,8 @@ public class RhymeDocsIT {
     HalResource hal = entryPoint.asHalResource();
 
     Link link = hal.getLink("curies");
-    String path = StringUtils.substringBefore(link.getHref(), "#");
-    URI uri = URI.create(TestEnvironmentConstants.SERVER_URL + path);
+    String hrefWithoutFragment = StringUtils.substringBefore(link.getHref(), "#");
+    URI uri = URI.create(hrefWithoutFragment);
 
     URLConnection connection = uri.toURL().openConnection();
     connection.connect();
