@@ -30,12 +30,11 @@
     <relativePath>parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>io.wcm.caravan</groupId>
   <artifactId>io.wcm.caravan.rhyme</artifactId>
   <version>1</version>
   <packaging>pom</packaging>
 
-  <name>Rhyme Root</name>
+  <name>Rhyme</name>
   <description>A framework to build reactive HAL web services</description>
 
   <modules>

@@ -9,12 +9,10 @@
     <relativePath>parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>io.wcm.caravan</groupId>
   <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>aem-hal-browser</name>
+  <name>Rhyme - AEM Example</name>
 
   <build>
     <plugins>

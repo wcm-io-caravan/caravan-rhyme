@@ -9,12 +9,10 @@
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>io.wcm.caravan</groupId>
   <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.config-definition</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
   <packaging>config-definition</packaging>
 
-  <name>aem-hal-browser config-definition</name>
+  <name>Rhyme - AEM Example Config Definition</name>
   <description>CONGA roles and template definitions</description>
 
   <dependencies>

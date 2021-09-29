@@ -34,7 +34,7 @@
   <version>1.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Rhyme</name>
+  <name>Rhyme - Parent</name>
   <description>Common parent POM for the Caravan Rhyme bundles</description>
 
   <scm>
@@ -121,6 +121,14 @@
           <artifactId>maven-site-plugin</artifactId>
           <configuration>
             <topSiteURL>${site.deploy.url}</topSiteURL>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <systemPropertyVariables>
+              <org.slf4j.simpleLogger.logFile>target/surefire-slf4j.log</org.slf4j.simpleLogger.logFile>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
