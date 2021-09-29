@@ -38,6 +38,7 @@ public @interface QueryParam {
   /**
    * Specifies the name of the query parameter. If empty or not set, then the name
    * is derived from the method or field.
+   * @return the parameter name
    */
   public String name() default "";
 
