@@ -16,8 +16,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,53 +32,60 @@ public class WaitForServerStartupExtension implements BeforeAllCallback, Invocat
 
   private static final Logger log = LoggerFactory.getLogger(WaitForServerStartupExtension.class);
 
-  private static final Namespace NAMESPACE = Namespace.create(WaitForServerStartupExtension.class);
-
-  private static final String LAST_CAUGHT_EXCEPTION = "lastCaughtException";
-
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final JsonFactory JSON_FACTORY = new JsonFactory(OBJECT_MAPPER);
+
+  private static Throwable errorFromPreviousTest;
+
+  private static final int MAX_WAIT_SECONDS = 30;
 
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
 
-    Store store = context.getStore(NAMESPACE);
-
-    Throwable lastCaughtException = store.get(LAST_CAUGHT_EXCEPTION, Throwable.class);
-    if (lastCaughtException != null) {
-      throw new IllegalStateException("Failed to wait for server startup for previous test, and will not try again.", lastCaughtException);
+    if (errorFromPreviousTest != null) {
+      throw new IllegalStateException("Failed to wait for server startup for previous test, and will not try again.", errorFromPreviousTest);
     }
 
-    int maxWaitSeconds = 30;
+    try {
+      pollEntryPointUntilItIsAvailable();
+    }
+    catch (Throwable e) {
+      errorFromPreviousTest = e;
+
+      throw new IllegalStateException("Entry point at " + IntegrationTestEnvironment.ENTRY_POINT_URL
+          + " still fails to load after waiting " + MAX_WAIT_SECONDS + " seconds."
+          + " Possible reasons are that not all OSGI bundles could be started or that you have a different server running on "
+          + ENTRY_POINT_URL, e);
+    }
+  }
+
+  private void pollEntryPointUntilItIsAvailable() throws Throwable {
+
+    Throwable lastCaughtError = null;
+
     Stopwatch sw = Stopwatch.createStarted();
 
-    while (sw.elapsed(TimeUnit.SECONDS) < maxWaitSeconds) {
+    while (sw.elapsed(TimeUnit.SECONDS) < MAX_WAIT_SECONDS) {
       try {
-        assertThatEntryPointOfExampleServiceIsAvailable(ENTRY_POINT_URL);
+        assertThatEntryPointIsAvailable(ENTRY_POINT_URL);
         return;
       }
       catch (Exception | AssertionError e) {
-        lastCaughtException = e;
+        lastCaughtError = e;
+
         log.warn("The Sling Launchpad doesn't seem to have started completely yet. A " + e.getClass().getSimpleName() + " was caught: "
             + e.getMessage());
-        try {
-          Thread.sleep(1000);
-        }
-        catch (InterruptedException e1) {
-          log.error("Thread was interrupted while waiting for entry point to become available", e1);
-        }
+
+        Thread.sleep(1000);
       }
     }
 
-    store.put(LAST_CAUGHT_EXCEPTION, lastCaughtException);
-
-    throw new IllegalStateException("Entry point at " + IntegrationTestEnvironment.ENTRY_POINT_URL
-        + " still fails to load after waiting " + maxWaitSeconds + " seconds."
-        + " Possible reasons are that not all OSGI bundles could be started or that you have a different server running on "
-        + ENTRY_POINT_URL, lastCaughtException);
+    if (lastCaughtError != null) {
+      throw lastCaughtError;
+    }
   }
 
-  private static HalResource assertThatEntryPointOfExampleServiceIsAvailable(String url) throws IOException {
+  private static HalResource assertThatEntryPointIsAvailable(String url) throws IOException {
 
     HttpResponse response = getResponse(url);
 
