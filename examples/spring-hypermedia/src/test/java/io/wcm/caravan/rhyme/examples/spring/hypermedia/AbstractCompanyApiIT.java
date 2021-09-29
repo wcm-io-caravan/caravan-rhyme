@@ -42,7 +42,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
  * but is only using the HAL API interfaces to navigate through resources.
  */
 @SpringBootTest
-abstract class AbstractCompanyApiIntegrationTest {
+abstract class AbstractCompanyApiIT {
 
   private static final long NON_EXISTANT_ID = 999L;
 

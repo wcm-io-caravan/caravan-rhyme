@@ -16,9 +16,9 @@ import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
 
 /**
  * This test verifies the API functionality as its seen by an external consumer.
- * It executes all tests defined in {@link AbstractCompanyApiIntegrationTest} using
+ * It executes all tests defined in {@link AbstractCompanyApiIT} using
  * a dynamic client proxy of the {@link CompanyApi}. Without adding further code,
- * it can verify a few aspects that the {@link ServerSideIntegrationTest} doesn't cover.
+ * it can verify a few aspects that the {@link ServerSideIT} doesn't cover.
  * <ul>
  * <li>The path mappings and parameter parsing of the controller methods</li>
  * <li>JSON serialization and deserialization of resource state</li>
@@ -40,7 +40,7 @@ import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
  * This is also something that can be changed on the server side without breaking API compatibility.
  * </p>
  */
-public class ClientSideIntegrationTest extends AbstractCompanyApiIntegrationTest {
+public class ClientSideIT extends AbstractCompanyApiIT {
 
   @Autowired
   private MockMvcHalResourceLoader mockMvcResourceLoader;

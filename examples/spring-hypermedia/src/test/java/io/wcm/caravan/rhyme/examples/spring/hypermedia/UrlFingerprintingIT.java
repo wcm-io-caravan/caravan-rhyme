@@ -19,7 +19,7 @@ import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
 import wiremock.com.google.common.collect.Iterables;
 
 @SpringBootTest
-public class UrlFingerprintingTest {
+public class UrlFingerprintingIT {
 
   private static final int SHORT_MAX_AGE_SECONDS = 10;
   private static final int LONG_MAX_AGE_SECONDS = (int)Duration.ofDays(100).getSeconds();
