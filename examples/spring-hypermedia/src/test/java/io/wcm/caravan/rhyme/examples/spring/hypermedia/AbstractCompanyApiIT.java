@@ -38,8 +38,11 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 
 /**
- * Defines a set of tests that cover most of the API's functionality,
- * but is only using the HAL API interfaces to navigate through resources.
+ * Defines a set of integration tests (running against the fully initialized Spring Boot application)
+ * which cover most of the API's functionality.
+ * The same set of tests run twice (by the {@link ClientSideIT} and {@link ServerSideIT}
+ * subclasses), which is possible because the tests use the {@link CompanyApi} HAL API interface
+ * to navigate to the resources under test.
  */
 @SpringBootTest
 abstract class AbstractCompanyApiIT {
