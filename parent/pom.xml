@@ -123,6 +123,14 @@
             <topSiteURL>${site.deploy.url}</topSiteURL>
           </configuration>
         </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <systemPropertyVariables>
+              <org.slf4j.simpleLogger.logFile>target/surefire-slf4j.log</org.slf4j.simpleLogger.logFile>
+            </systemPropertyVariables>
+          </configuration>
+        </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
        <plugin>
          <groupId>org.eclipse.m2e</groupId>
