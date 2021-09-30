@@ -10,7 +10,7 @@ import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration
  * This test verifies the API functionality when being used from within the same application.
  * It executes all tests defined in {@link AbstractCompanyApiIT} directly against the server-side
  * resource implementations. It does not verify the link generation or JSON (de)serialization as the
- * {@link ExternalClientIT} does.
+ * {@link ExternalClientIT} or {@link MockMvcClientIT} do.
  */
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
