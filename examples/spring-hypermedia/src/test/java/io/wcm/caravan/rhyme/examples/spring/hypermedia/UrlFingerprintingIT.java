@@ -62,7 +62,7 @@ public class UrlFingerprintingIT {
   }
 
   @Test
-  void max_age_of_entry_point_without_timestamp_should_be_long() {
+  void max_age_of_entry_point_with_timestamp_should_be_long() {
 
     Integer maxAge = getResponse("/?timestamp=foo").getMaxAge();
 
