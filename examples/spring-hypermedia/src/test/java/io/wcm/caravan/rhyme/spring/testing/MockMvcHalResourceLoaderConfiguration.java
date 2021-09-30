@@ -27,9 +27,10 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -37,7 +38,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.common.collect.LinkedHashMultimap;
 
-import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
@@ -57,23 +57,28 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
  * <li>expanding link templates and following links to other resources</li>
  * </ul>
  */
-@Component
-@Primary // this ensures that this component is also used for any HTTP requests initiated via SpringRhyme#getRemoteResource
-public class MockMvcHalResourceLoader implements HalResourceLoader {
+@TestConfiguration
+public class MockMvcHalResourceLoaderConfiguration {
 
   private final HalResourceLoader delegate;
 
-  public MockMvcHalResourceLoader(@Autowired WebApplicationContext applicationContext) {
+  public MockMvcHalResourceLoaderConfiguration(@Autowired WebApplicationContext applicationContext) {
 
     MockMvcClient mockMvcClient = new MockMvcClient(applicationContext);
 
     delegate = HalResourceLoaderBuilder.create().withCustomHttpClient(mockMvcClient).build();
   }
 
-  @Override
-  public Single<HalResponse> getHalResource(String uri) {
+  public HalResponse getResponse(String uri) {
 
-    return delegate.getHalResource(uri);
+    return getResourceLoader().getHalResource(uri).blockingGet();
+  }
+
+  @Primary
+  @Bean
+  public HalResourceLoader getResourceLoader() {
+
+    return delegate;
   }
 
   private static final class MockMvcClient implements HttpClientSupport {

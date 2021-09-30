@@ -32,7 +32,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Iterables;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
@@ -40,11 +39,10 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 /**
  * Defines a set of integration tests (running against the fully initialized Spring Boot application)
  * which cover most of the API's functionality.
- * The same set of tests run twice (by the {@link ClientSideIT} and {@link ServerSideIT}
- * subclasses), which is possible because the tests use the {@link CompanyApi} HAL API interface
- * to navigate to the resources under test.
+ * The same set of tests are run three times (by the {@link ExternalClientIT}, {@link MockMvcClientIT} and
+ * {@link ServerSideIT} subclasses), which is possible because the tests use the {@link CompanyApi} HAL API
+ * interface to navigate to the resources under test.
  */
-@SpringBootTest
 abstract class AbstractCompanyApiIT {
 
   private static final long NON_EXISTANT_ID = 999L;
@@ -73,12 +71,12 @@ abstract class AbstractCompanyApiIT {
   // is used when the application is started. For the tests that need to
   // know an existing ID, we just pick the first one that exists in each repo.
 
-  private Long getIdOfFirstEmployee() {
+  protected Long getIdOfFirstEmployee() {
 
     return Iterables.firstOf(employeeRepository.findAll()).getId();
   }
 
-  private Long getIdOfFirstManager() {
+  protected Long getIdOfFirstManager() {
 
     return Iterables.firstOf(managerRepository.findAll()).getId();
   }

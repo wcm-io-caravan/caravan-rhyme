@@ -37,7 +37,7 @@ public class HalCrawler {
   private Consumer<UriComponentsBuilder> urlModifier;
 
   /**
-   * @param resourceLoader for integration tests, this is usually a {@link MockMvcHalResourceLoader}
+   * @param resourceLoader used to to load the resources
    */
   public HalCrawler(HalResourceLoader resourceLoader) {
     this.resourceLoader = resourceLoader;

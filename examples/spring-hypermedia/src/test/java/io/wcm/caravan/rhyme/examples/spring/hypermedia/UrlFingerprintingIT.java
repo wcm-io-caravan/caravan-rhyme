@@ -10,22 +10,25 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
-import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoader;
+import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
 import wiremock.com.google.common.collect.Iterables;
 
 @SpringBootTest
+@Import(MockMvcHalResourceLoaderConfiguration.class)
 public class UrlFingerprintingIT {
 
   private static final int SHORT_MAX_AGE_SECONDS = 10;
   private static final int LONG_MAX_AGE_SECONDS = (int)Duration.ofDays(100).getSeconds();
 
   @Autowired
-  private MockMvcHalResourceLoader mockMvcResourceLoader;
+  private HalResourceLoader mockMvcResourceLoader;
 
   private HalResponse getResponse(String uri) {
 
