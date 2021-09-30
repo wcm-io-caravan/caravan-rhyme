@@ -24,6 +24,7 @@ import javax.persistence.OneToOne;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 /**
@@ -32,6 +33,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @EntityListeners(RepositoryModificationListener.class)
+@Generated
 @NoArgsConstructor
 public class Employee {
 
