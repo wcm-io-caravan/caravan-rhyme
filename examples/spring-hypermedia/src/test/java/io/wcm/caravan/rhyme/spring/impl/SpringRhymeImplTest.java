@@ -36,10 +36,8 @@ public class SpringRhymeImplTest {
 
   @Mock
   private HttpServletRequest request;
-
   @Mock
   private HalResourceLoader resourceLoader;
-
   @Mock
   private SpringRhymeDocsIntegration rhymeDocs;
 

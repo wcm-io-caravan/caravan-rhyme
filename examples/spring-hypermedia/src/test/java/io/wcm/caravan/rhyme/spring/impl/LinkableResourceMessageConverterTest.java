@@ -41,10 +41,8 @@ public class LinkableResourceMessageConverterTest {
 
   @Mock
   private HttpServletRequest request;
-
   @Mock
   private HalResourceLoader resourceLoader;
-
   @Mock
   private SpringRhymeDocsIntegration rhymeDocs;
 
@@ -143,5 +141,4 @@ public class LinkableResourceMessageConverterTest {
       return new Link(REQUEST_URL);
     }
   }
-
 }
