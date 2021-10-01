@@ -82,7 +82,6 @@ public class VndErrorResponseRendererImpl implements VndErrorResponseRenderer {
         .withUri(requestUri)
         .withStatus(status)
         .withContentType(VndErrorResponseRenderer.CONTENT_TYPE)
-        .withMaxAge(metrics.getResponseMaxAge())
         .withBody(vndResource);
   }
 
