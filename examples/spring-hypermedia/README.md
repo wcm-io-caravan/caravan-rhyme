@@ -68,7 +68,7 @@ and it's as easy to navigate through the code as it is to navigate to your resou
 The annotations and Javadoc comments from the API interfaces are
 also the single source for the generated HTML documentation that is automatically linked from your resources with the `curies` relation.
 
-Tools such as the HAL Browser or HAL explorer will automatically link to this documentation directly for any custom relation that is being used. The exact same documentation is also used by developer's implementing the service, and developers will also see the same javadocs when using the Rhyme client proxies to access your API (if you decide to publish your interfaces to your consumers as a seperate module). This ensures that documentation is always in sync with the code with very little effort.
+Tools such as the HAL Browser or HAL explorer will automatically link to this documentation directly for any custom relation that is being used. The exact same documentation is also used by developers implementing the service (as its based on Javadocs), and consumers will also see the same Javadocs when using the Rhyme client proxies to access your API (if you decide to publish your interfaces to your consumers as a seperate module). This ensures that documentation is easy to maintain at a single location and easily available to developers using the API.
 
 ## Rendering HAL resources
 
@@ -86,7 +86,7 @@ See the [DetailedEmployeeController](src/main/java/io/wcm/caravan/rhyme/examples
 
 ## Caching and URL Fingerprinting
 
-Any link from the entry point contains an additional 'timestamp' parameter. It's based on the last modification date of the repositories. This URL fingerprinting allows any of the linked resource to set a long value (100 days) for the 'max-age' cache-control directive. Because the entry point is only cached for a short amount of time (10 seconds), any clients will still receive up-to-date resource for repeated requests (as long as they always start their requests at the entry point).
+Any link from the entry point contains an additional 'timestamp' parameter. It's based on the last modification date of the repositories. This URL fingerprinting allows any of the linked resource to set a long value (100 days) for the 'max-age' cache-control directive. Because the entry point is only cached for a short amount of time (10 seconds), any clients will still receive updated data quickly (as long as they always start their journey at the entry point).
 
 There is no code required within the resource implementations (and no parameters exposed in the API) to achieve this. All this is handled by the central [CompanyApiLinkBuilder](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/CompanyApiLinkBuilder.java)
 
