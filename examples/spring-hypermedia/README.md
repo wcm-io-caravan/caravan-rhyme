@@ -68,7 +68,7 @@ and it's as easy to navigate through the code as it is to navigate to your resou
 The annotations and Javadoc comments from the API interfaces are
 also the single source for the generated HTML documentation that is automatically linked from your resources with the `curies` relation.
 
-Tools such as the HAL Browser our HAL explorer will automatically link to this documentation directly for any custom relation that is being used. The exact same documentation is also used by developer's implementing the service, and developers will also see the same javadocs when using the Rhyme client proxies to access your API (if you decide to publish your interfaces to your consumers as a seperate module). This ensures that documentation is always in sync with the code with very little effort.
+Tools such as the HAL Browser or HAL explorer will automatically link to this documentation directly for any custom relation that is being used. The exact same documentation is also used by developer's implementing the service, and developers will also see the same javadocs when using the Rhyme client proxies to access your API (if you decide to publish your interfaces to your consumers as a seperate module). This ensures that documentation is always in sync with the code with very little effort.
 
 ## Rendering HAL resources
 
