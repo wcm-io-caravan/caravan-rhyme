@@ -58,7 +58,7 @@ public class SpringRhymeImplTest {
   }
 
   @HalApiInterface
-  interface MinimalTestResource extends LinkableResource {
+  public interface MinimalTestResource extends LinkableResource {
 
     @ResourceState
     ObjectNode getState();
@@ -103,4 +103,5 @@ public class SpringRhymeImplTest {
 
     assertThat(rhyme.getCoreRhyme()).isSameAs(coreRhyme);
   }
+
 }

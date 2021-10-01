@@ -69,7 +69,7 @@ class LinkableResourceMessageConverter extends AbstractHttpMessageConverter<Link
   protected LinkableResource readInternal(Class<? extends LinkableResource> clazz, HttpInputMessage inputMessage)
       throws IOException, HttpMessageNotReadableException {
 
-    throw new UnsupportedOperationException("Parsing resources is not implemented");
+    throw new HttpMessageNotReadableException("Parsing " + LinkableResource.class.getSimpleName() + " instances is not implemented", inputMessage);
   }
 
   @Override
