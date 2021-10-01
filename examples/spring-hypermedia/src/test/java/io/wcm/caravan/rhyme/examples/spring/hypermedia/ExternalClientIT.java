@@ -41,7 +41,7 @@ public class ExternalClientIT extends AbstractCompanyApiIT {
     this.companyApi = companyApi;
   }
 
-  // since we don't have access to the repository, the IDs need to be hard-coded for this test
+  // since we don't have access to the repository in this test, the IDs need to be hard-coded
   @Override
   protected Long getIdOfFirstEmployee() {
     return 2L;
