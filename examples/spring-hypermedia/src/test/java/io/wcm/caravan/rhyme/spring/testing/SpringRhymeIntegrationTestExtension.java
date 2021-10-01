@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -46,26 +50,41 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
  */
 public class SpringRhymeIntegrationTestExtension implements BeforeAllCallback, TestInstancePostProcessor, ParameterResolver {
 
-  private static ApplicationMainThread thread;
-
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
 
-    // TODO: use a Store to keep this thread alife while the tests are executed
+    // extract the configuration for this extension from the @SpringRhymeIntegrationTest annotation
+    Class<?> applicationClass = getApplicationClassFromAnnotation(context);
+    String enryPointUri = getEntryPointUriFromAnnotation(context);
+
+    // check if a thread to run the application under test was already started (by a previous test using the same extension)
+    Store store = getRootContextStore(context);
+    ApplicationMainThread thread = store.get(applicationClass, ApplicationMainThread.class);
     if (thread == null) {
 
-      thread = new ApplicationMainThread(getApplicationClass(context), new String[0]);
+      // if not then create a thread and put it in the store, so that it a) won't be garbage collected right away,
+      // and b) so that other classes for the same application don't have to restart the application as well
+      thread = new ApplicationMainThread(applicationClass, new String[0]);
+      store.put(applicationClass, thread);
+
+      // start the thread that will run the main method
       thread.start();
 
-      thread.waitUntilEntryPointCanBeLoaded(getEntryPointUri(context));
+      // wait until the server has been fully started
+      thread.blockCurrentThreadUntilEntryPointCanBeLoaded(enryPointUri);
     }
+  }
+
+  private Store getRootContextStore(ExtensionContext context) {
+
+    return context.getRoot().getStore(Namespace.create(SpringRhymeIntegrationTestExtension.class));
   }
 
   @Override
   public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception {
 
     getEntryPointResourceField(context)
-        .ifPresent(field -> injectProxyIntoField(getEntryPointUri(context), testInstance, field));
+        .ifPresent(field -> injectProxyIntoField(getEntryPointUriFromAnnotation(context), testInstance, field));
   }
 
   @Override
@@ -77,7 +96,7 @@ public class SpringRhymeIntegrationTestExtension implements BeforeAllCallback, T
   @Override
   public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
 
-    return createClientProxy(getEntryPointUri(extensionContext), parameterContext.getParameter().getType());
+    return createClientProxy(getEntryPointUriFromAnnotation(extensionContext), parameterContext.getParameter().getType());
   }
 
   public void injectProxyIntoField(String entryPointUri, Object testInstance, Field field) {
@@ -134,29 +153,29 @@ public class SpringRhymeIntegrationTestExtension implements BeforeAllCallback, T
       }
 
       return testAnnotation;
-    })
-        .orElseThrow(() -> new HalApiDeveloperException("No test class was found for " + context));
+
+    }).orElseThrow(() -> new HalApiDeveloperException("No test class was found for " + context));
   }
 
-  private static String getEntryPointUri(ExtensionContext context) {
+  private static String getEntryPointUriFromAnnotation(ExtensionContext context) {
 
     SpringRhymeIntegrationTest testAnnotation = getAnnotation(context);
 
     String entryPointUri = testAnnotation.entryPointUri();
     if (StringUtils.isBlank(entryPointUri)) {
-      throw new HalApiDeveloperException("entryPointUri attribute is missing for " + SpringRhymeIntegrationTest.class);
+      throw new HalApiDeveloperException("entryPointUri attribute is missing on " + SpringRhymeIntegrationTest.class);
     }
 
     return entryPointUri;
   }
 
-  private static Class getApplicationClass(ExtensionContext context) {
+  private static Class getApplicationClassFromAnnotation(ExtensionContext context) {
 
     SpringRhymeIntegrationTest testAnnotation = getAnnotation(context);
 
     Class<?> applicationClass = testAnnotation.applicationClass();
     if (applicationClass == null) {
-      throw new HalApiDeveloperException("applicationClass attribute is missing for " + SpringRhymeIntegrationTest.class);
+      throw new HalApiDeveloperException("applicationClass attribute is missing on " + SpringRhymeIntegrationTest.class);
     }
 
     return applicationClass;
@@ -188,22 +207,25 @@ public class SpringRhymeIntegrationTestExtension implements BeforeAllCallback, T
       }
     }
 
-    private void waitUntilEntryPointCanBeLoaded(String entryPointUri) {
+    private void blockCurrentThreadUntilEntryPointCanBeLoaded(String entryPointUri) {
 
       await()
           .atMost(Duration.ofSeconds(30))
-          .alias("Spring Boot application responds to HTTP request")
+          .alias(applicationClass.getSimpleName() + " responds to HTTP request")
           .untilAsserted(() -> assertThatEntryPointCanBeLoaded(entryPointUri));
     }
 
-    private void assertThatEntryPointCanBeLoaded(String entryPointUri) {
+    private void assertThatEntryPointCanBeLoaded(String entryPointUri) throws MalformedURLException {
 
+      // for any errors that happened in the thread itself during startup, we want to fail fast
       if (startupError != null) {
         throw startupError;
       }
 
+      URL url = URI.create(entryPointUri).toURL();
+
       try {
-        HttpURLConnection connection = (HttpURLConnection)URI.create(entryPointUri).toURL().openConnection();
+        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
         connection.connect();
 
         assertThat(connection.getResponseCode())
@@ -211,6 +233,8 @@ public class SpringRhymeIntegrationTestExtension implements BeforeAllCallback, T
             .isEqualTo(200);
       }
       catch (IOException ex) {
+        // it's important that we wrap the exception in an AssertionError here, because any other
+        // exception would fail fast, but this is an exception for which we want to wait until itgoes away
         fail("Failed to load " + entryPointUri, ex);
       }
     }
