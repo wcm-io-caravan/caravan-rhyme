@@ -3,7 +3,6 @@ package io.wcm.caravan.rhyme.spring.impl;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.time.Duration;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,7 @@ public class SpringErrorHandlingController {
     ErrorThrowingResource triggerResponseStatusException(@TemplateVariable("statusCode") Integer statusCode);
 
     @Related("errors:gone")
-    ErrorThrowingResource triggerGoneExceptionWith100DaysMaxAge();
+    ErrorThrowingResource triggerGoneException();
 
     @Related("errors:tooManyRequests")
     ErrorThrowingResource triggerTooManyRequests();
@@ -56,13 +55,13 @@ public class SpringErrorHandlingController {
   }
 
   @ResponseStatus(HttpStatus.GONE)
-  public static class GoneException extends RuntimeException {
+  private static class ExceptionWithGoneStatusInValueAttribute extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
   }
 
   @ResponseStatus(code = HttpStatus.TOO_MANY_REQUESTS)
-  public static class TooManyRequestExceptions extends RuntimeException {
+  private static class ExceptionWithTooManyRequestsStatusInCodeAttribute extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
   }
@@ -82,7 +81,7 @@ public class SpringErrorHandlingController {
       }
 
       @Override
-      public ErrorThrowingResource triggerGoneExceptionWith100DaysMaxAge() {
+      public ErrorThrowingResource triggerGoneException() {
         return gone();
       }
 
@@ -122,10 +121,7 @@ public class SpringErrorHandlingController {
 
       @Override
       public ObjectNode getStateWithError() {
-
-        rhyme.setResponseMaxAge(Duration.ofDays(100));
-
-        throw new GoneException();
+        throw new ExceptionWithGoneStatusInValueAttribute();
       }
 
       @Override
@@ -142,7 +138,7 @@ public class SpringErrorHandlingController {
 
       @Override
       public ObjectNode getStateWithError() {
-        throw new TooManyRequestExceptions();
+        throw new ExceptionWithTooManyRequestsStatusInCodeAttribute();
       }
 
       @Override

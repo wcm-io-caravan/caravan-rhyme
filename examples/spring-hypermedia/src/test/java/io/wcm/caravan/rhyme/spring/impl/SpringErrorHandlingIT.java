@@ -4,7 +4,6 @@ import static io.wcm.caravan.rhyme.spring.impl.SpringErrorHandlingController.BAS
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
-import java.time.Duration;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,20 +70,10 @@ public class SpringErrorHandlingIT {
   void should_extract_status_code_from_ResponseStatus_annotation() {
 
     HalResponse errorResponse = getResponseFromCaughtClientException(
-        (er) -> er.triggerGoneExceptionWith100DaysMaxAge());
+        (er) -> er.triggerGoneException());
 
     assertThat(errorResponse.getStatus())
         .isEqualTo(HttpStatus.GONE.value());
-  }
-
-  @Test
-  void should_use_max_age_set_before_exception() {
-
-    HalResponse errorResponse = getResponseFromCaughtClientException(
-        (er) -> er.triggerGoneExceptionWith100DaysMaxAge());
-
-    assertThat(errorResponse.getMaxAge())
-        .isEqualTo(Duration.ofDays(100).getSeconds());
   }
 
   @Test

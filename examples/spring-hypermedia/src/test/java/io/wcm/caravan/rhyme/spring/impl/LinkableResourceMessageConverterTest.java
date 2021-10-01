@@ -126,9 +126,9 @@ public class LinkableResourceMessageConverterTest {
     return new HalResource(jsonResponse);
   }
 
-  private final class MinimalTestResourceImpl implements MinimalTestResource {
+  static final class MinimalTestResourceImpl implements MinimalTestResource {
 
-    ObjectNode state = JsonNodeFactory.instance.objectNode()
+    private final ObjectNode state = JsonNodeFactory.instance.objectNode()
         .put("foo", "bar");
 
     @Override

@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +28,7 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.relations.VndErrorRelations;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.spring.impl.LinkableResourceMessageConverterTest.MinimalTestResourceImpl;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -90,6 +93,20 @@ public class SpringRhymeImplTest {
 
     assertThat(aboutLink).isNotNull();
     assertThat(aboutLink.getHref()).isEqualTo(REQUEST_PATH + "?" + REQUEST_QUERY);
+  }
+
+  @Test
+  public void renderHalResponse_should_use_max_age() throws Exception {
+
+    rhyme.setResponseMaxAge(Duration.ofSeconds(10));
+
+    MinimalTestResourceImpl resource = new MinimalTestResourceImpl();
+
+    ResponseEntity<JsonNode> jsonEntity = rhyme.renderResponse(resource);
+
+    assertThat(jsonEntity.getHeaders().getCacheControl())
+        .isNotNull()
+        .contains("max-age=10");
   }
 
   @Test
