@@ -1,21 +1,15 @@
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-
-import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.time.Duration;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
 import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
+import io.wcm.caravan.rhyme.spring.testing.SpringRhymeIntegrationTest;
+import io.wcm.caravan.rhyme.spring.testing.SpringRhymeIntegrationTestExtension;
 
 /**
  * This test is similar to {@link MockMvcClientIT}, but it's actually starting
@@ -30,38 +24,21 @@ import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration
  * <li>It is verified that the application properly starts up using the main method</li>
  * </ul>
  */
+@ExtendWith(SpringRhymeIntegrationTestExtension.class)
+@SpringRhymeIntegrationTest(
+    entryPointUri = ExternalClientIT.ENTRY_POINT_URL,
+    applicationClass = SpringRhymeHypermediaApplication.class)
 public class ExternalClientIT extends AbstractCompanyApiIT {
 
-  private static final String ENTRY_POINT_URL = "http://localhost:8081";
+  static final String ENTRY_POINT_URL = "http://localhost:8081";
 
-  private static Thread thread;
+  private final CompanyApi companyApi;
 
-  @BeforeAll
-  public static void startApplication() throws Exception {
-
-    // TODO: create a JUnit extension that properly takes care of application startup
-    thread = new Thread(() -> SpringRhymeHypermediaApplication.main(new String[0]));
-    thread.start();
-
-    await()
-        .atMost(Duration.ofSeconds(30))
-        .alias("Spring Boot application responds to HTTP request")
-        .untilAsserted(() -> assertThatEntryPointCanBeLoaded());
-  }
-
-  private static void assertThatEntryPointCanBeLoaded() {
-
-    try {
-      HttpURLConnection connection = (HttpURLConnection)URI.create(ENTRY_POINT_URL).toURL().openConnection();
-      connection.connect();
-
-      assertThat(connection.getResponseCode())
-          .as("Response code of " + ENTRY_POINT_URL)
-          .isEqualTo(200);
-    }
-    catch (IOException ex) {
-      Assertions.fail("An exception was caught", ex);
-    }
+  /**
+   * @param companyApi a client proxy created by the {@link SpringRhymeIntegrationTestExtension}
+   */
+  ExternalClientIT(CompanyApi companyApi) {
+    this.companyApi = companyApi;
   }
 
   // since we don't have access to the repository, the IDs need to be hard-coded for this test
@@ -78,17 +55,11 @@ public class ExternalClientIT extends AbstractCompanyApiIT {
   @Override
   protected CompanyApi getApiImplementionOrClientProxy() {
 
-    // Create a HalApiClient that is using a UrlHttpConnection to execute actual HTTP requests
-    // against the spring application that was started
-    HalApiClient apiClient = HalApiClient.create();
-
-    // Return a dynamic client proxy that can fetch the API's entry point resource from the root path
-    return apiClient.getRemoteResource(ENTRY_POINT_URL, CompanyApi.class);
-
-    // All of the tests in the superclass will now start with fetching that single entry point
-    // with an HTTP request to the CompanyApiController (exactly as an external consumer would),
+    // All of the tests in the superclass will use this single entry point proxy to execute
+    // an HTTP request to the CompanyApiController (exactly as an external consumer would),
     // and then follow links to other resources as required, which will trigger additional
     // requests to the other controllers.
+    return companyApi;
   }
 
   @Test
