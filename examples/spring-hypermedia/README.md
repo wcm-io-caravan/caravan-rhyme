@@ -56,7 +56,7 @@ This is an example with very limited functionality, but the point is that is dem
 
 ## Using annotated interfaces to define your API
 
-You can easily browse the source code on github by starting with the [CompanyApi](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/CompanyApi.java)
+You can easily browse the source code on github by starting with the [CompanyApi](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/CompanyApi.java#34)
 entrypoint interface, and then use github's cross-referencing links that pop up when you click on a resource class name. 'Definition' links will always take you to the corresponding
 `@HalApiInterface` definition, and 'References' will find the server-side implementation class.
 
@@ -74,19 +74,19 @@ Tools such as the HAL Browser our HAL explorer will automatically link to this d
 
 In a Rhyme web service built with Spring Boot, to render a resource you only have to return an implementation of the corresponding interface in your controller method. In this example, the implementations have very little logic so they are all defined directly in the controllers (often as anonymous inner classes). The nice thing about having these resources as well-structured classes is that you can easily refactor and move the code around as required while your project grows.
 
-Linking to other resources is as easy as calling the methods of other controllers to create the resources you want to link to. See the [CompanyApiController](examples/spring-hypermedia/src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/CompanyApiController.java) as an example how it easily defines links for the HAL representation of the entry point. Note that the way this works also allows internal consumers to call those methods directly, with the same semantics defined in the interface.
+Linking to other resources is as easy as calling the methods of other controllers to create the resources you want to link to. See the [CompanyApiController](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/CompanyApiController.java) as an example how it easily defines links for the HAL representation of the entry point. Note that the way this works also allows internal consumers to call those methods directly, with the same semantics defined in the interface.
 
 ## Embedded Resources
 
-The [EmployeeResourceImpl](examples/spring-hypermedia/src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/EmployeeController.java#L134) class is a good example how you can control whether a resource should be embedded. Simply implementing the 'EmbeddedableResource' interface would embed this resource wherever it is linked. By overriding '#isEmbedded()' you can control in which context this should happen. In this example this depends on which constructor you use, but you can use any logic you want to make that decision. For example you can also expose additional links or template variables in your API to allow your clients to activate or disable the use of embedded resources.
+The [EmployeeResourceImpl](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/EmployeeController.java#L134) class is a good example how you can control whether a resource should be embedded. Simply implementing the 'EmbeddedableResource' interface would embed this resource wherever it is linked. By overriding '#isEmbedded()' you can control in which context this should happen. In this example this depends on which constructor you use, but you can use any logic you want to make that decision. For example you can also expose additional links or template variables in your API to allow your clients to activate or disable the use of embedded resources.
 
 ## Consuming HAL resources with Rhyme client proxies
 
-See the [DetailedEmployeeController](examples/spring-hypermedia/src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/DetailedEmployeeController.java) as an example for a controller that fetches other resources from an upstream service to build its response. In this case we are just retrieving other resources from the same API on localhost, but it would work the same way for external services.
+See the [DetailedEmployeeController](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/DetailedEmployeeController.java) as an example for a controller that fetches other resources from an upstream service to build its response. In this case we are just retrieving other resources from the same API on localhost, but it would work the same way for external services.
 
 ## Caching and URL Fingerprinting
 
 Any link from the entry point contains an additional 'timestamp' parameter. It's based on the last modification date of the repositories. This URL fingerprinting allows any of the linked resource to set a long value (100 days) for the 'max-age' cache-control directive. Because the entry point is only cached for a short amount of time (10 seconds), any clients will still receive up-to-date resource for repeated requests (as long as they always start their requests at the entry point).
 
-There is no code required within the resource implementations (and no parameters exposed in the API) to achieve this. All this is handled by the central [CompanyApiLinkBuilder](examples/spring-hypermedia/src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/CompanyApiLinkBuilder.java)
+There is no code required within the resource implementations (and no parameters exposed in the API) to achieve this. All this is handled by the central [CompanyApiLinkBuilder](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/CompanyApiLinkBuilder.java)
 
