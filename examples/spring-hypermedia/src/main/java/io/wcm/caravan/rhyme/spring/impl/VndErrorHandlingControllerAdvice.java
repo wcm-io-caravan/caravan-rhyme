@@ -67,5 +67,4 @@ class VndErrorHandlingControllerAdvice {
 
     return rhyme.renderVndErrorResponse(ex);
   }
-
 }

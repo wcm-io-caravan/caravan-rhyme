@@ -46,7 +46,15 @@ class SpringExceptionStatusAndLoggingStrategy implements ExceptionStatusAndLoggi
     }
 
     if (error.getClass().isAnnotationPresent(ResponseStatus.class)) {
-      return error.getClass().getAnnotation(ResponseStatus.class).code().value();
+
+      ResponseStatus annotation = error.getClass().getAnnotation(ResponseStatus.class);
+
+      HttpStatus fromCodeAttribute = annotation.code();
+      if (fromCodeAttribute != HttpStatus.INTERNAL_SERVER_ERROR) {
+        return fromCodeAttribute.value();
+      }
+
+      return annotation.value().value();
     }
 
     if (error instanceof MissingServletRequestParameterException) {

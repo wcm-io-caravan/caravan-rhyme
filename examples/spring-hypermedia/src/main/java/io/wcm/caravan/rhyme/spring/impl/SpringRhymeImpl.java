@@ -149,9 +149,7 @@ class SpringRhymeImpl implements SpringRhyme {
 
     BodyBuilder builder = ResponseEntity.status(halResponse.getStatus());
 
-    if (halResponse.getContentType() != null) {
-      builder.contentType(MediaType.parseMediaType(halResponse.getContentType()));
-    }
+    builder.contentType(MediaType.parseMediaType(halResponse.getContentType()));
 
     if (halResponse.getMaxAge() != null) {
       builder.cacheControl(CacheControl.maxAge(halResponse.getMaxAge(), TimeUnit.SECONDS));
