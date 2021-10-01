@@ -181,6 +181,4 @@ public class UrlFingerprintingImplTest {
 
     return fingerprinting.createLinkWith(linkBuilder).build();
   }
-
-
 }

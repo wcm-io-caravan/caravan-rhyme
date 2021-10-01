@@ -87,7 +87,9 @@ public class SpringRhymeIntegrationTestExtension implements BeforeAllCallback, T
     try {
       field.set(testInstance, clientProxy);
     }
+    //CHECKSTYLE:OFF - IllegalCatch (we really want to catch everything here)
     catch (Throwable ex) {
+      //CHECKSTYLE:ON
       throw new HalApiDeveloperException("Failed to set field " + field.getName() + " for test " + field.getDeclaringClass() + ", make sure it's public", ex);
     }
   }
@@ -179,7 +181,9 @@ public class SpringRhymeIntegrationTestExtension implements BeforeAllCallback, T
 
         mainMethod.invoke(null, new Object[] { args });
       }
+      //CHECKSTYLE:OFF - IllegalCatch (we really want to catch everything here)
       catch (Throwable ex) {
+        //CHECKSTYLE:ON
         startupError = new RuntimeException("Failed to execute " + applicationClass.getName() + "#main", ex);
       }
     }

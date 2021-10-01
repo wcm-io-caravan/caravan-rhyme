@@ -25,13 +25,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * The application class to configure and start the example service
  */
+//CHECKSTYLE:OFF - FinalClass (Spring will extended this internally)
 @SpringBootApplication(scanBasePackages = { "io.wcm.caravan.rhyme.spring", "io.wcm.caravan.rhyme.examples.spring.hypermedia" })
-public class SpringRhymeHypermediaApplication {
+public class SpringRhymeHypermediaApplication { //CHECKSTYLE:ON
 
   /**
+   * Starts the spring boot application
    * @param args command line arguments
    */
-  public static void main(String[] args) {
+  //CHECKSTYLE:OFF - UncommentedMain (we do need this method)
+  public static void main(String[] args) { //CHECKSTYLE:ON
     SpringApplication.run(SpringRhymeHypermediaApplication.class, args);
   }
 }
