@@ -15,14 +15,14 @@ import io.wcm.caravan.rhyme.spring.api.RhymeLinkBuilder;
 class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
   private final Link link;
-  private final Map<String, String> timestampParameters;
+  private final Map<String, String> fingerprintingParameters;
 
   private boolean withFingerprinting = true;
 
-  SpringRhymeLinkBuilder(WebMvcLinkBuilder webMvcLinkBuilder, Map<String, String> timestampParameters) {
+  SpringRhymeLinkBuilder(WebMvcLinkBuilder webMvcLinkBuilder, Map<String, String> fingerprintingParameters) {
 
     this.link = new Link(webMvcLinkBuilder.toString());
-    this.timestampParameters = timestampParameters;
+    this.fingerprintingParameters = fingerprintingParameters;
   }
 
   @Override
@@ -51,9 +51,9 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
   }
 
   @Override
-  public SpringRhymeLinkBuilder withFingerprintingOnlyIf(boolean value) {
+  public SpringRhymeLinkBuilder withFingerprintingOnlyIf(boolean condition) {
 
-    withFingerprinting = value;
+    withFingerprinting = condition;
     return this;
   }
 
@@ -63,8 +63,7 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(link.getHref());
 
     if (withFingerprinting) {
-      timestampParameters.forEach(
-          (name, value) -> uriBuilder.queryParam(name, value));
+      fingerprintingParameters.forEach(uriBuilder::queryParam);
     }
 
     link.setHref(uriBuilder.build().toUriString());

@@ -78,7 +78,7 @@ public class SpringErrorHandlingController {
 
       @Override
       public ErrorThrowingResource triggerResponseStatusException(Integer statusCode) {
-        return get(statusCode);
+        return responseStatus(statusCode);
       }
 
       @Override
@@ -99,7 +99,7 @@ public class SpringErrorHandlingController {
   }
 
   @GetMapping(BASE_PATH + "/responseStatusException")
-  ErrorThrowingResource get(@RequestParam Integer statusCode) {
+  ErrorThrowingResource responseStatus(@RequestParam Integer statusCode) {
 
     return new ErrorThrowingResource() {
 
@@ -110,7 +110,7 @@ public class SpringErrorHandlingController {
 
       @Override
       public Link createLink() {
-        return createLinkTo(ctrl -> ctrl.get(statusCode));
+        return createLinkTo(ctrl -> ctrl.responseStatus(statusCode));
       }
     };
   }

@@ -52,10 +52,10 @@ class UrlFingerprintingImpl implements UrlFingerprinting {
   }
 
   @Override
-  public UrlFingerprinting withConditionalMaxAge(Duration mutableMaxAge, Duration immutableMaxAge) {
+  public UrlFingerprinting withConditionalMaxAge(Duration mutableMaxAgeValue, Duration immutableMaxAgeValue) {
 
-    this.mutableMaxAge = mutableMaxAge;
-    this.immutableMaxAge = immutableMaxAge;
+    this.mutableMaxAge = mutableMaxAgeValue;
+    this.immutableMaxAge = immutableMaxAgeValue;
 
     return this;
   }
@@ -70,14 +70,19 @@ class UrlFingerprintingImpl implements UrlFingerprinting {
   public RhymeLinkBuilder createLinkWith(WebMvcLinkBuilder linkBuilder) {
 
     if (!timestampParameters.isEmpty()) {
-      if (allTimestampsPresentInRequest && immutableMaxAge != null) {
-        rhyme.setResponseMaxAge(immutableMaxAge);
-      }
-      else if (mutableMaxAge != null) {
-        rhyme.setResponseMaxAge(mutableMaxAge);
-      }
+      applyMaxAge();
     }
 
     return new SpringRhymeLinkBuilder(linkBuilder, timestampParameters);
+  }
+
+  private void applyMaxAge() {
+
+    if (allTimestampsPresentInRequest && immutableMaxAge != null) {
+      rhyme.setResponseMaxAge(immutableMaxAge);
+    }
+    else if (mutableMaxAge != null) {
+      rhyme.setResponseMaxAge(mutableMaxAge);
+    }
   }
 }
