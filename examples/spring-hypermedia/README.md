@@ -9,8 +9,8 @@ to render and consume [HAL+JSON](https://stateless.group/hal_specification.html)
 It's based on the [Spring HATEOAS - Hypermedia Example](https://github.com/spring-projects/spring-hateoas-examples/tree/main/hypermedia)
 project by [Greg L. Turnquist](https://github.com/gregturn) and shows the similarities and differences to a plain [Spring HATEOAS](https://spring.io/projects/spring-hateoas) application.
 
-One area where it differs is that the meaning of the`company:detailedEmployee` relation was changed to become an example for how a service built with **Rhyme** 
-can easily create a resource based on other HAL+JSON resources retrieved by HTTP from an upstream service. Make sure not to miss loading this resource when you run the example, and have a look at the embedded `rhyme:metadata` resource to see how the core Rhyme framework keeps track of those requests to the upstream service (as explained [here](https://github.com/wcm-io-caravan/caravan-rhyme#data-debugging-and-performance-analysis) in the root README)
+One area where it differs is that the meaning of the `company:detailedEmployee` relation was changed to become an example for how a service built with **Rhyme** 
+can easily componse a resource based on other HAL+JSON resources retrieved by HTTP from an upstream service. Make sure not to miss loading this resource when you run the example, and have a look at the embedded `rhyme:metadata` resource to see how the core Rhyme framework keeps track of those requests to the upstream service (as explained [here](https://github.com/wcm-io-caravan/caravan-rhyme#data-debugging-and-performance-analysis) in the root README)
 
 # Build and Run
 
@@ -78,15 +78,15 @@ Linking to other resources works by calling the methods of other controllers to 
 
 ## Embedded Resources
 
-The [EmployeeResourceImpl](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/EmployeeController.java#L134) class is a good example how you can control whether a resource should be embedded. Simply implementing the 'EmbeddedableResource' interface would embed this resource wherever it is linked. By overriding '#isEmbedded()' you can control in which context this should happen. In this example this depends on which constructor you use, but you can use any logic you want to make that decision. For example you can also expose additional links or template variables in your API to allow your clients to activate or disable the use of embedded resources.
+The [EmployeeResourceImpl](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/EmployeeController.java#L134) class is a good example how you can control whether a resource should be embedded. Simply implementing the `EmbeddedableResource` interface would embed this resource wherever it is linked. By overriding `#isEmbedded()` you can control when this should happen. In this example, it depends on which constructor you use, but you can use any logic you want to make that decision. For example you can also expose additional links or template variables in your API to allow your clients to activate or disable the use of embedded resources.
 
 ## Consuming HAL resources with Rhyme client proxies
 
-See the [DetailedEmployeeController](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/DetailedEmployeeController.java) as an example for a controller that fetches other resources from an upstream service to build its response. In this case we are just retrieving other resources from the same API on localhost, but it would work the same way for external services.
+See the [DetailedEmployeeController](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/DetailedEmployeeController.java) as an example for a controller that fetches other resources from an upstream service to build its own response. In this case we are just retrieving other resources from the same API on localhost, but it would work the same way for external services.
 
 ## Caching and URL Fingerprinting
 
-Any link from the entry point contains an additional 'timestamp' parameter. It's based on the last modification date of the repositories. This URL fingerprinting allows any of the linked resource to set a long value (100 days) for the 'max-age' cache-control directive. Because the entry point is only cached for a short amount of time (10 seconds), any clients will still receive updated data quickly (as long as they always start their journey at the entry point).
+Any link from the entry point contains an additional `timestamp` parameter. It's based on the last modification date of the repositories. This URL fingerprinting allows any of the linked resource to set a long value (100 days) for the `max-age` cache-control directive. Because the entry point is only cached for a short amount of time (10 seconds), any clients will still receive updated data quickly (as long as they always start their journey at the entry point).
 
 There is no code required within the resource implementations (and no parameters exposed in the API) to achieve this. All this is handled by the central [CompanyApiLinkBuilder](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/CompanyApiLinkBuilder.java).
 
