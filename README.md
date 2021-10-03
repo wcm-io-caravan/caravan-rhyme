@@ -437,7 +437,7 @@ By default only responses with status code 200 will be cached, and a default max
 
 For all this to work best, you should build your API with the following pattern:
 - for the entry point resource to your HAL API you should set a short (but not zero!) max-age value via `Rhyme#setResponseMaxAge(Duration)`
-- you should ensure that the entry point resource is rendering quickly, as it will be requested often (since any interaction with your API start with requesting the entry point)
+- you should ensure that the entry point resource is rendering quickly, as it will be requested often (since any interaction with your API starts with requesting the entry point)
 - any links pointing to resources that are expensive to generate should contain some kind of fingerprint (e.g. a hash or timestamp) in the URL that changes whenever the data changes. 
 - when a resource with such a fingerprint in the URL is rendered, you can set the max-age to a very high value as they are now essentially immutable (because if data changes, the clients will fetch them with a different URL instead)
 - Consumers will now automatically "poll" the entry point repeatedly. But as long as the data (and therefore the URLs) doesn't change, they will continue to use the same fingerprinted URLs to fetch the more expensive resources (and there is a high chance that those can be found in cache)
