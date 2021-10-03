@@ -327,4 +327,32 @@ public class TemplateVariablesTest {
 
     assertThat(linkedState).isNotNull();
   }
+
+  @Test
+  public void should_fail_if_no_bean_properties_defined_in_interface() throws Exception {
+
+    Throwable ex = catchThrowable(() -> client.createProxy(ResourceWithInvalidTemplateVariables.class).getItem(null));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class);
+
+    assertThat(ex.getCause())
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("Not a single getter method following the JavaBeans naming convention");
+  }
+
+  @HalApiInterface
+  interface ResourceWithInvalidTemplateVariables {
+
+    @Related(ITEM)
+    Single<LinkedResourceWithSingleState> getItem(@TemplateVariables DtoWithInvalidSignatures dto);
+  }
+
+  public interface DtoWithInvalidSignatures {
+
+    Integer foo();
+
+    // this is not a valid bean property, since the "is" variation is only valid for primitive boolean properties
+    Boolean isFlag();
+  }
 }

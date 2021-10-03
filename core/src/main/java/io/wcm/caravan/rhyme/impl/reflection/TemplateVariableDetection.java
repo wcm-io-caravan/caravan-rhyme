@@ -21,6 +21,7 @@ package io.wcm.caravan.rhyme.impl.reflection;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -196,7 +197,14 @@ public final class TemplateVariableDetection {
 
   private static <T> List<TemplateVariableWithTypeInfo> getVariableInfosFromPublicGetter(Object instance, Class dtoClass) {
     try {
-      return Stream.of(Introspector.getBeanInfo(dtoClass).getPropertyDescriptors())
+
+      PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(dtoClass).getPropertyDescriptors();
+      if (propertyDescriptors.length == 0) {
+        String msg = "Not a single getter method following the JavaBeans naming conventions was found in " + dtoClass;
+        throw new HalApiDeveloperException(msg);
+      }
+
+      return Stream.of(propertyDescriptors)
           .map(property -> {
             Method readMethod = property.getReadMethod();
             Object value = invokeMethod(readMethod, instance);
