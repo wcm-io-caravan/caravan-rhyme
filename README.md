@@ -30,6 +30,7 @@ The key concepts and features of **Rhyme** are:
 - [core](core) - the core framework that can be integrated within any Java project
 - [osgi-jaxrs](osgi-jaxrs) - integration module for implementing HAL web services using the [OSGi R7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
 - [aem](aem) - integration module for Adobe Experience Manager (work in progress and not yet released)
+- [examples/spring-hypermedia](examples/spring-hypermedia) - a well documented Spring Boot application that contains examples for most of the key concepts of the core framework
 - [examples/aem-hal-browser](examples/aem-hal-browser) - an example project for AEM that shows how HAL resources can be implemented as sling models (work in progress)
 - [examples/osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
 - [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
@@ -444,6 +445,7 @@ For all this to work best, you should build your API with the following pattern:
 
 Your consumers will not have to anything to benefit from these immutable resoures, as the additional fingerprinting in your URLs is not exposed anywhere in your API. It's entirely up to the server-side implementation to decide for which links these fingerprints are added, and the clients will just pick it up by following the links.
 
+To see all this in action, check out the [examples/spring-hypermedia](examples/spring-hypermedia) module.
 
 ## Data debugging and performance analysis
 
