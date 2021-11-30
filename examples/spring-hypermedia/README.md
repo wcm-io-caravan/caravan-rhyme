@@ -14,14 +14,12 @@ can easily componse a resource based on other HAL+JSON resources retrieved by HT
 
 # Build and Run
 
-Until the `feature/spring-hypermedia-example` branch is merged to develop, you need to build this example from source to run it.
 
 Using **JDK 8 or 11** and **Apache Maven 3.6.0** (or higher) you should be able to build and run the example like this:
 
 ```
 git clone https://github.com/wcm-io-caravan/caravan-rhyme.git
 cd caravan-rhyme
-git checkout feature/spring-hypermedia-example
 mvn clean install
 mvn -f examples/spring-hypermedia/ spring-boot:run
 ```
