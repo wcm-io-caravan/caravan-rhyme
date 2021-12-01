@@ -120,6 +120,16 @@
         <version>${spring-boot.version}</version>
       </plugin>
 
+      <!-- do not generate site for this project -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+      </plugin>
+
       <!-- Generate HTML documentation into classpath resources-->
       <plugin>
         <groupId>io.wcm.caravan.maven.plugins</groupId>
