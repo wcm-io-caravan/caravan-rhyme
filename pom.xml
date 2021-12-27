@@ -43,6 +43,7 @@
     <module>docs-maven-plugin</module>
     <module>aem</module>
     <module>osgi-jaxrs</module>
+    <module>spring</module>
     <module>examples/aem-hal-browser</module>
     <module>examples/osgi-jaxrs-example-launchpad</module>
     <module>examples/osgi-jaxrs-example-service</module>
