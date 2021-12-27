@@ -32,12 +32,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.google.common.collect.Iterables;
+
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
 import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
-import wiremock.com.google.common.collect.Iterables;
 
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
