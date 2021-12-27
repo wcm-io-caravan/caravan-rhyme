@@ -90,6 +90,12 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- this avoids integration tests failures in eclipse -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- include the test-jar from rhyme.core (for the wiremock HTTP client test) -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
