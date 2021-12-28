@@ -37,8 +37,8 @@ import com.google.common.collect.Iterables;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
-import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
+import io.wcm.caravan.rhyme.testing.client.HalCrawler;
+import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration;
 
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)

@@ -27,8 +27,8 @@ import org.springframework.boot.web.servlet.context.ServletWebServerApplicationC
 
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
-import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
+import io.wcm.caravan.rhyme.testing.client.HalCrawler;
+import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration;
 
 /**
  * This test is similar to {@link MockMvcClientIT}, but it's starting

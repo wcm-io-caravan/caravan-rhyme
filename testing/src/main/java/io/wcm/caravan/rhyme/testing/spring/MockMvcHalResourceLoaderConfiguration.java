@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.spring.testing;
+package io.wcm.caravan.rhyme.testing.spring;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
