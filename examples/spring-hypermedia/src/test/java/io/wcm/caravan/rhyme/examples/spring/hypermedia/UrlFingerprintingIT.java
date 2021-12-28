@@ -32,12 +32,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.google.common.collect.Iterables;
+
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
 import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
-import wiremock.com.google.common.collect.Iterables;
 
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
@@ -136,7 +137,7 @@ public class UrlFingerprintingIT {
   void all_resources_should_have_short_max_age_if_called_without_query() {
 
     HalCrawler crawlerThatRemovesQuery = new HalCrawler(mockMvcResourceLoader)
-        .withModifiedUrls(uri -> uri.replaceQuery(null));
+        .withModifiedUrls(this::removeQuery);
 
     List<HalResponse> responses = crawlerThatRemovesQuery.getAllResponses();
 
@@ -145,4 +146,11 @@ public class UrlFingerprintingIT {
         .containsOnly(SHORT_MAX_AGE_SECONDS);
   }
 
+  private String removeQuery(String url) {
+
+    return UriComponentsBuilder.fromUriString(url)
+        .replaceQuery(null)
+        .build()
+        .toUriString();
+  }
 }

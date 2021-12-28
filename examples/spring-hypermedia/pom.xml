@@ -29,7 +29,7 @@
   <properties>
     <java.version>1.8</java.version>
     <build.compiler.release>8</build.compiler.release>
-    <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
+    <spring-boot.version>2.5.8</spring-boot.version>
   </properties>
 
   <dependencyManagement>
@@ -65,6 +65,7 @@
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-rest-hal-browser</artifactId>
+      <version>3.3.9.RELEASE</version>
     </dependency>
     
     <dependency>
@@ -80,8 +81,8 @@
     <!-- wcm.io Caravan dependencies -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <artifactId>io.wcm.caravan.rhyme.spring</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -90,24 +91,18 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- include the test-jar from rhyme.core (for the wiremock HTTP client test) -->
+    <!-- this avoids integration tests failures in eclipse -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- include the test-jar from rhyme.spring -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <artifactId>io.wcm.caravan.rhyme.spring</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <!-- Wiremock for testing HalResource loader implementations -->
-    <dependency>
-      <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-jre8-standalone</artifactId>
-      <version>2.27.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.awaitility</groupId>
-      <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

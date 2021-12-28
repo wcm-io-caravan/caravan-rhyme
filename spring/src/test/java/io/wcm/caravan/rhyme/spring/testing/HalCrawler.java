@@ -26,12 +26,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -53,7 +52,7 @@ public class HalCrawler {
 
   private int limit = 1000;
 
-  private Consumer<UriComponentsBuilder> urlModifier;
+  private Function<String, String> urlModifier = Function.identity();
 
   /**
    * @param resourceLoader used to to load the resources
@@ -88,7 +87,7 @@ public class HalCrawler {
    * @param function to be applied to every URI before it will be crawled
    * @return this
    */
-  public HalCrawler withModifiedUrls(Consumer<UriComponentsBuilder> function) {
+  public HalCrawler withModifiedUrls(Function<String, String> function) {
 
     urlModifier = function;
     return this;
@@ -114,12 +113,7 @@ public class HalCrawler {
 
   private void addUrlUnlessAlreadyProcessed(String url) {
 
-    String urlToCrawl = url;
-    if (urlModifier != null) {
-      UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
-      urlModifier.accept(builder);
-      urlToCrawl = builder.build().toUriString();
-    }
+    String urlToCrawl = urlModifier.apply(url);
 
     if (!crawledUrlsAndResponses.containsKey(urlToCrawl)) {
       urlsLeftToCrawl.add(urlToCrawl);

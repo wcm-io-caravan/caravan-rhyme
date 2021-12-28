@@ -19,10 +19,10 @@
  */
 package io.wcm.caravan.rhyme.spring.impl;
 
-import static io.wcm.caravan.rhyme.spring.impl.SpringErrorHandlingController.BASE_PATH;
+import static io.wcm.caravan.rhyme.spring.impl.SpringLinkBuilderTestController.BASE_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -52,7 +52,7 @@ public class UrlFingerprintingImplTest {
   private static final Duration MUTABLE_MAX_AGE = Duration.ofSeconds(1);
   private static final Duration IMMUTABLE_MAX_AGE = Duration.ofSeconds(100);
 
-  private final WebMvcLinkBuilder linkBuilder = linkTo(methodOn(SpringErrorHandlingController.class).get());
+  private final WebMvcLinkBuilder linkBuilder = linkTo(methodOn(SpringLinkBuilderTestController.class).get());
 
   private static final Instant NOW = Instant.now();
 
@@ -142,7 +142,7 @@ public class UrlFingerprintingImplTest {
 
     assertThatFingerprintContains(fingerprinting, valueFromRequest);
 
-    verifyNoInteractions(rhyme);
+    verifyZeroInteractions(rhyme);
   }
 
   @Test

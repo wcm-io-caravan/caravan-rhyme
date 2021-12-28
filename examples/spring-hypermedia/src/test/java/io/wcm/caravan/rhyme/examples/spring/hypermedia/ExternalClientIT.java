@@ -19,45 +19,43 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
-import java.net.HttpURLConnection;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
 import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
-import io.wcm.caravan.rhyme.spring.testing.SpringRhymeIntegrationTest;
-import io.wcm.caravan.rhyme.spring.testing.SpringRhymeIntegrationTestExtension;
 
 /**
- * This test is similar to {@link MockMvcClientIT}, but it's actually starting
- * the Spring boot application with the main method, and is using a {@link HttpURLConnection}
- * to load the resources under test exactly as a real consumer would.
+ * This test is similar to {@link MockMvcClientIT}, but it's starting
+ * the Spring boot application so that it actually listens on a random server port,
+ * and the resources under test are loaded via HTTP exactly as a real consumer would do.
  * Differences in behaviour to {@link MockMvcClientIT} are:
  * <ul>
  * <li>HTTP requests executed within the service (e.g. by {@link DetailedEmployeeController})
  * are executed using the regular default implementation of {@link HalResourceLoader} (because we
  * are not using {@link MockMvcHalResourceLoaderConfiguration} here)</li>
  * <li>All URLs in the generated links will be fully qualified</li>
- * <li>It is verified that the application properly starts up using the main method</li>
  * </ul>
  */
-@ExtendWith(SpringRhymeIntegrationTestExtension.class)
-@SpringRhymeIntegrationTest(
-    entryPointUri = ExternalClientIT.ENTRY_POINT_URL,
-    applicationClass = SpringRhymeHypermediaApplication.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ExternalClientIT extends AbstractCompanyApiIT {
 
-  static final String ENTRY_POINT_URL = "http://localhost:8081";
+  private final String entryPointUrl;
 
   private final CompanyApi companyApi;
 
-  /**
-   * @param companyApi a client proxy created by the {@link SpringRhymeIntegrationTestExtension}
-   */
-  ExternalClientIT(CompanyApi companyApi) {
-    this.companyApi = companyApi;
+  ExternalClientIT(@Autowired ServletWebServerApplicationContext server) {
+
+    this.entryPointUrl = "http://localhost:" + server.getWebServer().getPort();
+
+    HalApiClient apiClient = HalApiClient.create();
+    this.companyApi = apiClient.getRemoteResource(entryPointUrl, CompanyApi.class);
+
   }
 
   // since we don't have access to the repository in this test, the IDs need to be hard-coded
@@ -89,7 +87,7 @@ public class ExternalClientIT extends AbstractCompanyApiIT {
     // resolved links) can actually be retrieved
 
     HalCrawler crawler = new HalCrawler(HalResourceLoader.builder().build())
-        .withEntryPoint(ENTRY_POINT_URL);
+        .withEntryPoint(entryPointUrl);
 
     MockMvcClientIT.crawlAndVerifyAllResponses(crawler);
   }

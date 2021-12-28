@@ -17,8 +17,25 @@
  * limitations under the License.
  * #L%
  */
-/**
- * The annotations used to define HAL API interfaces
- */
-@org.osgi.annotation.versioning.Version("1.1.0")
-package io.wcm.caravan.rhyme.api.annotations;
+package io.wcm.caravan.rhyme.spring.impl;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+class SpringLinkBuilderTestController {
+
+  public static final String BASE_PATH = "/testing/spring/linkbuilder";
+
+  @GetMapping(BASE_PATH)
+  ResponseEntity<String> get() {
+
+    return ResponseEntity.ok("foo");
+  }
+
+  @GetMapping(BASE_PATH + "/status")
+  ResponseEntity<String> responseStatus(@RequestParam Integer statusCode) {
+
+    return ResponseEntity.status(statusCode).build();
+  }
+}

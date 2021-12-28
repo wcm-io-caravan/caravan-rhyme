@@ -17,29 +17,19 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.spring.testing;
+package io.wcm.caravan.rhyme.api.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 /**
- * Annotation required for test classes using the {@link SpringRhymeIntegrationTestExtension}
+ * A marker annotation that you can use to annotated methods that don't need to be covered by tests,
+ * and will be excluded when JaCoCo is calculating the code coverage.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface SpringRhymeIntegrationTest {
-
-  /**
-   * @return the class annotated with {@link SpringBootApplication} that should be started
-   */
-  Class<?> applicationClass();
-
-  /**
-   * @return the fully qualified URI of the entry point to be loaded
-   */
-  String entryPointUri();
+@Target(ElementType.METHOD)
+public @interface ExcludeFromJacocoGeneratedReport {
+  // no attributes are required
 }

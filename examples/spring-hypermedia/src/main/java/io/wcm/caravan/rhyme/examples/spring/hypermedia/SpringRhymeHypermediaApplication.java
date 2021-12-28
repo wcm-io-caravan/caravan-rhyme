@@ -22,6 +22,8 @@ package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import io.wcm.caravan.rhyme.api.annotations.ExcludeFromJacocoGeneratedReport;
+
 /**
  * The application class to configure and start the example service
  */
@@ -34,6 +36,7 @@ public class SpringRhymeHypermediaApplication { //CHECKSTYLE:ON
    * @param args command line arguments
    */
   //CHECKSTYLE:OFF - UncommentedMain (we do need this method)
+  @ExcludeFromJacocoGeneratedReport // integration tests are starting the application via @SpringBootTest, so this is expected not to be called
   public static void main(String[] args) { //CHECKSTYLE:ON
     SpringApplication.run(SpringRhymeHypermediaApplication.class, args);
   }

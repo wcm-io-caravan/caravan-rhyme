@@ -35,12 +35,12 @@ import wiremock.com.google.common.collect.ImmutableMap;
 
 public class SpringRhymeLinkBuilderTest {
 
-  private static final String EXPECTED_URL = "/errorHandling/responseStatusException?statusCode=200";
-  private static final String EXPECTED_TEMPLATE = "/errorHandling/responseStatusException?statusCode={statusCode}";
+  private static final String EXPECTED_URL = "/testing/spring/linkbuilder/status?statusCode=200";
+  private static final String EXPECTED_TEMPLATE = "/testing/spring/linkbuilder/status?statusCode={statusCode}";
 
   private SpringRhymeLinkBuilder createLinkBuilder(Integer statusCode, Map<String, String> timestampParameters) {
 
-    WebMvcLinkBuilder linkBuilder = linkTo(methodOn(SpringErrorHandlingController.class).responseStatus(statusCode));
+    WebMvcLinkBuilder linkBuilder = linkTo(methodOn(SpringLinkBuilderTestController.class).responseStatus(statusCode));
 
     return new SpringRhymeLinkBuilder(linkBuilder, timestampParameters);
   }

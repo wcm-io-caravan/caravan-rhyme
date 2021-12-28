@@ -27,7 +27,10 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.http.HttpStatus;
 
 import com.damnhandy.uri.template.UriTemplate;
@@ -41,28 +44,31 @@ import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.examples.spring.hypermedia.SpringRhymeHypermediaApplication;
 import io.wcm.caravan.rhyme.spring.impl.SpringErrorHandlingController.ErrorHandlingResource;
 import io.wcm.caravan.rhyme.spring.impl.SpringErrorHandlingController.ErrorThrowingResource;
-import io.wcm.caravan.rhyme.spring.testing.SpringRhymeIntegrationTest;
-import io.wcm.caravan.rhyme.spring.testing.SpringRhymeIntegrationTestExtension;
+
 
 /**
  * An integration test for the error handling in {@link VndErrorHandlingControllerAdvice} and
  * {@link SpringExceptionStatusAndLoggingStrategy}.
- * It's using the {@link SpringRhymeIntegrationTestExtension} to fully start up the
- * {@link SpringRhymeHypermediaApplication},
- * which includes the {@link SpringErrorHandlingController} that is throwing the exceptions to be handled.
+ * It's using {@link WebEnvironment#RANDOM_PORT} to fully start up the
+ * {@link SpringRhymeHypermediaApplication} listening on a random port, because
+ * there are a few error cases in this test where {@link WebEnvironment#MOCK} doesn't work the same way
+ * as if the application is serving requests on an actual network socket.
  */
-@ExtendWith(SpringRhymeIntegrationTestExtension.class)
-@SpringRhymeIntegrationTest(entryPointUri = SpringErrorHandlingIT.BASE_URI, applicationClass = SpringRhymeHypermediaApplication.class)
+@SpringBootTest(classes = SpringRhymeHypermediaApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SpringErrorHandlingIT {
 
-  static final String BASE_URI = "http://localhost:8081" + BASE_PATH;
+  private final String baseUri;
+
 
   private final ErrorHandlingResource errors;
   private final HalApiClient client;
 
-  SpringErrorHandlingIT(ErrorHandlingResource errors) {
-    this.errors = errors;
+  SpringErrorHandlingIT(@Autowired ServletWebServerApplicationContext server) {
+
+    this.baseUri = "http://localhost:" + server.getWebServer().getPort() + BASE_PATH;
+
     this.client = HalApiClient.create();
+    this.errors = client.getRemoteResource(baseUri, ErrorHandlingResource.class);
   }
 
   private HalResponse getResponseFromCaughtClientException(Function<ErrorHandlingResource, ErrorThrowingResource> callable) {
@@ -141,7 +147,7 @@ public class SpringErrorHandlingIT {
   @Test
   void should_extract_status_code_from_NoHandlerFoundException() {
 
-    String nonExistingUrl = BASE_URI + "/foo/bar";
+    String nonExistingUrl = baseUri + "/foo/bar";
 
     HalResponse errorResponse = getResponseFromCaughtClientException(
         (er) -> client.getRemoteResource(nonExistingUrl, ErrorThrowingResource.class));
