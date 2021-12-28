@@ -14,8 +14,9 @@
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme.coverage</artifactId>
-  <name>coverage</name>
-  <description>Compute aggregated test code coverage</description>
+  <version>1-SNAPSHOT</version>
+  <name>Rhyme - Code Coverage</name>
+  <description>Computes aggregated JaCoCo coverage report from all dependencies</description>
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
