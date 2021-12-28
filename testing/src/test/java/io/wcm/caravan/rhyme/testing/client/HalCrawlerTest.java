@@ -37,7 +37,7 @@ public class HalCrawlerTest {
   @Test
   public void should_crawl_from_root_resource() throws Exception {
 
-    EndlessLoopHalResourceLoader loader = new EndlessLoopHalResourceLoader()
+    MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLimit(5);
 
     HalCrawler crawler = new HalCrawler(loader);
@@ -51,7 +51,7 @@ public class HalCrawlerTest {
   @Test
   public void should_crawl_from_custom_entry_point() throws Exception {
 
-    EndlessLoopHalResourceLoader loader = new EndlessLoopHalResourceLoader()
+    MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLimit(5);
 
     HalCrawler crawler = new HalCrawler(loader)
@@ -66,7 +66,7 @@ public class HalCrawlerTest {
   @Test
   public void should_ignore_link_templates() throws Exception {
 
-    EndlessLoopHalResourceLoader loader = new EndlessLoopHalResourceLoader()
+    MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLinkTemplate()
         .withLimit(5);
 
@@ -81,7 +81,7 @@ public class HalCrawlerTest {
   @Test
   public void should_respect_default_limit() throws Exception {
 
-    EndlessLoopHalResourceLoader loader = new EndlessLoopHalResourceLoader();
+    MockResourceChainLoader loader = new MockResourceChainLoader();
 
     HalCrawler crawler = new HalCrawler(loader);
 
@@ -93,7 +93,7 @@ public class HalCrawlerTest {
   @Test
   public void should_respect_custom_limit() throws Exception {
 
-    EndlessLoopHalResourceLoader loader = new EndlessLoopHalResourceLoader();
+    MockResourceChainLoader loader = new MockResourceChainLoader();
 
     HalCrawler crawler = new HalCrawler(loader)
         .withLimit(10);
@@ -107,7 +107,7 @@ public class HalCrawlerTest {
   @Test
   public void should_not_crawl_multiple_times() throws Exception {
 
-    EndlessLoopHalResourceLoader loader = new EndlessLoopHalResourceLoader()
+    MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLimit(5);
 
     HalCrawler crawler = new HalCrawler(loader);
@@ -124,7 +124,7 @@ public class HalCrawlerTest {
   @Test
   public void should_modify_uris() throws Exception {
 
-    EndlessLoopHalResourceLoader loader = new EndlessLoopHalResourceLoader()
+    MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLimit(5);
 
     HalCrawler crawler = new HalCrawler(loader)
@@ -141,40 +141,40 @@ public class HalCrawlerTest {
         .containsExactly("/?foo", "/1?foo", "/2?foo", "/3?foo", "/4?foo");
   }
 
-  class EndlessLoopHalResourceLoader implements HalResourceLoader {
+  class MockResourceChainLoader implements HalResourceLoader {
 
     private Integer limit;
 
-    private boolean linkTemplate;
+    private boolean includeLinkTemplate;
+
+    MockResourceChainLoader withLinkTemplate() {
+      includeLinkTemplate = true;
+      return this;
+    }
+
+    MockResourceChainLoader withLimit(int maxNumResources) {
+      this.limit = maxNumResources;
+      return this;
+    }
 
     @Override
     public Single<HalResponse> getHalResource(String uri) {
 
+      HalResource body = new HalResource(uri);
       int nextIndex = getNextIndex(uri);
-
-      HalResource hal = new HalResource(uri);
       if (limit == null || nextIndex < limit) {
-        hal.addLinks(StandardRelations.NEXT, new Link("/" + nextIndex));
+        body.addLinks(StandardRelations.NEXT, new Link("/" + nextIndex));
       }
-      if (linkTemplate) {
-        hal.addLinks("foo:template", new Link("/{index}"));
-        hal.addLinks("curies", new Link("/docs/foo").setName("foo"));
+
+      if (includeLinkTemplate) {
+        body.addLinks("foo:template", new Link("/{index}"));
+        body.addLinks("curies", new Link("/docs/foo").setName("foo"));
       }
 
       return Single.just(new HalResponse()
           .withStatus(200)
           .withUri(uri)
-          .withBody(hal));
-    }
-
-    public EndlessLoopHalResourceLoader withLinkTemplate() {
-      linkTemplate = true;
-      return this;
-    }
-
-    EndlessLoopHalResourceLoader withLimit(int limit) {
-      this.limit = limit;
-      return this;
+          .withBody(body));
     }
 
     private int getNextIndex(String currentUri) {
@@ -187,7 +187,5 @@ public class HalCrawlerTest {
 
       return currentIndex + 1;
     }
-
   }
-
 }
