@@ -48,6 +48,7 @@
     <module>examples/osgi-jaxrs-example-launchpad</module>
     <module>examples/osgi-jaxrs-example-service</module>
     <module>examples/spring-hypermedia</module>
+    <module>coverage</module>
     <module>parent</module>
 
   </modules>
@@ -80,21 +81,6 @@
         <configuration>
           <skipDeletedFiles>true</skipDeletedFiles>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.7</version>
-        <executions>
-          <execution>
-            <id>report-aggregate</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>report-aggregate</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
     </plugins>
