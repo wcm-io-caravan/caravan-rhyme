@@ -34,8 +34,8 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
-import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
+import io.wcm.caravan.rhyme.testing.client.HalCrawler;
+import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration;
 
 /**
  * This test verifies the API functionality as its seen by an external consumer.

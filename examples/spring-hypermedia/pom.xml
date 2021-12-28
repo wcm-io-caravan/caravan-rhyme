@@ -91,18 +91,10 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- this avoids integration tests failures in eclipse -->
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- include the test-jar from rhyme.spring -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.rhyme.spring</artifactId>
+      <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
       <version>1.0.0-SNAPSHOT</version>
-      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
   </dependencies>

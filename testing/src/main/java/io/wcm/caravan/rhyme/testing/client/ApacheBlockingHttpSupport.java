@@ -34,24 +34,38 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.common.collect.LinkedHashMultimap;
 
+import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
-class ApacheBlockingHttpSupport implements HttpClientSupport {
+
+/**
+ * An HTTP client implementation to be used with
+ * {@link HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)}
+ * that is using the synchronous Apache HTTP client to execute requests.
+ */
+public class ApacheBlockingHttpSupport implements HttpClientSupport {
 
   private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
   private final URI baseUri;
 
+  /**
+   * Default constructor that can be used if all URIs are fully qualified
+   */
   public ApacheBlockingHttpSupport() {
     this(null);
   }
 
+  /**
+   * An alternative constructor that will resolve all paths against the given Base URI
+   * @param baseUri a fully qualified base URI
+   */
   public ApacheBlockingHttpSupport(URI baseUri) {
     this.baseUri = baseUri;
   }
 
-  private Map<String, Collection<String>> getHeaders(HttpResponse response) {
+  static Map<String, Collection<String>> getHeaders(HttpResponse response) {
 
     LinkedHashMultimap<String, String> headers = LinkedHashMultimap.create();
 
@@ -67,7 +81,7 @@ class ApacheBlockingHttpSupport implements HttpClientSupport {
 
     URI requestUri = uri;
     if (baseUri != null) {
-      baseUri.resolve(uri);
+      requestUri = baseUri.resolve(uri);
       callback.onUrlModified(requestUri);
     }
 

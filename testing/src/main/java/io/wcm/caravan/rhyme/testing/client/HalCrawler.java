@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.spring.testing;
+package io.wcm.caravan.rhyme.testing.client;
 
 import java.util.ArrayList;
 import java.util.Deque;

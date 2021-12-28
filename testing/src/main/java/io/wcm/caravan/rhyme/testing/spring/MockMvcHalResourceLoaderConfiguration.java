@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.spring.testing;
+package io.wcm.caravan.rhyme.testing.spring;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -40,7 +40,6 @@ import com.google.common.collect.LinkedHashMultimap;
 
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
-import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
@@ -62,16 +61,11 @@ public class MockMvcHalResourceLoaderConfiguration {
 
   private final HalResourceLoader delegate;
 
-  public MockMvcHalResourceLoaderConfiguration(@Autowired WebApplicationContext applicationContext) {
+  MockMvcHalResourceLoaderConfiguration(@Autowired WebApplicationContext applicationContext) {
 
     MockMvcClient mockMvcClient = new MockMvcClient(applicationContext);
 
     delegate = HalResourceLoaderBuilder.create().withCustomHttpClient(mockMvcClient).build();
-  }
-
-  public HalResponse getResponse(String uri) {
-
-    return getResourceLoader().getHalResource(uri).blockingGet();
   }
 
   @Primary

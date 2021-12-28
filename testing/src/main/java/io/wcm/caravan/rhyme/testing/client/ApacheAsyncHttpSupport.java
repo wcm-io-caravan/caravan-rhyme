@@ -19,34 +19,47 @@
  */
 package io.wcm.caravan.rhyme.testing.client;
 
+import static io.wcm.caravan.rhyme.testing.client.ApacheBlockingHttpSupport.getHeaders;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
-import com.google.common.collect.LinkedHashMultimap;
-
+import io.wcm.caravan.rhyme.api.annotations.ExcludeFromJacocoGeneratedReport;
+import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
-class ApacheAsyncHttpSupport implements HttpClientSupport {
+/**
+ * An HTTP client implementation to be used with
+ * {@link HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)}
+ * that is using the asynchronous Apache HTTP client to execute requests.
+ */
+public class ApacheAsyncHttpSupport implements HttpClientSupport {
 
   private final CloseableHttpAsyncClient httpClient = HttpAsyncClientBuilder.create().build();
 
   private final URI baseUri;
 
+  /**
+   * Default constructor that can be used if all URIs are fully qualified
+   */
   public ApacheAsyncHttpSupport() {
     this(null);
   }
 
+  /**
+   * An alternative constructor that will resolve all paths against the given Base URI
+   * @param baseUri a fully qualified base URI
+   */
   public ApacheAsyncHttpSupport(URI baseUri) {
     this.baseUri = baseUri;
     this.httpClient.start();
@@ -57,7 +70,7 @@ class ApacheAsyncHttpSupport implements HttpClientSupport {
 
     URI requestUri = uri;
     if (baseUri != null) {
-      baseUri.resolve(uri);
+      requestUri = baseUri.resolve(uri);
       callback.onUrlModified(requestUri);
     }
 
@@ -87,20 +100,10 @@ class ApacheAsyncHttpSupport implements HttpClientSupport {
         }
       }
 
-      private Map<String, Collection<String>> getHeaders(HttpResponse httpResponse) {
-
-        LinkedHashMultimap<String, String> headers = LinkedHashMultimap.create();
-
-        for (Header header : httpResponse.getAllHeaders()) {
-          headers.put(header.getName(), header.getValue());
-        }
-
-        return headers.asMap();
-      }
-
       @Override
+      @ExcludeFromJacocoGeneratedReport
       public void cancelled() {
-        // no need to implement anything here
+        // no need to implement anything here, since the code cannot cancel the request
       }
     });
   }

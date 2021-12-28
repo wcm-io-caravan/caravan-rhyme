@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
+import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration;
 
 /**
  * This test verifies the API functionality when being used from within the same application.

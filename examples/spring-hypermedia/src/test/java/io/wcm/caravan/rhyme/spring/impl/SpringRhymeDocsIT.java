@@ -39,8 +39,8 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.examples.spring.hypermedia.SpringRhymeHypermediaApplication;
-import io.wcm.caravan.rhyme.spring.testing.HalCrawler;
-import io.wcm.caravan.rhyme.spring.testing.MockMvcHalResourceLoaderConfiguration;
+import io.wcm.caravan.rhyme.testing.client.HalCrawler;
+import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration;
 
 @SpringBootTest(classes = SpringRhymeHypermediaApplication.class)
 @Import(MockMvcHalResourceLoaderConfiguration.class)

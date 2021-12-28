@@ -29,12 +29,12 @@
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>io.wcm.caravan.rhyme.spring</artifactId>
+  <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>Rhyme - Spring Integration</name>
-  <description>Integration support classes to build HAL+JSON web services with Rhyme and Spring Boot </description>
+  <name>Rhyme - Testing Support</name>
+  <description>Additional classes for unit / integration tests (but are only meant to be used as test scoped dependencies)</description>
 
   <scm>
     <connection>scm:git:https://github.com/wcm-io-caravan/caravan-rhyme.git</connection>
@@ -44,9 +44,7 @@
   </scm>
 
   <properties>
-    <site.url.module.prefix>rhyme/spring</site.url.module.prefix>
-    <java.version>1.8</java.version>
-    <build.compiler.release>8</build.compiler.release>
+    <site.url.module.prefix>rhyme/testing</site.url.module.prefix>
     <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
   </properties>
 
@@ -62,39 +60,8 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
-  <dependencies>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
 
-    <!-- Spring Dependencies -->
-    <dependency>
-      <groupId>io.projectreactor.netty</groupId>
-      <artifactId>reactor-netty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.hateoas</groupId>
-      <artifactId>spring-hateoas</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webflux</artifactId>
-    </dependency>
+  <dependencies>
 
     <!-- Jackson - overriding managed version from wcm.io parent, because we need a version that
     is compatible with the version used in spring-webflux -->
@@ -114,6 +81,11 @@
       <version>2.11.2</version>
     </dependency>
 
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- wcm.io -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
@@ -121,12 +93,21 @@
       <version>1.1.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
-  
-    <!-- Test dependencies -->
+    <!-- AssertJ for fluent assertions -->
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+    </dependency>
+    <!-- Spring Dependencies - marked as optional to not pollute the classpath for non-spring modules -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <optional>true</optional>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
+      <optional>true</optional>
       <exclusions>
         <exclusion>
           <groupId>org.junit.vintage</groupId>
@@ -138,14 +119,48 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <!-- Wiremock for testing HalResource loader implementations -->
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8-standalone</artifactId>
+      <version>2.27.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.mercateo</groupId>
+      <artifactId>test-clock</artifactId>
+      <version>1.0.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+    </dependency>
+    <!-- Apache HTTP clients for integration tests -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient-osgi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore-osgi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpasyncclient-osgi</artifactId>
+    </dependency>
   </dependencies>
 
   <distributionManagement>
