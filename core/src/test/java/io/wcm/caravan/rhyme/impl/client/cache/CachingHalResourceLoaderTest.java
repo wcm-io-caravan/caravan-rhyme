@@ -19,7 +19,6 @@
  */
 package io.wcm.caravan.rhyme.impl.client.cache;
 
-import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
@@ -350,7 +349,7 @@ public class CachingHalResourceLoaderTest {
     return new HalResponse()
         .withUri(uri)
         .withBody(createBody(text))
-        .withStatus(SC_OK)
+        .withStatus(200)
         .withMaxAge(maxAge);
   }
 

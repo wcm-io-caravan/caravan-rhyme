@@ -146,43 +146,10 @@
       <artifactId>byte-buddy</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- Wiremock for testing HalResource loader implementations -->
-    <dependency>
-      <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-jre8-standalone</artifactId>
-      <version>2.27.2</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>com.mercateo</groupId>
       <artifactId>test-clock</artifactId>
       <version>1.0.2</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- Apache HTTP clients for integration tests -->
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpasyncclient-osgi</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

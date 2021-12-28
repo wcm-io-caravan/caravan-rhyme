@@ -121,19 +121,11 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- include the test-jar from rhyme.core (for the wiremock HTTP client test) -->
+    <!-- include the testing momdule (for the wiremock HTTP client test) -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <!-- Wiremock for testing HalResource loader implementations -->
-    <dependency>
-      <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-jre8-standalone</artifactId>
-      <version>2.27.2</version>
+      <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 
