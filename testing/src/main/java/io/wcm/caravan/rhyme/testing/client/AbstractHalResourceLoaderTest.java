@@ -28,12 +28,20 @@ import com.google.common.net.HttpHeaders;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 import wiremock.org.apache.http.client.utils.URIBuilder;
 
+/**
+ * A base class that you can extend if you are implementing your own {@link HalResourceLoader}
+ * or {@link HttpClientSupport} classes.
+ * It will run a extensive suite of tests where a {@link WireMockServer} will respond
+ * with a variety of responses, including client/server errors and corrupt responses.
+ */
 public abstract class AbstractHalResourceLoaderTest {
 
   private static final String UNKNOWN_HOST_URL = "http://foo.bar";
@@ -165,6 +173,13 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
 
+  /**
+   * Implement this to return your implementation of {@link HalResourceLoader},
+   * or (if you are implementing {@link HttpClientSupport} then use
+   * {@link HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)} to
+   * create the instance under test
+   * @return the instance to be tested
+   */
   protected abstract HalResourceLoader createLoaderUnderTest();
 
   private HalResponse loadResource() {

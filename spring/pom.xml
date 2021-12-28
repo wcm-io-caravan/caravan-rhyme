@@ -64,12 +64,7 @@
   </dependencyManagement>
   
   <dependencies>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    
+
     <!-- Spring Dependencies -->
     <dependency>
       <groupId>io.projectreactor.netty</groupId>
@@ -94,24 +89,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webflux</artifactId>
-    </dependency>
-
-    <!-- Jackson - overriding managed version from wcm.io parent, because we need a version that
-    is compatible with the version used in spring-webflux -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.11.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.11.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.11.2</version>
     </dependency>
 
     <!-- wcm.io -->
