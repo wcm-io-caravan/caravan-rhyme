@@ -17,8 +17,19 @@
  * limitations under the License.
  * #L%
  */
-/**
- * The annotations used to define HAL API interfaces
- */
-@org.osgi.annotation.versioning.Version("1.1.0")
 package io.wcm.caravan.rhyme.api.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * A marker annotation that you can use to annotated methods that don't need to be covered by tests,
+ * and will be excluded when JaCoCo is calculating the code coverage.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface ExcludeFromJacocoGeneratedReport {
+  // no attributes are required
+}
