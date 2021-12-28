@@ -137,7 +137,7 @@ public class UrlFingerprintingIT {
   void all_resources_should_have_short_max_age_if_called_without_query() {
 
     HalCrawler crawlerThatRemovesQuery = new HalCrawler(mockMvcResourceLoader)
-        .withModifiedUrls(uri -> uri.replaceQuery(null));
+        .withModifiedUrls(this::removeQuery);
 
     List<HalResponse> responses = crawlerThatRemovesQuery.getAllResponses();
 
@@ -146,4 +146,11 @@ public class UrlFingerprintingIT {
         .containsOnly(SHORT_MAX_AGE_SECONDS);
   }
 
+  private String removeQuery(String url) {
+
+    return UriComponentsBuilder.fromUriString(url)
+        .replaceQuery(null)
+        .build()
+        .toUriString();
+  }
 }
