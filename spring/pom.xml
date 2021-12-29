@@ -47,7 +47,7 @@
     <site.url.module.prefix>rhyme/spring</site.url.module.prefix>
     <java.version>1.8</java.version>
     <build.compiler.release>8</build.compiler.release>
-    <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
+    <spring-boot.version>2.5.8</spring-boot.version>
   </properties>
 
   <dependencyManagement>
@@ -68,6 +68,7 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
+      <version>4.0.1</version>
     </dependency>
 
     <!-- Spring Dependencies -->

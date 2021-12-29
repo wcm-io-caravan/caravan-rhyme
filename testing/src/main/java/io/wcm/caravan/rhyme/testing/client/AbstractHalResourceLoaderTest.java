@@ -44,14 +44,14 @@ import wiremock.org.apache.http.client.utils.URIBuilder;
  */
 public abstract class AbstractHalResourceLoaderTest {
 
-  private static final String UNKNOWN_HOST_URL = "http://foo.bar";
+  protected static final String UNKNOWN_HOST_URL = "http://foo.bar";
 
-  private static final String TEST_PATH = "/test";
+  protected static final String TEST_PATH = "/test";
 
   private static WireMockServer wireMockServer;
 
-  private static String testUrl;
-  private static String sslTestUrl;
+  protected static String testUrl;
+  protected static String sslTestUrl;
 
   @BeforeAll
   static void init() throws URISyntaxException {
@@ -164,7 +164,7 @@ public abstract class AbstractHalResourceLoaderTest {
             .withStatus(statusCode)));
   }
 
-  private void stubFaultyResponseWithStatusCode(int statusCode, Fault fault) {
+  protected void stubFaultyResponseWithStatusCode(int statusCode, Fault fault) {
 
     wireMockServer.stubFor(get(urlEqualTo(TEST_PATH))
         .willReturn(aResponse()
@@ -182,19 +182,19 @@ public abstract class AbstractHalResourceLoaderTest {
    */
   protected abstract HalResourceLoader createLoaderUnderTest();
 
-  private HalResponse loadResource() {
+  protected HalResponse loadResource() {
 
     String uri = testUrl;
 
     return createLoaderUnderTest().getHalResource(uri).blockingGet();
   }
 
-  private HalApiClientException loadResourceAndExpectClientException() {
+  protected HalApiClientException loadResourceAndExpectClientException() {
 
     return loadResourceAndExpectClientException(testUrl);
   }
 
-  private HalApiClientException loadResourceAndExpectClientException(String url) {
+  protected HalApiClientException loadResourceAndExpectClientException(String url) {
     Single<HalResponse> rxResponse = createLoaderUnderTest().getHalResource(url);
 
     Throwable ex = catchThrowable(() -> rxResponse.blockingGet());

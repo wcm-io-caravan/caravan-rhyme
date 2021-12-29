@@ -45,7 +45,7 @@
 
   <properties>
     <site.url.module.prefix>rhyme/testing</site.url.module.prefix>
-    <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
+    <spring-boot.version>2.5.8</spring-boot.version>
   </properties>
 
   <dependencyManagement>
@@ -85,6 +85,7 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
+      <version>4.0.1</version>
     </dependency>
     <!-- wcm.io -->
     <dependency>

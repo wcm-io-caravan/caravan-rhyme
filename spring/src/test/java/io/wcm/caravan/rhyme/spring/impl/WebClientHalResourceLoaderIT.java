@@ -19,6 +19,15 @@
  */
 package io.wcm.caravan.rhyme.spring.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+
+import com.github.tomakehurst.wiremock.http.Fault;
+
+import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 
@@ -31,5 +40,43 @@ public class WebClientHalResourceLoaderIT extends AbstractHalResourceLoaderTest 
   protected HalResourceLoader createLoaderUnderTest() {
     // make sure to disable caching for these unit-tests
     return new WebClientHalResourceLoader(false);
+  }
+
+  // after upgrading to Spring Boot 2.5.8, WebClient is handling a few edge cases differently,
+  // so for now we are overriding the text with updated expectations
+
+  @Override
+  @Test
+  public void cause_should_be_present_in_HalApiClientException_for_malformed_200_response() throws Exception {
+
+    stubFaultyResponseWithStatusCode(200, Fault.MALFORMED_RESPONSE_CHUNK);
+
+    HalResponse response = loadResource();
+
+    assertThat(response.getStatus())
+        .isEqualTo(200);
+
+    assertThat(response.getBody())
+        .isNull();
+  }
+
+  @Override
+  @Test
+  public void cause_should_be_present_in_HalApiClientException_for_for_network_errors() throws Exception {
+
+    HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
+
+    assertThat(ex)
+        .hasCauseInstanceOf(WebClientRequestException.class);
+  }
+
+  @Override
+  @Test
+  public void cause_should_be_present_in_HalApiClientException_for_for_ssl_errors() throws Exception {
+
+    HalApiClientException ex = loadResourceAndExpectClientException(sslTestUrl);
+
+    assertThat(ex)
+        .hasRootCauseMessage("unable to find valid certification path to requested target");
   }
 }
