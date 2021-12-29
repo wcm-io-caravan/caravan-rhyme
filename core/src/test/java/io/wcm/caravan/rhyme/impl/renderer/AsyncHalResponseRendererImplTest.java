@@ -246,6 +246,44 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
+  public void error_response_should_use_500_instead_of_null_status_code() {
+
+    exceptionStrategy = new ExceptionStatusAndLoggingStrategy() {
+
+      @Override
+      public Integer extractStatusCode(Throwable error) {
+        return null;
+      }
+
+    };
+
+    mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
+
+    HalResponse response = renderResponse();
+
+    assertThat(response.getStatus()).isEqualTo(500);
+  }
+
+  @Test
+  public void error_response_should_use_500_instead_of_0_status_code() {
+
+    exceptionStrategy = new ExceptionStatusAndLoggingStrategy() {
+
+      @Override
+      public Integer extractStatusCode(Throwable error) {
+        return 0;
+      }
+
+    };
+
+    mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
+
+    HalResponse response = renderResponse();
+
+    assertThat(response.getStatus()).isEqualTo(500);
+  }
+
+  @Test
   public void error_response_should_have_vnderror_content_type() {
 
     mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
