@@ -89,14 +89,4 @@ public class Employee {
     this.role = role;
   }
 
-
-  public Manager getManager() {
-    return this.manager;
-  }
-
-
-  public void setManager(Manager manager) {
-    this.manager = manager;
-  }
-
 }

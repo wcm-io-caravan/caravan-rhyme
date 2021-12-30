@@ -78,11 +78,6 @@ public class Manager {
   }
 
 
-  public List<Employee> getEmployees() {
-    return this.employees;
-  }
-
-
   public void setEmployees(List<Employee> employees) {
     this.employees = employees;
   }
