@@ -23,24 +23,18 @@ import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.Data;
-import lombok.Generated;
-import lombok.NoArgsConstructor;
-
 /**
  * @author Greg Turnquist
  */
-@Data
 @Entity
 @EntityListeners(RepositoryModificationListener.class)
-@Generated
-@NoArgsConstructor
 public class Employee {
 
   /** a generated ID (to be used in all the link templates) */
   @Id
   @GeneratedValue
   private Long id;
+
 
   /** the first name */
   private String name;
@@ -59,6 +53,49 @@ public class Employee {
 
     this.name = name;
     this.role = role;
+    this.manager = manager;
+  }
+
+  public Employee() {
+    // required for
+  }
+
+  public Long getId() {
+    return this.id;
+  }
+
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+
+  public String getName() {
+    return this.name;
+  }
+
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+
+  public String getRole() {
+    return this.role;
+  }
+
+
+  public void setRole(String role) {
+    this.role = role;
+  }
+
+
+  public Manager getManager() {
+    return this.manager;
+  }
+
+
+  public void setManager(Manager manager) {
     this.manager = manager;
   }
 

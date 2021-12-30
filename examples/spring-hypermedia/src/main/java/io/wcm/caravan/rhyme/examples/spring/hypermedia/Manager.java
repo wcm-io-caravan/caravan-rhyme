@@ -26,19 +26,13 @@ import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.Data;
-import lombok.Generated;
-import lombok.NoArgsConstructor;
-
 /**
  * @author Greg Turnquist
  */
-@Data
 @Entity
 @EntityListeners(RepositoryModificationListener.class)
-@Generated
-@NoArgsConstructor
 public class Manager {
+
 
   /** a generated ID (to be used in all the link templates) */
   @Id
@@ -59,5 +53,39 @@ public class Manager {
   Manager(String name) {
     this.name = name;
   }
+
+  public Manager() {
+
+  }
+
+  public Long getId() {
+    return this.id;
+  }
+
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+
+  public String getName() {
+    return this.name;
+  }
+
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+
+  public List<Employee> getEmployees() {
+    return this.employees;
+  }
+
+
+  public void setEmployees(List<Employee> employees) {
+    this.employees = employees;
+  }
+
 
 }
