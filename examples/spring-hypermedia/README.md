@@ -34,11 +34,6 @@ The package [io.wcm.caravan.rhyme.examples.spring.hypermedia](src/main/java/io/w
 contains all code to define and implement the example API. You can compare it to the [corresponding package](https://github.com/spring-projects/spring-hateoas-examples/tree/main/hypermedia/src/main/java/org/springframework/hateoas/examples)
 in the Spring HATEOAS example project (on which it is based) to understand the similarities and differences.
 
-## Spring Integration Code
-The package [io.wcm.caravan.rhyme.spring.impl](src/main/java/io/wcm/caravan/rhyme/spring/impl) contains the code to integrate the core **Rhyme**
-framework with Spring Boot. This will go into a seperate integration module in the near future, so it can be re-used outside of this example, 
-using only the interfaces from the [io.wcm.caravan.rhyme.spring.api](src/main/java/io/wcm/caravan/rhyme/spring/api) package.
-
 ## Integration Tests
 The test package [io.wcm.caravan.rhyme.examples.spring.hypermedia](src/test/java/io/wcm/caravan/rhyme/examples/spring/hypermedia) contains simple yet extensive tests for for the example service.
 
