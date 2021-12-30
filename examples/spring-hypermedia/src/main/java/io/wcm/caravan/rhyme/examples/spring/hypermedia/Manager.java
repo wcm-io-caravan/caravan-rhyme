@@ -33,7 +33,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @EntityListeners(RepositoryModificationListener.class)
 public class Manager {
 
-
   /** a generated ID (to be used in all the link templates) */
   @Id
   @GeneratedValue
@@ -55,32 +54,26 @@ public class Manager {
   }
 
   public Manager() {
-
+    // required for deserialization
   }
 
   public Long getId() {
     return this.id;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public String getName() {
     return this.name;
   }
 
-
   public void setName(String name) {
     this.name = name;
   }
 
-
   public void setEmployees(List<Employee> employees) {
     this.employees = employees;
   }
-
-
 }
