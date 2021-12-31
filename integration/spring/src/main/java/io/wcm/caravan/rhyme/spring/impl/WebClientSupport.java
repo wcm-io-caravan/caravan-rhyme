@@ -21,7 +21,6 @@ package io.wcm.caravan.rhyme.spring.impl;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
-import java.util.function.Supplier;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -36,22 +35,12 @@ import reactor.netty.resources.ConnectionProvider;
 
 final class WebClientSupport implements HttpClientSupport {
 
-  private final Supplier<WebClient> webClientSupplier;
+  private final ConnectionProvider connectionProvider = ConnectionProvider
+      .builder(WebClientSupport.class.getSimpleName())
+      .maxConnections(5000)
+      .build();
 
-  WebClientSupport() {
-    this.webClientSupplier = () -> createDefaultWebClient();
-  }
-
-  WebClientSupport(Supplier<WebClient> webClientSupplier) {
-    this.webClientSupplier = webClientSupplier;
-  }
-
-  private static WebClient createDefaultWebClient() {
-
-    ConnectionProvider connectionProvider = ConnectionProvider
-        .builder(WebClientSupport.class.getSimpleName())
-        .maxConnections(5000)
-        .build();
+  private WebClient createDefaultWebClient() {
 
     HttpClient httpClient = HttpClient.create(connectionProvider);
 
@@ -64,7 +53,7 @@ final class WebClientSupport implements HttpClientSupport {
   @Override
   public void executeGetRequest(URI uri, HttpClientCallback callback) {
 
-    WebClient client = webClientSupplier.get();
+    WebClient client = createDefaultWebClient();
 
     client.get().uri(uri).retrieve()
         // any 200 responses will be parsed as a string and forwarded to the callback

@@ -30,38 +30,39 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 
 /**
- * Defines default implementations for spring beans required by {@link SpringRhyme}. You can override
- * any of these bean definitions if you need a different implementation in your project (or tests)
+ * Registers all components from the impl package, and provides default implementations for spring beans required by
+ * {@link SpringRhyme}.
+ * You can override any of these bean definitions if you need a different implementation in your project (or tests)
  */
 @Configuration
 @ComponentScan(basePackages = "io.wcm.caravan.rhyme.spring.impl")
 class SpringRhymeAutoConfiguration {
 
   /**
-   * Defines the default resource loader used by the {@link SpringRhyme} implementation class
-   * @param builder used to create the underlying {@link WebClient}
+   * Defines the default resource loader used by the {@link SpringRhyme} implementation class: a
+   * {@link HalResourceLoader} that is using a Spring {@link WebClient} and caches responses in-memory with default
+   * settings
    * @return a (singleton scoped) instance of {@link HalResourceLoader}
    */
   @Bean
   @ConditionalOnMissingBean
-  HalResourceLoader halResourceLoader(WebClient.Builder builder) {
+  HalResourceLoader halResourceLoader() {
 
-    return halResourceBuilder(builder)
+    return halResourceBuilder()
         .withMemoryCache()
         .build();
   }
 
   /**
    * Provides a {@link HalResourceLoaderBuilder} that is already pre-configured to use a {@link WebClientSupport}
-   * @param builder used to create the underlying {@link WebClient}
    * @return a {@link HalResourceLoaderBuilder} that can be further customised before a {@link HalResourceLoader} is
    *         built
    */
   @Bean
   @ConditionalOnMissingBean
-  HalResourceLoaderBuilder halResourceBuilder(WebClient.Builder builder) {
+  HalResourceLoaderBuilder halResourceBuilder() {
 
-    WebClientSupport client = new WebClientSupport(builder::build);
+    WebClientSupport client = new WebClientSupport();
 
     return HalResourceLoader.builder()
         .withCustomHttpClient(client);
