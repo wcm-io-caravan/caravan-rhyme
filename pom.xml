@@ -27,7 +27,7 @@
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
     <version>1.0.0</version>
-    <relativePath>parent/pom.xml</relativePath>
+    <relativePath>tooling/parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme</artifactId>
@@ -40,17 +40,17 @@
   <modules>
     <module>api-interfaces</module>
     <module>core</module>
-    <module>docs-maven-plugin</module>
-    <module>aem</module>
-    <module>osgi-jaxrs</module>
-    <module>spring</module>
-    <module>testing</module>
     <module>examples/aem-hal-browser</module>
     <module>examples/osgi-jaxrs-example-launchpad</module>
     <module>examples/osgi-jaxrs-example-service</module>
     <module>examples/spring-hypermedia</module>
-    <module>coverage</module>
-    <module>parent</module>
+    <module>integration/aem</module>
+    <module>integration/osgi-jaxrs</module>
+    <module>integration/spring</module>    
+    <module>testing</module>    
+    <module>tooling/coverage</module>
+    <module>tooling/docs-maven-plugin</module>    
+    <module>tooling/parent</module>
 
   </modules>
 
