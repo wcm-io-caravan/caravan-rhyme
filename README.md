@@ -28,13 +28,20 @@ The key concepts and features of **Rhyme** are:
 
 - [api-interfaces](api-interfaces) - contains only annotations, interfaces and dependencies to be used in your API interface definitions
 - [core](core) - the core framework that can be integrated within any Java project
-- [spring](spring) - integration module for implementing HAL webservices as a Spring (Boot) application
-- [osgi-jaxrs](osgi-jaxrs) - integration module for implementing HAL web services using the [OSGi R7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
-- [aem](aem) - integration module for Adobe Experience Manager (work in progress and not yet released)
-- [examples/spring-hypermedia](examples/spring-hypermedia) - a well documented Spring Boot application that contains examples for most of the key concepts of the core framework
-- [examples/aem-hal-browser](examples/aem-hal-browser) - an example project for AEM that shows how HAL resources can be implemented as sling models (work in progress)
-- [examples/osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
-- [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
+- **Integration** modules for using Rhyme with a web service platform:
+  - [spring](integration/spring) - integration module for implementing HAL webservices as a Spring (Boot) application
+  - [osgi-jaxrs](integration/osgi-jaxrs) - integration module for implementing HAL web services using the [OSGi R7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
+  - [aem](integration/aem) - integration module for Adobe Experience Manager (work in progress and not yet released)
+- **Examples** that show how to use Rhyme in various frameworks:
+  - [examples/spring-hypermedia](examples/spring-hypermedia) - a well documented Spring Boot application with examples for most of the key concepts of the core framework
+  - [examples/aem-hal-browser](examples/aem-hal-browser) - an example project for AEM that shows how HAL resources can be implemented as Sling models (work in progress)
+  - [examples/osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
+  - [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
+- [testing](testing) additional testing support classes (to be used in test scope only)
+- Maven **Tooling**
+  - [coverage](coverage) Maven module to generate aggregated code coverage reports
+  - [docs-maven-plugin](docs-maven-plugin) Maven Plugin to generate and embed HTML API docs from annotated interfaces
+  - [parent](parent) common parent POM used by most other modules
 
 Another example for usage with Spring Boot can be found at https://github.com/feffef/reactive-hal-spring-example.
 
@@ -235,8 +242,8 @@ You can implement this interface completely by yourself, but this will require y
 A simpler way is to implement the callback-style [HttpClientSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HttpClientSupport.java)
 interface, and then use the [HalResourceLoaderBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/client/HalResourceLoaderBuilder.java).
 
-In both cases, you should extend the [AbstractHalResourceLoaderTest](core/src/test/java/io/wcm/caravan/rhyme/testing/client/AbstractHalResourceLoaderTest.java) 
-(from the test-jar of the core module) to test your implementation against a Wiremock server. These unit tests ensure that all expectations regarding response and error handling are met.
+In both cases, you should extend the [AbstractHalResourceLoaderTest](testing/src/main/java/io/wcm/caravan/rhyme/testing/client/AbstractHalResourceLoaderTest.java) 
+(from the testing module module) to test your implementation against a Wiremock server. These unit tests ensure that all expectations regarding response and error handling are met.
 
 The `HalResourceLoaderBuilder` also has further method to enable persistent caching of responses which are explained in a later section.
 
@@ -395,7 +402,7 @@ You can also create a nested hierarchy of embedded resources. This may for examp
 
 Since the interfaces annotated with `@HalApiInterface` define the structure and relations of all resources in the API, they can also be used to generate a nice context-sensitive documentation for your API, that is automatically integrated in tools such as the [HAL Browser](https://github.com/mikekelly/hal-browser) or [HAL Explorer](https://github.com/toedter/hal-explorer).
 
-All you have to do to generate documentation is to add the following plugin configuration for the [rhyme-docs-maven-plugin](docs-maven-plugin) into the pom.xml of the module that contains the sources for your interfaces annotated with `@HalApiInterface`:
+All you have to do to generate documentation is to add the following plugin configuration for the [rhyme-docs-maven-plugin](tooling/docs-maven-plugin) into the pom.xml of the module that contains the sources for your interfaces annotated with `@HalApiInterface`:
 
 ```
       <!-- Generate HTML documentation into classpath resources-->
@@ -417,7 +424,7 @@ After your API interfaces are compiled, the plugin will use the annotations and 
 
 To ensure that your rendered API responses contain valid CURIE links pointing to your documentation, an implementation of the [RhymeDocsSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/RhymeDocsSupport.java) interface and a call `RhymeBuilder#withRhymeDocsSupport` is required. You also have to write some code to expose the documentation files from the class path to the base URL defined in your `RhymeDocsSupport` implementation.
 
-All this is usually done once in the integration module for your platform. For example if you are using OSGi / JAX-RS, this all happens in the [docs package](osgi-jaxrs/src/main/java/io/wcm/caravan/rhyme/jaxrs/impl/docs), and as a service developer you don't need to do anything than configure the maven plugin.
+All this is usually done once in the integration module for your platform. For example if you are using OSGi / JAX-RS, this all happens in the [docs package](integration/osgi-jaxrs/src/main/java/io/wcm/caravan/rhyme/jaxrs/impl/docs), and as a service developer you don't need to do anything than configure the maven plugin.
 
 ## Controlling caching
 
@@ -503,7 +510,7 @@ The **status code** will be determined as follows:
 - any errors while retrieving an upstream resource should lead to a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) from which the original status code can be extracted and by default is also used in your service's response
 - this works well in many cases, but you may of course also catch those exception yourself (in your resource implementations), and either return some suitable fallback content or re-throw a [HalApiServerException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiServerException.java) with a different status code
 - the Rhyme framework classes may also throw a [HalApiDeveloperException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiDeveloperException.java) that usually indicates that you did something wrong (and hopefully have a clear explanation, otherwise please open an issue). In this case a 500 status code is used.
-- when you use the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java) to create your `Rhyme` instance you may also register a [ExceptionStatusAndLoggingStrategy](develop/core/src/main/java/io/wcm/caravan/rhyme/api/spi/ExceptionStatusAndLoggingStrategy.java)) that can extract a suitable status code for any other exception (e.g. an exception used by your web framework)
+- when you use the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java) to create your `Rhyme` instance you may also register a [ExceptionStatusAndLoggingStrategy](core/src/main/java/io/wcm/caravan/rhyme/api/spi/ExceptionStatusAndLoggingStrategy.java)) that can extract a suitable status code for any other exception (e.g. an exception used by your web framework)
 - any other runtime exceptions will lead to a 500 status code
 
 Some exceptions may also be thrown **before** you are calling `Rhyme#renderResponse`. You should try to catch those as well and call `Rhyme#renderVndErrorResponse(Throwable)` yourself to create a vnd.error response yourself.
