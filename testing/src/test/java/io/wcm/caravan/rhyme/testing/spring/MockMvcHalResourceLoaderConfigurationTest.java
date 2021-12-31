@@ -22,16 +22,15 @@ package io.wcm.caravan.rhyme.testing.spring;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -40,20 +39,11 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 @SpringBootTest
+@Import(MockMvcHalResourceLoaderConfiguration.class)
 public class MockMvcHalResourceLoaderConfigurationTest {
 
   @Autowired
-  private WebApplicationContext wac;
-
   private HalResourceLoader loader;
-
-  @BeforeEach
-  void setUp() {
-
-    MockMvcHalResourceLoaderConfiguration config = new MockMvcHalResourceLoaderConfiguration(wac);
-
-    loader = config.getResourceLoader();
-  }
 
   @Test
   public void should_retrieve_status_and_body_for_200_response() throws Exception {

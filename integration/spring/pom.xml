@@ -96,6 +96,10 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-webflux</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+    </dependency>
 
     <!-- Jackson - overriding managed version from wcm.io parent, because we need a version that
     is compatible with the version used in spring-webflux -->
