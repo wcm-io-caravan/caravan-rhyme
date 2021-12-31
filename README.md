@@ -28,20 +28,20 @@ The key concepts and features of **Rhyme** are:
 
 - [api-interfaces](api-interfaces) - contains only annotations, interfaces and dependencies to be used in your API interface definitions
 - [core](core) - the core framework that can be integrated within any Java project
-- **Integration** modules for using Rhyme with a web service platform:
-  - [spring](integration/spring) - integration module for implementing HAL webservices as a Spring (Boot) application
-  - [osgi-jaxrs](integration/osgi-jaxrs) - integration module for implementing HAL web services using the [OSGi R7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
-  - [aem](integration/aem) - integration module for Adobe Experience Manager (work in progress and not yet released)
-- **Examples** that show how to use Rhyme in various frameworks:
-  - [examples/spring-hypermedia](examples/spring-hypermedia) - a well documented Spring Boot application with examples for most of the key concepts of the core framework
-  - [examples/aem-hal-browser](examples/aem-hal-browser) - an example project for AEM that shows how HAL resources can be implemented as Sling models (work in progress)
-  - [examples/osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
-  - [examples/osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
+- **Integration** modules for using Rhyme with specific web service frameworks:
+  - [spring](integration/spring) - code and APIs for implementing HAL web services as a Spring (Boot) application
+  - [osgi-jaxrs](integration/osgi-jaxrs) - code and APIs for implementing HAL web services using the [OSGi R7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
+  - [aem](integration/aem) - code and APIs for usage in Adobe Experience Manager (work in progress and not yet released)
+- **Examples** that show how to use Rhyme in these frameworks:
+  - [spring-hypermedia](examples/spring-hypermedia) - a well documented Spring Boot application with examples for most of the key concepts of the core framework
+  - [osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
+  - [osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
+  - [aem-hal-browser](examples/aem-hal-browser) - an example project for AEM that shows how HAL resources can be implemented as Sling models (work in progress)
 - [testing](testing) additional testing support classes (to be used in test scope only)
 - Maven **Tooling**
-  - [coverage](coverage) Maven module to generate aggregated code coverage reports
-  - [docs-maven-plugin](docs-maven-plugin) Maven Plugin to generate and embed HTML API docs from annotated interfaces
-  - [parent](parent) common parent POM used by most other modules
+  - [coverage](coverage) - Maven module to generate aggregated code coverage reports
+  - [docs-maven-plugin](docs-maven-plugin) - Maven Plugin to generate and embed HTML API docs from annotated interfaces
+  - [parent](parent) - common parent POM used by most other modules
 
 Another example for usage with Spring Boot can be found at https://github.com/feffef/reactive-hal-spring-example.
 
