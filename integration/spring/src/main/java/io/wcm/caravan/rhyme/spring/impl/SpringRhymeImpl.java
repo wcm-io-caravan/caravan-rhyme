@@ -33,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -46,8 +47,10 @@ import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
 
 /**
  * Implementation of the request-scoped {@link SpringRhyme} interface that creates a single {@link Rhyme} instance
- * using a caching {@link WebClientHalResourceLoader}, {@link SpringExceptionStatusAndLoggingStrategy} and the
- * {@link SpringRhymeDocsIntegration}. It also contains methods to render a {@link LinkableResource} (or any exception),
+ * for each incoming request. It will lookup a {@link HalResourceLoader} implementation bean using the Spring
+ * application context, by default this will be a caching resource loader using a {@link WebClient}.
+ * The {@link SpringExceptionStatusAndLoggingStrategy} and the {@link SpringRhymeDocsIntegration} are activated as well.
+ * This class also contains methods to render a {@link LinkableResource} (or any exception),
  * as a Spring {@link ResponseEntity}, but these methods are not made public because these conversions are handled by
  * the {@link LinkableResourceMessageConverter} and {@link VndErrorHandlingControllerAdvice}.
  */

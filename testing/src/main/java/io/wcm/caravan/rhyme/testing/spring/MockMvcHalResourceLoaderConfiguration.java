@@ -26,10 +26,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -45,10 +43,9 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 /**
- * An implementation of {@link HalResourceLoader} for integration-tests that is using the {@link MockMvc} class
- * to fetch resources from the currently running {@link WebApplicationContext}. It allows you to create
- * a {@link HalApiClient} to navigate through your resources running in your application the same way as an external
- * client would. These tests can cover all of the following aspects with very little code:
+ * A Spring configuration that will replace the default {@link HalResourceLoader} bean
+ * with one that fetches resources from the currently running {@link WebApplicationContext} using the Spring
+ * {@link MockMvc} class.
  * <ul>
  * <li>the calls to the controller methods that create your server-side resource implementations</li>
  * <li>the rendering / serialization of these resources to the HAL+JSON format</li>
@@ -59,20 +56,14 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 @TestConfiguration
 public class MockMvcHalResourceLoaderConfiguration {
 
-  private final HalResourceLoader delegate;
-
-  MockMvcHalResourceLoaderConfiguration(@Autowired WebApplicationContext applicationContext) {
+  @Bean
+  public HalResourceLoader halResourceLoader(WebApplicationContext applicationContext) {
 
     MockMvcClient mockMvcClient = new MockMvcClient(applicationContext);
 
-    delegate = HalResourceLoaderBuilder.create().withCustomHttpClient(mockMvcClient).build();
-  }
-
-  @Primary
-  @Bean
-  public HalResourceLoader getResourceLoader() {
-
-    return delegate;
+    return HalResourceLoaderBuilder.create()
+        .withCustomHttpClient(mockMvcClient)
+        .build();
   }
 
   private static final class MockMvcClient implements HttpClientSupport {

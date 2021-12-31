@@ -34,12 +34,14 @@ import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 /**
  * Runs a set of tests for the {@link WebClientHalResourceLoader} against a Wiremock server
  */
-public class WebClientHalResourceLoaderIT extends AbstractHalResourceLoaderTest {
+public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
-    // make sure to disable caching for these unit-tests
-    return new WebClientHalResourceLoader(false);
+
+    return HalResourceLoader.builder()
+        .withCustomHttpClient(new WebClientSupport())
+        .build();
   }
 
   // after upgrading to Spring Boot 2.5.8, WebClient is handling a few edge cases differently,
