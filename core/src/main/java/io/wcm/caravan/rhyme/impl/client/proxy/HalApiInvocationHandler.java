@@ -127,7 +127,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
 
       Maybe<Object> state = rxResource
           .onErrorResumeNext(ex -> addContextToHalApiClientException(ex, invocation))
-          .map(hal -> new ResourceStateHandler(hal))
+          .map(hal -> new ResourceStateHandler(hal, typeSupport))
           .flatMapMaybe(handler -> handler.handleMethodInvocation(invocation));
 
       return RxJavaReflectionUtils.convertAndCacheReactiveType(state, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);

@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.rhyme.impl.client.proxy;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +28,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 
 class ResourceStateHandler {
 
@@ -40,9 +39,11 @@ class ResourceStateHandler {
   private static final Logger log = LoggerFactory.getLogger(HalApiInvocationHandler.class);
 
   private final HalResource contextResource;
+  private final HalApiTypeSupport typeSupport;
 
-  ResourceStateHandler(HalResource contextResource) {
+  ResourceStateHandler(HalResource contextResource, HalApiTypeSupport typeSupport) {
     this.contextResource = contextResource;
+    this.typeSupport = typeSupport;
   }
 
   Maybe<Object> handleMethodInvocation(HalApiMethodInvocation invocation) {
@@ -53,7 +54,7 @@ class ResourceStateHandler {
 
     // if the interface is using Maybe or Optional as return type, and the HAL resource does not contain any
     // state properties, then an empty maybe should be returned
-    boolean isOptional = Maybe.class.isAssignableFrom(returnType) || Optional.class.isAssignableFrom(returnType);
+    boolean isOptional = typeSupport.isProviderOfOptionalValue(returnType);
     if (isOptional && contextResource.getStateFieldNames().isEmpty()) {
       return Maybe.empty();
     }
