@@ -22,17 +22,20 @@ package io.wcm.caravan.rhyme.impl.renderer;
 import static io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererTestUtil.createTestState;
 import static io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererTestUtil.render;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.testing.TestState;
 
 public class RenderResourcePropertyTest {
@@ -196,4 +199,33 @@ public class RenderResourcePropertyTest {
     assertThat(json.path("valid").asBoolean())
         .isEqualTo(resourceImpl.isValid());
   }
+
+
+  @HalApiInterface
+  public interface TestResourceWithObservableReturnType {
+
+    @ResourceProperty
+    Observable<Integer> getNumber();
+  }
+
+
+  @Test
+  public void should_throw_developer_exception_if_using_observable_as_return_type() {
+
+    TestResourceWithObservableReturnType resourceImpl = new TestResourceWithObservableReturnType() {
+
+      @Override
+      public Observable<Integer> getNumber() {
+        return Observable.just(123);
+      }
+
+    };
+
+    Throwable ex = catchThrowable(() -> render(resourceImpl));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("@ResourceProperty cannot be used for arrays");
+  }
+
 }

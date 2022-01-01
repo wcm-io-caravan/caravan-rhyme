@@ -37,8 +37,11 @@ import com.google.common.base.Preconditions;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
+import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
@@ -146,6 +149,13 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
 
     return Observable.fromIterable(methods)
         .concatMap(method -> {
+
+          if (typeSupport.isProviderOfMultiplerValues(method.getReturnType())) {
+            String methodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method, typeSupport);
+            String msg = "@" + ResourceProperty.class.getSimpleName() + " cannot be used for arrays, but " + methodName + " is using " + method.getReturnType()
+                + " as return type. Consider using @" + ResourceState.class.getSimpleName() + " instead";
+            return Observable.error(new HalApiDeveloperException(msg));
+          }
 
           String propertyName = HalApiReflectionUtils.getPropertyName(method, typeSupport);
 
