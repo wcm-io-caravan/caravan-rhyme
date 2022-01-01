@@ -145,9 +145,9 @@ public class RenderResourcePropertyTest {
       }
     };
 
-    JsonNode json = render(resourceImpl).getModel();
+    HalResource hal = render(resourceImpl);
 
-    assertThat(() -> json.fieldNames())
+    assertThat(hal.getStateFieldNames())
         .containsExactlyInAnyOrder("foo", "bar", "valid");
   }
 
