@@ -33,7 +33,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 
 class ResourceStateHandler {
 
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+  static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
       .registerModule(new GuavaModule()) // allows de-serialization of Guava collections
       .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 

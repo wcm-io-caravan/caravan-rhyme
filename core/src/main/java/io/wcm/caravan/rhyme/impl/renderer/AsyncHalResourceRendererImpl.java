@@ -22,12 +22,10 @@ package io.wcm.caravan.rhyme.impl.renderer;
 import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.findHalApiInterface;
 import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.getSimpleClassName;
 
-import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -147,31 +145,17 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
     List<Method> methods = HalApiReflectionUtils.findResourcePropertyMethods(apiInterface, typeSupport);
 
     return Observable.fromIterable(methods)
-        .flatMap(method -> {
+        .concatMap(method -> {
+
+          String propertyName = HalApiReflectionUtils.getPropertyName(method, typeSupport);
+
           return RxJavaReflectionUtils.invokeMethodAndReturnObservable(resourceImplInstance, method, metrics, typeSupport)
               // convert the emitted property value to a JSON  node
-              .map(object -> OBJECT_MAPPER.convertValue(object, JsonNode.class))
-              .map(returnValue -> Pair.of(getPropertyName(method), returnValue));
+              .map(returnValue -> OBJECT_MAPPER.convertValue(returnValue, JsonNode.class))
+              .map(jsonNode -> Pair.of(propertyName, jsonNode));
         });
   }
 
-
-  private String getPropertyName(Method method) {
-
-    String fromAnnotation = typeSupport.getPropertyName(method);
-    if (StringUtils.isNotBlank(fromAnnotation)) {
-      return fromAnnotation;
-    }
-
-    String name = method.getName();
-    if (name.startsWith("get")) {
-      return Introspector.decapitalize(name.substring(3));
-    }
-    if (name.startsWith("is")) {
-      return Introspector.decapitalize(name.substring(2));
-    }
-    return Introspector.decapitalize(name);
-  }
 
   HalResource createHalResource(Object resourceImplInstance, ObjectNode stateNode, List<RelationRenderResult> listOfRelated) {
 
