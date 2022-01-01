@@ -94,6 +94,16 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
   }
 
   @Override
+  public boolean isResourcePropertyMethod(Method method) {
+    return annotationSupport.isResourcePropertyMethod(method);
+  }
+
+  @Override
+  public String getPropertyName(Method method) {
+    return annotationSupport.getPropertyName(method);
+  }
+
+  @Override
   public String getRelation(Method method) {
     return annotationSupport.getRelation(method);
   }
@@ -183,9 +193,20 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
     }
 
     @Override
+    public boolean isResourcePropertyMethod(Method method) {
+      return false;
+    }
+
+    @Override
+    public String getPropertyName(Method method) {
+      return null;
+    }
+
+    @Override
     public String getRelation(Method method) {
       return null;
     }
+
 
   }
 

@@ -143,6 +143,18 @@ public final class HalApiReflectionUtils {
   /**
    * @param apiInterface an interface annotated with {@link HalApiInterface} (either directly or by extending)
    * @param annotationSupport the strategy to detect HAL API annotations
+   * @return the method annotated with {@link ResourceState}
+   */
+  public static List<Method> findResourcePropertyMethods(Class<?> apiInterface, HalApiAnnotationSupport annotationSupport) {
+
+    return Stream.of(apiInterface.getMethods())
+        .filter(annotationSupport::isResourcePropertyMethod)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * @param apiInterface an interface annotated with {@link HalApiInterface} (either directly or by extending)
+   * @param annotationSupport the strategy to detect HAL API annotations
    * @return a list of all methods annotated with {@link Related}
    */
   public static List<Method> getSortedRelatedResourceMethods(Class<?> apiInterface, HalApiAnnotationSupport annotationSupport) {

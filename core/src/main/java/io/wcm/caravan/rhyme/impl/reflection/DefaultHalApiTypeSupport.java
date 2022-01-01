@@ -36,6 +36,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceLink;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
@@ -56,6 +57,16 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
   @Override
   public boolean isResourceStateMethod(Method method) {
     return method.isAnnotationPresent(ResourceState.class);
+  }
+
+  @Override
+  public boolean isResourcePropertyMethod(Method method) {
+    return method.isAnnotationPresent(ResourceProperty.class);
+  }
+
+  @Override
+  public String getPropertyName(Method method) {
+    return method.getAnnotation(ResourceProperty.class).value();
   }
 
   @Override
