@@ -10,8 +10,8 @@ import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * An example for a simple HAL API that provides a greeting message, and has additional links to translate or customize
- * this message
+ * An example for a simple HAL API resource that provides a greeting message, and has additional links to translate or
+ * customize this message
  */
 @HalApiInterface
 public interface HelloWorldResource extends LinkableResource {
