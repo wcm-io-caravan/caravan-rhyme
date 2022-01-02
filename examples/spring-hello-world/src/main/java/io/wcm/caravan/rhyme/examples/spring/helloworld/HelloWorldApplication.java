@@ -20,7 +20,6 @@
 package io.wcm.caravan.rhyme.examples.spring.helloworld;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import io.wcm.caravan.rhyme.api.annotations.ExcludeFromJacocoGeneratedReport;
@@ -30,7 +29,6 @@ import io.wcm.caravan.rhyme.api.annotations.ExcludeFromJacocoGeneratedReport;
  */
 //CHECKSTYLE:OFF - FinalClass (Spring will extended this internally)
 @SpringBootApplication
-@EnableAutoConfiguration
 public class HelloWorldApplication { //CHECKSTYLE:ON
 
   /**
