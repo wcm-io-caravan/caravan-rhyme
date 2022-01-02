@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>io.wcm.maven</groupId>
+		<artifactId>io.wcm.maven.global-parent</artifactId>
+		<version>39</version>
+		<relativePath />
+	</parent>
+
+	<groupId>io.wcm.caravan</groupId>
+	<artifactId>io.wcm.caravan.rhyme.examples.spring-hello-world</artifactId>
+	<version>1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>Rhyme - Spring Boot Hello World Example</name>
+	<description>An very simple HAL service implemented with Spring boot</description>
+
+	<scm>
+		<connection>scm:git:https://github.com/wcm-io-caravan/caravan-rhyme.git</connection>
+		<developerConnection>scm:git:https://github.com/wcm-io-caravan/caravan-rhyme.git</developerConnection>
+		<url>https://github.com/wcm-io-caravan/caravan-rhyme</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<build.compiler.release>8</build.compiler.release>
+		<spring-boot.version>2.5.8</spring-boot.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<!-- Import dependency management from Spring Boot -->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring-boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-rest-hal-explorer</artifactId>
+		</dependency>
+ 
+		<!-- wcm.io Caravan dependencies -->
+		<dependency>
+			<groupId>io.wcm.caravan</groupId>
+			<artifactId>io.wcm.caravan.rhyme.spring</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.wcm.caravan</groupId>
+			<artifactId>io.wcm.caravan.rhyme.testing</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring-boot.version}</version>
+			</plugin>
+
+			<!-- do not generate site for this project -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+					<skipDeploy>true</skipDeploy>
+				</configuration>
+			</plugin>
+
+			<!-- Generate HTML documentation into classpath resources-->
+			<plugin>
+				<groupId>io.wcm.caravan.maven.plugins</groupId>
+				<artifactId>rhyme-docs-maven-plugin</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate-rhyme-docs</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Copy the HTML documentation into the classes folder so they are included in the JAR -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>custom-resources</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes/RHYME-DOCS-INF</outputDirectory>
+							<resources>
+								<resource>
+									<directory>target/generated-rhyme-docs</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+							<encoding>UTF-8</encoding>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+                      io.wcm.caravan.maven.plugins
+                    </groupId>
+										<artifactId>
+                      rhyme-docs-maven-plugin
+                    </artifactId>
+										<versionRange>
+                      [1.0.0-SNAPSHOT,)
+                    </versionRange>
+										<goals>
+											<goal>generate-rhyme-docs</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
