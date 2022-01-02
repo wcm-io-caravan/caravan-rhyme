@@ -130,10 +130,6 @@ class HelloWorldController {
    */
   private abstract class AbstractHelloWorldResource implements HelloWorldResource {
 
-    private boolean isDefaultMessage() {
-      return HELLO_WORLD.equals(getText());
-    }
-
     @Override
     public Optional<HelloWorldResource> withDefaultMessage() {
 
