@@ -83,12 +83,20 @@ class HalApiMethodInvocation {
     return typeSupport.isResourceStateMethod(method);
   }
 
+  boolean isForMethodAnnotatedWithResourceProperties() {
+    return typeSupport.isResourcePropertyMethod(method);
+  }
+
   boolean isForMethodAnnotatedWithResourceRepresentation() {
     return typeSupport.isResourceRepresentationMethod(method);
   }
 
   boolean hasTemplatedReturnType() {
     return method.getGenericReturnType() instanceof ParameterizedType;
+  }
+
+  Method getMethod() {
+    return method;
   }
 
   Class<?> getReturnType() {

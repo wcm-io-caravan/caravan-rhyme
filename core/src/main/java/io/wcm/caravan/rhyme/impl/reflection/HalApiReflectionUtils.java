@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.rhyme.impl.reflection;
 
+import java.beans.Introspector;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,6 +33,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 
@@ -138,6 +141,18 @@ public final class HalApiReflectionUtils {
     return Stream.of(apiInterface.getMethods())
         .filter(annotationSupport::isResourceStateMethod)
         .findFirst();
+  }
+
+  /**
+   * @param apiInterface an interface annotated with {@link HalApiInterface} (either directly or by extending)
+   * @param annotationSupport the strategy to detect HAL API annotations
+   * @return the method annotated with {@link ResourceState}
+   */
+  public static List<Method> findResourcePropertyMethods(Class<?> apiInterface, HalApiAnnotationSupport annotationSupport) {
+
+    return Stream.of(apiInterface.getMethods())
+        .filter(annotationSupport::isResourcePropertyMethod)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -270,6 +285,23 @@ public final class HalApiReflectionUtils {
       }
 
     }
+  }
+
+  public static String getPropertyName(Method method, HalApiTypeSupport typeSupport) {
+  
+    String fromAnnotation = typeSupport.getPropertyName(method);
+    if (StringUtils.isNotBlank(fromAnnotation)) {
+      return fromAnnotation;
+    }
+  
+    String name = method.getName();
+    if (name.startsWith("get")) {
+      return Introspector.decapitalize(name.substring(3));
+    }
+    if (name.startsWith("is")) {
+      return Introspector.decapitalize(name.substring(2));
+    }
+    return Introspector.decapitalize(name);
   }
 
 }

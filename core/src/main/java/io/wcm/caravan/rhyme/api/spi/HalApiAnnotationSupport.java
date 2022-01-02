@@ -67,6 +67,22 @@ public interface HalApiAnnotationSupport {
   boolean isResourceStateMethod(Method method);
 
   /**
+   * @param method from a HAL API interface
+   * @return true if the method returns one of the resource properties
+   */
+  default boolean isResourcePropertyMethod(Method method) {
+    return false;
+  };
+
+  /**
+   * @param method for which {@link #isResourcePropertyMethod(Method)} returns true
+   * @return the name of the property (from the value attribute of the annotation)
+   */
+  default String getPropertyName(Method method) {
+    return null;
+  };
+
+  /**
    * @param method for which {@link #isResourceLinkMethod(Method)} returns true
    * @return the relation to be used for links and embedded resources returned by the method
    */

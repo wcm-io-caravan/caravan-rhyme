@@ -410,6 +410,16 @@ public class RhymeBuilderImplTest {
     }
 
     @Override
+    public boolean isResourcePropertyMethod(Method method) {
+      return false;
+    }
+
+    @Override
+    public String getPropertyName(Method method) {
+      return null;
+    }
+
+    @Override
     public String getRelation(Method method) {
 
       if (isRelatedResourceMethod(method)) {

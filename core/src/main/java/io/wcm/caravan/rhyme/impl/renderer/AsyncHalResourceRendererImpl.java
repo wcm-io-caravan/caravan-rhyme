@@ -20,22 +20,28 @@
 package io.wcm.caravan.rhyme.impl.renderer;
 
 import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.findHalApiInterface;
-import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.getClassAndMethodName;
 import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.getSimpleClassName;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
+import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
@@ -84,7 +90,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
       Class<?> apiInterface = findHalApiInterface(resourceImplInstance, typeSupport);
 
       // get the JSON resource state from the method annotated with @ResourceState
-      Single<ObjectNode> rxState = renderResourceState(apiInterface, resourceImplInstance);
+      Single<ObjectNode> rxState = renderResourceStateAndProperties(apiInterface, resourceImplInstance);
 
       // render links and embedded resources for each method annotated with @RelatedResource
       Single<List<RelationRenderResult>> rxRelated = relatedRenderer.renderRelated(apiInterface, resourceImplInstance);
@@ -100,6 +106,22 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
 
       return rxHalResource;
     }
+  }
+
+  Single<ObjectNode> renderResourceStateAndProperties(Class<?> apiInterface, Object resourceImplInstance) {
+
+    Single<ObjectNode> rxState = renderResourceState(apiInterface, resourceImplInstance);
+
+    Single<List<Pair<String, JsonNode>>> rxProperties = renderResourceProperties(apiInterface, resourceImplInstance).toList();
+
+    return Single.zip(rxState, rxProperties, (state, properties) -> {
+
+      properties.forEach(pair -> state.set(pair.getKey(), pair.getValue()));
+
+      return state;
+    })
+        // and measure the total time of the emissions
+        .compose(EmissionStopwatch.collectMetrics(() -> "rendering resource state of " + getSimpleClassName(resourceImplInstance, typeSupport), metrics));
   }
 
   Single<ObjectNode> renderResourceState(Class<?> apiInterface, Object resourceImplInstance) {
@@ -118,12 +140,32 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
         .map(object -> OBJECT_MAPPER.convertValue(object, ObjectNode.class))
         // or use an empty object if the method returned an empty Maybe or Observable
         .singleElement()
-        .switchIfEmpty(emptyObject)
-        // and measure the total time of the emissions
-        .compose(
-            EmissionStopwatch.collectMetrics(() -> "rendering state emitted by " + getClassAndMethodName(resourceImplInstance, method.get(), typeSupport),
-                metrics));
+        .switchIfEmpty(emptyObject);
   }
+
+  private Observable<Pair<String, JsonNode>> renderResourceProperties(Class<?> apiInterface, Object resourceImplInstance) {
+
+    List<Method> methods = HalApiReflectionUtils.findResourcePropertyMethods(apiInterface, typeSupport);
+
+    return Observable.fromIterable(methods)
+        .concatMap(method -> {
+
+          if (typeSupport.isProviderOfMultiplerValues(method.getReturnType())) {
+            String methodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method, typeSupport);
+            String msg = "@" + ResourceProperty.class.getSimpleName() + " cannot be used for arrays, but " + methodName + " is using " + method.getReturnType()
+                + " as return type. Consider using @" + ResourceState.class.getSimpleName() + " instead";
+            return Observable.error(new HalApiDeveloperException(msg));
+          }
+
+          String propertyName = HalApiReflectionUtils.getPropertyName(method, typeSupport);
+
+          return RxJavaReflectionUtils.invokeMethodAndReturnObservable(resourceImplInstance, method, metrics, typeSupport)
+              // convert the emitted property value to a JSON  node
+              .map(returnValue -> OBJECT_MAPPER.convertValue(returnValue, JsonNode.class))
+              .map(jsonNode -> Pair.of(propertyName, jsonNode));
+        });
+  }
+
 
   HalResource createHalResource(Object resourceImplInstance, ObjectNode stateNode, List<RelationRenderResult> listOfRelated) {
 

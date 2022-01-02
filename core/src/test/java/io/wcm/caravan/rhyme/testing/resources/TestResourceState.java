@@ -28,5 +28,10 @@ public class TestResourceState {
     this.text = value;
     return this;
   }
+
+  public TestResourceState withNumber(Integer value) {
+    this.number = value;
+    return this;
+  }
 }
 
