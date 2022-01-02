@@ -1,7 +1,6 @@
 package io.wcm.caravan.rhyme.examples.spring.helloworld;
 
 import static io.wcm.caravan.rhyme.examples.spring.helloworld.HelloWorldResource.TEXT_PARAM;
-import static io.wcm.caravan.rhyme.examples.spring.helloworld.HelloWorldResource.LANGUAGE_PARAM;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -72,38 +71,45 @@ class HelloWorldController {
     };
   }
 
-
-  @GetMapping("/translations/{" + LANGUAGE_PARAM + "}")
-  HelloWorldResource createTranslatedResource(@PathVariable(name = LANGUAGE_PARAM) String language) {
+  @GetMapping("/translations/{languageCode}")
+  HelloWorldResource createTranslatedResource(@PathVariable String languageCode) {
 
     return new AbstractHelloWorldResource() {
 
       @Override
       public String getText() {
 
-        return TRANSLATIONS.getOrDefault(language, HELLO_WORLD);
+        return TRANSLATIONS.getOrDefault(languageCode, HELLO_WORLD);
       }
 
       @Override
       public Link createLink() {
 
-        WebMvcLinkBuilder linkBuilder = linkTo(methodOn(HelloWorldController.class).createTranslatedResource(language));
+        WebMvcLinkBuilder linkBuilder = linkTo(methodOn(HelloWorldController.class).createTranslatedResource(languageCode));
 
-        Locale locale = Locale.forLanguageTag(language);
+        String languageName = Locale.forLanguageTag(languageCode).getDisplayLanguage(Locale.ENGLISH);
 
         return new Link(linkBuilder.toString())
-            .setTitle("A message in " + locale.getDisplayLanguage(Locale.ENGLISH))
-            .setName(locale.getLanguage());
+            .setTitle("A message in " + languageName)
+            .setName(languageCode);
       }
     };
   }
 
+  /**
+   * Defines the methods that generate links to related resources, which are shared between the three available
+   * variations of {@link HelloWorldResource} in this controller
+   */
   private abstract class AbstractHelloWorldResource implements HelloWorldResource {
+
+    private boolean isDefaultMessage() {
+      return HELLO_WORLD.equals(getText());
+    }
 
     @Override
     public Optional<HelloWorldResource> withDefaultMessage() {
 
-      if (HELLO_WORLD.equals(getText())) {
+      if (isDefaultMessage()) {
         return Optional.empty();
       }
       return Optional.of(createDefaultResource());
@@ -112,6 +118,9 @@ class HelloWorldController {
     @Override
     public Stream<HelloWorldResource> getTranslations() {
 
+      if (!isDefaultMessage()) {
+        return Stream.empty();
+      }
       return TRANSLATIONS.keySet().stream()
           .map(language -> createTranslatedResource(language));
     }

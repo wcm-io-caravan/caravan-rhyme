@@ -17,7 +17,6 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 public interface HelloWorldResource extends LinkableResource {
 
   static final String TEXT_PARAM = "text";
-  static final String LANGUAGE_PARAM = "language";
 
   /**
    * @return the text of the greeting message
@@ -35,7 +34,7 @@ public interface HelloWorldResource extends LinkableResource {
 
   /**
    * Links to all available translated versions of the resource (using the language code as link name)
-   * @return 1..n {@link HelloWorldResource} instances
+   * @return 0..n {@link HelloWorldResource} instances
    */
   @Related("hello:translated")
   Stream<HelloWorldResource> getTranslations();

@@ -67,6 +67,15 @@ public class HelloWorldTest {
   }
 
   @Test
+  void custom_message_should_not_have_links_to_translations() {
+
+    Stream<HelloWorldResource> translations = helloWorld.withCustomMessage("Foo Bar!").getTranslations();
+
+    assertThat(translations)
+        .isEmpty();
+  }
+
+  @Test
   void should_hide_link_to_default_message_on_entry_point() {
 
     Optional<HelloWorldResource> defaultLink = helloWorld.withDefaultMessage();
