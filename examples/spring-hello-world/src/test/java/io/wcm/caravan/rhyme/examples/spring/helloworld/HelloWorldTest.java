@@ -30,7 +30,7 @@ public class HelloWorldTest {
   }
 
   @Test
-  void should_provide_default_message() {
+  void default_message_can_be_fetched() {
 
     String defaultMsg = helloWorld.getText();
 
@@ -39,7 +39,7 @@ public class HelloWorldTest {
   }
 
   @Test
-  void should_allow_to_fetch_custom_message() {
+  void custom_message_can_be_fetched() {
 
     String customMsg = helloWorld.withCustomMessage("Foo Bar!").getText();
 
@@ -48,7 +48,7 @@ public class HelloWorldTest {
   }
 
   @Test
-  void should_allow_to_fetch_translated_messages() {
+  void translated_messages_can_be_fetched() {
 
     Stream<String> translations = helloWorld.getTranslations().map(HelloWorldResource::getText);
 
@@ -69,14 +69,14 @@ public class HelloWorldTest {
   @Test
   void translated_message_should_have_only_links_to_other_translations() {
 
-    HelloWorldResource firstTranslation = helloWorld.getTranslations().findFirst().get();
+    HelloWorldResource translated = helloWorld.getTranslations().findFirst().get();
 
-    String firstLanguage = firstTranslation.createLink().getName();
+    String language = translated.createLink().getName();
 
-    assertThat(firstTranslation.getTranslations())
+    assertThat(translated.getTranslations())
         .hasSize(2)
-        .extracting(res -> res.createLink().getName())
-        .doesNotContain(firstLanguage);
+        .extracting(resource -> resource.createLink().getName())
+        .doesNotContain(language);
   }
 
   @Test
@@ -89,15 +89,6 @@ public class HelloWorldTest {
   }
 
   @Test
-  void should_hide_link_to_default_message_on_entry_point() {
-
-    Optional<HelloWorldResource> defaultLink = helloWorld.withDefaultMessage();
-
-    assertThat(defaultLink)
-        .isNotPresent();
-  }
-
-  @Test
   void custom_message_resource_should_have_link_back_to_default_message() {
 
     Optional<HelloWorldResource> defaultLink = helloWorld.withCustomMessage("Foo Bar!").withDefaultMessage();
@@ -107,5 +98,14 @@ public class HelloWorldTest {
         .get()
         .extracting(HelloWorldResource::getText)
         .isEqualTo("Hello World!");
+  }
+
+  @Test
+  void default_message_should_not_have_default_link() {
+
+    Optional<HelloWorldResource> defaultLink = helloWorld.withDefaultMessage();
+
+    assertThat(defaultLink)
+        .isNotPresent();
   }
 }

@@ -16,6 +16,9 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 @HalApiInterface
 public interface HelloWorldResource extends LinkableResource {
 
+  /**
+   * the name of the template variable used in {@link #withCustomMessage(String)}
+   */
   static final String TEXT_PARAM = "text";
 
   /**
