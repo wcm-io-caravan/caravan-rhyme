@@ -67,6 +67,19 @@ public class HelloWorldTest {
   }
 
   @Test
+  void translated_message_should_have_only_links_to_other_translations() {
+
+    HelloWorldResource firstTranslation = helloWorld.getTranslations().findFirst().get();
+
+    String firstLanguage = firstTranslation.createLink().getName();
+
+    assertThat(firstTranslation.getTranslations())
+        .hasSize(2)
+        .extracting(res -> res.createLink().getName())
+        .doesNotContain(firstLanguage);
+  }
+
+  @Test
   void custom_message_should_not_have_links_to_translations() {
 
     Stream<HelloWorldResource> translations = helloWorld.withCustomMessage("Foo Bar!").getTranslations();

@@ -7,6 +7,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 @RestController
 class HelloWorldController {
@@ -30,7 +32,7 @@ class HelloWorldController {
       "it", "Ciao mondo");
 
   @GetMapping("/")
-  HelloWorldResource createDefaultResource() {
+  HelloWorldResource getDefaultResource() {
 
     return new AbstractHelloWorldResource() {
 
@@ -40,18 +42,22 @@ class HelloWorldController {
       }
 
       @Override
+      public Optional<HelloWorldResource> withDefaultMessage() {
+        // no need to render a link to the default resource because this is the default resource
+        return Optional.empty();
+      }
+
+      @Override
       public Link createLink() {
 
-        WebMvcLinkBuilder linkBuilder = linkTo(methodOn(HelloWorldController.class).createDefaultResource());
-
-        return new Link(linkBuilder.toString())
-            .setTitle("The default Hello World message");
+        return buildLinkTo(ctrl -> ctrl.getDefaultResource())
+            .setTitle("The default 'Hello World' message");
       }
     };
   }
 
   @GetMapping("/custom")
-  HelloWorldResource createCustomResource(@RequestParam(name = TEXT_PARAM) String text) {
+  HelloWorldResource getCustomResource(@RequestParam(name = TEXT_PARAM) String text) {
 
     return new AbstractHelloWorldResource() {
 
@@ -61,18 +67,22 @@ class HelloWorldController {
       }
 
       @Override
+      public Stream<HelloWorldResource> getTranslations() {
+        // don't render links to translations from the resource with custom text
+        return Stream.empty();
+      }
+
+      @Override
       public Link createLink() {
 
-        WebMvcLinkBuilder linkBuilder = linkTo(methodOn(HelloWorldController.class).createCustomResource(text));
-
-        return new Link(linkBuilder.toString())
+        return buildLinkTo(ctrl -> ctrl.getCustomResource(text))
             .setTitle(text == null ? "Load a resource with a customized message" : "A customized '" + text + "' message");
       }
     };
   }
 
   @GetMapping("/translations/{languageCode}")
-  HelloWorldResource createTranslatedResource(@PathVariable String languageCode) {
+  HelloWorldResource getTranslatedResource(@PathVariable String languageCode) {
 
     return new AbstractHelloWorldResource() {
 
@@ -83,17 +93,35 @@ class HelloWorldController {
       }
 
       @Override
-      public Link createLink() {
+      public Stream<HelloWorldResource> getTranslations() {
 
-        WebMvcLinkBuilder linkBuilder = linkTo(methodOn(HelloWorldController.class).createTranslatedResource(languageCode));
+        return super.getTranslations()
+            .filter(translation -> !translation.createLink().getName().equals(languageCode));
+      }
+
+      @Override
+      public Link createLink() {
 
         String languageName = Locale.forLanguageTag(languageCode).getDisplayLanguage(Locale.ENGLISH);
 
-        return new Link(linkBuilder.toString())
+        return buildLinkTo(ctrl -> ctrl.getTranslatedResource(languageCode))
             .setTitle("A message in " + languageName)
             .setName(languageCode);
       }
     };
+  }
+
+  /**
+   * Builds a link pointing to a controller method with the help of the {@link WebMvcLinkBuilder} class
+   * @param controllerCall a lambda that calls the target function on a subclass of the
+   *          {@link HelloWorldController}
+   * @return a wcm.io Caravan {@link Link} object where the href property is already set
+   */
+  private Link buildLinkTo(Function<HelloWorldController, LinkableResource> controllerCall) {
+
+    WebMvcLinkBuilder linkBuilder = linkTo(controllerCall.apply(methodOn(HelloWorldController.class)));
+
+    return new Link(linkBuilder.toString());
   }
 
   /**
@@ -109,26 +137,20 @@ class HelloWorldController {
     @Override
     public Optional<HelloWorldResource> withDefaultMessage() {
 
-      if (isDefaultMessage()) {
-        return Optional.empty();
-      }
-      return Optional.of(createDefaultResource());
+      return Optional.of(getDefaultResource());
     }
 
     @Override
     public Stream<HelloWorldResource> getTranslations() {
 
-      if (!isDefaultMessage()) {
-        return Stream.empty();
-      }
       return TRANSLATIONS.keySet().stream()
-          .map(language -> createTranslatedResource(language));
+          .map(language -> getTranslatedResource(language));
     }
 
     @Override
     public HelloWorldResource withCustomMessage(String text) {
 
-      return createCustomResource(text);
+      return getCustomResource(text);
     }
   }
 }

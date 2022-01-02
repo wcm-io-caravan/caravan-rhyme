@@ -33,7 +33,7 @@ public interface HelloWorldResource extends LinkableResource {
   HelloWorldResource withCustomMessage(@TemplateVariable(TEXT_PARAM) String text);
 
   /**
-   * Links to all available translated versions of the resource (using the language code as link name)
+   * Links to all available translated versions of the default resource (using the language code as link name)
    * @return 0..n {@link HelloWorldResource} instances
    */
   @Related("hello:translated")
