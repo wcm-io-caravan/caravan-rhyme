@@ -34,6 +34,7 @@ The key concepts and features of **Rhyme** are:
   - [aem](integration/aem) - code and APIs for usage in Adobe Experience Manager (work in progress and not yet released)
 - **Examples** that show how to use Rhyme in these frameworks:
   - [spring-hypermedia](examples/spring-hypermedia) - a well documented Spring Boot application with examples for most of the key concepts of the core framework
+  - [spring-hello-world](examples/spring-hello-world) - a very simple Spring Boot application with minimal dependencies 
   - [osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
   - [osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
   - [aem-hal-browser](examples/aem-hal-browser) - an example project for AEM that shows how HAL resources can be implemented as Sling models (work in progress)
