@@ -41,6 +41,7 @@ import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRxBeanPrope
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithRxBeanProperties.BeanProperties;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestEntryPoint;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 
 public class RhymePropertiesDocsTest {
@@ -627,5 +628,39 @@ public class RhymePropertiesDocsTest {
       }
 
     }
+  }
+
+  @Test
+  public void getProperties_should_use_javadocs_from_ResourceProperty() {
+
+    RhymeResourceDocs docs = getDocsFor(ResourceWithResourceProperty.class);
+
+    assertThat(docs.getProperties())
+        .extracting(RhymePropertyDocs::getJsonPointer)
+        .containsExactly(
+            "/title", "/foo");
+
+    assertThat(findDocsForProperty("/title", docs).getDescription())
+        .isEqualTo("the title");
+
+    assertThat(findDocsForProperty("/foo", docs).getDescription())
+        .isEqualTo("the index");
+  }
+
+  @HalApiInterface
+  interface ResourceWithResourceProperty {
+
+    /**
+     * @return the title
+     */
+    @ResourceProperty
+    String getTitle();
+
+    /**
+     * the index
+     * @return an integer
+     */
+    @ResourceProperty("foo")
+    Integer getIndex();
   }
 }

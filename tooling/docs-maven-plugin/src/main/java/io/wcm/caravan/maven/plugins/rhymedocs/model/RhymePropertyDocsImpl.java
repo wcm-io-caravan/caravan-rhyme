@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +36,12 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.TreeNode;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
 
@@ -107,23 +106,63 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
 
   public static List<RhymePropertyDocs> create(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
 
+    Stream<RhymePropertyDocs> resourceStateDocs = crreateDocsFromResourceState(apiInterface, builder, projectClassLoader);
+
+    Stream<RhymePropertyDocs> resourcePropertyDocs = crreateDocsFromResourceProperty(apiInterface, builder, projectClassLoader);
+
+    return Stream.concat(resourceStateDocs, resourcePropertyDocs)
+        .collect(Collectors.toList());
+  }
+
+  private static Stream<RhymePropertyDocs> crreateDocsFromResourceProperty(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
+
+    Stream<JavaMethod> javaMethods = DocumentationUtils.getMethodsWithAnnotation(apiInterface, ResourceProperty.class);
+
+    return javaMethods.map(javaMethod -> {
+
+      Method method = DocumentationUtils.getMethod(apiInterface, javaMethod, projectClassLoader);
+      Class<?> stateType = RxJavaReflectionUtils.getObservableEmissionType(method, RhymeResourceDocs.TYPE_SUPPORT);
+
+      String description = DocumentationUtils.findJavaDocForMethod(builder, method.getDeclaringClass(), method);
+
+      String propertyName = getResourcePropertyName(method);
+
+      return new FixedPropertyModel(stateType.getSimpleName(), description, "/" + propertyName);
+    });
+  }
+
+  private static String getResourcePropertyName(Method method) {
+
+    ResourceProperty annotation = method.getAnnotation(ResourceProperty.class);
+    if (StringUtils.isNotBlank(annotation.value())) {
+      return annotation.value();
+    }
+
+    return DocumentationUtils.getBeanProperties(method.getDeclaringClass())
+        .filter(pd -> pd.getReadMethod().equals(method))
+        .map(pd -> pd.getName())
+        .findFirst()
+        .orElse(method.getName());
+  }
+
+  private static Stream<RhymePropertyDocs> crreateDocsFromResourceState(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
+
     Optional<JavaMethod> javaMethod = DocumentationUtils.getMethodsWithAnnotation(apiInterface, ResourceState.class).findFirst();
     if (!javaMethod.isPresent()) {
-      return Collections.emptyList();
+      return Stream.empty();
     }
 
     Method method = DocumentationUtils.getMethod(apiInterface, javaMethod.get(), projectClassLoader);
     Class<?> stateType = RxJavaReflectionUtils.getObservableEmissionType(method, RhymeResourceDocs.TYPE_SUPPORT);
 
     if (TreeNode.class.isAssignableFrom(stateType)) {
-      return ImmutableList.of(new FixedPropertyModel("JSON Object",
+      return Stream.of(new FixedPropertyModel("JSON Object",
           "The HAL API Interface for this method uses a generic JSON node, so that the property structure is not specified", "/"));
     }
 
     Map<String, String> processedClassNames = new HashMap<>();
-    Stream<RhymePropertyDocs> concat = createPropertyDocsRecursively(builder, stateType, "", processedClassNames);
 
-    return concat.collect(Collectors.toList());
+    return createPropertyDocsRecursively(builder, stateType, "", processedClassNames);
   }
 
   private static Stream<RhymePropertyDocs> createPropertyDocsRecursively(JavaProjectBuilder builder, Class<?> stateType, String basePointer,
