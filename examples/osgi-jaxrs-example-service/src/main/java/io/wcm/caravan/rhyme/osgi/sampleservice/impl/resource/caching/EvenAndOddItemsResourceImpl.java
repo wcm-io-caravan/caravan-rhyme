@@ -31,7 +31,6 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.caching.EvenOddItemsResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
@@ -106,17 +105,17 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
     }
 
     @Override
-    public Observable<ItemResource> getItems() {
+    public Maybe<String> getTitle() {
 
-      return items.map(ClientCollectionResourceImpl.EmbeddedItemResourceImpl::new);
+      return items.count()
+          .map(numItems -> "A collection of " + numItems + " items")
+          .toMaybe();
     }
 
     @Override
-    public Maybe<TitledState> getState() {
+    public Observable<ItemResource> getItems() {
 
-      return items.count()
-          .map(numItems -> new TitledState().withTitle("A collection of " + numItems + " items"))
-          .toMaybe();
+      return items.map(ClientCollectionResourceImpl.EmbeddedItemResourceImpl::new);
     }
 
     @Override
@@ -130,5 +129,6 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
 
       return true;
     }
+
   }
 }

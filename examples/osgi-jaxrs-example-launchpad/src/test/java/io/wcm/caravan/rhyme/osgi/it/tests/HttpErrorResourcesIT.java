@@ -59,7 +59,7 @@ public class HttpErrorResourcesIT {
     return assertThrows(HalApiClientException.class, () -> {
       entryPoint.getErrorExamples()
           .flatMap(errors -> errors.testClientErrorHandling(parameters))
-          .flatMapMaybe(ErrorResource::getProperties)
+          .flatMapMaybe(ErrorResource::getTitle)
           .blockingGet();
     });
   }

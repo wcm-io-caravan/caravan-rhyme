@@ -23,7 +23,7 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
-import io.wcm.caravan.rhyme.api.annotations.ResourceState;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 
 /**
@@ -34,10 +34,10 @@ import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 public interface ItemCollectionResource {
 
   /**
-   * @return an optional state with just a title (to be displayed in the HAL browser when this resource is embedded)
+   * @return an optional title (to be displayed in the HAL browser when this resource is embedded)
    */
-  @ResourceState
-  Maybe<TitledState> getState();
+  @ResourceProperty
+  Maybe<String> getTitle();
 
   /**
    * Allows to switch between two versions of this resource: one that is based on embedded resource items, and one that

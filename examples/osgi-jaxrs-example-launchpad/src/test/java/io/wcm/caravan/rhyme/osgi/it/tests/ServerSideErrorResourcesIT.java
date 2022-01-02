@@ -56,7 +56,7 @@ public class ServerSideErrorResourcesIT {
     return assertThrows(HalApiClientException.class, () -> {
       entryPoint.getErrorExamples()
           .flatMap(errors -> errors.simulateErrorOnServer(parameters))
-          .flatMapMaybe(ErrorResource::getProperties)
+          .flatMapMaybe(ErrorResource::getTitle)
           .blockingGet();
     });
   }

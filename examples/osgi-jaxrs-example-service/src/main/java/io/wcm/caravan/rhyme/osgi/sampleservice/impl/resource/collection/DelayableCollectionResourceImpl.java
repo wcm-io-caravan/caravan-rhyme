@@ -25,7 +25,6 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
 
 /**
@@ -45,7 +44,7 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
   }
 
   @Override
-  public Maybe<TitledState> getState() {
+  public Maybe<String> getTitle() {
 
     return Maybe.empty();
   }

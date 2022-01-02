@@ -21,8 +21,7 @@ package io.wcm.caravan.rhyme.osgi.sampleservice.api.errors;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
-import io.wcm.caravan.rhyme.api.annotations.ResourceState;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 
 /**
  * This is used as target resource type by the error handling examples,
@@ -33,8 +32,9 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
 public interface ErrorResource {
 
   /**
-   * @return the properties of the resource
+   * @return an optional title (to be displayed in the HAL browser when this resource is embedded)
    */
-  @ResourceState
-  Maybe<TitledState> getProperties();
+  @ResourceProperty
+  Maybe<String> getTitle();
+
 }

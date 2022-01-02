@@ -24,7 +24,6 @@ import javax.ws.rs.WebApplicationException;
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
@@ -41,7 +40,7 @@ public class ServerSideErrorResourceImpl implements ErrorResource, LinkableResou
   }
 
   @Override
-  public Maybe<TitledState> getProperties() {
+  public Maybe<String> getTitle() {
 
     Exception exception;
     if (parameters.getWrapException()) {

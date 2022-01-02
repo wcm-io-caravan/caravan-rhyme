@@ -22,7 +22,6 @@ package io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors;
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
@@ -40,12 +39,12 @@ public class HalApiClientErrorResourceImpl implements ErrorResource, LinkableRes
   }
 
   @Override
-  public Maybe<TitledState> getProperties() {
+  public Maybe<String> getTitle() {
 
     return context.getUpstreamEntryPoint()
         .getErrorExamples()
         .flatMap(examples -> examples.simulateErrorOnServer(parameters))
-        .flatMapMaybe(ErrorResource::getProperties);
+        .flatMapMaybe(ErrorResource::getTitle);
   }
 
   @Override
