@@ -144,6 +144,8 @@ If you want to provide a strongly **typed** API to your consumers, you should de
 ```
 If you don't like this style with public mutable fields, you can define the class with private fields and access methods or even use an interface. But be aware that instances of this class or interface will have to be deserialized with Jackson on the client side, so you must use annotations (e.g. `@JsonCreator`) that allow your resource state instances to be created from the parsed JSON.
 
+If you do not have such (de)serialisable domain classes in your project yet that you could use with @ResourceState, then you can also consider adding multiple methods (one for each JSON property) annotated with [@ResourceProperty](api-interfaces/src/main/java/io/wcm/caravan/rhyme/api/annotations/ResourceProperty.java) directly in your @HalApiInterface. This is also useful if a resource just has very few JSON properties, and you want to avoid creating a Java class to represent that JSON structure.
+
 In the end, an actual HAL resource that matches the `ItemResource` interface defined above would look like this:
 
 ```javascript
