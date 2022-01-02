@@ -140,7 +140,7 @@
                 <pluginExecution>
                   <pluginExecutionFilter>
                     <groupId>io.wcm.caravan.maven.plugins</groupId>
-                    <artifactId> rhyme-docs-maven-plugin</artifactId>
+                    <artifactId>rhyme-docs-maven-plugin</artifactId>
                     <versionRange>1.0.0-SNAPSHOT,)</versionRange>
                     <goals>
                       <goal>generate-rhyme-docs</goal>
