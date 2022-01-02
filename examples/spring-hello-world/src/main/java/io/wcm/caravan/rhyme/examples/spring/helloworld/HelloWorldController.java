@@ -50,7 +50,7 @@ class HelloWorldController {
       @Override
       public Link createLink() {
 
-        return buildLinkTo(ctrl -> ctrl.getDefaultResource())
+        return buildLinkTo(controller -> controller.getDefaultResource())
             .setTitle("The default 'Hello World' message");
       }
     };
@@ -75,7 +75,7 @@ class HelloWorldController {
       @Override
       public Link createLink() {
 
-        return buildLinkTo(ctrl -> ctrl.getCustomResource(text))
+        return buildLinkTo(controller -> controller.getCustomResource(text))
             .setTitle(text == null ? "Load a resource with a customized message" : "A customized '" + text + "' message");
       }
     };
@@ -104,7 +104,7 @@ class HelloWorldController {
 
         String languageName = Locale.forLanguageTag(languageCode).getDisplayLanguage(Locale.ENGLISH);
 
-        return buildLinkTo(ctrl -> ctrl.getTranslatedResource(languageCode))
+        return buildLinkTo(controller -> controller.getTranslatedResource(languageCode))
             .setTitle("A message in " + languageName)
             .setName(languageCode);
       }
