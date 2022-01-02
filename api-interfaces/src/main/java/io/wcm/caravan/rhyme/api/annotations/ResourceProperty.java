@@ -23,11 +23,20 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Optional;
 
+/**
+ * Identifies a method that allows to access a single JSON property of a HAL resource's state.
+ * The method must provide a value that is serialized as a JSON primitive. This value can either be returned
+ * directly from the annotated method, but can also be wrapped with {@link Optional} or a reactive type.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ResourceProperty {
 
+  /**
+   * Allows to override the name of the JSON property (by default it's derived from the method name)
+   * @return the name of the JSON property (or empty string if not overriden)f
+   */
   String value() default "";
-
 }
