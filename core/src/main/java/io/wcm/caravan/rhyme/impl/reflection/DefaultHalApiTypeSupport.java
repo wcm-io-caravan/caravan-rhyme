@@ -66,7 +66,10 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
 
   @Override
   public String getPropertyName(Method method) {
-    return method.getAnnotation(ResourceProperty.class).value();
+    if (isResourcePropertyMethod(method)) {
+      return method.getAnnotation(ResourceProperty.class).value();
+    }
+    return null;
   }
 
   @Override

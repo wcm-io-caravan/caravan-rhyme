@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
@@ -144,13 +145,14 @@ public class ResourcePropertyTest {
 
     assertThat(ex)
         .isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("The JSON property 'text' is NULL");
+        .hasMessageStartingWith("The JSON property 'text' is NULL")
+        .hasMessageEndingWith("(The error was triggered by resource at /)");
   }
 
   @Test
   public void should_throw_developer_exception_for_missing_values() throws Exception {
 
-    client.mockHalResponseWithState(ENTRY_POINT_URI, JsonNodeFactory.instance.objectNode());
+    client.mockHalResponse(ENTRY_POINT_URI, new HalResource());
 
     ResourceWithRenamedProperties proxy = client.createProxy(ResourceWithRenamedProperties.class);
 

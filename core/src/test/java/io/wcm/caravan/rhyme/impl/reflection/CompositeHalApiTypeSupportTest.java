@@ -226,6 +226,19 @@ public class CompositeHalApiTypeSupportTest {
   }
 
   @Test
+  public void isResourcePropertyMethod_should_return_first_true_value() throws Exception {
+
+    assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourcePropertyMethod(firstMethod));
+  }
+
+  @Test
+  public void getPropertyName_should_return_first_non_null_value() throws Exception {
+
+    assertThatCompositeReturnsFirstNonNullValueOfMock(a -> a.getPropertyName(firstMethod), "prop");
+  }
+
+
+  @Test
   public void convertFromObservable_should_return_first_non_null_value() throws Exception {
 
     Function<Observable, Iterator> fun = o -> ((List)o.toList().blockingGet()).iterator();
