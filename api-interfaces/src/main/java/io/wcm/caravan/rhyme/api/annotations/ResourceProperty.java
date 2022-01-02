@@ -27,8 +27,11 @@ import java.util.Optional;
 
 /**
  * Identifies a method that allows to access a single JSON property of a HAL resource's state.
- * The method must provide a value that is serialized as a JSON primitive. This value can either be returned
+ * The method must provide a value that can be easily serialised to JSON. This value can either be returned
  * directly from the annotated method, but can also be wrapped with {@link Optional} or a reactive type.
+ * If you do have existing domain model classes in your project that can be easily (de)serialised, or
+ * you feel that you are adding to many {@link ResourceProperty} methods to your resource interface,
+ * then consider using {@link ResourceState} instead:
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -36,7 +39,7 @@ public @interface ResourceProperty {
 
   /**
    * Allows to override the name of the JSON property (by default it's derived from the method name)
-   * @return the name of the JSON property (or empty string if not overriden)f
+   * @return the name of the JSON property (or empty string if not overriden)
    */
   String value() default "";
 }

@@ -135,10 +135,10 @@ final class HalApiInvocationHandler implements InvocationHandler {
 
     if (invocation.isForMethodAnnotatedWithResourceProperties()) {
 
-      Maybe<Object> property = rxResource
+      Observable<Object> property = rxResource
           .onErrorResumeNext(ex -> addContextToHalApiClientException(ex, invocation))
           .map(hal -> new ResourcePropertyHandler(hal, typeSupport))
-          .flatMapMaybe(handler -> handler.handleMethodInvocation(invocation));
+          .flatMapObservable(handler -> handler.handleMethodInvocation(invocation));
 
       return RxJavaReflectionUtils.convertAndCacheReactiveType(property, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
     }

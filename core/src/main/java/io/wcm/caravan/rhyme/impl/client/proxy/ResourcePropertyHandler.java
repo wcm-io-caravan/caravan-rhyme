@@ -23,11 +23,9 @@ import static io.wcm.caravan.rhyme.impl.client.proxy.ResourceStateHandler.OBJECT
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
-import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
@@ -42,13 +40,7 @@ class ResourcePropertyHandler {
     this.typeSupport = typeSupport;
   }
 
-  Maybe<Object> handleMethodInvocation(HalApiMethodInvocation invocation) {
-
-    if (typeSupport.isProviderOfMultiplerValues(invocation.getReturnType())) {
-      String msg = "@" + ResourceProperty.class.getSimpleName() + " cannot be used for arrays, but " + invocation + " is using " + invocation.getReturnType()
-          + " as return type. Consider using @" + ResourceState.class.getSimpleName() + " instead";
-      return Maybe.error(new HalApiDeveloperException(msg));
-    }
+  Observable<Object> handleMethodInvocation(HalApiMethodInvocation invocation) {
 
     String propertyName = HalApiReflectionUtils.getPropertyName(invocation.getMethod(), typeSupport);
 
@@ -61,18 +53,43 @@ class ResourcePropertyHandler {
         String msg = "The JSON property '" + propertyName + "' is " + jsonNode.getNodeType()
             + ". You must use Maybe or Optional as return type to support this. ";
 
-        Link link = contextResource.getLink();
-        if (link != null) {
-          msg += " (The error was triggered by resource at " + link.getHref() + ")";
-        }
-
-        return Maybe.error(new HalApiDeveloperException(msg));
+        return errorObservable(msg);
       }
-      return Maybe.empty();
+      return Observable.empty();
     }
 
-    Object propertyValue = OBJECT_MAPPER.convertValue(jsonNode, invocation.getEmissionType());
+    if (typeSupport.isProviderOfMultiplerValues(invocation.getReturnType())) {
+      if (!jsonNode.isArray()) {
+        return errorObservable("The JSON property '" + propertyName + "' is of type " + jsonNode.getNodeType()
+            + " but an array was expected. Please adjust " + invocation + " accordingly");
+      }
 
-    return Maybe.just(propertyValue);
+      return Observable.fromIterable(jsonNode)
+          .map(arrayElement -> convertToJavaObject(invocation, arrayElement));
+    }
+
+    if (jsonNode.isArray()) {
+      return errorObservable("The JSON property '" + propertyName + "' is an array, but a primitive or object "
+          + "(" + invocation.getReturnType().getSimpleName() + ") was expected");
+    }
+
+    return Observable.just(convertToJavaObject(invocation, jsonNode));
+  }
+
+  Object convertToJavaObject(HalApiMethodInvocation invocation, JsonNode jsonNode) {
+    Object propertyValue = OBJECT_MAPPER.convertValue(jsonNode, invocation.getEmissionType());
+    return propertyValue;
+  }
+
+  Observable<Object> errorObservable(String msg) {
+
+    String fullMsg = msg;
+
+    Link link = contextResource.getLink();
+    if (link != null) {
+      fullMsg += " (The error was triggered by resource at " + link.getHref() + ")";
+    }
+
+    return Observable.error(new HalApiDeveloperException(fullMsg));
   }
 }

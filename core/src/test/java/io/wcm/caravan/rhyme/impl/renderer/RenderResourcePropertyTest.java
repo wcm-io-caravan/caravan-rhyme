@@ -22,11 +22,13 @@ package io.wcm.caravan.rhyme.impl.renderer;
 import static io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererTestUtil.createTestState;
 import static io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererTestUtil.render;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.ImmutableList;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
@@ -35,7 +37,6 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.testing.TestState;
 
 public class RenderResourcePropertyTest {
@@ -205,27 +206,55 @@ public class RenderResourcePropertyTest {
   public interface TestResourceWithObservableReturnType {
 
     @ResourceProperty
-    Observable<Integer> getNumber();
+    Observable<Integer> getNumbers();
   }
 
 
   @Test
-  public void should_throw_developer_exception_if_using_observable_as_return_type() {
+  public void should_allow_observable_as_return_type() {
 
     TestResourceWithObservableReturnType resourceImpl = new TestResourceWithObservableReturnType() {
 
       @Override
-      public Observable<Integer> getNumber() {
+      public Observable<Integer> getNumbers() {
         return Observable.just(123);
       }
 
     };
 
-    Throwable ex = catchThrowable(() -> render(resourceImpl));
+    JsonNode json = render(resourceImpl).getModel();
 
-    assertThat(ex)
-        .isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("@ResourceProperty cannot be used for arrays");
+    JsonNode numbersJson = json.path("numbers");
+    assertThat(numbersJson)
+        .hasSize(1)
+        .extracting(JsonNode::asInt)
+        .containsExactly(123);
   }
 
+  @HalApiInterface
+  public interface TestResourceWithListReturnType {
+
+    @ResourceProperty
+    List<Integer> getNumbers();
+  }
+
+  @Test
+  public void should_allow_list_as_return_type() {
+
+    TestResourceWithListReturnType resourceImpl = new TestResourceWithListReturnType() {
+
+      @Override
+      public List<Integer> getNumbers() {
+        return ImmutableList.of(1, 2, 3, 4);
+      }
+    };
+
+    JsonNode json = render(resourceImpl).getModel();
+
+    JsonNode numbersJson = json.path("numbers");
+    assertThat(numbersJson)
+        .hasSize(4)
+        .extracting(JsonNode::asInt)
+        .containsExactly(1, 2, 3, 4);
+  }
 }

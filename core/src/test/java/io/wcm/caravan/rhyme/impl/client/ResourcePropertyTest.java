@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -50,7 +51,6 @@ public class ResourcePropertyTest {
     @ResourceProperty
     Single<String> getText();
 
-
     @ResourceProperty
     Single<Integer> getNumber();
   }
@@ -69,6 +69,21 @@ public class ResourcePropertyTest {
         .isEqualTo(1234);
   }
 
+  @Test
+  public void should_throw_developer_exception_for_unexpected_array() throws Exception {
+
+    HalResource hal = new HalResource();
+    hal.getModel().putArray("text").add("foo").add("bar");
+    client.mockHalResponse(ENTRY_POINT_URI, hal);
+
+    ResourceWithSingleProperties proxy = client.createProxy(ResourceWithSingleProperties.class);
+
+    Throwable ex = catchThrowable(() -> proxy.getText().blockingGet());
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("The JSON property 'text' is an array");
+  }
 
   @HalApiInterface
   interface ResourceWithMaybeProperties {
@@ -114,7 +129,6 @@ public class ResourcePropertyTest {
 
     @ResourceProperty("text")
     String getString();
-
 
     @ResourceProperty("number")
     Integer getInteger();
@@ -171,9 +185,27 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void should_throw_developer_exception_if_using_list_return_type() throws Exception {
+  public void should_support_list_return_type() throws Exception {
 
-    client.mockHalResponseWithState(ENTRY_POINT_URI, JsonNodeFactory.instance.objectNode());
+    HalResource hal = new HalResource();
+    hal.getModel().putArray("strings").add("foo").add("bar");
+
+    client.mockHalResponse(ENTRY_POINT_URI, hal);
+
+    ResourceWithListProperty proxy = client.createProxy(ResourceWithListProperty.class);
+
+    assertThat(proxy.getStrings())
+        .hasSize(2)
+        .containsExactly("foo", "bar");
+  }
+
+  @Test
+  public void should_throw_developer_exception_if_array_was_expected_but_primitive_or_object_found_in_JSON() throws Exception {
+
+    HalResource hal = new HalResource();
+    hal.getModel().put("strings", "foo");
+
+    client.mockHalResponse(ENTRY_POINT_URI, hal);
 
     ResourceWithListProperty proxy = client.createProxy(ResourceWithListProperty.class);
 
@@ -181,7 +213,29 @@ public class ResourcePropertyTest {
 
     assertThat(ex)
         .isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("@ResourceProperty cannot be used for arrays");
+        .hasMessageStartingWith("The JSON property 'strings' is of type STRING");
+  }
+
+  @HalApiInterface
+  interface ResourceWithObservableProperty {
+
+    @ResourceProperty
+    Observable<String> getStrings();
+  }
+
+  @Test
+  public void should_support_observable_return_type() throws Exception {
+
+    HalResource hal = new HalResource();
+    hal.getModel().putArray("strings").add("foo").add("bar");
+
+    client.mockHalResponse(ENTRY_POINT_URI, hal);
+
+    ResourceWithObservableProperty proxy = client.createProxy(ResourceWithObservableProperty.class);
+
+    assertThat(proxy.getStrings().toList().blockingGet())
+        .hasSize(2)
+        .containsExactly("foo", "bar");
   }
 
   @HalApiInterface
