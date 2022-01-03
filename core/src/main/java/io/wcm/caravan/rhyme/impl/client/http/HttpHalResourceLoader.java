@@ -245,7 +245,11 @@ public class HttpHalResourceLoader implements HalResourceLoader {
   private static JsonNode parseJson(InputStream is) {
 
     try (InputStream autoClosingStream = is) {
-      return JSON_FACTORY.createParser(autoClosingStream).readValueAsTree();
+      JsonNode jsonNode = JSON_FACTORY.createParser(autoClosingStream).readValueAsTree();
+      if (jsonNode == null) {
+        throw new HttpClientSupportException("The response body was completely empty (or consisted only of whitespace)");
+      }
+      return jsonNode;
     }
     catch (JsonProcessingException ex) {
       throw new HttpClientSupportException("The response body was read completely, but it's not valid JSON.", ex);

@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -202,8 +204,8 @@ public class HttpHalResourceLoaderTest {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
       callback.onHeadersAvailable(200, Collections.emptyMap());
-      callback.onBodyAvailable(new ByteArrayInputStream(new byte[0]));
-      callback.onBodyAvailable(new ByteArrayInputStream(new byte[0]));
+      callback.onBodyAvailable(createUtf8Stream("{}"));
+      callback.onBodyAvailable(createUtf8Stream("{}"));
     });
 
     HalResponse response = executeGetRequestWith(VALID_URI, loader);
@@ -249,6 +251,65 @@ public class HttpHalResourceLoaderTest {
         .isEqualTo(200);
 
     JSONAssert.assertEquals(jsonString, response.getBody().getModel().toString(), true);
+  }
+
+  @Test
+  public void should_fail_for_empty_json_response() throws Exception {
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+
+      callback.onHeadersAvailable(200, Collections.emptyMap());
+      callback.onBodyAvailable(new ByteArrayInputStream(new byte[0]));
+    });
+
+    HalApiClientException ex = loadResourceAndExpectClientException(loader, VALID_URI);
+
+    assertThat(ex)
+        .hasMessageStartingWith("HAL client request to /foo has failed because the response body is malformed")
+        .getCause()
+        .hasMessageContaining("the body could not be successfully read and parsed as a JSON document")
+        .getCause()
+        .hasMessage("The response body was completely empty (or consisted only of whitespace)");
+  }
+
+  @Test
+  public void should_fail_for_invalid_json_response() throws Exception {
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+
+      callback.onHeadersAvailable(200, Collections.emptyMap());
+      callback.onBodyAvailable(createUtf8Stream("{"));
+    });
+
+    HalApiClientException ex = loadResourceAndExpectClientException(loader, VALID_URI);
+
+    assertThat(ex)
+        .hasMessageStartingWith("HAL client request to /foo has failed because the response body is malformed")
+        .getCause()
+        .hasMessageContaining("the body could not be successfully read and parsed as a JSON document")
+        .getCause()
+        .hasMessage("The response body was read completely, but it's not valid JSON.");
+  }
+
+  @Test
+  public void should_fail_if_body_input_stream_fails() throws Exception {
+
+    InputStream is = Mockito.mock(InputStream.class);
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+
+      callback.onHeadersAvailable(200, Collections.emptyMap());
+      callback.onBodyAvailable(is);
+    });
+
+    HalApiClientException ex = loadResourceAndExpectClientException(loader, VALID_URI);
+
+    assertThat(ex)
+        .hasMessageStartingWith("HAL client request to /foo has failed because the response body is malformed")
+        .getCause()
+        .hasMessageContaining("the body could not be successfully read and parsed as a JSON document")
+        .getCause()
+        .hasMessage("The response body could not be read completely from the input stream");
   }
 
   ByteArrayInputStream createUtf8Stream(String json) {

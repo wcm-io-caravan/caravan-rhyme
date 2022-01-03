@@ -26,7 +26,6 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 
 import com.github.tomakehurst.wiremock.http.Fault;
 
-import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
@@ -53,13 +52,16 @@ public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
     stubFaultyResponseWithStatusCode(200, Fault.MALFORMED_RESPONSE_CHUNK);
 
-    HalResponse response = loadResource();
+    HalApiClientException ex = loadResourceAndExpectClientException();
 
-    assertThat(response.getStatus())
+    assertThat(ex.getStatusCode())
         .isEqualTo(200);
 
-    assertThat(response.getBody())
+    assertThat(ex.getErrorResponse().getBody())
         .isNull();
+
+    assertThat(ex)
+        .hasRootCauseMessage("The response body was completely empty (or consisted only of whitespace)");
   }
 
   @Override

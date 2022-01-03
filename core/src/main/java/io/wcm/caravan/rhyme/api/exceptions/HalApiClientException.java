@@ -91,7 +91,7 @@ public class HalApiClientException extends RuntimeException {
       return msg + "before a status code was available";
     }
     if (errorResponse.getStatus() == 200) {
-      return msg + " because the response body is malformed";
+      return msg + "because the response body is malformed";
     }
 
     return msg + "with status code " + errorResponse.getStatus();

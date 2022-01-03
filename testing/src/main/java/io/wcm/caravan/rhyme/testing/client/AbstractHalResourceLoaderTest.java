@@ -446,6 +446,21 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
+  public void cause_should_be_present_in_HalApiClientException_for_failure_to_parse_empty_string() throws Exception {
+
+    stubEmptyResponseWithStatusCode(200);
+
+    HalApiClientException ex = loadResourceAndExpectClientException();
+
+    assertThat(ex)
+        .hasMessageContaining("has failed because the response body is malformed");
+
+    assertThat(ex.getCause())
+        .hasMessage("An HTTP response with status code 200 was retrieved, but the body could not be successfully read and parsed as a JSON document")
+        .hasRootCauseMessage("The response body was completely empty (or consisted only of whitespace)");
+  }
+
+  @Test
   public void cause_should_be_present_in_HalApiClientException_for_malformed_200_response() throws Exception {
 
     stubFaultyResponseWithStatusCode(200, Fault.MALFORMED_RESPONSE_CHUNK);
