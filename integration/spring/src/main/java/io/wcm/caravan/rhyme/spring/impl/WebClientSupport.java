@@ -22,6 +22,7 @@ package io.wcm.caravan.rhyme.spring.impl;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -73,7 +74,9 @@ final class WebClientSupport implements HttpClientSupport {
 
     callback.onHeadersAvailable(entity.getStatusCodeValue(), entity.getHeaders());
 
-    callback.onBodyAvailable(new ByteArrayInputStream(entity.getBody()));
+    byte[] body = ObjectUtils.defaultIfNull(entity.getBody(), new byte[0]);
+
+    callback.onBodyAvailable(new ByteArrayInputStream(body));
   }
 
   private Mono<ResponseEntity<byte[]>> handleErrorResponse(HttpClientCallback callback,
