@@ -29,10 +29,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Identifies a method that allows to access the state/properties of a HAL resource all at once.
+ * Used to define a method that allows to access the HAL resources' state (i.e. all but the reserved properties) as a
+ * single object
+ * <p>
  * The method must provide a Jackson {@link ObjectNode} or a Java object that that matches the JSON object structure
- * (and which can be deserialised by a default Jackson {@link ObjectMapper}). This object can either be returned
- * directly from the annotated method, but can also be wrapped with {@link Optional} or a reactive type.
+ * (and can be deserialised by a default Jackson {@link ObjectMapper}). This object can either be returned
+ * directly from the annotated method, but can also be wrapped with {@link Optional} or a supported reactive type.
+ * </p>
+ * @see ResourceProperty
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

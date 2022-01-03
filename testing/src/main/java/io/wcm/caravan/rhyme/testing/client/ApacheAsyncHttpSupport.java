@@ -33,10 +33,10 @@ import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
-import io.wcm.caravan.rhyme.api.annotations.ExcludeFromJacocoGeneratedReport;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
+import io.wcm.caravan.rhyme.tooling.annotations.ExcludeFromJacocoGeneratedReport;
 
 /**
  * An HTTP client implementation to be used with

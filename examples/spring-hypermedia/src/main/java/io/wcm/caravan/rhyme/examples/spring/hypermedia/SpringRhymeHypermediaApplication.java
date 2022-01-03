@@ -22,7 +22,7 @@ package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import io.wcm.caravan.rhyme.api.annotations.ExcludeFromJacocoGeneratedReport;
+import io.wcm.caravan.rhyme.tooling.annotations.ExcludeFromJacocoGeneratedReport;
 
 /**
  * The application class to configure and start the example service

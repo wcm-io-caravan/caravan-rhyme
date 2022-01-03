@@ -24,9 +24,28 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+
 /**
- * A marker annotation that is required for all HAL API interfaces, to indicate that it should be scanned for the
- * presence of methods annotated with {@link Related}, {@link ResourceState}, etc that actually define the API.
+ * A marker annotation that is required for all HAL API interfaces to be used with the Rhyme framework. It indicates
+ * that the interface can be scanned for the presence of methods annotated with {@link Related}, {@link ResourceState},
+ * etc that actually define the API.
+ * <p>
+ * Note that you <b>can</b> make your interface extend {@link LinkableResource}, if the clients of the API should be
+ * aware
+ * that (and how) the resource can always be accessed through an URI.
+ * </p>
+ * <p>
+ * If you are also using Rhyme for server-side rendering of the resource, then all your implementations of an interface
+ * annotated with {@link HalApiInterface} <b>must</b> implement either {@link LinkableResource} or
+ * {@link EmbeddableResource}.
+ * </p>
+ * @see Related
+ * @see ResourceState
+ * @see ResourceProperty
+ * @see ResourceLink
+ * @see ResourceRepresentation
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

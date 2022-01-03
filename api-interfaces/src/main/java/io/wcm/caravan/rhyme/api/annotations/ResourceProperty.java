@@ -26,12 +26,17 @@ import java.lang.annotation.Target;
 import java.util.Optional;
 
 /**
- * Identifies a method that allows to access a single JSON property of a HAL resource's state.
- * The method must provide a value that can be easily serialised to JSON. This value can either be returned
- * directly from the annotated method, but can also be wrapped with {@link Optional} or a reactive type.
- * If you do have existing domain model classes in your project that can be easily (de)serialised, or
+ * Used to define methods that allow to access a single JSON property of a HAL resource's state.
+ * <p>
+ * The method must provide a value that can be easily transformed from/to JSON. This value can either be returned
+ * directly from the annotated method, but can also be wrapped with {@link Optional} or a supported reactive type.
+ * </p>
+ * <p>
+ * If you do have existing domain model classes in your project that can be easily (de)serialized, or
  * you feel that you are adding to many {@link ResourceProperty} methods to your resource interface,
- * then consider using {@link ResourceState} instead:
+ * then consider using {@link ResourceState} instead.
+ * </p>
+ * @see ResourceState
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

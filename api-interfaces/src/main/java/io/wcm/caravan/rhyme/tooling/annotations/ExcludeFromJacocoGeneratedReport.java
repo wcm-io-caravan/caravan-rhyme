@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.api.annotations;
+package io.wcm.caravan.rhyme.tooling.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -25,9 +25,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A marker annotation that you can use on methods that can't be covered by tests,
- * and will be excluded when JaCoCo is calculating the code coverage. It's based on
- * the convention that JaCoCO will ignore all methods with an annotation that contains 'Generated' in its name.
+ * A marker annotation only relevant for static code analysis.
+ * <p>
+ * You can use this on methods that can't be covered by tests,
+ * and should be excluded when JaCoCo is calculating the code coverage. It's based on
+ * the convention that JaCoCo will ignore all methods with an annotation that contains 'Generated' in its name.
+ * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

@@ -18,7 +18,7 @@
  * #L%
  */
 /**
- * The annotations used on interface to define HAL APIs
+ * Additional annotations that are only used at build time
  */
-@org.osgi.annotation.versioning.Version("1.1.0")
-package io.wcm.caravan.rhyme.api.annotations;
+@org.osgi.annotation.versioning.Version("1.0.0")
+package io.wcm.caravan.rhyme.tooling.annotations;
