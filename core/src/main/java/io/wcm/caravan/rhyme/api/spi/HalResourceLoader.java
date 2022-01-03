@@ -46,7 +46,7 @@ import io.wcm.caravan.rhyme.impl.client.HalResourceLoaderBuilderImpl;
  * <p>
  * If you need full control over the HTTP client implementation to be used, and/or want to enable
  * caching of HAL responses, you should call {@link #builder()} to configure and build
- * a {@link HalResourceLoader} instance with the methods from {@link HalResourceLoaderBuilderImpl}.
+ * a {@link HalResourceLoader} instance with the methods from {@link HalResourceLoaderBuilder}.
  * For caching to work properly, it is important that you'll then store and re-use the same
  * {@link HalResourceLoader} instance when creating {@link Rhyme} or {@link HalApiClient} objects
  * </p>
@@ -55,14 +55,14 @@ import io.wcm.caravan.rhyme.impl.client.HalResourceLoaderBuilderImpl;
  * also implement the JSON parsing and exception handling according to the expectations of the
  * {@link HalApiClient} implementation. A simpler way is to implement the callback-style
  * {@link HttpClientSupport} interface, and then use
- * {@link HalResourceLoaderBuilderImpl#withCustomHttpClient(HttpClientSupport)}
+ * {@link HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)}
  * to adapt it. In both cases, you should extend
- * the io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest (from the test-jar)
+ * the io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest (from the testing module)
  * to test your implementation against a Wiremock server, to ensure that all expectations
  * regarding response and error handling are met.
  * </p>
  * @see HttpClientSupport
- * @see HalResourceLoaderBuilderImpl
+ * @see HalResourceLoaderBuilder
  * @see RhymeBuilder#withResourceLoader(HalResourceLoader)
  * @see HalApiClient#create(HalResourceLoader)
  */
