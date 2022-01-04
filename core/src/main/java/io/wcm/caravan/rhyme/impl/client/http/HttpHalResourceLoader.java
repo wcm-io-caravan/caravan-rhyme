@@ -210,7 +210,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
           // the response code indicates that the request was *not* successful even through the response could be parsed
           String msg;
           if (StringUtils.equals(halResponse.getContentType(), VndErrorResponseRenderer.CONTENT_TYPE)) {
-            msg = msgPrefix + "which contains a vnd.error body with the following server-side error details";
+            msg = msgPrefix + "which contains a vnd.error body with server-side error details";
           }
           else {
             msg = msgPrefix + "and a JSON body that may contain further information is present";
