@@ -179,7 +179,7 @@
           <links>
             <link>https://caravan.wcm.io/hal/resource/apidocs/</link>
             <link>https://fasterxml.github.io/jackson-databind/javadoc/2.11/</link>
-            <link>http://reactivex.io/RxJava/3.x/javadoc/3.0.3/</link>
+            <link>http://reactivex.io/RxJava/3.x/javadoc/3.1.3/</link>
           </links>
         </configuration>
       </plugin>
