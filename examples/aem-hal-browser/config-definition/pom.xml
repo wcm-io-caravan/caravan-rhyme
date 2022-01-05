@@ -42,6 +42,7 @@
       <plugin>
         <groupId>io.wcm.devops.conga</groupId>
         <artifactId>conga-maven-plugin</artifactId>
+        <version>1.14.4</version>
         <executions>
 
           <!-- Generate configuration for environments defined in this application code repository -->
