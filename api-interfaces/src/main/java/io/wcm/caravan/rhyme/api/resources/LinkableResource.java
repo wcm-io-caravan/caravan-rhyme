@@ -23,6 +23,7 @@ import org.osgi.annotation.versioning.ConsumerType;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceLink;
 
 /**
@@ -54,6 +55,11 @@ public interface LinkableResource {
    * Create a link to this resource, including meaningful title and name properties where appropriate. If all required
    * parameters of the resource are set, then the link should have a resolved URI as href property. If some or all
    * required parameters are null, a link with a URI template should be created instead.
+   * <p>
+   * Note that the Link instance doesn't have a relation property, because that is derived from the {@link Related}
+   * annotation of the method that defines the links to this resource. The same resource can be linked from multiple
+   * other resources using different relations, but all links are created on the server side using the same method.
+   * </p>
    * @return a {@link Link} instance where href, title and name properties are already set as required
    */
   @ResourceLink

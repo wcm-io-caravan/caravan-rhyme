@@ -58,12 +58,19 @@
 
   <build>
     <plugins>
-
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
       </plugin>
-
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <links>
+            <link>https://caravan.wcm.io/hal/resource/apidocs/</link>
+            <link>https://fasterxml.github.io/jackson-databind/javadoc/2.11/</link>
+          </links>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

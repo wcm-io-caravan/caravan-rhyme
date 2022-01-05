@@ -26,6 +26,7 @@ import org.osgi.annotation.versioning.ProviderType;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -37,6 +38,10 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
  * HAL+JSON resource. You should create a {@link Rhyme} instance immediately after
  * accepting an incoming request (using a {@link RhymeBuilder}) and then use this single instance to fetch all upstream
  * resource and render the response.
+ * <p>
+ * If you are only using the Rhyme framework as a HAL client library (but not to render HAL resources) then you can use
+ * {@link HalApiClient} directly.
+ * </p>
  */
 @ProviderType
 public interface Rhyme {

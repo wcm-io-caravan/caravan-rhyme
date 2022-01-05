@@ -167,6 +167,22 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <!-- switch on dependency-driven aggregation -->
+          <includeDependencySources>true</includeDependencySources>
+          <dependencySourceIncludes>
+            <dependencySourceInclude>io.wcm.caravan:io.wcm.caravan.rhyme.api-interfaces</dependencySourceInclude>
+          </dependencySourceIncludes>
+          <links>
+            <link>https://caravan.wcm.io/hal/resource/apidocs/</link>
+            <link>https://fasterxml.github.io/jackson-databind/javadoc/2.11/</link>
+            <link>http://reactivex.io/RxJava/3.x/javadoc/3.0.3/</link>
+          </links>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
