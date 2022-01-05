@@ -46,8 +46,9 @@
   <properties>
     <site.url.module.prefix>rhyme/core</site.url.module.prefix>
   </properties>
-  
+
   <dependencies>
+
     <!-- wcm.io -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
@@ -75,7 +76,17 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- Jackson -->
+   <!-- Jackson -->
+   <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <scope>compile</scope>
+   </dependency>
+   <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>compile</scope>
+   </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
