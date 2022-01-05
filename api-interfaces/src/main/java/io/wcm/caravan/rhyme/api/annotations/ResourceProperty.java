@@ -25,11 +25,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
- * Used to define methods that allow to access a single JSON property of a HAL resource's state.
+ * Used to declare methods that allow to access a single JSON property of a HAL resource's state.
  * <p>
- * The method must provide a value that can be easily transformed from/to JSON. This value can either be returned
- * directly from the annotated method, but can also be wrapped with {@link Optional} or a supported reactive type.
+ * The method must provide a value that can be easily transformed from/to JSON by a default Jackson
+ * {@link ObjectMapper}. This value can either be returned directly from the annotated method, but can also be wrapped
+ * with {@link Optional} or a supported reactive type.
  * </p>
  * <p>
  * If you do have existing domain model classes in your project that can be easily (de)serialized, or

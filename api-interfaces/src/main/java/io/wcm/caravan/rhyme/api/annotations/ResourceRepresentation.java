@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.wcm.caravan.hal.resource.HalResource;
 
 /**
- * Used to define a method that allows clients to get the full JSON representation of the resource
+ * Used to declare the method that allows clients to get the full JSON representation of the resource
  * (including the _links and _embedded properties).
  * <p>
  * Adding a method with this annotation is only required if you want your clients to conveniently process the HAL

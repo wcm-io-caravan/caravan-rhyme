@@ -28,8 +28,12 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * Used to define methods that allow clients to access only the {@link Link} or URI that is pointing to a resource
- * (without actually fetching it). The return type of the method must be a {@link Link} or {@link String}.
+ * Used to declare a method that provide a link to the resource instance. The return type of the method must be a
+ * {@link Link} or {@link String}.
+ * <p>
+ * On the client side, it will allow to access only the {@link Link} or URI that is pointing to a resource
+ * (without actually fetching it). On the server side, this annotation is usually used only indirectly
+ * by implementing {@link LinkableResource#createLink()}.
  * <p>
  * If your interface extends from {@link LinkableResource} then you won't need to add this annotation yourself, as
  * {@link LinkableResource#createLink()} is already annotated.

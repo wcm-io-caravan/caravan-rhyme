@@ -23,7 +23,7 @@ package io.wcm.caravan.rhyme.api.relations;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 
 /**
- * Constants for standard link relations used in {@link Related} annotations.
+ * Constants for some standard link relations used in {@link Related} annotations.
  * @see <a href="http://www.iana.org/assignments/link-relations/link-relations.xhtml">IANA Link Relation Types</a>
  */
 public final class StandardRelations {

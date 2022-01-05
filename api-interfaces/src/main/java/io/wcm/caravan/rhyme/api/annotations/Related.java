@@ -27,10 +27,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * Used to annotate methods in a {@link HalApiInterface} which allow access to linked or embedded resources.
+ * Used to declare methods which defines a link relation and the expected type for linked or embedded resources.
+ * For each link relation there must be only one corresponding {@link Related} method in your {@link HalApiInterface}.
  * <p>
  * The return value of the methods must provide one ore more instances of another {@link HalApiInterface} type.
  * These can either be returned directly, or wrapped in an {@link Optional}, {@link Stream}, {@link List},
@@ -45,6 +47,10 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
  * {@link TemplateVariables} annotations to define URI templates that clients can expand with the values
  * specified in those parameters.
  * </p>
+ * <p>
+ * On the server side, these methods will be called by the framework when the resource is rendered. Any parameters for
+ * template parameters will be invoked with a null value.
+ * </p>
  * @see TemplateVariables
  * @see TemplateVariable
  */
@@ -55,6 +61,7 @@ public @interface Related {
   /**
    * Defines the relation of the linked or embedded resource to this context resource.
    * @return a standard relation or CURI of a custom relation (i.e. "prefix:relation")
+   * @see StandardRelations
    */
   String value();
 

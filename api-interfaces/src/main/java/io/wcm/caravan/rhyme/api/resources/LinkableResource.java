@@ -30,13 +30,15 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceLink;
  * linked to from another resource).
  * <p>
  * You <b>can</b> make your {@link HalApiInterface}s extends this interface directly, and doing so will make it possible
- * for clients to extract the resource link and URL from a client proxy. This can be useful if the client need to select
- * one of multiple links based on the link properties, or do other processing that requires the knowledge of the URLs.
+ * for clients to extract the resource link and URL from a client proxy by calling {@link #createLink()}. This can be
+ * useful if the client need to select one of multiple links based on the link properties, or do other processing that
+ * requires the knowledge of the URLs.
  * </p>
  * <p>
- * But you can also hide the link URLs completely from the client, if you only want them to work with the methods
- * available in your {@link HalApiInterface}. In that case, you would <b>not</b> make your <b>interface</b> extend
- * {@link LinkableResource}, but only implement in in the server-side implementation class.
+ * You may want want to keep the option of having certain small resources only be available as embedded resource, and
+ * not let your clients know that they can also fetch an it directly through an URL. In that case, you would <b>not</b>
+ * make your <b>interface</b> extend {@link LinkableResource}, but only implement it in the server-side implementation
+ * class.
  * </p>
  * <p>
  * If you don't implement this interface in your server-side implementation of a HAL API interface, then that resource

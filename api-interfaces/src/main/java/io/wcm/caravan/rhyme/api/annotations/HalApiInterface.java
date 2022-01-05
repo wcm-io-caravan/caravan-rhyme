@@ -37,8 +37,8 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
  * that (and how) the resource can always be accessed through an URI.
  * </p>
  * <p>
- * If you are also using Rhyme for server-side rendering of the resource, then all your implementations of an interface
- * annotated with {@link HalApiInterface} <b>must</b> implement either {@link LinkableResource} or
+ * If you are also using Rhyme for server-side rendering of the resource, then all your <b>implementations</b> of an
+ * interface annotated with {@link HalApiInterface} <b>must</b> implement either {@link LinkableResource} or
  * {@link EmbeddableResource}.
  * </p>
  * @see Related
