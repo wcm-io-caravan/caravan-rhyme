@@ -71,11 +71,6 @@
         <artifactId>jackson-databind</artifactId>
         <version>2.11.4</version>
       </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-guava</artifactId>
-        <version>2.11.4</version>
-      </dependency>
       <!-- RxJava 1 -->
       <dependency>
         <groupId>io.reactivex</groupId>

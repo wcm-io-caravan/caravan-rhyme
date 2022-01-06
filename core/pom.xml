@@ -92,11 +92,6 @@
       <artifactId>jackson-databind</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-guava</artifactId>
-      <scope>compile</scope>
-    </dependency>
 
     <!-- RxJava -->
     <dependency>
