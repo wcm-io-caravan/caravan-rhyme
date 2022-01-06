@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.model;
 
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -138,11 +139,14 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
       return annotation.value();
     }
 
-    return DocumentationUtils.getBeanProperties(method.getDeclaringClass())
-        .filter(pd -> pd.getReadMethod().equals(method))
-        .map(pd -> pd.getName())
-        .findFirst()
-        .orElse(method.getName());
+    String name = method.getName();
+    if (name.startsWith("get")) {
+      return Introspector.decapitalize(name.substring(3));
+    }
+    if (name.startsWith("is")) {
+      return Introspector.decapitalize(name.substring(2));
+    }
+    return Introspector.decapitalize(name);
   }
 
   private static Stream<RhymePropertyDocs> crreateDocsFromResourceState(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {

@@ -115,9 +115,12 @@ class CompanyApiLinkBuilder {
    */
   String getLocalEntryPointUrl() {
 
-    return createLinkTo(CompanyApiController.class, CompanyApiController::get)
-        .withFingerprintingOnlyIf(fingerprinting.isUsedInIncomingRequest())
-        .build()
-        .getHref();
+    RhymeLinkBuilder linkBuilder = createLinkTo(CompanyApiController.class, CompanyApiController::get);
+
+    if (!fingerprinting.isUsedInIncomingRequest()) {
+      linkBuilder = linkBuilder.withoutFingerprint();
+    }
+
+    return linkBuilder.build().getHref();
   }
 }

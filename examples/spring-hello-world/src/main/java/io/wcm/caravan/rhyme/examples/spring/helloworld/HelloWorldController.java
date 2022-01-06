@@ -49,8 +49,8 @@ class HelloWorldController {
 
       @Override
       public Link createLink() {
-
-        return buildLinkTo(controller -> controller.getDefaultResource())
+        // to build links to controller methods without parameters we can use a static method reference
+        return buildLinkTo(HelloWorldController::getDefaultResource)
             .setTitle("The default 'Hello World' message");
       }
     };
@@ -74,7 +74,8 @@ class HelloWorldController {
 
       @Override
       public Link createLink() {
-
+        // to build links to controller methods with parameters we explicitly call the method on the
+        // proxy provided my WebMvcLinkBuilder, and pass the parameters required to expand the link template
         return buildLinkTo(controller -> controller.getCustomResource(text))
             .setTitle(text == null ? "Load a resource with a customized message" : "A customized '" + text + "' message");
       }
@@ -94,7 +95,7 @@ class HelloWorldController {
 
       @Override
       public Stream<HelloWorldResource> getTranslations() {
-
+        // overriden so that we can filter out to the link to the language that is currently rendered
         return super.getTranslations()
             .filter(translation -> !translation.createLink().getName().equals(languageCode));
       }

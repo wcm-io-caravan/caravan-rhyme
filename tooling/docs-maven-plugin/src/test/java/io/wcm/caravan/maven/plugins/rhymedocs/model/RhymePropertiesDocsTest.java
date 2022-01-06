@@ -638,13 +638,19 @@ public class RhymePropertiesDocsTest {
     assertThat(docs.getProperties())
         .extracting(RhymePropertyDocs::getJsonPointer)
         .containsExactly(
-            "/title", "/foo");
+            "/title", "/foo", "/enabled", "/something");
 
     assertThat(findDocsForProperty("/title", docs).getDescription())
         .isEqualTo("the title");
 
     assertThat(findDocsForProperty("/foo", docs).getDescription())
         .isEqualTo("the index");
+
+    assertThat(findDocsForProperty("/enabled", docs).getDescription())
+        .isEqualTo("true or false");
+
+    assertThat(findDocsForProperty("/something", docs).getDescription())
+        .isEmpty();
   }
 
   @HalApiInterface
@@ -662,5 +668,14 @@ public class RhymePropertiesDocsTest {
      */
     @ResourceProperty("foo")
     Integer getIndex();
+
+    /**
+     * @return true or false
+     */
+    @ResourceProperty
+    Boolean isEnabled();
+
+    @ResourceProperty
+    String something();
   }
 }

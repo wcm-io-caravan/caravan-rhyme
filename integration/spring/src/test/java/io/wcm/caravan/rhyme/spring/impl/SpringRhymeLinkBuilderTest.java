@@ -110,22 +110,13 @@ public class SpringRhymeLinkBuilderTest {
     assertThat(link.getHref()).isEqualTo(EXPECTED_TEMPLATE + "&foo=bar");
   }
 
+
   @Test
-  public void withFingerprintingOnlyIf_should_keep_timestamp_if_condition_is_true() throws Exception {
+  public void withoutFingerprint_should_remove_timestamp_if_condition_is_false() throws Exception {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUriWithFingerprinting(ImmutableMap.of("foo", "bar"));
 
-    Link link = linkBuilder.withFingerprintingOnlyIf(true).build();
-
-    assertThat(link.getHref()).isEqualTo(EXPECTED_URL + "&foo=bar");
-  }
-
-  @Test
-  public void withFingerprintingOnlyIf_should_remove_timestamp_if_condition_is_false() throws Exception {
-
-    SpringRhymeLinkBuilder linkBuilder = buildResolvedUriWithFingerprinting(ImmutableMap.of("foo", "bar"));
-
-    Link link = linkBuilder.withFingerprintingOnlyIf(false).build();
+    Link link = linkBuilder.withoutFingerprint().build();
 
     assertThat(link.getHref()).isEqualTo(EXPECTED_URL);
   }
