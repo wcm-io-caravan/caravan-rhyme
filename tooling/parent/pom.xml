@@ -82,12 +82,12 @@
       <dependency>
         <groupId>io.reactivex.rxjava3</groupId>
         <artifactId>rxjava</artifactId>
-        <version>3.0.3</version>
+        <version>3.1.3</version>
       </dependency>
       <dependency>
         <groupId>com.github.akarnokd</groupId>
         <artifactId>rxjava3-interop</artifactId>
-        <version>3.0.2</version>
+        <version>3.1.1</version>
       </dependency>
 
       <!-- Byte Buddy for creating dynamic proxies of classes -->
