@@ -26,18 +26,11 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
  * An intermediate stage during link generation that is returned by
- * {@link UrlFingerprinting#createLinkWith(WebMvcLinkBuilder)} that allows
+ * {@link UrlFingerprinting#createLinkWith(WebMvcLinkBuilder)} and allows
  * adding adding name and title attributes before calling {@link #build()} to finally create the link.
  * @see UrlFingerprinting
  */
 public interface RhymeLinkBuilder {
-
-  /**
-   * Allows to conditionally disable the URL fingerprinting for the link being build
-   * @param condition true if URL fingerprinting parameters should be added
-   * @return this
-   */
-  RhymeLinkBuilder withFingerprintingOnlyIf(boolean condition);
 
   /**
    * @param name the name attribute for the generated link
@@ -57,6 +50,12 @@ public interface RhymeLinkBuilder {
    * @return this
    */
   RhymeLinkBuilder withTemplateTitle(String title);
+
+  /**
+   * Allows to disable the addition of fingerprinting parameters only for the link that is currently being built
+   * @return this
+   */
+  RhymeLinkBuilder withoutFingerprint();
 
   /**
    * Finishes building the link

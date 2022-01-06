@@ -70,9 +70,9 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
   }
 
   @Override
-  public SpringRhymeLinkBuilder withFingerprintingOnlyIf(boolean condition) {
+  public SpringRhymeLinkBuilder withoutFingerprint() {
 
-    withFingerprinting = condition;
+    withFingerprinting = false;
     return this;
   }
 
