@@ -30,7 +30,6 @@ import java.util.Map;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
@@ -53,7 +52,7 @@ public class ApacheAsyncHttpSupport implements HttpClientSupport {
 
   /**
    * Default constructor that can be used if all URIs are fully qualified and requests
-   * can be executed with a default HTTP client created with {@link HttpClientBuilder}
+   * can be executed with a default HTTP client created with {@link HttpAsyncClientBuilder}
    */
   public ApacheAsyncHttpSupport() {
     this((URI)null);
