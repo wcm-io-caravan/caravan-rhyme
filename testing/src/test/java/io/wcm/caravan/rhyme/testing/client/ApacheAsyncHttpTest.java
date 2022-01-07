@@ -3,8 +3,11 @@ package io.wcm.caravan.rhyme.testing.client;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.UnknownHostException;
 
@@ -26,11 +29,14 @@ public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void should_use_custom_HttpClient_instance() {
+  public void should_use_and_start_custom_HttpClient_instance() {
 
     CloseableHttpAsyncClient client = Mockito.mock(CloseableHttpAsyncClient.class);
 
     HalResourceLoader loader = HalResourceLoader.create(new ApacheAsyncHttpSupport(client));
+
+    verify(client).isRunning();
+    verify(client).start();
 
     RuntimeException rootCause = new RuntimeException("failed");
 
@@ -42,6 +48,20 @@ public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
     assertThat(ex)
         .isNotNull()
         .hasRootCause(rootCause);
+  }
+
+  @Test
+  public void should_not_start_HttpClient_instance_if_already_started() throws IOException {
+
+    CloseableHttpAsyncClient client = Mockito.mock(CloseableHttpAsyncClient.class);
+
+    when(client.isRunning())
+        .thenReturn(true);
+
+    new ApacheAsyncHttpSupport(client);
+
+    verify(client, never())
+        .start();
   }
 
   @Test
