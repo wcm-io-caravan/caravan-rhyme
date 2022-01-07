@@ -29,11 +29,9 @@ import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
-import io.wcm.caravan.rhyme.impl.reflection.CompositeHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupportAdapter;
-import io.wcm.caravan.rhyme.impl.renderer.CompositeExceptionStatusAndLoggingStrategy;
 
 /**
  * Implementation of the {@link RhymeBuilder} interface that allows to configure and create {@link Rhyme} instances
@@ -81,15 +79,6 @@ public class RhymeBuilderImpl implements RhymeBuilder {
     return this;
   }
 
-  private HalApiTypeSupport getEffectiveTypeSupport() {
-
-    if (registeredTypeSupports.size() == 1) {
-      return registeredTypeSupports.get(0);
-    }
-
-    return new CompositeHalApiTypeSupport(registeredTypeSupports);
-  }
-
   @Override
   public RhymeBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy) {
 
@@ -97,23 +86,11 @@ public class RhymeBuilderImpl implements RhymeBuilder {
     return this;
   }
 
-  private ExceptionStatusAndLoggingStrategy getEffectiveExceptionStrategy() {
-
-    if (exceptionStrategies.isEmpty()) {
-      return null;
-    }
-    if (exceptionStrategies.size() == 1) {
-      return exceptionStrategies.get(0);
-    }
-
-    return new CompositeExceptionStatusAndLoggingStrategy(exceptionStrategies);
-  }
-
   @Override
   public Rhyme buildForRequestTo(String incomingRequestUri) {
 
-    HalApiTypeSupport typeSupport = getEffectiveTypeSupport();
-    ExceptionStatusAndLoggingStrategy exceptionStrategy = getEffectiveExceptionStrategy();
+    HalApiTypeSupport typeSupport = RhymeBuilderUtils.getEffectiveTypeSupport(registeredTypeSupports);
+    ExceptionStatusAndLoggingStrategy exceptionStrategy = RhymeBuilderUtils.getEffectiveExceptionStrategy(exceptionStrategies);
 
     return new RhymeImpl(incomingRequestUri, resourceLoader, exceptionStrategy, typeSupport, rhymeDocsSupport);
   }

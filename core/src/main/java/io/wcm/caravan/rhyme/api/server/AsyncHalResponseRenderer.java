@@ -31,11 +31,7 @@ import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
-import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
-import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
 
 /**
  * Asynchronously creates a {@link HalResponse} from a server-side {@link HalApiInterface} implementation instance,
@@ -59,14 +55,15 @@ public interface AsyncHalResponseRenderer {
    *          the current incoming request
    * @param exceptionStrategy allows to control the status code and logging of exceptions being thrown during rendering
    * @return a new {@link AsyncHalResponseRenderer} to use for the current incoming request
+   * @deprecated Use {@link HalResponseRendererBuilder} instead
    */
+  @Deprecated
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy) {
 
-    HalApiTypeSupport typeSupport = new DefaultHalApiTypeSupport();
-
-    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
-
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, null);
+    return new HalResponseRendererBuilder()
+        .withMetrics(metrics)
+        .withExceptionStrategy(exceptionStrategy)
+        .build();
   }
 
   /**
@@ -79,14 +76,18 @@ public interface AsyncHalResponseRenderer {
    * @param returnTypeSupport an (optional) strategy to support additional return types in your HAL API interface
    *          methods
    * @return a new {@link AsyncHalResponseRenderer} to use for the current incoming request
-   * @deprecated Use
-   *             {@link #create(RequestMetricsCollector,ExceptionStatusAndLoggingStrategy,HalApiAnnotationSupport,HalApiReturnTypeSupport,RhymeDocsSupport)}
-   *             instead
+   * @deprecated Use {@link HalResponseRendererBuilder} instead
    */
   @Deprecated
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
-    return create(metrics, exceptionStrategy, annotationSupport, returnTypeSupport, null);
+
+    return new HalResponseRendererBuilder()
+        .withMetrics(metrics)
+        .withExceptionStrategy(exceptionStrategy)
+        .withAnnotationTypeSupport(annotationSupport)
+        .withReturnTypeSupport(returnTypeSupport)
+        .build();
   }
 
   /**
@@ -100,15 +101,19 @@ public interface AsyncHalResponseRenderer {
    *          methods
    * @param rhymeDocsSupport to know where the generation documentation will be mounted
    * @return a new {@link AsyncHalResponseRenderer} to use for the current incoming request
+   * @deprecated Use {@link HalResponseRendererBuilder} instead
    */
+  @Deprecated
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport, RhymeDocsSupport rhymeDocsSupport) {
 
-    HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(annotationSupport, returnTypeSupport);
-
-    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
-
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, rhymeDocsSupport);
+    return new HalResponseRendererBuilder()
+        .withMetrics(metrics)
+        .withExceptionStrategy(exceptionStrategy)
+        .withAnnotationTypeSupport(annotationSupport)
+        .withReturnTypeSupport(returnTypeSupport)
+        .withRhymeDocsSupport(rhymeDocsSupport)
+        .build();
   }
 
 }

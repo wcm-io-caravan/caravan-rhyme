@@ -31,8 +31,6 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
-import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 
 /**
  * A type-safe HAL client that will create a dynamic proxy implementation for a given URI
@@ -96,7 +94,7 @@ public interface HalApiClient {
    */
   static HalApiClient create() {
 
-    return HalApiClient.create(HalResourceLoader.withDefaultHttpClient());
+    return new HalApiClientBuilder().build();
   }
 
   /**
@@ -111,7 +109,9 @@ public interface HalApiClient {
    */
   static HalApiClient create(HalResourceLoader resourceLoader) {
 
-    return new HalApiClientImpl(resourceLoader, RequestMetricsCollector.create(), new DefaultHalApiTypeSupport());
+    return new HalApiClientBuilder()
+        .withResourceLoader(resourceLoader)
+        .build();
   }
 
   /**
@@ -120,12 +120,15 @@ public interface HalApiClient {
    *          incoming request
    * @return an instance of {@link HalApiClient} that should be re-used for all upstream requests required by the
    *         current incoming request
-   * @deprecated to create a stand-alone instance use {@link #create(HalResourceLoader)} instead
+   * @deprecated use {@link HalApiClientBuilder} instead
    */
   @Deprecated
   static HalApiClient create(HalResourceLoader resourceLoader, RequestMetricsCollector metrics) {
 
-    return new HalApiClientImpl(resourceLoader, metrics, new DefaultHalApiTypeSupport());
+    return new HalApiClientBuilder()
+        .withResourceLoader(resourceLoader)
+        .withMetrics(metrics)
+        .build();
   }
 
   /**
@@ -140,10 +143,17 @@ public interface HalApiClient {
    *          methods
    * @return an instance of {@link HalApiClient} that should be re-used for all upstream requests required by the
    *         current incoming request
+   * @deprecated use {@link HalApiClientBuilder} instead
    */
+  @Deprecated
   static HalApiClient create(HalResourceLoader resourceLoader, RequestMetricsCollector metrics,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
 
-    return new HalApiClientImpl(resourceLoader, metrics, DefaultHalApiTypeSupport.extendWith(annotationSupport, returnTypeSupport));
+    return new HalApiClientBuilder()
+        .withResourceLoader(resourceLoader)
+        .withMetrics(metrics)
+        .withAnnotationTypeSupport(annotationSupport)
+        .withReturnTypeSupport(returnTypeSupport)
+        .build();
   }
 }
