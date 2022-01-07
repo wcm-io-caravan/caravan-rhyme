@@ -20,6 +20,7 @@
 package io.wcm.caravan.rhyme.api.server;
 
 import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -35,7 +36,13 @@ public interface HalResponseRendererBuilder {
     return RhymeDirector.buildRenderer();
   }
 
-  HalResponseRendererBuilder withMetrics(RequestMetricsCollector metrics);
+  /**
+   * Provide the {@link RequestMetricsCollector} instance that was used to capture and measure
+   * all interaction with the {@link HalApiClient} for the current incoming request.
+   * @param metricsSharedWithClient the same instance that was used to create the {@link HalApiClient}
+   * @return this
+   */
+  HalResponseRendererBuilder withMetrics(RequestMetricsCollector metricsSharedWithClient);
 
   /**
    * Enable generation of "curies" links (to HTML documentation generated with the rhyme-docs-maven-plugin)

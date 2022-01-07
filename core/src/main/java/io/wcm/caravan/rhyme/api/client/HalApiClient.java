@@ -52,27 +52,19 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
  * will take place as long as your are using the same {@link HalApiClient} instance.
  * </p>
  * <p>
- * A more persistent caching of the HAL responses, that does this needs to be implemented as a {@link HalResourceLoader}
- * instead.
+ * If a more persistent caching of the HAL responses is required, then this is implemented in the
+ * {@link HalResourceLoader} instead.
  * </p>
  * <p>
- * A {@link RequestMetricsCollector} instance can be used to track all upstream resources that have been retrieved,
- * and collect performance metrics about the interaction with the proxy objects.
- * This is only relevant for clients created by the {@link Rhyme} instance while handling an incoming
- * request. In that case you you shouldn't need to interact with
- * {@link HalApiClient} directly, but use {@link Rhyme#getRemoteResource(String, Class)} instead. This ensures
- * that the same {@link RequestMetricsCollector} instance is used throughout your incoming request.
- * </p>
- * <p>
- * If you only want to consume HAL APIs and not use Rhyme to render your responses, you don't need
- * to worry about the {@link RequestMetricsCollector}, and
- * the easiest way to start is simply calling {@link HalApiClient#create()}.
+ * Further customization of the {@link HalApiClient} instance can be done when using a {@link HalApiClientBuilder}.
  * </p>
  * @see HalApiInterface
  * @see Related
  * @see ResourceState
  * @see ResourceRepresentation
  * @see HalResourceLoader
+ * @see HalResourceLoaderBuilder
+ * @see HalApiClientBuilder
  */
 @ProviderType
 public interface HalApiClient {
@@ -133,8 +125,8 @@ public interface HalApiClient {
   }
 
   /**
-   * An advanced overload {@link #create(HalResourceLoader, RequestMetricsCollector)} that allows
-   * to the client to be used with interfaces using non-standard annotations or return types.
+   * An advanced overload of {@link #create(HalResourceLoader, RequestMetricsCollector)} that allows
+   * the client to be used with interfaces using non-standard annotations or return types.
    * @param resourceLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance relevant data for the current
    *          incoming request

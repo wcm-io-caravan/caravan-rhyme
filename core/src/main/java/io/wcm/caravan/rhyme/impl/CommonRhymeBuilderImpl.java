@@ -68,9 +68,9 @@ class CommonRhymeBuilderImpl<BuilderInterface> {
     return (BuilderInterface)this;
   }
 
-  public BuilderInterface withMetrics(RequestMetricsCollector metricsSharedWithClient) {
+  public BuilderInterface withMetrics(RequestMetricsCollector sharedMetrics) {
 
-    this.metrics = metricsSharedWithClient;
+    this.metrics = sharedMetrics;
     return (BuilderInterface)this;
   }
 

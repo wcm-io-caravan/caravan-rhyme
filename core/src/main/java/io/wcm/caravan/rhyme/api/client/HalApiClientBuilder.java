@@ -19,11 +19,13 @@
  */
 package io.wcm.caravan.rhyme.api.client;
 
+import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.RhymeDirector;
+import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
 
 public interface HalApiClientBuilder {
 
@@ -33,7 +35,20 @@ public interface HalApiClientBuilder {
 
   HalApiClientBuilder withResourceLoader(HalResourceLoader resourceLoader);
 
-  HalApiClientBuilder withMetrics(RequestMetricsCollector metricsSharedWithClient);
+  /**
+   * A {@link RequestMetricsCollector} instance can be used to track all upstream resources that have been retrieved,
+   * and collect metrics and response metadata from the interaction with the proxy objects.
+   * This is only relevant for clients created by the {@link Rhyme} instance while handling an incoming
+   * request.
+   * <p>
+   * If you only want to consume HAL APIs and not use Rhyme to render your responses, you don't need
+   * to worry about the {@link RequestMetricsCollector}.
+   * </p>
+   * * @param metricsSharedWithRenderer the same instance that will be used to create the
+   * {@link AsyncHalResourceRenderer}
+   * @return this
+   */
+  HalApiClientBuilder withMetrics(RequestMetricsCollector metricsSharedWithRenderer);
 
   /**
    * Extend the core framework to support additional return types in your annotated HAL API interfaces.
