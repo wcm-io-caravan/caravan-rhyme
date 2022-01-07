@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
+import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
@@ -59,7 +60,7 @@ public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceL
   @BeforeEach
   void setUp() {
 
-    resourceLoader = HalResourceLoader.builder()
+    resourceLoader = HalResourceLoaderBuilder.create()
         .withCustomHttpClient(new CaravanResilientHttpSupport(httpClient, EXTERNAL_SERVICE_ID))
         .withMemoryCache()
         .withCachingConfiguration(new CachingConfiguration() {

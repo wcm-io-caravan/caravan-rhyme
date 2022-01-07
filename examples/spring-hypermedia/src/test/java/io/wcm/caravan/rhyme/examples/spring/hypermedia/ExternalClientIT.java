@@ -86,7 +86,7 @@ public class ExternalClientIT extends AbstractCompanyApiIT {
     // that verifies if any resource that can be reached from the entry point (by following
     // resolved links) can actually be retrieved
 
-    HalCrawler crawler = new HalCrawler(HalResourceLoader.builder().build())
+    HalCrawler crawler = new HalCrawler(HalResourceLoader.create())
         .withEntryPoint(entryPointUrl);
 
     MockMvcClientIT.crawlAndVerifyAllResponses(crawler);

@@ -38,6 +38,7 @@ import io.wcm.caravan.pipeline.JsonPipelineFactory;
 import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.client.HalApiClientBuilder;
+import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
@@ -122,7 +123,7 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
     @Override
     public HalResourceLoader load(String serviceId) throws Exception {
 
-      return HalResourceLoader.builder()
+      return HalResourceLoaderBuilder.create()
           .withCustomHttpClient(new CaravanResilientHttpSupport(httpClient, serviceId))
           .withMemoryCache()
           .withCachingConfiguration(new CaravanCachingConfiguration())

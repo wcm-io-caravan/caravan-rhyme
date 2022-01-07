@@ -64,7 +64,7 @@ class SpringRhymeAutoConfiguration {
 
     WebClientSupport client = new WebClientSupport();
 
-    return HalResourceLoader.builder()
+    return HalResourceLoaderBuilder.create()
         .withCustomHttpClient(client);
   }
 }

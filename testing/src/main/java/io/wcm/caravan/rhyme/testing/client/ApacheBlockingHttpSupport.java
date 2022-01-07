@@ -35,14 +35,15 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import com.google.common.collect.LinkedHashMultimap;
 
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 
 /**
- * An HTTP client implementation to be used with
- * {@link HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)}
- * that is using the synchronous Apache HTTP client to execute requests.
+ * An HTTP client implementation that is using the synchronous Apache HTTP client to execute requests.
+ * @see HalResourceLoader#create(HttpClientSupport)
+ * @see HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)
  */
 public class ApacheBlockingHttpSupport implements HttpClientSupport {
 

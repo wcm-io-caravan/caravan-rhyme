@@ -28,8 +28,6 @@ public class HttpUrlConnectionSupportTest extends AbstractHalResourceLoaderTest 
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
 
-    return HalResourceLoader.builder()
-        .withCustomHttpClient(new HttpUrlConnectionSupport())
-        .build();
+    return HalResourceLoader.create(new HttpUrlConnectionSupport());
   }
 }

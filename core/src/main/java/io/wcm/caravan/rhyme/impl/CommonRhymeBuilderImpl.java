@@ -135,7 +135,7 @@ class CommonRhymeBuilderImpl<BuilderInterface> {
   private void applyDefaultsBeforeBuilding() {
 
     if (resourceLoader == null) {
-      resourceLoader = HalResourceLoader.withDefaultHttpClient();
+      resourceLoader = HalResourceLoader.create();
     }
 
     if (metrics == null) {

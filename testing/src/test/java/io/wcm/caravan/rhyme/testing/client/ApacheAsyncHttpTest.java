@@ -17,9 +17,7 @@ public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
 
-    return HalResourceLoader.builder()
-        .withCustomHttpClient(new ApacheAsyncHttpSupport())
-        .build();
+    return HalResourceLoader.create(new ApacheAsyncHttpSupport());
   }
 
   @Test
@@ -29,7 +27,7 @@ public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
 
     ApacheAsyncHttpSupport support = new ApacheAsyncHttpSupport(baseUri);
 
-    HalResourceLoader loader = HalResourceLoader.builder().withCustomHttpClient(support).build();
+    HalResourceLoader loader = HalResourceLoader.create(support);
 
     Throwable ex = catchThrowable(() -> loader.getHalResource("/").blockingGet());
 

@@ -48,7 +48,7 @@ public interface HttpClientCallback {
   void onUrlModified(URI uri);
 
   /**
-   * This should be called as soon as the HTTP response headers are available. It will ensure that
+   * This *must* be called as soon as the HTTP response headers are available. It will ensure that
    * {@link HalResponse#getStatus()}, {@link HalResponse#getContentType()} and {@link HalResponse#getMaxAge()} will
    * return the values from your response
    * @param statusCode HTTP status code from the response

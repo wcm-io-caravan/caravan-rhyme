@@ -17,9 +17,7 @@ public class ApacheBlockingHttpTest extends AbstractHalResourceLoaderTest {
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
 
-    return HalResourceLoader.builder()
-        .withCustomHttpClient(new ApacheBlockingHttpSupport())
-        .build();
+    return HalResourceLoader.create(new ApacheBlockingHttpSupport());
   }
 
   @Test
@@ -29,7 +27,7 @@ public class ApacheBlockingHttpTest extends AbstractHalResourceLoaderTest {
 
     ApacheBlockingHttpSupport support = new ApacheBlockingHttpSupport(baseUri);
 
-    HalResourceLoader loader = HalResourceLoader.builder().withCustomHttpClient(support).build();
+    HalResourceLoader loader = HalResourceLoader.create(support);
 
     Throwable ex = catchThrowable(() -> loader.getHalResource("/").blockingGet());
 
