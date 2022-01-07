@@ -34,6 +34,7 @@ public class HalApiClientExceptionTest {
     String requestUrl = "/foo";
     HalResponse response = new HalResponse().withStatus(404);
 
+    @SuppressWarnings("deprecation")
     HalApiClientException ex = new HalApiClientException(response, requestUrl, null);
 
     assertThat(ex.getRequestUrl())
