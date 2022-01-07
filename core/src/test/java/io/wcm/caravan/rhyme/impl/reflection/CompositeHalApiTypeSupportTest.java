@@ -102,7 +102,7 @@ public class CompositeHalApiTypeSupportTest {
   @Test
   public void client_should_use_custom_return_types() throws Exception {
 
-    HalApiClient client = new HalApiClientBuilder().withReturnTypeSupport(mockReturnTypeSupport).build();
+    HalApiClient client = HalApiClientBuilder.create().withReturnTypeSupport(mockReturnTypeSupport).build();
 
     assertThatMockReturnTypeSupportIsEffective(((HalApiClientImpl)client).getTypeSupport());
   }
@@ -110,7 +110,7 @@ public class CompositeHalApiTypeSupportTest {
   @Test
   public void client_should_use_custom_annotations() throws Exception {
 
-    HalApiClient client = new HalApiClientBuilder().withAnnotationTypeSupport(mockAnnotationSupport).build();
+    HalApiClient client = HalApiClientBuilder.create().withAnnotationTypeSupport(mockAnnotationSupport).build();
 
     assertThatMockAnnotationSupportIsEffective(((HalApiClientImpl)client).getTypeSupport());
   }
@@ -138,7 +138,7 @@ public class CompositeHalApiTypeSupportTest {
   @Test
   public void response_renderer_should_use_custom_annotations() throws Exception {
 
-    AsyncHalResponseRenderer renderer = new HalResponseRendererBuilder().withAnnotationTypeSupport(mockAnnotationSupport).build();
+    AsyncHalResponseRenderer renderer = HalResponseRendererBuilder.create().withAnnotationTypeSupport(mockAnnotationSupport).build();
 
     assertThatMockAnnotationSupportIsEffective(((AsyncHalResponseRendererImpl)renderer).getAnnotationSupport());
   }

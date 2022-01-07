@@ -29,7 +29,7 @@ import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
-import io.wcm.caravan.rhyme.impl.RhymeBuilderImpl;
+import io.wcm.caravan.rhyme.impl.RhymeDirector;
 
 /**
  * A builder to configure and create a {@link Rhyme} instance to be used throughout the lifecycle of the incoming
@@ -53,7 +53,7 @@ public interface RhymeBuilder {
   @Deprecated
   static RhymeBuilder withoutResourceLoader() {
 
-    return RhymeBuilder.create();
+    return create();
   }
 
   /**
@@ -64,9 +64,7 @@ public interface RhymeBuilder {
    */
   static RhymeBuilder create() {
 
-    HalResourceLoader defaultLoader = HalResourceLoader.builder().build();
-
-    return new RhymeBuilderImpl(defaultLoader);
+    return RhymeDirector.buildRhyme();
   }
 
   /**
@@ -76,7 +74,7 @@ public interface RhymeBuilder {
    */
   static RhymeBuilder withResourceLoader(HalResourceLoader resourceLoader) {
 
-    return new RhymeBuilderImpl(resourceLoader);
+    return RhymeDirector.buildRhyme(resourceLoader);
   }
 
   /**

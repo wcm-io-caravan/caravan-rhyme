@@ -60,7 +60,7 @@ public interface AsyncHalResponseRenderer {
   @Deprecated
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy) {
 
-    return new HalResponseRendererBuilder()
+    return HalResponseRendererBuilder.create()
         .withMetrics(metrics)
         .withExceptionStrategy(exceptionStrategy)
         .build();
@@ -82,7 +82,7 @@ public interface AsyncHalResponseRenderer {
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
 
-    return new HalResponseRendererBuilder()
+    return HalResponseRendererBuilder.create()
         .withMetrics(metrics)
         .withExceptionStrategy(exceptionStrategy)
         .withAnnotationTypeSupport(annotationSupport)
@@ -107,7 +107,7 @@ public interface AsyncHalResponseRenderer {
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport, RhymeDocsSupport rhymeDocsSupport) {
 
-    return new HalResponseRendererBuilder()
+    return HalResponseRendererBuilder.create()
         .withMetrics(metrics)
         .withExceptionStrategy(exceptionStrategy)
         .withAnnotationTypeSupport(annotationSupport)

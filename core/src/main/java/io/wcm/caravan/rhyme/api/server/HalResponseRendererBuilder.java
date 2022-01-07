@@ -19,77 +19,59 @@
  */
 package io.wcm.caravan.rhyme.api.server;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.ObjectUtils;
-
+import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
-import io.wcm.caravan.rhyme.impl.RhymeBuilderUtils;
-import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
-import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupportAdapter;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
+import io.wcm.caravan.rhyme.impl.RhymeDirector;
 
-public final class HalResponseRendererBuilder {
+public interface HalResponseRendererBuilder {
 
-  private RequestMetricsCollector metrics;
-
-  private final List<ExceptionStatusAndLoggingStrategy> exceptionStrategies = new ArrayList<>();
-
-  private final List<HalApiTypeSupport> typeSupports = new ArrayList<>();
-
-  private RhymeDocsSupport rhymeDocsSupport;
-
-  public HalResponseRendererBuilder withMetrics(RequestMetricsCollector metricsSharedWithClient) {
-
-    this.metrics = metricsSharedWithClient;
-    return this;
+  static HalResponseRendererBuilder create() {
+    return RhymeDirector.buildRenderer();
   }
 
-  public HalResponseRendererBuilder withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport) {
+  HalResponseRendererBuilder withMetrics(RequestMetricsCollector metrics);
 
-    this.rhymeDocsSupport = rhymeDocsSupport;
-    return this;
-  }
+  /**
+   * Enable generation of "curies" links (to HTML documentation generated with the rhyme-docs-maven-plugin)
+   * when rendering {@link HalResponse}s with {@link Rhyme#renderResponse(LinkableResource)}.
+   * If you call this method, you also have to ensure that you actually serve the generated HTML files using
+   * {@link RhymeDocsSupport#loadGeneratedHtml(RhymeDocsSupport, String)}
+   * @param rhymeDocsSupport the SPI instance that handles loading of the generated HTML
+   * @return this
+   */
+  HalResponseRendererBuilder withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport);
 
-  public HalResponseRendererBuilder withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport) {
+  /**
+   * Extend the core framework to support additional return types in your annotated HAL API interfaces.
+   * You can call this method multiple times if you want to register more than one extension.
+   * @param additionalTypeSupport extension to the default type support
+   * @return this
+   */
+  HalResponseRendererBuilder withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport);
 
-    if (additionalTypeSupport != null) {
-      typeSupports.add(new HalApiTypeSupportAdapter(additionalTypeSupport));
-    }
-    return this;
-  }
+  /**
+   * Extend the core framework to support additional annotation types in your annotated HAL API interfaces.
+   * You can call this method multiple times if you want to register more than one extension.
+   * @param additionalTypeSupport extension to the default type support
+   * @return this
+   */
+  HalResponseRendererBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport);
 
-  public HalResponseRendererBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport) {
+  /**
+   * Allow the exception handling of the core framework to support additional platform / framework specific exceptions.
+   * You can call this method multiple times if you want to register more than one extension.
+   * @param customStrategy extension to the default exception handling.
+   * @return this
+   */
+  HalResponseRendererBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy);
 
-    if (additionalTypeSupport != null) {
-      typeSupports.add(new HalApiTypeSupportAdapter(additionalTypeSupport));
-    }
-    return this;
-  }
+  AsyncHalResponseRenderer build();
 
-  public HalResponseRendererBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy) {
 
-    exceptionStrategies.add(customStrategy);
-    return this;
-  }
-
-  public AsyncHalResponseRenderer build() {
-
-    metrics = ObjectUtils.defaultIfNull(metrics, RequestMetricsCollector.create());
-
-    HalApiTypeSupport typeSupport = RhymeBuilderUtils.getEffectiveTypeSupport(typeSupports);
-
-    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
-
-    ExceptionStatusAndLoggingStrategy exceptionStrategy = RhymeBuilderUtils.getEffectiveExceptionStrategy(exceptionStrategies);
-
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, rhymeDocsSupport);
-  }
 }

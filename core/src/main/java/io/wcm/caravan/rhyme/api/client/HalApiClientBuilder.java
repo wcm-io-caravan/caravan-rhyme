@@ -19,66 +19,37 @@
  */
 package io.wcm.caravan.rhyme.api.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.impl.RhymeBuilderUtils;
-import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
-import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
-import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupportAdapter;
+import io.wcm.caravan.rhyme.impl.RhymeDirector;
 
-public class HalApiClientBuilder {
+public interface HalApiClientBuilder {
 
-  private HalResourceLoader resourceLoader;
-
-  private RequestMetricsCollector metrics;
-
-  private final List<HalApiTypeSupport> typeSupports = new ArrayList<>();
-
-  public HalApiClientBuilder withResourceLoader(HalResourceLoader resourceLoader) {
-
-    this.resourceLoader = resourceLoader;
-    return this;
+  static HalApiClientBuilder create() {
+    return RhymeDirector.buildClient();
   }
 
-  public HalApiClientBuilder withMetrics(RequestMetricsCollector metricsSharedWithClient) {
+  HalApiClientBuilder withResourceLoader(HalResourceLoader resourceLoader);
 
-    this.metrics = metricsSharedWithClient;
-    return this;
-  }
+  HalApiClientBuilder withMetrics(RequestMetricsCollector metricsSharedWithClient);
 
-  public HalApiClientBuilder withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport) {
+  /**
+   * Extend the core framework to support additional return types in your annotated HAL API interfaces.
+   * You can call this method multiple times if you want to register more than one extension.
+   * @param additionalTypeSupport extension to the default type support
+   * @return this
+   */
+  HalApiClientBuilder withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport);
 
-    if (additionalTypeSupport != null) {
-      typeSupports.add(new HalApiTypeSupportAdapter(additionalTypeSupport));
-    }
-    return this;
-  }
+  /**
+   * Extend the core framework to support additional annotation types in your annotated HAL API interfaces.
+   * You can call this method multiple times if you want to register more than one extension.
+   * @param additionalTypeSupport extension to the default type support
+   * @return this
+   */
+  HalApiClientBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport);
 
-  public HalApiClientBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport) {
-
-    if (additionalTypeSupport != null) {
-      typeSupports.add(new HalApiTypeSupportAdapter(additionalTypeSupport));
-    }
-    return this;
-  }
-
-  public HalApiClient build() {
-
-    if (resourceLoader == null) {
-      resourceLoader = HalResourceLoader.withDefaultHttpClient();
-    }
-
-    if (metrics == null) {
-      metrics = RequestMetricsCollector.create();
-    }
-
-    HalApiTypeSupport effectiveTypeSupport = RhymeBuilderUtils.getEffectiveTypeSupport(typeSupports);
-
-    return new HalApiClientImpl(resourceLoader, metrics, effectiveTypeSupport);
-  }
+  HalApiClient build();
 }

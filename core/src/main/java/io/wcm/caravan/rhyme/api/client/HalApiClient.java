@@ -94,7 +94,8 @@ public interface HalApiClient {
    */
   static HalApiClient create() {
 
-    return new HalApiClientBuilder().build();
+    return HalApiClientBuilder.create()
+        .build();
   }
 
   /**
@@ -109,7 +110,7 @@ public interface HalApiClient {
    */
   static HalApiClient create(HalResourceLoader resourceLoader) {
 
-    return new HalApiClientBuilder()
+    return HalApiClientBuilder.create()
         .withResourceLoader(resourceLoader)
         .build();
   }
@@ -125,7 +126,7 @@ public interface HalApiClient {
   @Deprecated
   static HalApiClient create(HalResourceLoader resourceLoader, RequestMetricsCollector metrics) {
 
-    return new HalApiClientBuilder()
+    return HalApiClientBuilder.create()
         .withResourceLoader(resourceLoader)
         .withMetrics(metrics)
         .build();
@@ -149,7 +150,7 @@ public interface HalApiClient {
   static HalApiClient create(HalResourceLoader resourceLoader, RequestMetricsCollector metrics,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
 
-    return new HalApiClientBuilder()
+    return HalApiClientBuilder.create()
         .withResourceLoader(resourceLoader)
         .withMetrics(metrics)
         .withAnnotationTypeSupport(annotationSupport)
