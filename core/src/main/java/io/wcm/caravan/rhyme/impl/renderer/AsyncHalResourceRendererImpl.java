@@ -40,6 +40,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
@@ -78,7 +79,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
 
   Single<HalResource> renderResourceAndEmbedded(Object resourceImplInstance) {
 
-    try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResourceRenderer.class,
+    try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResponseRenderer.class,
         () -> "calls to #renderResourceAndEmbedded with " + getSimpleClassName(resourceImplInstance, typeSupport))) {
 
       Preconditions.checkNotNull(resourceImplInstance, "Cannot create a HalResource from a null reference");
@@ -171,7 +172,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
 
     if (resourceImplInstance instanceof LinkableResource) {
 
-      try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResourceRenderer.class,
+      try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResponseRenderer.class,
           () -> "calls to #createLink of " + getSimpleClassName(resourceImplInstance, typeSupport))) {
 
         hal.setLink(((LinkableResource)resourceImplInstance).createLink());

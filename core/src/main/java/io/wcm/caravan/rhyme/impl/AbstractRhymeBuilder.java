@@ -19,23 +19,20 @@
  */
 package io.wcm.caravan.rhyme.impl;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import io.reactivex.rxjava3.core.Single;
+import com.google.common.base.Stopwatch;
+
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.client.HalApiClientBuilder;
-import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
-import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
@@ -60,6 +57,8 @@ import io.wcm.caravan.rhyme.impl.renderer.CompositeExceptionStatusAndLoggingStra
  * @param <BuilderInterface> the interface that the subclass is implementing
  */
 abstract class AbstractRhymeBuilder<BuilderInterface> {
+
+  private final Stopwatch stopwatch = Stopwatch.createStarted();
 
   private HalResourceLoader resourceLoader;
 
@@ -186,45 +185,19 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
     return new HalApiClientImpl(resourceLoader, metrics, effectiveTypeSupport);
   }
 
+  @SuppressWarnings("deprecation")
   Rhyme buildRhyme(String incomingRequestUri) {
 
-    return new Rhyme() {
+    HalApiClient client = buildApiClient();
 
-      private final HalApiClient client = buildApiClient();
+    AsyncHalResponseRenderer renderer = buildAsyncRenderer();
 
-      private final AsyncHalResponseRenderer renderer = buildAsyncRenderer();
+    VndErrorResponseRenderer errorRenderer = VndErrorResponseRenderer.create(getEffectiveExceptionStrategy());
 
-      private final VndErrorResponseRenderer errorRenderer = VndErrorResponseRenderer.create(getEffectiveExceptionStrategy());
+    RhymeImpl impl = new RhymeImpl(incomingRequestUri, client, renderer, errorRenderer, metrics);
 
-      @Override
-      public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
+    metrics.onMethodInvocationFinished(AsyncHalResponseRenderer.class, "building Rhyme instance", stopwatch.elapsed(TimeUnit.MICROSECONDS));
 
-        return client.getRemoteResource(uri, halApiInterface);
-      }
-
-      @Override
-      public void setResponseMaxAge(Duration duration) {
-
-        metrics.setResponseMaxAge(duration);
-      }
-
-      @Override
-      public Single<HalResponse> renderResponse(LinkableResource resourceImpl) {
-
-        return renderer.renderResponse(incomingRequestUri, resourceImpl);
-      }
-
-      @Override
-      public HalResponse renderVndErrorResponse(Throwable error) {
-
-        return errorRenderer.renderError(incomingRequestUri, null, error, metrics);
-      }
-
-      @Override
-      public RequestMetricsStopwatch startStopwatch(Class clazz, Supplier<String> taskDescription) {
-
-        return metrics.startStopwatch(clazz, taskDescription);
-      }
-    };
+    return impl;
   }
 }

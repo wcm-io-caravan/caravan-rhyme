@@ -62,13 +62,15 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
+import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 
 /**
  * Full implementation of {@link RequestMetricsCollector} that keeps track of all upstream resources that have been
  * retrieved, and additional invocation/emission times to analyze the performance of a request
  */
 public class ResponseMetadataGenerator implements RequestMetricsCollector {
+
+  private final Stopwatch overalResponseTimeStopwatch = Stopwatch.createStarted();
 
   private static final Logger log = LoggerFactory.getLogger(ResponseMetadataGenerator.class);
 
@@ -78,8 +80,6 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
       TimeUnit.MILLISECONDS, "ms",
       TimeUnit.MICROSECONDS, "μs",
       TimeUnit.NANOSECONDS, "ns");
-
-  private final Stopwatch overalResponseTimeStopwatch = Stopwatch.createStarted();
 
   private final List<TimeMeasurement> inputMaxAgeSeconds = Collections.synchronizedList(new ArrayList<>());
   private final List<TimeMeasurement> inputResponseTimes = Collections.synchronizedList(new ArrayList<>());
@@ -277,7 +277,7 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
 
     // and a summary of the important timing results
     metadataResource.getModel().put("sumOfProxyInvocationTime", getSumOfInvocationMillis(HalApiClient.class) + "ms");
-    metadataResource.getModel().put("sumOfResourceAssemblyTime", getSumOfInvocationMillis(AsyncHalResourceRenderer.class) + "ms");
+    metadataResource.getModel().put("sumOfResourceAssemblyTime", getSumOfInvocationMillis(AsyncHalResponseRenderer.class) + "ms");
     metadataResource.getModel().put("sumOfResponseAndParseTimes", getSumOfResponseTimeMillis() + "ms");
     metadataResource.getModel().put("overallServerSideResponseTime", getOverallResponseTimeMillis() + "ms");
     metadataResource.getModel().put("metricsCollectionTime", TimeUnit.NANOSECONDS.toMillis(metricsCollectionNanos.get()) + "ms");
@@ -315,8 +315,8 @@ public class ResponseMetadataGenerator implements RequestMetricsCollector {
             "A breakdown of time spent in blocking HalApiClient proxy method calls",
             null, false),
 
-        new TimingResourceCategory(AsyncHalResourceRenderer.class.getSimpleName(), RENDERING_TIMES,
-            "A breakdown of time spent in blocking method calls by AsyncHalResourceRenderer",
+        new TimingResourceCategory(AsyncHalResponseRenderer.class.getSimpleName(), RENDERING_TIMES,
+            "A breakdown of time spent in blocking method calls while rendering resources",
             null, false),
 
         new TimingResourceCategory("SlingRhymeImpl", SLING_MODELS,

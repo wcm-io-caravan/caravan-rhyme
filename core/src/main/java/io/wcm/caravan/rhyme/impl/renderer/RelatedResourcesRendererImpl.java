@@ -39,6 +39,7 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
@@ -165,7 +166,7 @@ final class RelatedResourcesRendererImpl {
     Observable<Link> rxLinks = rxLinkedResourceImpls
         .map(linkedResource -> {
 
-          try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResourceRenderer.class,
+          try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResponseRenderer.class,
               () -> "calls to #createLink of " + getSimpleClassName(linkedResource))) {
 
             Link link = linkedResource.createLink();
