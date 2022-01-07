@@ -44,18 +44,31 @@ public final class RhymeBuilders {
     // only static methods
   }
 
+  /**
+   * @return a new instance of {@link HalApiClientBuilder}
+   */
   public static HalApiClientBuilder client() {
     return new HalApiClientBuilderImpl();
   }
 
+  /**
+   * @return a new instance of {@link HalResponseRendererBuilder}s
+   */
   public static HalResponseRendererBuilder renderer() {
     return new HalResponseRenderBuilderImpl();
   }
 
+  /**
+   * @return a new instance of {@link RhymeBuilder}
+   */
   public static RhymeBuilder rhyme() {
     return new RhymeBuilderImpl();
   }
 
+  /**
+   * @param loader the resource loader to use
+   * @return a new instance of {@link RhymeBuilder}
+   */
   public static RhymeBuilder rhyme(HalResourceLoader loader) {
     return new RhymeBuilderImpl().withResourceLoader(loader);
   }
@@ -64,7 +77,12 @@ public final class RhymeBuilders {
 
     @Override
     public HalApiClient build() {
-      return buildApiClient();
+
+      HalApiClient client = buildApiClient();
+
+      wasUsedToBuild = true;
+
+      return client;
     }
   }
 
@@ -72,7 +90,12 @@ public final class RhymeBuilders {
 
     @Override
     public AsyncHalResponseRenderer build() {
-      return buildAsyncRenderer();
+
+      AsyncHalResponseRenderer renderer = buildAsyncRenderer();
+
+      wasUsedToBuild = true;
+
+      return renderer;
     }
   }
 
@@ -80,7 +103,12 @@ public final class RhymeBuilders {
 
     @Override
     public Rhyme buildForRequestTo(String incomingRequestUri) {
-      return buildRhyme(incomingRequestUri);
+
+      Rhyme rhyme = buildRhyme(incomingRequestUri);
+
+      wasUsedToBuild = true;
+
+      return rhyme;
     }
   }
 }

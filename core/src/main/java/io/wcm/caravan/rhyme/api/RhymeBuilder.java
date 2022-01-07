@@ -32,8 +32,8 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.RhymeBuilders;
 
 /**
- * A builder to configure and create a {@link Rhyme} instance to be used throughout the lifecycle of the incoming
- * request.
+ * A fluent builder to configure and create a single {@link Rhyme} instance, which then should be used throughout the
+ * lifecycle of the current incoming request.
  * <p>
  * If you are only using {@link Rhyme} as a HAL client library
  * (but not to render HAL+JSON responses), you can also use {@link HalApiClient} directly.

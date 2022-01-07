@@ -34,6 +34,7 @@ import io.wcm.caravan.rhyme.api.client.HalApiClientBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
@@ -69,6 +70,8 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
   private final List<HalApiTypeSupport> typeSupports = new ArrayList<>();
 
   private RhymeDocsSupport rhymeDocsSupport;
+
+  protected boolean wasUsedToBuild;
 
   @SuppressWarnings("unchecked")
   public BuilderInterface withResourceLoader(HalResourceLoader resourceLoader) {
@@ -147,6 +150,10 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
   }
 
   private void applyDefaultsBeforeBuilding() {
+
+    if (wasUsedToBuild) {
+      throw new HalApiDeveloperException("You shouldn't re-use this builder to create more than once instance");
+    }
 
     if (resourceLoader == null) {
       resourceLoader = HalResourceLoader.create();
