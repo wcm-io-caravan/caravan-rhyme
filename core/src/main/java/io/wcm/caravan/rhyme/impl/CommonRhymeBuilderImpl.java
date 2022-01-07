@@ -19,17 +19,22 @@
  */
 package io.wcm.caravan.rhyme.impl;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ObjectUtils;
-
+import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
+import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
@@ -97,46 +102,6 @@ class CommonRhymeBuilderImpl<BuilderInterface> {
     return (BuilderInterface)this;
   }
 
-  AsyncHalResponseRenderer buildAsyncRenderer() {
-
-    metrics = ObjectUtils.defaultIfNull(metrics, RequestMetricsCollector.create());
-
-    HalApiTypeSupport typeSupport = getEffectiveTypeSupport();
-
-    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
-
-    ExceptionStatusAndLoggingStrategy exceptionStrategy = getEffectiveExceptionStrategy();
-
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, rhymeDocsSupport);
-  }
-
-  HalApiClient buildApiClient() {
-
-    if (resourceLoader == null) {
-      resourceLoader = HalResourceLoader.withDefaultHttpClient();
-    }
-
-    if (metrics == null) {
-      metrics = RequestMetricsCollector.create();
-    }
-
-    HalApiTypeSupport effectiveTypeSupport = getEffectiveTypeSupport();
-
-    return new HalApiClientImpl(resourceLoader, metrics, effectiveTypeSupport);
-  }
-
-  Rhyme buildRhyme(String incomingRequestUri) {
-
-    if (resourceLoader == null) {
-      resourceLoader = HalResourceLoader.withDefaultHttpClient();
-    }
-
-    HalApiTypeSupport typeSupport = getEffectiveTypeSupport();
-    ExceptionStatusAndLoggingStrategy exceptionStrategy = getEffectiveExceptionStrategy();
-
-    return new RhymeImpl(incomingRequestUri, resourceLoader, exceptionStrategy, typeSupport, rhymeDocsSupport);
-  }
-
   private ExceptionStatusAndLoggingStrategy getEffectiveExceptionStrategy() {
 
     List<ExceptionStatusAndLoggingStrategy> nonNullStrategies = exceptionStrategies.stream()
@@ -165,6 +130,81 @@ class CommonRhymeBuilderImpl<BuilderInterface> {
     customAndDefault.add(defaultSupport);
 
     return new CompositeHalApiTypeSupport(customAndDefault);
+  }
+
+  private void applyDefaultsBeforeBuilding() {
+
+    if (resourceLoader == null) {
+      resourceLoader = HalResourceLoader.withDefaultHttpClient();
+    }
+
+    if (metrics == null) {
+      metrics = RequestMetricsCollector.create();
+    }
+  }
+
+  AsyncHalResponseRenderer buildAsyncRenderer() {
+
+    applyDefaultsBeforeBuilding();
+
+    HalApiTypeSupport typeSupport = getEffectiveTypeSupport();
+
+    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
+
+    ExceptionStatusAndLoggingStrategy exceptionStrategy = getEffectiveExceptionStrategy();
+
+    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, rhymeDocsSupport);
+  }
+
+  HalApiClient buildApiClient() {
+
+    applyDefaultsBeforeBuilding();
+
+    HalApiTypeSupport effectiveTypeSupport = getEffectiveTypeSupport();
+
+    return new HalApiClientImpl(resourceLoader, metrics, effectiveTypeSupport);
+  }
+
+  Rhyme buildRhyme(String incomingRequestUri) {
+
+    return new Rhyme() {
+
+      private final HalApiClient client = buildApiClient();
+
+      private final AsyncHalResponseRenderer renderer = buildAsyncRenderer();
+
+      private final VndErrorResponseRenderer errorRenderer = VndErrorResponseRenderer.create(getEffectiveExceptionStrategy());
+
+      @Override
+      public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
+
+        return client.getRemoteResource(uri, halApiInterface);
+      }
+
+      @Override
+      public void setResponseMaxAge(Duration duration) {
+
+        metrics.setResponseMaxAge(duration);
+      }
+
+      @Override
+      public Single<HalResponse> renderResponse(LinkableResource resourceImpl) {
+
+        return renderer.renderResponse(incomingRequestUri, resourceImpl);
+      }
+
+      @Override
+      public HalResponse renderVndErrorResponse(Throwable error) {
+
+        return errorRenderer.renderError(incomingRequestUri, null, error, metrics);
+      }
+
+      @Override
+      public RequestMetricsStopwatch startStopwatch(Class clazz, Supplier<String> taskDescription) {
+
+        return metrics.startStopwatch(clazz, taskDescription);
+      }
+    };
   }
 
 }
