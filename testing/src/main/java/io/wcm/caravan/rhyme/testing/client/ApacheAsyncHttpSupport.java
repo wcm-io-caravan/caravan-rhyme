@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
@@ -46,15 +47,28 @@ import io.wcm.caravan.rhyme.tooling.annotations.ExcludeFromJacocoGeneratedReport
  */
 public class ApacheAsyncHttpSupport implements HttpClientSupport {
 
-  private final CloseableHttpAsyncClient httpClient = HttpAsyncClientBuilder.create().build();
+  private final CloseableHttpAsyncClient httpClient;
 
   private final URI baseUri;
 
   /**
-   * Default constructor that can be used if all URIs are fully qualified
+   * Default constructor that can be used if all URIs are fully qualified and requests
+   * can be executed with a default HTTP client created with {@link HttpClientBuilder}
    */
   public ApacheAsyncHttpSupport() {
-    this(null);
+    this((URI)null);
+  }
+
+  /**
+   * Allows to provide a customised {@link CloseableHttpAsyncClient} instance to be used for all requests.
+   * @param client to use for all requests
+   */
+  public ApacheAsyncHttpSupport(CloseableHttpAsyncClient client) {
+    this.httpClient = client;
+    this.baseUri = null;
+    if (!httpClient.isRunning()) {
+      httpClient.start();
+    }
   }
 
   /**
@@ -62,6 +76,7 @@ public class ApacheAsyncHttpSupport implements HttpClientSupport {
    * @param baseUri a fully qualified base URI
    */
   public ApacheAsyncHttpSupport(URI baseUri) {
+    this.httpClient = HttpAsyncClientBuilder.create().build();
     this.baseUri = baseUri;
     this.httpClient.start();
   }

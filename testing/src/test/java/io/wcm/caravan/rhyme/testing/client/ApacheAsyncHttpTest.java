@@ -2,11 +2,16 @@ package io.wcm.caravan.rhyme.testing.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.net.UnknownHostException;
 
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
@@ -18,6 +23,25 @@ public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
   protected HalResourceLoader createLoaderUnderTest() {
 
     return HalResourceLoader.create(new ApacheAsyncHttpSupport());
+  }
+
+  @Test
+  public void should_use_custom_HttpClient_instance() {
+
+    CloseableHttpAsyncClient client = Mockito.mock(CloseableHttpAsyncClient.class);
+
+    HalResourceLoader loader = HalResourceLoader.create(new ApacheAsyncHttpSupport(client));
+
+    RuntimeException rootCause = new RuntimeException("failed");
+
+    when(client.execute(any(HttpUriRequest.class), any()))
+        .thenThrow(rootCause);
+
+    Throwable ex = catchThrowable(() -> loader.getHalResource("/foo").blockingGet());
+
+    assertThat(ex)
+        .isNotNull()
+        .hasRootCause(rootCause);
   }
 
   @Test
