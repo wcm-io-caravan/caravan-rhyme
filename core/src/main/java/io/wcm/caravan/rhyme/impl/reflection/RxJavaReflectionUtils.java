@@ -38,9 +38,9 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
 import io.wcm.caravan.rhyme.impl.util.RxJavaTransformers;
 
 /**
@@ -66,7 +66,7 @@ public final class RxJavaReflectionUtils {
 
     String fullMethodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method, typeSupport);
 
-    try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResourceRenderer.class, () -> "calls to " + fullMethodName)) {
+    try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResponseRenderer.class, () -> "calls to " + fullMethodName)) {
 
       Object[] args = new Object[method.getParameterCount()];
       Object returnValue = method.invoke(resourceImplInstance, args);

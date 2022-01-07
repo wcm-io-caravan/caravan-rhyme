@@ -132,8 +132,4 @@ public class CompositeHalApiTypeSupport implements HalApiTypeSupport {
     return anyMatch(delegate -> delegate.isProviderOfOptionalValue(returnType));
   }
 
-  List<HalApiTypeSupport> getDelegates() {
-    return delegates;
-  }
-
 }

@@ -21,6 +21,7 @@ package io.wcm.caravan.rhyme.api.server;
 
 import org.osgi.annotation.versioning.ProviderType;
 
+import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -30,7 +31,14 @@ import io.wcm.caravan.rhyme.impl.renderer.VndErrorResponseRendererImpl;
 
 /**
  * Creates an error response according to the "application/vnd.error+json" media type for any
- * exception thrown when rendering HAL
+ * exception thrown and caught during request processing. It will use an {@link ExceptionStatusAndLoggingStrategy}
+ * to determine the appropriate status code for the given exception.
+ * <p>
+ * This renderer is used internally to implement {@link Rhyme#renderResponse(LinkableResource)} and
+ * {@link Rhyme#renderVndErrorResponse(Throwable)} but may also be used directly in advanced testing or integration
+ * scenarios.
+ * </p>
+ * @see ExceptionStatusAndLoggingStrategy
  */
 @ProviderType
 public interface VndErrorResponseRenderer {

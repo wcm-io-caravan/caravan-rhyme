@@ -46,7 +46,7 @@ public interface RequestMetricsCollector {
   /**
    * Calculates the "max-age" Cache-Control header value to be used when rendering the response.
    * @return the minimum "max-age" value of all upstream requests and the limit set via
-   *         {@link #setResponseMaxAge(Duration)}
+   *         {@link #setResponseMaxAge(Duration)} (or null if none of this ever haooened)
    */
   Integer getResponseMaxAge();
 

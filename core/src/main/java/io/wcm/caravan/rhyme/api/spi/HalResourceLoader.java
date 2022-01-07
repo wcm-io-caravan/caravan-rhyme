@@ -31,7 +31,6 @@ import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.impl.client.HalResourceLoaderBuilderImpl;
 
 /**
  * An interface to delegate (or mock) the actual loading (and caching) of all JSON+HAL resources
@@ -40,13 +39,13 @@ import io.wcm.caravan.rhyme.impl.client.HalResourceLoaderBuilderImpl;
  * instance can be re-used throughout your application life-cycle.
  * <p>
  * If you don't need any configuration options (e.g. authentication), caching or asynchronous request handling,
- * you can can simply use {@link #withDefaultHttpClient()} to create an instance that is using
+ * you can can simply use {@link #create()} to create an instance that is using
  * {@link HttpURLConnection} to execute the HTTP requests while blocking the current request.
  * </p>
  * <p>
  * If you need full control over the HTTP client implementation to be used, and/or want to enable
- * caching of HAL responses, you should call {@link #builder()} to configure and build
- * a {@link HalResourceLoader} instance with the methods from {@link HalResourceLoaderBuilder}.
+ * caching of HAL responses, you should use a {@link HalResourceLoaderBuilder} to configure and build
+ * a {@link HalResourceLoader} instance.
  * For caching to work properly, it is important that you'll then store and re-use the same
  * {@link HalResourceLoader} instance when creating {@link Rhyme} or {@link HalApiClient} objects
  * </p>
@@ -83,12 +82,6 @@ public interface HalResourceLoader {
    */
   Single<HalResponse> getHalResource(String uri);
 
-
-  static HalResourceLoaderBuilder builder() {
-
-    return new HalResourceLoaderBuilderImpl();
-  }
-
   /**
    * Create a {@link HalResourceLoader} that uses a {@link HttpURLConnection} with default configuration to
    * load the upstream resources.
@@ -96,10 +89,24 @@ public interface HalResourceLoader {
    *         blocks the current thread while loading the resource,
    *         and does not implement any caching
    */
-  static HalResourceLoader withDefaultHttpClient() {
+  static HalResourceLoader create() {
 
     // if no further methods are called, the builder will create a loader that uses HttpURLConnection (and no caching)
-    return builder().build();
+    return HalResourceLoaderBuilder.create()
+        .build();
   }
 
+  /**
+   * Create a {@link HalResourceLoader} that uses a custom HTTP client, but does not implement any caching. You can
+   * also use {@link HalResourceLoaderBuilder} instead (if you need or caching or additional customization).
+   * @param client the HTTP client implementation to load the upstream resources
+   * @return a {@link HalResourceLoader} that is using that client but doesn't add any caching
+   * @see HalResourceLoaderBuilder
+   */
+  static HalResourceLoader create(HttpClientSupport client) {
+
+    return HalResourceLoaderBuilder.create()
+        .withCustomHttpClient(client)
+        .build();
+  }
 }

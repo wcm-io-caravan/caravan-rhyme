@@ -25,18 +25,16 @@ import org.osgi.annotation.versioning.ProviderType;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
-import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
-import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 
 /**
  * A type-safe HAL client that will create a dynamic proxy implementation for a given URI
- * and {@link HalApiInterface}.
+ * and {@link HalApiInterface}. It can be used instead of {@link Rhyme#getRemoteResource(String, Class)} if you only
+ * want to consume HAL resources (but not render them).
  * <p>
  * Whenever you call a method on the proxy returned by
  * {@link #getRemoteResource(String, Class)} that is annotated with a relevant annotation (e.g {@link Related}
@@ -54,32 +52,25 @@ import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
  * will take place as long as your are using the same {@link HalApiClient} instance.
  * </p>
  * <p>
- * A more persistent caching of the HAL responses, that does this needs to be implemented as a {@link HalResourceLoader}
- * instead.
+ * If a more persistent caching of the HAL responses is required, then this is implemented in the
+ * {@link HalResourceLoader} instead.
  * </p>
  * <p>
- * A {@link RequestMetricsCollector} instance can be used to track all upstream resources that have been retrieved,
- * and collect performance metrics about the interaction with the proxy objects.
- * This is only relevant for clients created by the {@link Rhyme} instance while handling an incoming
- * request. In that case you you shouldn't need to interact with
- * {@link HalApiClient} directly, but use {@link Rhyme#getRemoteResource(String, Class)} instead. This ensures
- * that the same {@link RequestMetricsCollector} instance is used throughout your incoming request.
- * </p>
- * <p>
- * If you only want to consume HAL APIs and not use Rhyme to render your responses, you don't need
- * to worry about the {@link RequestMetricsCollector}, and
- * the easiest way to start is simply calling {@link HalApiClient#create()}.
+ * Further customization of the {@link HalApiClient} instance can be done using the {@link HalApiClientBuilder}.
  * </p>
  * @see HalApiInterface
  * @see Related
  * @see ResourceState
- * @see ResourceRepresentation
  * @see HalResourceLoader
+ * @see HalResourceLoaderBuilder
+ * @see HalApiClientBuilder
+ * @see Rhyme
  */
 @ProviderType
 public interface HalApiClient {
 
   /**
+   * Create a dynamic client proxy to load and navigate through HAL+JSON resources
    * @param uri the absolute URI of the resource to load (usually the entry point of the HAL API)
    * @param halApiInterface the HAL API interface class of a service's entry point resource
    * @return a proxy implementation of the specified entry point interface
@@ -96,7 +87,8 @@ public interface HalApiClient {
    */
   static HalApiClient create() {
 
-    return HalApiClient.create(HalResourceLoader.withDefaultHttpClient());
+    return HalApiClientBuilder.create()
+        .build();
   }
 
   /**
@@ -111,7 +103,9 @@ public interface HalApiClient {
    */
   static HalApiClient create(HalResourceLoader resourceLoader) {
 
-    return new HalApiClientImpl(resourceLoader, RequestMetricsCollector.create(), new DefaultHalApiTypeSupport());
+    return HalApiClientBuilder.create()
+        .withResourceLoader(resourceLoader)
+        .build();
   }
 
   /**
@@ -120,17 +114,20 @@ public interface HalApiClient {
    *          incoming request
    * @return an instance of {@link HalApiClient} that should be re-used for all upstream requests required by the
    *         current incoming request
-   * @deprecated to create a stand-alone instance use {@link #create(HalResourceLoader)} instead
+   * @deprecated use {@link HalApiClientBuilder} instead
    */
   @Deprecated
   static HalApiClient create(HalResourceLoader resourceLoader, RequestMetricsCollector metrics) {
 
-    return new HalApiClientImpl(resourceLoader, metrics, new DefaultHalApiTypeSupport());
+    return HalApiClientBuilder.create()
+        .withResourceLoader(resourceLoader)
+        .withMetrics(metrics)
+        .build();
   }
 
   /**
-   * An advanced overload {@link #create(HalResourceLoader, RequestMetricsCollector)} that allows
-   * to the client to be used with interfaces using non-standard annotations or return types.
+   * An advanced overload of {@link #create(HalResourceLoader, RequestMetricsCollector)} that allows
+   * the client to be used with interfaces using non-standard annotations or return types.
    * @param resourceLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance relevant data for the current
    *          incoming request
@@ -140,10 +137,17 @@ public interface HalApiClient {
    *          methods
    * @return an instance of {@link HalApiClient} that should be re-used for all upstream requests required by the
    *         current incoming request
+   * @deprecated use {@link HalApiClientBuilder} instead
    */
+  @Deprecated
   static HalApiClient create(HalResourceLoader resourceLoader, RequestMetricsCollector metrics,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
 
-    return new HalApiClientImpl(resourceLoader, metrics, DefaultHalApiTypeSupport.extendWith(annotationSupport, returnTypeSupport));
+    return HalApiClientBuilder.create()
+        .withResourceLoader(resourceLoader)
+        .withMetrics(metrics)
+        .withAnnotationTypeSupport(annotationSupport)
+        .withReturnTypeSupport(returnTypeSupport)
+        .build();
   }
 }

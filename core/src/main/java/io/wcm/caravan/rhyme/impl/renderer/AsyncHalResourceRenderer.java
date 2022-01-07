@@ -23,12 +23,17 @@ import org.osgi.annotation.versioning.ProviderType;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
  * Asynchronously creates a {@link HalResource} representation from a server-side implementation instance of an
  * interface annotated with {@link HalApiInterface}
+ * <p>
+ * This renderer is used internally to implement {@link Rhyme#renderResponse(LinkableResource)} but may also be used
+ * directly in advanced testing or integration scenarios.
+ * </p>
  */
 @ProviderType
 public interface AsyncHalResourceRenderer {

@@ -35,26 +35,37 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import com.google.common.collect.LinkedHashMultimap;
 
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 
 /**
- * An HTTP client implementation to be used with
- * {@link HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)}
- * that is using the synchronous Apache HTTP client to execute requests.
+ * An HTTP client implementation that is using the synchronous Apache HTTP client to execute requests.
+ * @see HalResourceLoader#create(HttpClientSupport)
+ * @see HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)
  */
 public class ApacheBlockingHttpSupport implements HttpClientSupport {
 
-  private final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+  private final CloseableHttpClient httpClient;
 
   private final URI baseUri;
 
   /**
-   * Default constructor that can be used if all URIs are fully qualified
+   * Default constructor that can be used if all URIs are fully qualified and requests
+   * can be executed with a default HTTP client created with {@link HttpClientBuilder}
    */
   public ApacheBlockingHttpSupport() {
-    this(null);
+    this((URI)null);
+  }
+
+  /**
+   * Allows to provide a customised {@link CloseableHttpClient} instance to be used for all requests.
+   * @param client to use for all requests
+   */
+  public ApacheBlockingHttpSupport(CloseableHttpClient client) {
+    this.httpClient = client;
+    this.baseUri = null;
   }
 
   /**
@@ -62,6 +73,7 @@ public class ApacheBlockingHttpSupport implements HttpClientSupport {
    * @param baseUri a fully qualified base URI
    */
   public ApacheBlockingHttpSupport(URI baseUri) {
+    this.httpClient = HttpClientBuilder.create().build();
     this.baseUri = baseUri;
   }
 

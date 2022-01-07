@@ -21,6 +21,7 @@ package io.wcm.caravan.rhyme.impl;
 
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ITEM;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,6 +54,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
@@ -73,6 +75,21 @@ public class RhymeBuilderImplTest {
   private static final String INCOMING_REQUEST_URI = "/incoming";
 
   private final TestResourceTree upstreamResourceTree = new TestResourceTree();
+
+  @Test
+  public void build_cannot_be_called_multiple_times() {
+
+    RhymeBuilder builder = RhymeBuilder.create();
+
+    builder.buildForRequestTo("/foo");
+
+    Throwable ex = catchThrowable(() -> builder.buildForRequestTo("/bar"));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessage("You shouldn't re-use this builder to create more than once instance");
+  }
+
 
   private Rhyme createRhymeWithCustomExceptionStrategy() {
 

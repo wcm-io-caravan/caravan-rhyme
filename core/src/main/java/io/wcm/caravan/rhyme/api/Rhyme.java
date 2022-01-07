@@ -42,17 +42,21 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
  * If you are only using the Rhyme framework as a HAL client library (but not to render HAL resources) then you can use
  * {@link HalApiClient} directly.
  * </p>
+ * @see RhymeBuilder
  */
 @ProviderType
 public interface Rhyme {
 
   /**
-   * Create a dynamic client proxy to load HAL+JSON resources from an upstream service.
+   * Create a dynamic client proxy to load and navigate through HAL+JSON resources from an upstream service.
+   * Any interaction with the proxies will be recorded and used to generate embedded metadata about the upstream
+   * requests when {@link #renderResponse(LinkableResource)} is called later.
    * @param <T> an interface annotated with {@link HalApiInterface}
    * @param uri the URI of the entry point, in any format that the {@link HalResourceLoader} being used can understand
    * @param halApiInterface an interface annotated with {@link HalApiInterface}
-   * @return a dynamic proxy instance of the provided {@link HalApiInterface} that you can use to navigate through the
+   * @return a dynamic proxy instance of the provided interface that you can use to navigate through the
    *         resources of the service
+   * @see HalApiClient
    */
   <T> T getRemoteResource(String uri, Class<T> halApiInterface);
 

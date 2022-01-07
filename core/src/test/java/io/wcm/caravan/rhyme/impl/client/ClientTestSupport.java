@@ -33,6 +33,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.subjects.SingleSubject;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.client.HalApiClientBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
@@ -69,7 +70,11 @@ public class ClientTestSupport {
   }
 
   HalApiClient getHalApiClient() {
-    return HalApiClient.create(jsonLoader, metrics);
+
+    return HalApiClientBuilder.create()
+        .withResourceLoader(jsonLoader)
+        .withMetrics(metrics)
+        .build();
   }
 
   RequestMetricsCollector getMetrics() {

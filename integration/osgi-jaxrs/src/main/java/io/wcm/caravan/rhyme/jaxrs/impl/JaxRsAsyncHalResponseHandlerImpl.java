@@ -40,6 +40,7 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
+import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
@@ -72,9 +73,14 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRe
   public void respondWith(LinkableResource resourceImpl, UriInfo uriInfo, AsyncResponse suspended, RequestMetricsCollector metrics) {
 
     try {
-      // create a response renderer with a strategy that is able to extract the status code
-      // from any JAX-RS WebApplicationException that might be thrown in the resource implementations
-      AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy, annotationSupport, returnTypeSupport, rhymeDocsLoader);
+      // create a response renderer all required customizations for OSGI/JAX-RS
+      AsyncHalResponseRenderer renderer = HalResponseRendererBuilder.create()
+          .withMetrics(metrics)
+          .withExceptionStrategy(exceptionStrategy)
+          .withAnnotationTypeSupport(annotationSupport)
+          .withReturnTypeSupport(returnTypeSupport)
+          .withRhymeDocsSupport(rhymeDocsLoader)
+          .build();
 
       // asynchronously render the given resource (or create a vnd.error response if any exceptions are thrown)
       String requestUri = getRequestUri(uriInfo);

@@ -38,9 +38,7 @@ public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
 
-    return HalResourceLoader.builder()
-        .withCustomHttpClient(new WebClientSupport())
-        .build();
+    return HalResourceLoader.create(new WebClientSupport());
   }
 
   // after upgrading to Spring Boot 2.5.8, WebClient is handling a few edge cases differently,
