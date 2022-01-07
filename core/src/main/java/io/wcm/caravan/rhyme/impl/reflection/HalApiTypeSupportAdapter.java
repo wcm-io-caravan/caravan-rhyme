@@ -128,14 +128,6 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
     return returnTypeSupport.isProviderOfOptionalValue(returnType);
   }
 
-  HalApiAnnotationSupport getAnnotationSupport() {
-    return annotationSupport;
-  }
-
-  HalApiReturnTypeSupport getReturnTypeSupport() {
-    return returnTypeSupport;
-  }
-
   static class NoAdditionalReturnTypeSupport implements HalApiReturnTypeSupport {
 
     @Override
