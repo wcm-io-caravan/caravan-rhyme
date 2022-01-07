@@ -98,7 +98,7 @@ public interface HalResourceLoader {
 
   /**
    * Create a {@link HalResourceLoader} that uses a custom HTTP client, but does not implement any caching. You can
-   * use {@link HalResourceLoaderBuilder} if you need or caching or additional customization.
+   * also use {@link HalResourceLoaderBuilder} instead (if you need or caching or additional customization).
    * @param client the HTTP client implementation to load the upstream resources
    * @return a {@link HalResourceLoader} that is using that client but doesn't add any caching
    * @see HalResourceLoaderBuilder

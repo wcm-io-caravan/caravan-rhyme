@@ -27,47 +27,56 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
-public final class RhymeDirector {
+/**
+ * <b>Internal</b> definitions of the default implementations of the {@link RhymeBuilder}, {@link HalApiClientBuilder}
+ * and {@link HalResponseRendererBuilder} interfaces.
+ * <p>
+ * You should be using the static method in the interfaces instead.
+ * </p>
+ * @see HalApiClientBuilder#create()
+ * @see HalResponseRendererBuilder#create()
+ * @see RhymeBuilder#create()
+ * @see RhymeBuilder#withResourceLoader(HalResourceLoader)
+ */
+public final class RhymeBuilders {
 
-  private RhymeDirector() {
-
+  private RhymeBuilders() {
+    // only static methods
   }
 
-  public static HalApiClientBuilder buildClient() {
+  public static HalApiClientBuilder client() {
     return new HalApiClientBuilderImpl();
   }
 
-  public static HalResponseRendererBuilder buildRenderer() {
+  public static HalResponseRendererBuilder renderer() {
     return new HalResponseRenderBuilderImpl();
   }
 
-  public static RhymeBuilder buildRhyme() {
+  public static RhymeBuilder rhyme() {
     return new RhymeBuilderImpl();
   }
 
-  public static RhymeBuilder buildRhyme(HalResourceLoader loader) {
+  public static RhymeBuilder rhyme(HalResourceLoader loader) {
     return new RhymeBuilderImpl().withResourceLoader(loader);
   }
 
-  static class HalApiClientBuilderImpl extends CommonRhymeBuilderImpl<HalApiClientBuilder> implements HalApiClientBuilder {
+  private static class HalApiClientBuilderImpl extends AbstractRhymeBuilder<HalApiClientBuilder> implements HalApiClientBuilder {
 
     @Override
     public HalApiClient build() {
       return buildApiClient();
     }
-
   }
 
-  static class HalResponseRenderBuilderImpl extends CommonRhymeBuilderImpl<HalResponseRendererBuilder> implements HalResponseRendererBuilder {
+  private static class HalResponseRenderBuilderImpl extends AbstractRhymeBuilder<HalResponseRendererBuilder> implements HalResponseRendererBuilder {
 
     @Override
     public AsyncHalResponseRenderer build() {
       return buildAsyncRenderer();
     }
-
   }
 
-  static class RhymeBuilderImpl extends CommonRhymeBuilderImpl<RhymeBuilder> implements RhymeBuilder {
+  private static class RhymeBuilderImpl extends AbstractRhymeBuilder<RhymeBuilder> implements RhymeBuilder {
 
     @Override
     public Rhyme buildForRequestTo(String incomingRequestUri) {

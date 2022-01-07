@@ -28,12 +28,15 @@ import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.client.HalApiClientBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
+import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
@@ -50,7 +53,12 @@ import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
 import io.wcm.caravan.rhyme.impl.renderer.CompositeExceptionStatusAndLoggingStrategy;
 
-class CommonRhymeBuilderImpl<BuilderInterface> {
+/**
+ * An abstract base class for the common customization and dependency injection required by the {@link RhymeBuilder},
+ * {@link HalApiClientBuilder} and {@link HalResponseRendererBuilder} implementations.
+ * @param <BuilderInterface> the interface that the subclass is implementing
+ */
+abstract class AbstractRhymeBuilder<BuilderInterface> {
 
   private HalResourceLoader resourceLoader;
 
@@ -62,24 +70,28 @@ class CommonRhymeBuilderImpl<BuilderInterface> {
 
   private RhymeDocsSupport rhymeDocsSupport;
 
+  @SuppressWarnings("unchecked")
   public BuilderInterface withResourceLoader(HalResourceLoader resourceLoader) {
 
     this.resourceLoader = resourceLoader;
     return (BuilderInterface)this;
   }
 
+  @SuppressWarnings("unchecked")
   public BuilderInterface withMetrics(RequestMetricsCollector sharedMetrics) {
 
     this.metrics = sharedMetrics;
     return (BuilderInterface)this;
   }
 
+  @SuppressWarnings("unchecked")
   public BuilderInterface withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport) {
 
     this.rhymeDocsSupport = rhymeDocsSupport;
     return (BuilderInterface)this;
   }
 
+  @SuppressWarnings("unchecked")
   public BuilderInterface withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport) {
 
     if (additionalTypeSupport != null) {
@@ -88,6 +100,7 @@ class CommonRhymeBuilderImpl<BuilderInterface> {
     return (BuilderInterface)this;
   }
 
+  @SuppressWarnings("unchecked")
   public BuilderInterface withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport) {
 
     if (additionalTypeSupport != null) {
@@ -96,6 +109,7 @@ class CommonRhymeBuilderImpl<BuilderInterface> {
     return (BuilderInterface)this;
   }
 
+  @SuppressWarnings("unchecked")
   public BuilderInterface withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy) {
 
     exceptionStrategies.add(customStrategy);
@@ -206,5 +220,4 @@ class CommonRhymeBuilderImpl<BuilderInterface> {
       }
     };
   }
-
 }

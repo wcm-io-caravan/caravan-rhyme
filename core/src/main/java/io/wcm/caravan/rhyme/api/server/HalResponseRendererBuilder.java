@@ -19,7 +19,10 @@
  */
 package io.wcm.caravan.rhyme.api.server;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
@@ -28,12 +31,22 @@ import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
-import io.wcm.caravan.rhyme.impl.RhymeDirector;
+import io.wcm.caravan.rhyme.impl.RhymeBuilders;
 
+/**
+ * A fluent builder for {@link HalResponseRendererBuilder} instances which is only used in advanced integration
+ * scenarios. As a regular user of the framework, simply use {@link RhymeBuilder} instead.
+ * @see RhymeBuilder
+ * @see Rhyme#renderResponse(LinkableResource)
+ */
+@ProviderType
 public interface HalResponseRendererBuilder {
 
+  /**
+   * @return a new builder instance with no customizations applied
+   */
   static HalResponseRendererBuilder create() {
-    return RhymeDirector.buildRenderer();
+    return RhymeBuilders.renderer();
   }
 
   /**
@@ -78,7 +91,8 @@ public interface HalResponseRendererBuilder {
    */
   HalResponseRendererBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy);
 
+  /**
+   * @return the new {@link AsyncHalResponseRenderer} instance
+   */
   AsyncHalResponseRenderer build();
-
-
 }

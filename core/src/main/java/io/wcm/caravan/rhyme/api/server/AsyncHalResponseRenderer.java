@@ -23,6 +23,7 @@ import org.osgi.annotation.versioning.ProviderType;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
@@ -36,6 +37,10 @@ import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
  * Asynchronously creates a {@link HalResponse} from a server-side {@link HalApiInterface} implementation instance,
  * using {@link AsyncHalResourceRenderer} to render a {@link HalResource}, and {@link VndErrorResponseRenderer} to
  * handle any errors that might happen during resource rendering.
+ * <p>
+ * This renderer is used internally to implement {@link Rhyme#renderResponse(LinkableResource)}, but may also be used
+ * directly in advanced testing or integration scenarios.
+ * </p>
  * @see AsyncHalResourceRenderer
  * @see VndErrorResponseRenderer
  */
@@ -43,9 +48,13 @@ import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
 public interface AsyncHalResponseRenderer {
 
   /**
+   * Asynchronously render the given resource as a {@link HalResponse} instance. If rendering is successful, that
+   * instance will have a 200 status code and a HAL+JSON media type. If any errors were thrown and handled, a vnd.error
+   * response will be rendered instead (using the status code obtained from the
+   * {@link ExceptionStatusAndLoggingStrategy})
    * @param requestUri the URI of the incoming request
    * @param resourceImpl a server-side implementation instance of an interface annotated with {@link HalApiInterface}
-   * @return a {@link Single} that emits a {@link HalResponse}
+   * @return a {@link Single} that emits a {@link HalResponse} with initialized properties
    */
   Single<HalResponse> renderResponse(String requestUri, LinkableResource resourceImpl);
 

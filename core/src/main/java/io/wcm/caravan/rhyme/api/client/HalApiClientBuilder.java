@@ -19,20 +19,43 @@
  */
 package io.wcm.caravan.rhyme.api.client;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.impl.RhymeDirector;
+import io.wcm.caravan.rhyme.impl.RhymeBuilders;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
 
+/**
+ * A fluent builder to create and customize {@link HalApiClient} instances for advanced integration or test scenarios.
+ * <p>
+ * If you don't need any of the advanced customizations, you can simply use {@link HalApiClient#create()}
+ * {@link HalApiClient#create(HalResourceLoader)} instead.
+ * </p>
+ * <p>
+ * {@link HalApiClientBuilder} instances shouldn't be re-used, as calling the build method may modify its state.
+ * </p>
+ * @see HalApiClient
+ * @see RhymeBuilder
+ */
+@ProviderType
 public interface HalApiClientBuilder {
 
+  /**
+   * @return a new {@link HalApiClientBuilder} to start building
+   */
   static HalApiClientBuilder create() {
-    return RhymeDirector.buildClient();
+    return RhymeBuilders.client();
   }
 
+  /**
+   * @param resourceLoader implements the actual loading (and caching) of JSON/HAL resources
+   * @return this
+   */
   HalApiClientBuilder withResourceLoader(HalResourceLoader resourceLoader);
 
   /**
@@ -66,5 +89,8 @@ public interface HalApiClientBuilder {
    */
   HalApiClientBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport);
 
+  /**
+   * @return the new {@link HalApiClient} instance
+   */
   HalApiClient build();
 }

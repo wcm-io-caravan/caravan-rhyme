@@ -25,7 +25,6 @@ import org.osgi.annotation.versioning.ProviderType;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
-import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
@@ -34,7 +33,8 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 /**
  * A type-safe HAL client that will create a dynamic proxy implementation for a given URI
- * and {@link HalApiInterface}.
+ * and {@link HalApiInterface}. It can be used instead of {@link Rhyme#getRemoteResource(String, Class)} if you only
+ * want to consume HAL resources (but not render them).
  * <p>
  * Whenever you call a method on the proxy returned by
  * {@link #getRemoteResource(String, Class)} that is annotated with a relevant annotation (e.g {@link Related}
@@ -56,20 +56,21 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
  * {@link HalResourceLoader} instead.
  * </p>
  * <p>
- * Further customization of the {@link HalApiClient} instance can be done when using a {@link HalApiClientBuilder}.
+ * Further customization of the {@link HalApiClient} instance can be done using the {@link HalApiClientBuilder}.
  * </p>
  * @see HalApiInterface
  * @see Related
  * @see ResourceState
- * @see ResourceRepresentation
  * @see HalResourceLoader
  * @see HalResourceLoaderBuilder
  * @see HalApiClientBuilder
+ * @see Rhyme
  */
 @ProviderType
 public interface HalApiClient {
 
   /**
+   * Create a dynamic client proxy to load and navigate through HAL+JSON resources
    * @param uri the absolute URI of the resource to load (usually the entry point of the HAL API)
    * @param halApiInterface the HAL API interface class of a service's entry point resource
    * @return a proxy implementation of the specified entry point interface
