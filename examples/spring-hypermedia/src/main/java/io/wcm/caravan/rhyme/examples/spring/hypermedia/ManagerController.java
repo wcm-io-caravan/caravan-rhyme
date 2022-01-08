@@ -53,8 +53,6 @@ class ManagerController {
 
   @Autowired
   private CompanyApiLinkBuilder linkBuilder;
-  @Autowired
-  private CompanyApySettings settings;
 
   /**
    * A controller method to create a {@link ManagerCollectionResource} that lists all managers in the database. This
@@ -141,7 +139,7 @@ class ManagerController {
     private ManagerResourceImpl(Manager manager) {
       this.id = manager.getId();
       this.state = Lazy.of(manager);
-      this.embedded = settings.getUseEmbeddedResources();
+      this.embedded = linkBuilder.isUseEmbeddedResources();
     }
 
     @Override

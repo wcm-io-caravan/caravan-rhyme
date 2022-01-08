@@ -60,9 +60,6 @@ class DetailedEmployeeController {
   @Autowired
   private CompanyApiLinkBuilder linkBuilder;
 
-  @Autowired
-  private CompanyApySettings settings;
-
   /**
    * A controller method to create a {@link DetailedEmployeeResource} for a specific employee. This is called
    * to render this resource for an incoming HTTP request, but also to render all links to this kind of resource.
@@ -121,7 +118,7 @@ class DetailedEmployeeController {
         // We could return this resource proxy directly, but then only a link to the upstream resource would be added.
         // Since we want to embed the manager resource, we need to convert it to another proxy that also implements EmbeddableResource.
 
-        if (settings.getUseEmbeddedResources()) {
+        if (linkBuilder.isUseEmbeddedResources()) {
           return ResourceConversions.asEmbeddedResourceWithoutLink(manager);
         }
         return manager;
@@ -135,7 +132,7 @@ class DetailedEmployeeController {
             // ignore the employee for which we are just generating the detailed resource
             .filter(employee -> !employee.getState().getId().equals(id));
 
-        if (settings.getUseEmbeddedResources()) {
+        if (linkBuilder.isUseEmbeddedResources()) {
           // and again ensure that these resources are embedded rather than linked
           colleagues = colleagues.map(ResourceConversions::asEmbeddedResourceWithoutLink);
         }

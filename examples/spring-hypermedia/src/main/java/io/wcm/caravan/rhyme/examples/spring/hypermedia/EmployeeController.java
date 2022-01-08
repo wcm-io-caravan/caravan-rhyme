@@ -54,8 +54,6 @@ class EmployeeController {
 
   @Autowired
   private CompanyApiLinkBuilder linkBuilder;
-  @Autowired
-  private CompanyApySettings settings;
 
   /**
    * A controller method to create a {@link EmployeeCollectionResource} that lists all employees in the database. This
@@ -160,7 +158,7 @@ class EmployeeController {
     private EmployeeResourceImpl(Employee employee) {
       this.id = employee.getId();
       this.state = Lazy.of(employee);
-      this.embedded = settings.getUseEmbeddedResources();
+      this.embedded = linkBuilder.isUseEmbeddedResources();
     }
 
     @Override

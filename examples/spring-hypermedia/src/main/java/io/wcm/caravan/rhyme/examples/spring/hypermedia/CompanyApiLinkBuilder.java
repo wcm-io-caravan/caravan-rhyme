@@ -25,6 +25,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.time.Duration;
 import java.util.function.Function;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
@@ -64,19 +67,42 @@ class CompanyApiLinkBuilder {
 
   private final UrlFingerprinting fingerprinting;
 
-  private final CompanyApySettings settings;
+  private Boolean useEmbeddedResources;
+  private Boolean useFingerprinting;
 
   CompanyApiLinkBuilder(@Autowired SpringRhyme rhyme, @Autowired RepositoryModificationListener repositoryListener,
-      @Autowired CompanyApySettings settings) {
+      @Autowired HttpServletRequest request) {
 
     this.fingerprinting = rhyme
         .enableUrlFingerprinting()
         .withConditionalMaxAge(Duration.ofSeconds(10), Duration.ofDays(100))
         .withTimestampParameter(TIMESTAMP_QUERY_PARAM, repositoryListener::getLastModified);
 
-    settings.getParameterMap().forEach(fingerprinting::addQueryParameter);
+    useEmbeddedResources = initialiseStickySettingsParmeter(request, CompanyApi.USE_EMBEDDED_RESOURCES);
+    useFingerprinting = initialiseStickySettingsParmeter(request, CompanyApi.USE_FINGERPRINTING);
+  }
 
-    this.settings = settings;
+  private Boolean initialiseStickySettingsParmeter(HttpServletRequest request, String name) {
+
+    // if the query parameter was not present in the incoming request, then don't add it to any other links
+    String fromRequest = request.getParameter(name);
+    if (StringUtils.isBlank(fromRequest)) {
+      // but for both parameters, the default behavior should be as if this parameter was set to true
+      return true;
+    }
+
+    // if the parameter *was* present, then make sure it's also added to every other link
+    Boolean boolValue = Boolean.valueOf(fromRequest);
+    fingerprinting.addQueryParameter(name, boolValue);
+    return boolValue;
+  }
+
+  boolean isUseFingerprinting() {
+    return useFingerprinting;
+  }
+
+  boolean isUseEmbeddedResources() {
+    return useEmbeddedResources;
   }
 
   /**
@@ -93,7 +119,7 @@ class CompanyApiLinkBuilder {
 
     RhymeLinkBuilder linkBuilder = fingerprinting.createLinkWith(webMvcLinkBuilder);
 
-    if (!settings.getUseFingerprinting()) {
+    if (!isUseFingerprinting()) {
       linkBuilder = linkBuilder.withoutFingerprint();
     }
     return linkBuilder;
@@ -129,7 +155,7 @@ class CompanyApiLinkBuilder {
 
     RhymeLinkBuilder linkBuilder = createLinkTo(CompanyApiController.class, CompanyApiController::get);
 
-    if (!settings.getUseFingerprinting() || !fingerprinting.isUsedInIncomingRequest()) {
+    if (!isUseFingerprinting() || !fingerprinting.isUsedInIncomingRequest()) {
       linkBuilder = linkBuilder.withoutFingerprint();
     }
 
