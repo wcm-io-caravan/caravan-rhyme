@@ -23,7 +23,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.time.Duration;
-import java.util.function.Function;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -126,26 +125,6 @@ class CompanyApiLinkBuilder {
   }
 
   /**
-   * An alternative signature to {@link #create(WebMvcLinkBuilder)} that allows you to specify
-   * the controller class and method call directly. It's using {@link WebMvcLinkBuilder} as well,
-   * so note that the function you are passing isn't called on the actual controller class,
-   * but a proxy instance that does nothing else but to capture the method call and the parameters.
-   * @param <T> the type of controller you want to link to
-   * @param controllerClass the controller class you want to link to
-   * @param handlerMethodCall a function that calls a method on a proxy of the given controller,
-   *          to find the path mapping and expand any URI template variables if required
-   * @return a {@link RhymeLinkBuilder} that you can use to decorate the link with name and title attributes, and
-   *         then finally build it
-   * @see WebMvcLinkBuilder
-   */
-  <T> RhymeLinkBuilder createLinkTo(Class<T> controllerClass, Function<T, LinkableResource> handlerMethodCall) {
-
-    WebMvcLinkBuilder linkBuilder = linkTo(handlerMethodCall.apply(methodOn(controllerClass)));
-
-    return create(linkBuilder);
-  }
-
-  /**
    * Constructs an URL to the {@link CompanyApiController}, where a {@value #TIMESTAMP_QUERY_PARAM} parameter
    * is appended only if it was also present in the incoming request. This is used by the
    * {@link DetailedEmployeeController} to ensure that it can serve both immutable and mutable versions of the resource.
@@ -153,14 +132,13 @@ class CompanyApiLinkBuilder {
    */
   String getLocalEntryPointUrl() {
 
-    RhymeLinkBuilder linkBuilder = createLinkTo(CompanyApiController.class, CompanyApiController::get);
+    RhymeLinkBuilder linkBuilder = create(linkTo(methodOn(CompanyApiController.class).get()));
 
     if (!isUseFingerprinting() || !fingerprinting.isUsedInIncomingRequest()) {
       linkBuilder = linkBuilder.withoutFingerprint();
     }
 
-    return linkBuilder
-        .build()
+    return linkBuilder.build()
         .getHref();
   }
 }
