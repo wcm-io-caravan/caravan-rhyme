@@ -37,7 +37,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mercateo.test.clock.TestClock;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
@@ -48,6 +47,7 @@ import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport.SubscriberCounter;
+import io.wcm.caravan.rhyme.testing.TestClock;
 
 @ExtendWith(MockitoExtension.class)
 public class CachingHalResourceLoaderTest {

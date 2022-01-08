@@ -32,8 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.mercateo.test.clock.TestClock;
-
 import io.wcm.caravan.rhyme.api.client.CachingConfiguration;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
@@ -41,6 +39,7 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HalResponseCache;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 import io.wcm.caravan.rhyme.impl.client.http.HttpHalResourceLoader;
+import io.wcm.caravan.rhyme.testing.TestClock;
 
 @ExtendWith(MockitoExtension.class)
 public class HalResourceLoaderBuilderImplTest {

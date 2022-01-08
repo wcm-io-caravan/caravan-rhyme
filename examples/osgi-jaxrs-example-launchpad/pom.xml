@@ -168,7 +168,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.integration-test.minimal-launchpad</artifactId>
-      <version>1.2.0</version>
+      <version>1.3.0-SNAPSHOT</version>
       <type>slingfeature</type>
       <scope>provided</scope>
     </dependency>
@@ -258,6 +258,8 @@
               <controlPort>${sling.control.port}</controlPort>
               <contextPath>${http.base.path}</contextPath>
               <debug>${launchpad.debug}</debug>
+              <!-- override the vmOpts because the defaults contain XX:MaxPermSize which is no longer supported with Java 17 -->
+              <vmOpts>-Xmx1024m -Djava.awt.headless=true</vmOpts>
             </server>
           </servers>
         </configuration>
