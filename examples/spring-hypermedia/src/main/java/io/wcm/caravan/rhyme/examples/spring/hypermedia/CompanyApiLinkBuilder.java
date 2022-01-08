@@ -26,6 +26,7 @@ import java.time.Duration;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -91,7 +92,7 @@ class CompanyApiLinkBuilder {
     }
 
     // if the parameter *was* present, then make sure it's also added to every other link
-    Boolean boolValue = Boolean.valueOf(fromRequest);
+    Boolean boolValue = BooleanUtils.toBoolean(fromRequest);
     fingerprinting.addQueryParameter(name, boolValue);
     return boolValue;
   }

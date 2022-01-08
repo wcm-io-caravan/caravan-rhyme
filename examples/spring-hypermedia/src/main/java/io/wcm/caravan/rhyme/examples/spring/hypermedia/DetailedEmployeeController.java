@@ -58,7 +58,7 @@ class DetailedEmployeeController {
   private SpringRhyme rhyme;
 
   @Autowired
-  private CompanyApiLinkBuilder linkBuilder;
+  private CompanyApiLinkBuilder links;
 
   /**
    * A controller method to create a {@link DetailedEmployeeResource} for a specific employee. This is called
@@ -76,7 +76,7 @@ class DetailedEmployeeController {
     return new DetailedEmployeeResource() {
 
       // Construct the URL to the CompanyApiController running on localhost
-      private final String entryPointUrl = linkBuilder.getLocalEntryPointUrl();
+      private final String entryPointUrl = links.getLocalEntryPointUrl();
 
       /**
        * Load an employee by HTTP from localhost using a {@link HalApiClient}
@@ -115,12 +115,12 @@ class DetailedEmployeeController {
         // You can load any resource with an "embedRhymeMetadata" query parameter to
         // see the performance costs of these repeated calls, and then optimize if necessary.
 
-        // We could return this resource proxy directly, but then only a link to the upstream resource would be added.
-        // Since we want to embed the manager resource, we need to convert it to another proxy that also implements EmbeddableResource.
-
-        if (linkBuilder.isUseEmbeddedResources()) {
+        // If we want to embed the manager resource, we need to convert it to another proxy that also implements EmbeddableResource.
+        if (links.isUseEmbeddedResources()) {
           return ResourceConversions.asEmbeddedResourceWithoutLink(manager);
         }
+
+        // if we return this resource proxy directly, only a link to the manager resource
         return manager;
       }
 
@@ -132,8 +132,8 @@ class DetailedEmployeeController {
             // ignore the employee for which we are just generating the detailed resource
             .filter(employee -> !employee.getState().getId().equals(id));
 
-        if (linkBuilder.isUseEmbeddedResources()) {
-          // and again ensure that these resources are embedded rather than linked
+        // and again ensure that these resources are embedded rather than linked
+        if (links.isUseEmbeddedResources()) {
           colleagues = colleagues.map(ResourceConversions::asEmbeddedResourceWithoutLink);
         }
         return colleagues;
@@ -143,7 +143,7 @@ class DetailedEmployeeController {
       public Link createLink() {
 
         // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
-        return linkBuilder.create(linkTo(methodOn(DetailedEmployeeController.class).findById(id)))
+        return links.create(linkTo(methodOn(DetailedEmployeeController.class).findById(id)))
             .withTitle("The employee with ID " + id + ", with embedded resources for her managers and colleagues")
             .withTemplateTitle("A link template to detailed data for a single employee by ID")
             .build();

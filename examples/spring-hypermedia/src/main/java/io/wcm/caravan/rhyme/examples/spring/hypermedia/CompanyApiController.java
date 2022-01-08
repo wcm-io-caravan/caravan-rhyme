@@ -134,7 +134,7 @@ class CompanyApiController {
       // this is essentially the same as the regular entry point, just with a different link (template)
 
       // the logic that will parse the settings, and make sure they are persisted for all
-      // follow-up request is found in CompanyApiSettings and CompanyApiLinkBuilder
+      // follow-up request is found in CompanyApiLinkBuilder
 
       @Override
       public Link createLink() {
