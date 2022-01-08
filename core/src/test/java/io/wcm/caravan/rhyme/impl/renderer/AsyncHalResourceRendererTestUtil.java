@@ -26,7 +26,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator;
+import io.wcm.caravan.rhyme.impl.metadata.FullMetadataGenerator;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.testing.TestState;
 
@@ -39,7 +39,7 @@ public final class AsyncHalResourceRendererTestUtil {
 
   public static HalResource render(Object resourceImplInstance) {
 
-    RequestMetricsCollector metrics = new ResponseMetadataGenerator();
+    RequestMetricsCollector metrics = new FullMetadataGenerator();
     AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, new DefaultHalApiTypeSupport());
 
     Single<HalResource> rxResource;

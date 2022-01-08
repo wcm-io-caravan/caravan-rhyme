@@ -26,22 +26,43 @@ import org.osgi.annotation.versioning.ProviderType;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.Rhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.client.HalApiClientBuilder;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
-import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator;
+import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
+import io.wcm.caravan.rhyme.impl.metadata.FullMetadataGenerator;
+import io.wcm.caravan.rhyme.impl.metadata.MaxAgeOnlyCollector;
 
 /**
  * Keeps track of all upstream resource that have been fetched while handling the current request, and collects
- * additional data for performance analyze and caching. An instance of this interface is automatically created
- * for each {@link Rhyme} instance. The collected information will be included in the
+ * additional data for performance analyze and caching. The collected information will be included in the
  * responses created by {@link Rhyme#renderResponse(LinkableResource)}.
  * <p>
- * If you don't use that method (or {@link AsyncHalResponseRenderer} to render your responses, simply create a default
- * implementation using {@link RequestMetricsCollector#create()}
+ * You shouldn't have to interact with this interface directly except for advanced integration or testing scenarios.
+ * Usually an instance of this interface is automatically created for each {@link Rhyme} instance, and can choose
+ * whether you want to include the embedded metadata in the response by calling
+ * {@link RhymeBuilder#withEmbeddedMetadata()}.
+ * </p>
+ * <p>
+ * If you are not working with {@link RhymeBuilder}, but are integrating {@link HalApiClient} and
+ * {@link AsyncHalResponseRenderer} separately, then you must make sure that you create just one instance
+ * of {@link RequestMetricsCollector} for each incoming request, and pass it over to both
+ * {@link HalApiClientBuilder#withMetrics(RequestMetricsCollector)}
+ * and {@link HalResponseRendererBuilder#withMetrics(RequestMetricsCollector)}.
  * </p>
  */
 @ProviderType
 public interface RequestMetricsCollector {
+
+  /**
+   * The name of the query parameter that toggles whether the "rhyme:metadata" resource is embedded when rendering
+   * resources. This applies only if you are using one of the framework integrations (e.g. Spring, AEM) in default
+   * configuration. To enable the inclusion of the metadata programmatically, call
+   * {@link RhymeBuilder#withEmbeddedMetadata()}.
+   */
+  public static final String QUERY_PARAM_TOGGLE = "embedRhymeMetadata";
 
   /**
    * Calculates the "max-age" Cache-Control header value to be used when rendering the response.
@@ -100,10 +121,25 @@ public interface RequestMetricsCollector {
   RequestMetricsStopwatch startStopwatch(Class measuringClass, Supplier<String> taskDescription);
 
   /**
-   * Create a new instance to collect performance data for the current incoming request
-   * @return a new instance of {@link RequestMetricsCollector}
+   * Create a new instance to collect the full data on upstream requests and measure performance for the current
+   * incoming request. When this instance is used with {@link AsyncHalResponseRenderer}, a metadata resource with
+   * insight on performance and upstream requests will be automatically embedded in the response.If you don't need or
+   * want this, then use {@link RequestMetricsCollector#createEssentialCollector()} instead
+   * @return a new full-featured instance of {@link RequestMetricsCollector}
+   * @see RhymeBuilder#withEmbeddedMetadata()
+   * @see HalResponseRendererBuilder#withMetrics(RequestMetricsCollector)
    */
   static RequestMetricsCollector create() {
-    return new ResponseMetadataGenerator();
+    return new FullMetadataGenerator();
+  }
+
+  /**
+   * Create a minimal implementation that only captures the max-age value of upstream responses, but does
+   * not perform any other measurements and will not allow to render any embedded metadata into the response
+   * @return a new instance of {@link RequestMetricsCollector} that implements only the essential functionality required
+   *         for calculation of the max-age header to work
+   */
+  static RequestMetricsCollector createEssentialCollector() {
+    return new MaxAgeOnlyCollector();
   }
 }

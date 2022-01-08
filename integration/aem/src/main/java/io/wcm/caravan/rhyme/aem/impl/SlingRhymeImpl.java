@@ -26,6 +26,7 @@ import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
@@ -55,8 +56,14 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     // created for different context-resources.
     this.urlHandler = request.adaptTo(UrlHandler.class);
 
-    this.rhyme = RhymeBuilder.withResourceLoader(resourceLoaders.getResourceLoader())
-        .withRhymeDocsSupport(rhymeDocs)
+    RhymeBuilder rhymeBuilder = RhymeBuilder.withResourceLoader(resourceLoaders.getResourceLoader())
+        .withRhymeDocsSupport(rhymeDocs);
+
+    if (request.getParameterMap().containsKey(RequestMetricsCollector.QUERY_PARAM_TOGGLE)) {
+      rhymeBuilder = rhymeBuilder.withEmbeddedMetadata();
+    }
+
+    this.rhyme = rhymeBuilder
         .buildForRequestTo(request.getRequestURL().toString());
   }
 

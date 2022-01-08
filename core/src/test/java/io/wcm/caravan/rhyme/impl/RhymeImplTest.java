@@ -202,9 +202,14 @@ public class RhymeImplTest {
   @Test
   public void startStopwatch_should_start_a_measurement_that_shows_up_in_metadata() throws Exception {
 
-    MeasuringTestResource resourceImpl = new MeasuringTestResource();
+    Rhyme rhymeWithMetadata = RhymeBuilder
+        .create()
+        .withEmbeddedMetadata()
+        .buildForRequestTo(INCOMING_REQUEST_URI);
 
-    HalResponse response = rhyme.renderResponse(resourceImpl).blockingGet();
+    MeasuringTestResource resourceImpl = new MeasuringTestResource(rhymeWithMetadata);
+
+    HalResponse response = rhymeWithMetadata.renderResponse(resourceImpl).blockingGet();
 
     HalResource metadata = response.getBody().getEmbeddedResource(RHYME_METADATA_RELATION);
     assertThat(metadata).isNotNull();
@@ -224,7 +229,13 @@ public class RhymeImplTest {
         .endsWith("- 1x invocation of #createLink");
   }
 
-  class MeasuringTestResource implements LinkableTestResource {
+  static class MeasuringTestResource implements LinkableTestResource {
+
+    private final Rhyme rhyme;
+
+    MeasuringTestResource(Rhyme rhyme) {
+      this.rhyme = rhyme;
+    }
 
     @Override
     public Link createLink() {
@@ -233,6 +244,5 @@ public class RhymeImplTest {
         return new Link("/foo");
       }
     }
-
   }
 }

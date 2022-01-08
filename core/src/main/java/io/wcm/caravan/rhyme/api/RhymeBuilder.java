@@ -112,6 +112,13 @@ public interface RhymeBuilder {
   RhymeBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy);
 
   /**
+   * Enables the capturing of extensive performance and upstream response metadata for this request,
+   * which will be included as an embedded resource in the response.
+   * @return this
+   */
+  RhymeBuilder withEmbeddedMetadata();
+
+  /**
    * Create the {@link Rhyme} instance to be used to throughout the lifecycle of an incoming request
    * @param incomingRequestUri URI of the incoming request (can be absolute or relative, depending on the
    *          platform/framework)

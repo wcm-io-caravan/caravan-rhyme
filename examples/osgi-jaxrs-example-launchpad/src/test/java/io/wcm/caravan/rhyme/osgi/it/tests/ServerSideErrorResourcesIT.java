@@ -95,14 +95,14 @@ public class ServerSideErrorResourcesIT {
   }
 
   @Test
-  public void error_response_should_contain_embedded_metadata() {
+  public void error_response_should_not_contain_embedded_metadata_because_query_param_is_not_present() {
 
     HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
     HalResource metadata = ex.getErrorResponse().getBody().getEmbeddedResource("rhyme:metadata");
 
     assertThat(metadata)
-        .isNotNull();
+        .isNull();
   }
 
   @Test
