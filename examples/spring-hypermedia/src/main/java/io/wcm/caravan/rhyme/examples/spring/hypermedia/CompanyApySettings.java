@@ -14,7 +14,7 @@ import org.springframework.web.context.request.WebRequest;
 
 @Component
 @RequestScope
-public class CompanyApySettings {
+class CompanyApySettings {
 
   private final Map<String, Boolean> booleanParameters = new LinkedHashMap<>();
 
@@ -32,12 +32,12 @@ public class CompanyApySettings {
     }
   }
 
-  public Boolean getUseEmbeddedResources() {
+  Boolean getUseEmbeddedResources() {
 
     return booleanParameters.getOrDefault(USE_EMBEDDED_RESOURCES, true);
   }
 
-  public Boolean getUseFingerprinting() {
+  Boolean getUseFingerprinting() {
 
     return booleanParameters.getOrDefault(USE_FINGERPRINTING, true);
   }

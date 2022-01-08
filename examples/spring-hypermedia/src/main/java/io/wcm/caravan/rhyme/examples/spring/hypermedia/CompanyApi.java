@@ -33,9 +33,9 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 @HalApiInterface
 public interface CompanyApi extends LinkableResource {
 
-  public static final String USE_FINGERPRINTING = "useFingerprinting";
-  public static final String USE_EMBEDDED_RESOURCES = "useEmbeddedResources";
-  public static final String ID = "id";
+  static final String USE_FINGERPRINTING = "useFingerprinting";
+  static final String USE_EMBEDDED_RESOURCES = "useEmbeddedResources";
+  static final String ID = "id";
 
   /**
    * @return a collection of all employees in the company database
@@ -78,13 +78,14 @@ public interface CompanyApi extends LinkableResource {
   DetailedEmployeeResource getDetailedEmployeeById(@TemplateVariable(ID) Long id);
 
   /**
-   * allows to load the API entry point with different settings.
-   * @param settings to be applied
+   * reload the API entry point with different settings, which will persist across all resources that are loaded
+   * afterwards.
+   * @param useEmbeddedResources if set to false, the server will never embed any resources, but only use links
+   * @param useFingerprinting if set to false, the server will not add any time stamp parameters to the URLs
    * @return a new {@link CompanyApi} instance with the given settings
    */
   @Related("company:settings")
   CompanyApi withSettings(
       @TemplateVariable(USE_EMBEDDED_RESOURCES) Boolean useEmbeddedResources,
       @TemplateVariable(USE_FINGERPRINTING) Boolean useFingerprinting);
-
 }
