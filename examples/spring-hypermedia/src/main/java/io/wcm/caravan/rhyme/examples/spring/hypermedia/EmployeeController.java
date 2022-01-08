@@ -54,6 +54,8 @@ class EmployeeController {
 
   @Autowired
   private CompanyApiLinkBuilder linkBuilder;
+  @Autowired
+  private CompanyApiSettings settings;
 
   /**
    * A controller method to create a {@link EmployeeCollectionResource} that lists all employees in the database. This
@@ -82,7 +84,7 @@ class EmployeeController {
 
       @Override
       public CompanyApi getApi() {
-        return api;
+        return api.get();
       }
 
       @Override
@@ -158,7 +160,7 @@ class EmployeeController {
     private EmployeeResourceImpl(Employee employee) {
       this.id = employee.getId();
       this.state = Lazy.of(employee);
-      this.embedded = true;
+      this.embedded = settings.getUseEmbeddedResources();
     }
 
     @Override
@@ -182,6 +184,11 @@ class EmployeeController {
     }
 
     @Override
+    public boolean isLinkedWhenEmbedded() {
+      return false;
+    }
+
+    @Override
     public Link createLink() {
 
       // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
@@ -190,5 +197,6 @@ class EmployeeController {
           .withTemplateTitle("A link template to load a single employee by ID")
           .build();
     }
+
   }
 }

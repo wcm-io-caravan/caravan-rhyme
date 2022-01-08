@@ -64,27 +64,39 @@ class CompanyApiLinkBuilder {
 
   private final UrlFingerprinting fingerprinting;
 
-  CompanyApiLinkBuilder(@Autowired SpringRhyme rhyme, @Autowired RepositoryModificationListener repositoryListener) {
+  private final CompanyApiStickyParameters settings;
+
+  CompanyApiLinkBuilder(@Autowired SpringRhyme rhyme, @Autowired RepositoryModificationListener repositoryListener,
+      @Autowired CompanyApiStickyParameters settings) {
 
     this.fingerprinting = rhyme
         .enableUrlFingerprinting()
         .withConditionalMaxAge(Duration.ofSeconds(10), Duration.ofDays(100))
         .withTimestampParameter(TIMESTAMP_QUERY_PARAM, repositoryListener::getLastModified);
+
+    settings.getParameterMap().forEach(fingerprinting::withStickyParameter);
+
+    this.settings = settings;
   }
 
   /**
    * Start building a link to a controller handler method. The URL for that link is generated
    * by the {@link WebMvcLinkBuilder} class, but additional query parameters that are not directly
    * present in the API and controller signatures can be appended by {@link UrlFingerprinting}.
-   * @param linkBuilder created with {@link WebMvcLinkBuilder#linkTo(Class)} and
+   * @param webMvcLinkBuilder created with {@link WebMvcLinkBuilder#linkTo(Class)} and
    *          {@link WebMvcLinkBuilder#methodOn(Class, Object...)}
    * @return a {@link RhymeLinkBuilder} that you can use to decorate the link with name and title attributes, and
    *         then finally build it
    * @see WebMvcLinkBuilder
    */
-  RhymeLinkBuilder create(WebMvcLinkBuilder linkBuilder) {
+  RhymeLinkBuilder create(WebMvcLinkBuilder webMvcLinkBuilder) {
 
-    return fingerprinting.createLinkWith(linkBuilder);
+    RhymeLinkBuilder linkBuilder = fingerprinting.createLinkWith(webMvcLinkBuilder);
+
+    if (!settings.getUseFingerprinting()) {
+      linkBuilder = linkBuilder.withoutFingerprint();
+    }
+    return linkBuilder;
   }
 
   /**
@@ -117,10 +129,12 @@ class CompanyApiLinkBuilder {
 
     RhymeLinkBuilder linkBuilder = createLinkTo(CompanyApiController.class, CompanyApiController::get);
 
-    if (!fingerprinting.isUsedInIncomingRequest()) {
+    if (!settings.getUseFingerprinting() || !fingerprinting.isUsedInIncomingRequest()) {
       linkBuilder = linkBuilder.withoutFingerprint();
     }
 
-    return linkBuilder.build().getHref();
+    return linkBuilder
+        .build()
+        .getHref();
   }
 }

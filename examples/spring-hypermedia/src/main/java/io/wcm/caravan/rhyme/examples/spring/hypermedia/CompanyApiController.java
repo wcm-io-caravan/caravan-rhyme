@@ -19,11 +19,15 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApiStickyParameters.USE_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApiStickyParameters.USE_FINGERPRINTING;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -43,7 +47,7 @@ import io.wcm.caravan.rhyme.api.client.HalApiClient;
  * </p>
  */
 @RestController
-class CompanyApiController implements CompanyApi {
+class CompanyApiController {
 
   // inject the controllers for all resources that are linked from the entry point
   @Autowired
@@ -63,64 +67,103 @@ class CompanyApiController implements CompanyApi {
   @GetMapping("/")
   CompanyApi get() {
 
-    // Since the controller class is directly implementing the CompanyApi interface we can simply return this.
+    return new CompanyApiImpl();
+  }
+
+  private class CompanyApiImpl implements CompanyApi {
+
     // All methods from the interface will be automatically invoked later, when the response is being rendered
     // by the LinkableResourceMessageConverter.
-    return this;
+
+    @Override
+    public EmployeeCollectionResource getEmployees() {
+      return employees.findAll();
+    }
+
+    @Override
+    public ManagerCollectionResource getManagers() {
+      return managers.findAll();
+    }
+
+    @Override
+    public EmployeeResource getEmployeeById(Long id) {
+
+      // Note that even though the ID is always null when this entry point is rendered as a HAL resource,
+      // we still pass the given ID to the controller method. This allows these methods
+      // to also be called directly by API consumers in the same application (which do know the ID of
+      // the entity they are looking for).
+      return employees.findById(id);
+    }
+
+    @Override
+    public ManagerResource getManagerById(Long id) {
+      return managers.findById(id);
+    }
+
+    @Override
+    public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
+      return detailedEmployees.findById(id);
+    }
+
+    @Override
+    public CompanyApi withSettings(CompanyApiSettings settings) {
+
+      return new CompanyApiWithSettings(settings);
+    }
+
+    @Override
+    public Link createLink() {
+
+      return linkBuilder.create(linkTo(methodOn(CompanyApiController.class)
+          .get()))
+          .withTitle("The entry point of the hypermedia example API")
+          .build();
+    }
   }
 
-  // To create the links in the entry point, we are simply delegating to the controllers that create
-  // server-side implementations of each HAL API interface. When this entry point resource is being rendered,
-  // the #createLink() method (but nothing else) of those related resources will be called, and
-  // the link will be added to the response (using the relation from the @Related annotation of the
-  // method declaration in the CompanyApi interface)
+  /**
+   * A controller method used to render an alternative configurable variation of the API entry point
+   * @param useEmbeddedResources see {@link CompanyApiSettings#getUseEmbeddedResources()}
+   * @param useFingerprinting see {@link CompanyApiSettings#getUseFingerprinting()}
+   * @return a server-side implementation of {@link CompanyApi}
+   */
+  @GetMapping("/withSettings")
+  CompanyApi getWithSettings(
+      @RequestParam(name = USE_EMBEDDED_RESOURCES) Boolean useEmbeddedResources,
+      @RequestParam(name = USE_FINGERPRINTING) Boolean useFingerprinting) {
 
-  @Override
-  public EmployeeCollectionResource getEmployees() {
+    return new CompanyApiWithSettings(new CompanyApiSettings() {
 
-    return employees.findAll();
+      @Override
+      public Boolean getUseEmbeddedResources() {
+        return useEmbeddedResources;
+      }
+
+      @Override
+      public Boolean getUseFingerprinting() {
+        return useFingerprinting;
+      }
+    });
   }
 
-  @Override
-  public ManagerCollectionResource getManagers() {
+  private class CompanyApiWithSettings extends CompanyApiImpl {
 
-    return managers.findAll();
-  }
+    private final CompanyApiSettings settings;
 
-  // For any link *templates* defined in the CompanyApi interface, the response renderer will invoke
-  // the corresponding method with a null value for the "id" parameter, since the ID is unknown at that point.
-  // The resource implementations created by the controllers are able to handle this,
-  // and will create a URI template with an "id" variable when #createLink() is being called during rendering.
+    CompanyApiWithSettings(CompanyApiSettings settings) {
 
-  @Override
-  public EmployeeResource getEmployeeById(Long id) {
+      // settings can be null if this is used to render the link template from the entry point
+      this.settings = ObjectUtils.defaultIfNull(settings, CompanyApiStickyParameters.withNullReturnValues());
+    }
 
-    // Note that even though the ID is always null when this entry point is rendered as a HAL resource,
-    // we still pass the given ID to the controller method. This allows these methods
-    // to also be called directly by API consumers in the same application (which do know the ID of
-    // the entity they are looking for).
+    @Override
+    public Link createLink() {
 
-    return employees.findById(id);
-  }
-
-  @Override
-  public ManagerResource getManagerById(Long id) {
-
-    return managers.findById(id);
-  }
-
-  @Override
-  public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
-
-    return detailedEmployees.findById(id);
-  }
-
-  @Override
-  public Link createLink() {
-
-    // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
-    return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
-        .withTitle("The entry point of the hypermedia example API")
-        .build();
+      return linkBuilder.create(linkTo(methodOn(CompanyApiController.class)
+          .getWithSettings(settings.getUseEmbeddedResources(), settings.getUseFingerprinting())))
+          .withTitle("The entry point of the hypermedia example API sith custom settings")
+          .withTemplateTitle("Reload the entry point with different settings")
+          .build();
+    }
   }
 }

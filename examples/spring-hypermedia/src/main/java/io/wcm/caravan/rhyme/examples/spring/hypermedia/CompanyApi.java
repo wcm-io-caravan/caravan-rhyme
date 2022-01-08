@@ -22,6 +22,7 @@ package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
+import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
@@ -72,4 +73,13 @@ public interface CompanyApi extends LinkableResource {
    */
   @Related("company:detailedEmployee")
   DetailedEmployeeResource getDetailedEmployeeById(@TemplateVariable("id") Long id);
+
+  /**
+   * allows to load the API entry point with different settings.
+   * @param settings to be applied
+   * @return a new {@link CompanyApi} instance with the given settings
+   */
+  @Related("company:settings")
+  CompanyApi withSettings(@TemplateVariables CompanyApiSettings settings);
+
 }

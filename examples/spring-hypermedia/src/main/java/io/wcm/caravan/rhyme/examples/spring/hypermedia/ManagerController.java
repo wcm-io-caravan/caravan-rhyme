@@ -53,6 +53,8 @@ class ManagerController {
 
   @Autowired
   private CompanyApiLinkBuilder linkBuilder;
+  @Autowired
+  private CompanyApiSettings settings;
 
   /**
    * A controller method to create a {@link ManagerCollectionResource} that lists all managers in the database. This
@@ -73,7 +75,7 @@ class ManagerController {
 
       @Override
       public CompanyApi getApi() {
-        return api;
+        return api.get();
       }
 
       @Override
@@ -139,7 +141,7 @@ class ManagerController {
     private ManagerResourceImpl(Manager manager) {
       this.id = manager.getId();
       this.state = Lazy.of(manager);
-      this.embedded = true;
+      this.embedded = settings.getUseEmbeddedResources();
     }
 
     @Override
@@ -165,6 +167,11 @@ class ManagerController {
     }
 
     @Override
+    public boolean isLinkedWhenEmbedded() {
+      return false;
+    }
+
+    @Override
     public Link createLink() {
 
       // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
@@ -173,6 +180,7 @@ class ManagerController {
           .withTemplateTitle("A link template to load a single manager by ID")
           .build();
     }
+
   }
 
   /**
