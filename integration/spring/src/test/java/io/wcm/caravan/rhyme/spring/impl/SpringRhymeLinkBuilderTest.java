@@ -42,7 +42,7 @@ public class SpringRhymeLinkBuilderTest {
 
     WebMvcLinkBuilder linkBuilder = linkTo(methodOn(SpringLinkBuilderTestController.class).responseStatus(statusCode));
 
-    return new SpringRhymeLinkBuilder(linkBuilder, timestampParameters);
+    return new SpringRhymeLinkBuilder(linkBuilder, timestampParameters, Collections.emptyMap());
   }
 
   private SpringRhymeLinkBuilder buildResolvedUri() {

@@ -22,6 +22,7 @@ package io.wcm.caravan.rhyme.spring.impl;
 import java.util.Map;
 
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -35,13 +36,16 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
   private final Link link;
   private final Map<String, String> fingerprintingParameters;
+  private final Map<String, Object> stickyParameters;
 
   private boolean withFingerprinting = true;
 
-  SpringRhymeLinkBuilder(WebMvcLinkBuilder webMvcLinkBuilder, Map<String, String> fingerprintingParameters) {
+  SpringRhymeLinkBuilder(WebMvcLinkBuilder webMvcLinkBuilder, Map<String, String> fingerprintingParameters, Map<String, Object> stickyParameters) {
 
     this.link = new Link(webMvcLinkBuilder.toString());
+
     this.fingerprintingParameters = fingerprintingParameters;
+    this.stickyParameters = stickyParameters;
   }
 
   @Override
@@ -81,6 +85,8 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(link.getHref());
 
+    addStickyParams(uriBuilder);
+
     if (withFingerprinting) {
       fingerprintingParameters.forEach(uriBuilder::queryParam);
     }
@@ -88,5 +94,16 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
     link.setHref(uriBuilder.build().toUriString());
 
     return link;
+  }
+
+  public void addStickyParams(UriComponentsBuilder uriBuilder) {
+
+    MultiValueMap<String, String> existingParams = uriBuilder.build().getQueryParams();
+
+    stickyParameters.forEach((name, value) -> {
+      if (!existingParams.containsKey(name)) {
+        uriBuilder.queryParam(name, value);
+      }
+    });
   }
 }
