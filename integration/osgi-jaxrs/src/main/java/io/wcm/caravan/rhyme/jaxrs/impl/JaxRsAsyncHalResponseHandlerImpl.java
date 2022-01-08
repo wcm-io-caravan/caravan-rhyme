@@ -73,7 +73,7 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRe
   public void respondWith(LinkableResource resourceImpl, UriInfo uriInfo, AsyncResponse suspended, RequestMetricsCollector metrics) {
 
     try {
-      // create a response renderer all required customizations for OSGI/JAX-RS
+      // create a response renderer with all required customizations for OSGI/JAX-RS
       AsyncHalResponseRenderer renderer = HalResponseRendererBuilder.create()
           .withMetrics(metrics)
           .withExceptionStrategy(exceptionStrategy)

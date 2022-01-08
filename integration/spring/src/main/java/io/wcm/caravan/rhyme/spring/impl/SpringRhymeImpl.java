@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
@@ -76,11 +77,24 @@ class SpringRhymeImpl implements SpringRhyme {
 
     this.request = httpRequest;
 
-    this.rhyme = RhymeBuilder
+    RhymeBuilder rhymeBuilder = createRhymeBuilder(httpRequest, resourceLoader, rhymeDocs);
+
+    this.rhyme = rhymeBuilder
+        .buildForRequestTo(getRequestUrl(httpRequest));
+  }
+
+  private static RhymeBuilder createRhymeBuilder(HttpServletRequest httpRequest, HalResourceLoader resourceLoader, SpringRhymeDocsIntegration rhymeDocs) {
+
+    RhymeBuilder rhymeBuilder = RhymeBuilder
         .withResourceLoader(resourceLoader)
         .withRhymeDocsSupport(rhymeDocs)
-        .withExceptionStrategy(EXCEPTION_STRATEGY)
-        .buildForRequestTo(getRequestUrl(httpRequest));
+        .withExceptionStrategy(EXCEPTION_STRATEGY);
+
+    if (httpRequest.getParameterMap().containsKey(RequestMetricsCollector.QUERY_PARAM_TOGGLE)) {
+      rhymeBuilder = rhymeBuilder.withEmbeddedMetadata();
+    }
+
+    return rhymeBuilder;
   }
 
   private static String getRequestUrl(HttpServletRequest httpRequest) {

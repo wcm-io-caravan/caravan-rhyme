@@ -34,7 +34,7 @@ import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
  * A fluent builder to create and customize {@link HalApiClient} instances for advanced integration or test scenarios.
  * <p>
  * If you don't need any of the advanced customizations, you can simply use {@link HalApiClient#create()}
- * {@link HalApiClient#create(HalResourceLoader)} instead.
+ * or {@link HalApiClient#create(HalResourceLoader)} instead.
  * </p>
  * <p>
  * {@link HalApiClientBuilder} instances shouldn't be re-used, as calling the build method may modify its state.

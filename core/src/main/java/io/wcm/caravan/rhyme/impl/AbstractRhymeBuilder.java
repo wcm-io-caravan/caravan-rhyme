@@ -118,6 +118,13 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
     return (BuilderInterface)this;
   }
 
+  @SuppressWarnings("unchecked")
+  public BuilderInterface withEmbeddedMetadata() {
+
+    this.metrics = RequestMetricsCollector.create();
+    return (BuilderInterface)this;
+  }
+
   private ExceptionStatusAndLoggingStrategy getEffectiveExceptionStrategy() {
 
     List<ExceptionStatusAndLoggingStrategy> nonNullStrategies = exceptionStrategies.stream()
@@ -159,7 +166,7 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
     }
 
     if (metrics == null) {
-      metrics = RequestMetricsCollector.create();
+      metrics = RequestMetricsCollector.createEssentialCollector();
     }
   }
 

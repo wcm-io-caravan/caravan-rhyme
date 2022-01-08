@@ -53,6 +53,7 @@ import io.wcm.caravan.rhyme.aem.testing.context.AppAemContext;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
 import io.wcm.caravan.rhyme.aem.testing.models.UnregisteredSlingTestResource;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.relations.VndErrorRelations;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -204,7 +205,7 @@ public class HalApiServletTest {
 
     Resource resource = context.create().resource(TEST_RESOURCE_PATH);
 
-    context.request().setQueryString(HalApiServlet.QUERY_PARAM_EMBED_METADATA);
+    context.request().setQueryString(RequestMetricsCollector.QUERY_PARAM_TOGGLE);
 
     MockSlingHttpServletResponse response = requestResource(resource, SelectorSlingTestResource.SELECTOR);
 

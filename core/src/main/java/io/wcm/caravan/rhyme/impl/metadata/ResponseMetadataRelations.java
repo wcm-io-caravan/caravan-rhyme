@@ -21,7 +21,7 @@ package io.wcm.caravan.rhyme.impl.metadata;
 
 /**
  * Constants for the relation used in the embedded metadata resource created by
- * {@link ResponseMetadataGenerator#createMetadataResource(io.wcm.caravan.rhyme.api.resources.LinkableResource)}
+ * {@link FullMetadataGenerator#createMetadataResource(io.wcm.caravan.rhyme.api.resources.LinkableResource)}
  */
 public final class ResponseMetadataRelations {
 

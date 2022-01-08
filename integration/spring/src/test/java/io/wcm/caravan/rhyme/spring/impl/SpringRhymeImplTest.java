@@ -36,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
@@ -44,6 +45,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.relations.VndErrorRelations;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
@@ -115,7 +117,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  public void renderHalResponse_should_use_max_age() throws Exception {
+  public void renderResponse_should_use_max_age() throws Exception {
 
     rhyme.setResponseMaxAge(Duration.ofSeconds(10));
 
@@ -126,6 +128,37 @@ public class SpringRhymeImplTest {
     assertThat(jsonEntity.getHeaders().getCacheControl())
         .isNotNull()
         .contains("max-age=10");
+  }
+
+  @Test
+  public void renderResponse_should_not_embed_metadata_by_default() throws Exception {
+
+    MinimalTestResourceImpl resource = new MinimalTestResourceImpl();
+
+    ResponseEntity<JsonNode> jsonEntity = rhyme.renderResponse(resource);
+
+    HalResource hal = new HalResource(jsonEntity.getBody());
+
+    assertThat(hal.getEmbeddedResource("rhyme:metadata"))
+        .isNull();
+  }
+
+  @Test
+  public void renderResponse_should_embed_metadata_if_toggled_by_query() throws Exception {
+
+    MinimalTestResourceImpl resource = new MinimalTestResourceImpl();
+
+    when(request.getParameterMap())
+        .thenReturn(ImmutableMap.of(RequestMetricsCollector.QUERY_PARAM_TOGGLE, new String[0]));
+
+    SpringRhymeImpl rhymeWithMetadata = new SpringRhymeImpl(request, resourceLoader, rhymeDocs);
+
+    ResponseEntity<JsonNode> jsonEntity = rhymeWithMetadata.renderResponse(resource);
+
+    HalResource hal = new HalResource(jsonEntity.getBody());
+
+    assertThat(hal.getEmbeddedResource("rhyme:metadata"))
+        .isNotNull();
   }
 
   @Test

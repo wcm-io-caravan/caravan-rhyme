@@ -74,13 +74,20 @@ public class CaravanRhymeRequestCycleImpl implements CaravanRhymeRequestCycle {
 
   static final class CaravanRhymeImpl implements CaravanRhyme {
 
-    private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
+    private final RequestMetricsCollector metrics;
 
     private final CaravanHalApiClient halApiClient;
 
     private final UriInfo requestUri;
 
     CaravanRhymeImpl(CaravanHalApiClient halApiClient, UriInfo requestUri) {
+
+      // only use the full implementation of RequestMetricsCollector (which will will collect and render extensive metadata
+      // into the response) if the request parameter that toggles this behaviour is set
+      this.metrics = requestUri.getQueryParameters().containsKey(RequestMetricsCollector.QUERY_PARAM_TOGGLE)
+          ? RequestMetricsCollector.create()
+          : RequestMetricsCollector.createEssentialCollector();
+
       this.halApiClient = halApiClient;
       this.requestUri = requestUri;
     }

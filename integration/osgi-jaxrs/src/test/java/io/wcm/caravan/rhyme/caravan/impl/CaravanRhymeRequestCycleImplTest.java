@@ -21,15 +21,20 @@ package io.wcm.caravan.rhyme.caravan.impl;
 
 import static org.apache.http.HttpStatus.SC_NOT_IMPLEMENTED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Collections;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -42,7 +47,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -54,6 +58,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.io.http.CaravanHttpClient;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
@@ -83,7 +88,11 @@ public class CaravanRhymeRequestCycleImplTest {
   @BeforeEach
   void setUp() {
 
-    Mockito.lenient().when(uriInfo.getRequestUri()).thenReturn(URI.create(REQUEST_URI));
+    lenient().when(uriInfo.getRequestUri())
+        .thenReturn(URI.create(REQUEST_URI));
+
+    when(uriInfo.getQueryParameters())
+        .thenReturn(new MultivaluedHashMap<>());
 
     context.registerService(CaravanHttpClient.class, httpClient);
 
@@ -146,6 +155,16 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
+  public void processRequest_should_handle_exception_when_creating_resource() throws Exception {
+
+    requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, this::failWithNotImplemented);
+
+    Response response = verifyResumeHasBeenCalled();
+
+    assertThatVndErrorResponseIsRendered(response);
+  }
+
+  @Test
   public void processRequest_should_handle_exception_when_creating_context() throws Exception {
 
     requestCycle.processRequest(uriInfo, asyncResponse, this::failWithNotImplemented, ResourceImpl::new);
@@ -156,13 +175,40 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void processRequest_should_handle_exception_when_creating_resource() throws Exception {
+  public void processRequest_should_not_include_metadata_in_response_by_default() throws Exception {
 
-    requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, this::failWithNotImplemented);
+    requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImpl::new);
+
+    HalResource hal = getHalResourceFromResponseBody();
+
+    assertThat(hal.getEmbedded("rhyme:metadata"))
+        .isEmpty();
+  }
+
+  @Test
+  public void processRequest_should_include_metadata_if_query_param_is_set() throws Exception {
+
+    MultivaluedMap<String, String> queryParams = new MultivaluedHashMap<String, String>();
+    queryParams.put(RequestMetricsCollector.QUERY_PARAM_TOGGLE, Collections.emptyList());
+
+    when(uriInfo.getQueryParameters()).thenReturn(queryParams);
+
+    requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImpl::new);
+
+    HalResource hal = getHalResourceFromResponseBody();
+
+    assertThat(hal.getEmbedded("rhyme:metadata"))
+        .isNotEmpty();
+  }
+
+  private HalResource getHalResourceFromResponseBody() {
 
     Response response = verifyResumeHasBeenCalled();
 
-    assertThatVndErrorResponseIsRendered(response);
+    assertThat(response.getEntity())
+        .isInstanceOf(HalResource.class);
+
+    return (HalResource)response.getEntity();
   }
 
   @Test

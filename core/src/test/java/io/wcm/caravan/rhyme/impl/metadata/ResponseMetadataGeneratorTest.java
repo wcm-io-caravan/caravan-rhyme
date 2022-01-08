@@ -42,7 +42,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
-import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator.TimeMeasurement;
+import io.wcm.caravan.rhyme.impl.metadata.FullMetadataGenerator.TimeMeasurement;
 
 @ExtendWith(MockitoExtension.class)
 public class ResponseMetadataGeneratorTest {
@@ -59,7 +59,7 @@ public class ResponseMetadataGeneratorTest {
   @Mock
   private LinkableResource resource;
 
-  private final ResponseMetadataGenerator metrics = new ResponseMetadataGenerator();
+  private final FullMetadataGenerator metrics = new FullMetadataGenerator();
 
   @Test
   public void default_output_max_age_should_be_null() throws Exception {
