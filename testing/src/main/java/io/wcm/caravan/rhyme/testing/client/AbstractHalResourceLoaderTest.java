@@ -28,7 +28,6 @@ import com.google.common.net.HttpHeaders;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
-import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
@@ -77,6 +76,13 @@ public abstract class AbstractHalResourceLoaderTest {
     wireMockServer.resetAll();
   }
 
+  /**
+   * Implement this to return your implementation of {@link HalResourceLoader} to be tested.
+   * If you are implementing {@link HttpClientSupport}) then use
+   * {@link HalResourceLoader#create()} to create the instance under test
+   * @return the instance to be tested
+   */
+  protected abstract HalResourceLoader createLoaderUnderTest();
 
   private static HalResource createHalResource() {
 
@@ -172,15 +178,6 @@ public abstract class AbstractHalResourceLoaderTest {
             .withFault(fault)));
   }
 
-
-  /**
-   * Implement this to return your implementation of {@link HalResourceLoader},
-   * or (if you are implementing {@link HttpClientSupport} then use
-   * {@link HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)} to
-   * create the instance under test
-   * @return the instance to be tested
-   */
-  protected abstract HalResourceLoader createLoaderUnderTest();
 
   protected HalResponse loadResource() {
 

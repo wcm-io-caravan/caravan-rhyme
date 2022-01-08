@@ -37,7 +37,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.common.collect.LinkedHashMultimap;
 
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
-import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
@@ -61,9 +60,7 @@ public class MockMvcHalResourceLoaderConfiguration {
 
     MockMvcClient mockMvcClient = new MockMvcClient(applicationContext);
 
-    return HalResourceLoaderBuilder.create()
-        .withCustomHttpClient(mockMvcClient)
-        .build();
+    return HalResourceLoader.create(mockMvcClient);
   }
 
   private static final class MockMvcClient implements HttpClientSupport {

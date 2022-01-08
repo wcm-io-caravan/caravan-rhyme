@@ -34,26 +34,40 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 import io.wcm.caravan.rhyme.tooling.annotations.ExcludeFromJacocoGeneratedReport;
 
 /**
- * An HTTP client implementation to be used with
- * {@link HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)}
- * that is using the asynchronous Apache HTTP client to execute requests.
+ * An HTTP client implementation that is using the asynchronous Apache HTTP client to execute requests.
+ * @see HalResourceLoader#create(HttpClientSupport)
+ * @see HalResourceLoaderBuilder#withCustomHttpClient(HttpClientSupport)
  */
 public class ApacheAsyncHttpSupport implements HttpClientSupport {
 
-  private final CloseableHttpAsyncClient httpClient = HttpAsyncClientBuilder.create().build();
+  private final CloseableHttpAsyncClient httpClient;
 
   private final URI baseUri;
 
   /**
-   * Default constructor that can be used if all URIs are fully qualified
+   * Default constructor that can be used if all URIs are fully qualified and requests
+   * can be executed with a default HTTP client created with {@link HttpAsyncClientBuilder}
    */
   public ApacheAsyncHttpSupport() {
-    this(null);
+    this((URI)null);
+  }
+
+  /**
+   * Allows to provide a customised {@link CloseableHttpAsyncClient} instance to be used for all requests.
+   * @param client to use for all requests
+   */
+  public ApacheAsyncHttpSupport(CloseableHttpAsyncClient client) {
+    this.httpClient = client;
+    this.baseUri = null;
+    if (!httpClient.isRunning()) {
+      httpClient.start();
+    }
   }
 
   /**
@@ -61,6 +75,7 @@ public class ApacheAsyncHttpSupport implements HttpClientSupport {
    * @param baseUri a fully qualified base URI
    */
   public ApacheAsyncHttpSupport(URI baseUri) {
+    this.httpClient = HttpAsyncClientBuilder.create().build();
     this.baseUri = baseUri;
     this.httpClient.start();
   }

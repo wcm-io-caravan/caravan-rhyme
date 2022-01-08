@@ -36,7 +36,7 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
  * A default implementation of {@link HttpClientSupport} that is used in factory methods
  * that allow requesting resources without providing a more sophisticated implementation.
  * It's using {@link HttpURLConnection} without any configuration options.
- * @see HalResourceLoader#withDefaultHttpClient()
+ * @see HalResourceLoader#create()
  * @see HalApiClient#create()
  * @see RhymeBuilder#create()
  */

@@ -21,12 +21,25 @@ package io.wcm.caravan.rhyme.api.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.Test;
 
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
+import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
+import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
+import io.wcm.caravan.rhyme.impl.reflection.CompositeHalApiTypeSupport;
+import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 import io.wcm.caravan.rhyme.testing.TestState;
 
@@ -54,6 +67,59 @@ public class HalApiClientTest {
         .getState()
         .blockingGet();
 
+  }
+
+  @Test
+  public void metrics_from_deprecated_methods_should_be_used() throws Exception {
+
+    int maxAge = 123;
+
+    HalResourceLoader loader = new HalResourceLoader() {
+
+      @Override
+      public Single<HalResponse> getHalResource(String uri) {
+
+        return Single.just(new HalResponse().withBody(new HalResource()).withMaxAge(123));
+      }
+    };
+
+    RequestMetricsCollector metrics = RequestMetricsCollector.create();
+
+    @SuppressWarnings("deprecation")
+    HalApiClient client = HalApiClient.create(loader, metrics);
+
+    Maybe<TestState> testState = client.getRemoteResource("/", LinkableTestResource.class).getState();
+
+    assertThat(testState.isEmpty().blockingGet())
+        .isTrue();
+
+    assertThat(metrics.getResponseMaxAge())
+        .isEqualTo(maxAge);
+  }
+
+  @Test
+  public void type_support_from_deprecated_method_should_be_used() throws Exception {
+
+    HalResourceLoader loader = mock(HalResourceLoader.class);
+    RequestMetricsCollector metrics = mock(RequestMetricsCollector.class);
+
+    HalApiAnnotationSupport annotationSupport = mock(HalApiAnnotationSupport.class);
+    HalApiReturnTypeSupport returnTypeSupport = mock(HalApiReturnTypeSupport.class);
+
+    @SuppressWarnings("deprecation")
+    HalApiClient client = HalApiClient.create(loader, metrics, annotationSupport, returnTypeSupport);
+
+    HalApiTypeSupport typeSupport = ((HalApiClientImpl)client).getTypeSupport();
+    assertThat(typeSupport)
+        .isInstanceOf(CompositeHalApiTypeSupport.class);
+
+    when(annotationSupport.isHalApiInterface(String.class)).thenReturn(true);
+    assertThat(typeSupport.isHalApiInterface(String.class))
+        .isTrue();
+
+    when(returnTypeSupport.isProviderOfOptionalValue(String.class)).thenReturn(true);
+    assertThat(typeSupport.isProviderOfOptionalValue(String.class))
+        .isTrue();
   }
 
 }

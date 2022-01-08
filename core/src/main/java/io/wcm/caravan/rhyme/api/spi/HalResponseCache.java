@@ -27,14 +27,14 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 
 /**
  * An SPI interface for a cache implementation that can be given to
- * {@link HalResourceLoaderBuilder#withCustomCache(HalResponseCache)} if you want to store cached HAL+JSON responses
+ * {@link HalResourceLoaderBuilder#withCustomCache(HalResponseCache)} if you want to store HAL+JSON responses
  * in a custom cache (e.g. in an external, persistent data store).
  * <p>
  * Note that it's entirely up to the HalResponseCache
  * implementation to decide for how long a {@link HalResponse} is <b>stored</b> in the cache. Whether the response will
  * but the framework will actually be <b>used</b> is determined by the caching {@link HalResourceLoader}
  * implementation of the core framework, based on the {@link HalResponse#getMaxAge()} value and
- * the time the the response was retrieved (from {@link HalResponse#getTimestamp()}).
+ * the time when the response was retrieved (taken from {@link HalResponse#getTimestamp()}).
  */
 @ConsumerType
 public interface HalResponseCache {

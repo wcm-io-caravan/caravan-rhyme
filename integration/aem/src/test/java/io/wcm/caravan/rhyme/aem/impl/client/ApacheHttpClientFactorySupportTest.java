@@ -25,7 +25,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import io.wcm.caravan.commons.httpclient.HttpClientFactory;
 import io.wcm.caravan.commons.httpclient.impl.HttpClientFactoryImpl;
 import io.wcm.caravan.rhyme.aem.testing.context.AppAemContext;
-import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -46,9 +45,7 @@ public class ApacheHttpClientFactorySupportTest extends AbstractHalResourceLoade
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
 
-    return HalResourceLoaderBuilder.create()
-        .withCustomHttpClient(new ApacheHttpClientFactorySupport(clientFactory))
-        .build();
+    return HalResourceLoader.create(new ApacheHttpClientFactorySupport(clientFactory));
   }
 
 }

@@ -41,8 +41,8 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator.TimeMeasurement;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
 
 @ExtendWith(MockitoExtension.class)
 public class ResponseMetadataGeneratorTest {
@@ -291,7 +291,7 @@ public class ResponseMetadataGeneratorTest {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, 10, ANY_RESPONSE_TIME);
     metrics.onMethodInvocationFinished(EmissionStopwatch.class, METHOD1, ANY_RESPONSE_TIME);
-    metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class, METHOD1, ANY_RESPONSE_TIME);
+    metrics.onMethodInvocationFinished(AsyncHalResponseRenderer.class, METHOD1, ANY_RESPONSE_TIME);
 
     HalResource metadata = metrics.createMetadataResource(resource);
 
@@ -321,8 +321,8 @@ public class ResponseMetadataGeneratorTest {
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 200);
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 300);
 
-    metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class, METHOD1, 100);
-    metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class, METHOD1, 200);
+    metrics.onMethodInvocationFinished(AsyncHalResponseRenderer.class, METHOD1, 100);
+    metrics.onMethodInvocationFinished(AsyncHalResponseRenderer.class, METHOD1, 200);
 
     HalResource metadata = metrics.createMetadataResource(resource);
 

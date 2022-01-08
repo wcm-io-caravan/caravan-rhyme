@@ -2,14 +2,14 @@
  * #%L
  * wcm.io
  * %%
- * Copyright (C) 2021 wcm.io
+ * Copyright (C) 2022 wcm.io
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,45 +31,23 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
-import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
-import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
-import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
-import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
 
 final class RhymeImpl implements Rhyme {
 
-  private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
-
-  private final String requestUri;
-  private final HalResourceLoader resourceLoader;
-  private final ExceptionStatusAndLoggingStrategy exceptionStrategy;
-
+  private final String incomingRequestUri;
+  private final VndErrorResponseRenderer errorRenderer;
   private final HalApiClient client;
   private final AsyncHalResponseRenderer renderer;
+  private final RequestMetricsCollector metrics;
 
-  RhymeImpl(String requestUri, HalResourceLoader resourceLoader, ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiTypeSupport typeSupport,
-      RhymeDocsSupport rhymeDocsSupport) {
-    this.requestUri = requestUri;
-    this.resourceLoader = resourceLoader;
-    this.exceptionStrategy = exceptionStrategy;
-    this.client = createHalApiClient(typeSupport);
-    this.renderer = createResponseRenderer(typeSupport, rhymeDocsSupport);
-  }
+  RhymeImpl(String incomingRequestUri, HalApiClient client, AsyncHalResponseRenderer renderer, VndErrorResponseRenderer errorRenderer,
+      RequestMetricsCollector metrics) {
 
-  private HalApiClient createHalApiClient(HalApiTypeSupport typeSupport) {
-
-    return new HalApiClientImpl(resourceLoader, metrics, typeSupport);
-  }
-
-  private AsyncHalResponseRenderer createResponseRenderer(HalApiTypeSupport typeSupport, RhymeDocsSupport docsSupport) {
-
-    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
-
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport, docsSupport);
+    this.incomingRequestUri = incomingRequestUri;
+    this.errorRenderer = errorRenderer;
+    this.client = client;
+    this.renderer = renderer;
+    this.metrics = metrics;
   }
 
   @Override
@@ -87,15 +65,13 @@ final class RhymeImpl implements Rhyme {
   @Override
   public Single<HalResponse> renderResponse(LinkableResource resourceImpl) {
 
-    return renderer.renderResponse(requestUri, resourceImpl);
+    return renderer.renderResponse(incomingRequestUri, resourceImpl);
   }
 
   @Override
   public HalResponse renderVndErrorResponse(Throwable error) {
 
-    VndErrorResponseRenderer errorRenderer = VndErrorResponseRenderer.create(exceptionStrategy);
-
-    return errorRenderer.renderError(requestUri, null, error, metrics);
+    return errorRenderer.renderError(incomingRequestUri, null, error, metrics);
   }
 
   @Override

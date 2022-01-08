@@ -20,5 +20,5 @@
 /**
  * Constants for standard link relations
  */
-@org.osgi.annotation.versioning.Version("1.0.0")
+@org.osgi.annotation.versioning.Version("1.1.0")
 package io.wcm.caravan.rhyme.api.relations;
