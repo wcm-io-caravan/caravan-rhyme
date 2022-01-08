@@ -55,7 +55,7 @@ class EmployeeController {
   @Autowired
   private CompanyApiLinkBuilder linkBuilder;
   @Autowired
-  private CompanyApiSettings settings;
+  private CompanyApiStickyParameters settings;
 
   /**
    * A controller method to create a {@link EmployeeCollectionResource} that lists all employees in the database. This

@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
-import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApiStickyParameters.USE_EMBEDDED_RESOURCES;
-import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApiStickyParameters.USE_FINGERPRINTING;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -123,27 +121,16 @@ class CompanyApiController {
 
   /**
    * A controller method used to render an alternative configurable variation of the API entry point
-   * @param useEmbeddedResources see {@link CompanyApiSettings#getUseEmbeddedResources()}
-   * @param useFingerprinting see {@link CompanyApiSettings#getUseFingerprinting()}
    * @return a server-side implementation of {@link CompanyApi}
    */
   @GetMapping("/withSettings")
-  CompanyApi getWithSettings(
-      @RequestParam(name = USE_EMBEDDED_RESOURCES) Boolean useEmbeddedResources,
-      @RequestParam(name = USE_FINGERPRINTING) Boolean useFingerprinting) {
+  CompanyApi getWithSettings(@RequestParam Boolean useFingerprinting, @RequestParam Boolean useEmbeddedResources) {
 
-    return new CompanyApiWithSettings(new CompanyApiSettings() {
+    CompanyApiSettings settings = new CompanyApiSettings()
+        .setUseFingerprinting(useFingerprinting)
+        .setUseEmbeddedResources(useEmbeddedResources);
 
-      @Override
-      public Boolean getUseEmbeddedResources() {
-        return useEmbeddedResources;
-      }
-
-      @Override
-      public Boolean getUseFingerprinting() {
-        return useFingerprinting;
-      }
-    });
+    return new CompanyApiWithSettings(settings);
   }
 
   private class CompanyApiWithSettings extends CompanyApiImpl {
@@ -153,14 +140,14 @@ class CompanyApiController {
     CompanyApiWithSettings(CompanyApiSettings settings) {
 
       // settings can be null if this is used to render the link template from the entry point
-      this.settings = ObjectUtils.defaultIfNull(settings, CompanyApiStickyParameters.withNullReturnValues());
+      this.settings = ObjectUtils.defaultIfNull(settings, new CompanyApiSettings());
     }
 
     @Override
     public Link createLink() {
 
       return linkBuilder.create(linkTo(methodOn(CompanyApiController.class)
-          .getWithSettings(settings.getUseEmbeddedResources(), settings.getUseFingerprinting())))
+          .getWithSettings(settings.getUseFingerprinting(), settings.getUseEmbeddedResources())))
           .withTitle("The entry point of the hypermedia example API sith custom settings")
           .withTemplateTitle("Reload the entry point with different settings")
           .build();

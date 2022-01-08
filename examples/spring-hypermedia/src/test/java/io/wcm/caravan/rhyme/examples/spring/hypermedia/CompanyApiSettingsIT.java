@@ -1,6 +1,7 @@
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
 import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApiStickyParameters.USE_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApiStickyParameters.USE_FINGERPRINTING;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
@@ -9,6 +10,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+
+import com.damnhandy.uri.template.UriTemplate;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
@@ -19,15 +22,11 @@ import io.wcm.caravan.rhyme.testing.client.HalCrawler;
  * A variation of the {@link MockMvcClientIT} test that verifies
  * if the {@link CompanyApi} functionality remains the same when no embedded resources are used.
  */
-public class MockMvcClientWithoutEmbeddedIT extends MockMvcClientIT {
+public class CompanyApiSettingsIT extends MockMvcClientIT {
 
-  private final CompanyApiSettings dontUseEmbedded = new CompanyApiSettings() {
-
-    @Override
-    public Boolean getUseEmbeddedResources() {
-      return false;
-    }
-  };
+  private final CompanyApiSettings apiSettings = new CompanyApiSettings()
+      .setUseEmbeddedResources(false)
+      .setUseFingerprinting(true);
 
   @Override
   protected CompanyApi getApiImplementionOrClientProxy() {
@@ -38,7 +37,21 @@ public class MockMvcClientWithoutEmbeddedIT extends MockMvcClientIT {
     return super.getApiImplementionOrClientProxy()
         // and we are returning the alternative entry point with the settings
         // that disable the usage of embedded resource
-        .withSettings(dontUseEmbedded);
+        .withSettings(apiSettings);
+  }
+
+  @Test
+  public void entry_point_should_have_settings_link_template() {
+
+    Link settingsLink = super.getApiImplementionOrClientProxy().withSettings(null).createLink();
+
+    assertThat(settingsLink.isTemplated())
+        .isTrue();
+
+    String[] variables = UriTemplate.fromTemplate(settingsLink.getHref()).getVariables();
+
+    assertThat(variables)
+        .containsExactlyInAnyOrder(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING);
   }
 
   @Test
@@ -49,7 +62,8 @@ public class MockMvcClientWithoutEmbeddedIT extends MockMvcClientIT {
     URI uri = getURI(resource);
 
     assertThat(uri)
-        .hasParameter(USE_EMBEDDED_RESOURCES, "false");
+        .hasParameter(USE_EMBEDDED_RESOURCES, Boolean.toString(apiSettings.getUseEmbeddedResources()))
+        .hasParameter(USE_FINGERPRINTING, Boolean.toString(apiSettings.getUseFingerprinting()));
   }
 
   @Test
@@ -79,7 +93,8 @@ public class MockMvcClientWithoutEmbeddedIT extends MockMvcClientIT {
           .extracting(Entry::getValue)
           .extracting(Link::getHref)
           .as("all links in resource at " + response.getUri())
-          .allMatch(href -> href.contains(USE_EMBEDDED_RESOURCES + "=false"));
+          .allMatch(href -> href.contains(USE_EMBEDDED_RESOURCES + "=" + apiSettings.getUseEmbeddedResources()))
+          .allMatch(href -> href.contains(USE_FINGERPRINTING + "=" + apiSettings.getUseFingerprinting()));
     }
   }
 

@@ -6,19 +6,33 @@ package io.wcm.caravan.rhyme.examples.spring.hypermedia;
  * {@link CompanyApi#withSettings(CompanyApiSettings)}, and will be applied to all
  * resources of the API.
  */
-public interface CompanyApiSettings {
+public class CompanyApiSettings {
+
+  public Boolean useEmbeddedResources;
+
+  public Boolean useFingerprinting;
 
   /**
    * @return true if the server should be allowed to include embedded resources in the response.
    */
-  default Boolean getUseEmbeddedResources() {
-    return true;
+  public Boolean getUseEmbeddedResources() {
+    return useEmbeddedResources;
   }
 
   /**
    * @return true if URL fingerprinting should be used for all links
    */
-  default Boolean getUseFingerprinting() {
-    return true;
+  public Boolean getUseFingerprinting() {
+    return useFingerprinting;
+  }
+
+  public CompanyApiSettings setUseEmbeddedResources(boolean value) {
+    useEmbeddedResources = value;
+    return this;
+  }
+
+  public CompanyApiSettings setUseFingerprinting(boolean value) {
+    useFingerprinting = value;
+    return this;
   }
 }
