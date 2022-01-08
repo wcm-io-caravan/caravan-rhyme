@@ -194,10 +194,9 @@ abstract class AbstractCompanyApiIT {
 
     Long firstId = getIdOfFirstEmployee();
 
-    Employee firstEmployee = api.getDetailedEmployeeById(firstId).getState();
+    String firstEmployee = api.getDetailedEmployeeById(firstId).getState().getName();
 
-    assertThat(firstEmployee.getId()).isEqualTo(firstId);
-    assertThat(firstEmployee.getName()).isEqualTo("Frodo");
+    assertThat(firstEmployee).isEqualTo("Frodo");
   }
 
   @Test
@@ -205,6 +204,16 @@ abstract class AbstractCompanyApiIT {
 
     assertThat404isReturnedFor(
         () -> api.getDetailedEmployeeById(NON_EXISTANT_ID).getState());
+  }
+
+  @Test
+  public void getDetailedEmployeeById_should_include_manager_name() throws Exception {
+
+    Long firstId = getIdOfFirstEmployee();
+
+    String managerName = api.getDetailedEmployeeById(firstId).getManagerName();
+
+    assertThat(managerName).isEqualTo("Gandalf");
   }
 
   @Test

@@ -93,19 +93,27 @@ class DetailedEmployeeController {
 
       @Override
       public Employee getState() {
-
-        // This fetches the upstream employee resource, and deserializes the state from its JSON properties.
-        // Since this resource should have exactly the same state, we can simply return the instance without modifications.
+        // Fetches the upstream employee resource, deserializes the state from its JSON properties, and return it as it is
         return getEmployee().getState();
+      }
+
+      @Override
+      public String getManagerName() {
+
+        // to get the manager's name, we follow the 'company:manager' link from the upstream employee resource
+        return getEmployee().getManager().getState().getName();
       }
 
       @Override
       public ManagerResource getManager() {
 
         // Get a resource client proxy that follows the link to the manager of the employee.
-        // Even though getEmployee() is called multiple times in this class, it's not required to store that proxy instance anywhere.
-        // This is because the client proxies for each URL are already cached within the Rhyme instance.
         ManagerResource manager = getEmployee().getManager();
+
+        // Even though getEmployee() (and getManager()) is called multiple times in this class,
+        // it's not strictly required to store those proxy instances anywhere, as they are already cached by the Rhyme instance.
+        // You can load any resource with an "embedRhymeMetadata" query parameter to
+        // see the performance costs of these repeated calls, and then optimize if necessary.
 
         // We could return this resource proxy directly, but then only a link to the upstream resource would be added.
         // Since we want to embed the manager resource, we need to convert it to another proxy that also implements EmbeddableResource.
