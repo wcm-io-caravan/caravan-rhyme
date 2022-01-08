@@ -54,7 +54,7 @@ class ManagerController {
   @Autowired
   private CompanyApiLinkBuilder linkBuilder;
   @Autowired
-  private CompanyApiStickyParameters settings;
+  private CompanyApySettings settings;
 
   /**
    * A controller method to create a {@link ManagerCollectionResource} that lists all managers in the database. This

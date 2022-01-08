@@ -1,5 +1,8 @@
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_FINGERPRINTING;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -11,15 +14,11 @@ import org.springframework.web.context.request.WebRequest;
 
 @Component
 @RequestScope
-public class CompanyApiStickyParameters {
-
-  static final String USE_EMBEDDED_RESOURCES = "useEmbeddedResources";
-  static final String USE_FINGERPRINTING = "useFingerprinting";
-
+public class CompanyApySettings {
 
   private final Map<String, Boolean> booleanParameters = new LinkedHashMap<>();
 
-  CompanyApiStickyParameters(@Autowired WebRequest request) {
+  CompanyApySettings(@Autowired WebRequest request) {
 
     addBooleanParamIfPresentInRequest(request, USE_EMBEDDED_RESOURCES);
     addBooleanParamIfPresentInRequest(request, USE_FINGERPRINTING);

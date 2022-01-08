@@ -19,10 +19,11 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_FINGERPRINTING;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -104,9 +105,9 @@ class CompanyApiController {
     }
 
     @Override
-    public CompanyApi withSettings(CompanyApiSettings settings) {
+    public CompanyApi withSettings(Boolean useEmbeddedResources, Boolean useFingerprinting) {
 
-      return new CompanyApiWithSettings(settings);
+      return getWithSettings(useEmbeddedResources, useFingerprinting);
     }
 
     @Override
@@ -124,33 +125,21 @@ class CompanyApiController {
    * @return a server-side implementation of {@link CompanyApi}
    */
   @GetMapping("/withSettings")
-  CompanyApi getWithSettings(@RequestParam Boolean useFingerprinting, @RequestParam Boolean useEmbeddedResources) {
+  CompanyApi getWithSettings(
+      @RequestParam(name = USE_FINGERPRINTING) Boolean useFingerprinting,
+      @RequestParam(name = USE_EMBEDDED_RESOURCES) Boolean useEmbeddedResources) {
 
-    CompanyApiSettings settings = new CompanyApiSettings()
-        .setUseFingerprinting(useFingerprinting)
-        .setUseEmbeddedResources(useEmbeddedResources);
+    return new CompanyApiImpl() {
 
-    return new CompanyApiWithSettings(settings);
-  }
+      @Override
+      public Link createLink() {
 
-  private class CompanyApiWithSettings extends CompanyApiImpl {
-
-    private final CompanyApiSettings settings;
-
-    CompanyApiWithSettings(CompanyApiSettings settings) {
-
-      // settings can be null if this is used to render the link template from the entry point
-      this.settings = ObjectUtils.defaultIfNull(settings, new CompanyApiSettings());
-    }
-
-    @Override
-    public Link createLink() {
-
-      return linkBuilder.create(linkTo(methodOn(CompanyApiController.class)
-          .getWithSettings(settings.getUseFingerprinting(), settings.getUseEmbeddedResources())))
-          .withTitle("The entry point of the hypermedia example API sith custom settings")
-          .withTemplateTitle("Reload the entry point with different settings")
-          .build();
-    }
+        return linkBuilder.create(linkTo(methodOn(CompanyApiController.class)
+            .getWithSettings(useFingerprinting, useEmbeddedResources)))
+            .withTitle("The entry point of the hypermedia example API sith custom settings")
+            .withTemplateTitle("Reload the entry point with different settings")
+            .build();
+      }
+    };
   }
 }

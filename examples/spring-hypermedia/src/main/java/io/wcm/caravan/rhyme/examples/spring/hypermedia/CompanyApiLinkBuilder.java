@@ -64,10 +64,10 @@ class CompanyApiLinkBuilder {
 
   private final UrlFingerprinting fingerprinting;
 
-  private final CompanyApiStickyParameters settings;
+  private final CompanyApySettings settings;
 
   CompanyApiLinkBuilder(@Autowired SpringRhyme rhyme, @Autowired RepositoryModificationListener repositoryListener,
-      @Autowired CompanyApiStickyParameters settings) {
+      @Autowired CompanyApySettings settings) {
 
     this.fingerprinting = rhyme
         .enableUrlFingerprinting()
