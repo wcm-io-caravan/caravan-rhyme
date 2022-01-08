@@ -74,7 +74,7 @@ class CompanyApiLinkBuilder {
         .withConditionalMaxAge(Duration.ofSeconds(10), Duration.ofDays(100))
         .withTimestampParameter(TIMESTAMP_QUERY_PARAM, repositoryListener::getLastModified);
 
-    settings.getParameterMap().forEach(fingerprinting::withStickyParameter);
+    settings.getParameterMap().forEach(fingerprinting::addQueryParameter);
 
     this.settings = settings;
   }

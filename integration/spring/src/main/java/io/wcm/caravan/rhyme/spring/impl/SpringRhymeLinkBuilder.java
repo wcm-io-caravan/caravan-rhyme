@@ -36,7 +36,7 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
   private final Link link;
   private final Map<String, String> fingerprintingParameters;
-  private final Map<String, Object> stickyParameters;
+  private final Map<String, Object> additionalQueryParameters;
 
   private boolean withFingerprinting = true;
 
@@ -45,7 +45,7 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
     this.link = new Link(webMvcLinkBuilder.toString());
 
     this.fingerprintingParameters = fingerprintingParameters;
-    this.stickyParameters = stickyParameters;
+    this.additionalQueryParameters = stickyParameters;
   }
 
   @Override
@@ -85,7 +85,7 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(link.getHref());
 
-    addStickyParams(uriBuilder);
+    addAdditionalQueryParameters(uriBuilder);
 
     if (withFingerprinting) {
       fingerprintingParameters.forEach(uriBuilder::queryParam);
@@ -96,11 +96,11 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
     return link;
   }
 
-  public void addStickyParams(UriComponentsBuilder uriBuilder) {
+  private void addAdditionalQueryParameters(UriComponentsBuilder uriBuilder) {
 
     MultiValueMap<String, String> existingParams = uriBuilder.build().getQueryParams();
 
-    stickyParameters.forEach((name, value) -> {
+    additionalQueryParameters.forEach((name, value) -> {
       if (!existingParams.containsKey(name)) {
         uriBuilder.queryParam(name, value);
       }

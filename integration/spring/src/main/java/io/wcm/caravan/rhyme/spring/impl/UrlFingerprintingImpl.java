@@ -47,7 +47,7 @@ class UrlFingerprintingImpl implements UrlFingerprinting {
   private final Map<String, String> timestampParameters = new LinkedHashMap<>();
   private boolean allTimestampsPresentInRequest = true;
 
-  private final Map<String, Object> stickyParameters = new LinkedHashMap<>();
+  private final Map<String, Object> additionalQueryParameters = new LinkedHashMap<>();
 
   private Duration mutableMaxAge;
   private Duration immutableMaxAge;
@@ -73,9 +73,9 @@ class UrlFingerprintingImpl implements UrlFingerprinting {
   }
 
   @Override
-  public UrlFingerprinting withStickyParameter(String name, Object value) {
+  public UrlFingerprinting addQueryParameter(String name, Object value) {
 
-    stickyParameters.put(name, value);
+    additionalQueryParameters.put(name, value);
     return this;
   }
 
@@ -101,7 +101,7 @@ class UrlFingerprintingImpl implements UrlFingerprinting {
       applyMaxAge();
     }
 
-    return new SpringRhymeLinkBuilder(linkBuilder, timestampParameters, stickyParameters);
+    return new SpringRhymeLinkBuilder(linkBuilder, timestampParameters, additionalQueryParameters);
   }
 
   private void applyMaxAge() {
