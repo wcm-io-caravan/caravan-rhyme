@@ -67,6 +67,10 @@
       <artifactId>spring-data-rest-hal-browser</artifactId>
       <version>3.3.9.RELEASE</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-rest-hal-explorer</artifactId>
+    </dependency>
     
     <dependency>
       <groupId>com.h2database</groupId>
