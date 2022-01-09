@@ -37,6 +37,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -73,6 +75,37 @@ public class UrlFingerprintingImplTest {
     UrlFingerprinting fingerprinting = createFingerprinting();
 
     assertThatNoFingerprintingIsPresentInLink(fingerprinting);
+  }
+
+  ResponseEntity<String> controllerWithRequiredAnnotatedParamFoo(@RequestParam("foo") String foo) {
+    return ResponseEntity.ok("foo was set to " + foo);
+  }
+
+  @Test
+  public void should_expand_value_of_required_annotated_parameter() throws Exception {
+
+    UrlFingerprinting fingerprinting = createFingerprinting();
+
+    Link link = fingerprinting.createLinkWith(linkTo(methodOn(UrlFingerprintingImplTest.class)
+        .controllerWithRequiredAnnotatedParamFoo("test")))
+        .build();
+
+    assertThat(link.getHref())
+        .endsWith("?foo=test");
+  }
+
+  @Test
+  public void should_create_template_for_required_annotated_parameter() throws Exception {
+
+    UrlFingerprinting fingerprinting = createFingerprinting();
+
+    Link link = fingerprinting.createLinkWith(linkTo(methodOn(UrlFingerprintingImplTest.class)
+        .controllerWithRequiredAnnotatedParamFoo(null)))
+        .build();
+
+    assertThat(link.isTemplated());
+    assertThat(link.getHref())
+        .endsWith("?foo={foo}");
   }
 
   @Test
@@ -170,6 +203,34 @@ public class UrlFingerprintingImplTest {
     assertThatFingerprintContains(fingerprinting, valueFromRequest);
 
     verify(rhyme).setResponseMaxAge(IMMUTABLE_MAX_AGE);
+  }
+
+  @Test
+  public void should_add_additional_query_parameters() throws Exception {
+
+    UrlFingerprinting fingerprinting = createFingerprinting()
+        .addQueryParameter("foo", "123")
+        .addQueryParameter("bar", "456");
+
+    Link link = createLinkWith(fingerprinting);
+
+    assertThat(link.getHref())
+        .contains("foo=123&bar=456");
+  }
+
+  @Test
+  public void additional_query_parameters_should_not_replace_existing() throws Exception {
+
+    UrlFingerprinting fingerprinting = createFingerprinting()
+        .addQueryParameter("foo", "123")
+        .addQueryParameter("bar", "456");
+
+    Link link = fingerprinting.createLinkWith(linkTo(methodOn(UrlFingerprintingImplTest.class)
+        .controllerWithRequiredAnnotatedParamFoo("test")))
+        .build();
+
+    assertThat(link.getHref())
+        .contains("foo=test&bar=456");
   }
 
   private void assertThatNoFingerprintingIsPresentInLink(UrlFingerprinting fingerprinting) {
