@@ -209,8 +209,8 @@ public class UrlFingerprintingImplTest {
   public void should_add_additional_query_parameters() throws Exception {
 
     UrlFingerprinting fingerprinting = createFingerprinting()
-        .addQueryParameter("foo", "123")
-        .addQueryParameter("bar", "456");
+        .withQueryParameter("foo", "123")
+        .withQueryParameter("bar", "456");
 
     Link link = createLinkWith(fingerprinting);
 
@@ -222,8 +222,8 @@ public class UrlFingerprintingImplTest {
   public void additional_query_parameters_should_not_replace_existing() throws Exception {
 
     UrlFingerprinting fingerprinting = createFingerprinting()
-        .addQueryParameter("foo", "123")
-        .addQueryParameter("bar", "456");
+        .withQueryParameter("foo", "123")
+        .withQueryParameter("bar", "456");
 
     Link link = fingerprinting.createLinkWith(linkTo(methodOn(UrlFingerprintingImplTest.class)
         .controllerWithRequiredAnnotatedParamFoo("test")))

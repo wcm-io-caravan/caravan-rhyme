@@ -58,7 +58,7 @@ class DetailedEmployeeController {
   private SpringRhyme rhyme;
 
   @Autowired
-  private CompanyApiLinkBuilder links;
+  private CompanyApiLinkBuilder linkBuilder;
 
   /**
    * A controller method to create a {@link DetailedEmployeeResource} for a specific employee. This is called
@@ -76,7 +76,7 @@ class DetailedEmployeeController {
     return new DetailedEmployeeResource() {
 
       // Construct the URL to the CompanyApiController running on localhost
-      private final String entryPointUrl = links.getLocalEntryPointUrl();
+      private final String entryPointUrl = linkBuilder.getLocalEntryPointUrl();
 
       /**
        * Load an employee by HTTP from localhost using a {@link HalApiClient}
@@ -116,7 +116,7 @@ class DetailedEmployeeController {
         // see the performance costs of these repeated calls, and then optimize if necessary.
 
         // If we want to embed the manager resource, we need to convert it to another proxy that also implements EmbeddableResource.
-        if (links.isUseEmbeddedResources()) {
+        if (linkBuilder.isUseEmbeddedResources()) {
           return ResourceConversions.asEmbeddedResourceWithoutLink(manager);
         }
 
@@ -133,7 +133,7 @@ class DetailedEmployeeController {
             .filter(employee -> !employee.getState().getId().equals(id));
 
         // and again ensure that these resources are embedded rather than linked
-        if (links.isUseEmbeddedResources()) {
+        if (linkBuilder.isUseEmbeddedResources()) {
           colleagues = colleagues.map(ResourceConversions::asEmbeddedResourceWithoutLink);
         }
         return colleagues;
@@ -143,7 +143,7 @@ class DetailedEmployeeController {
       public Link createLink() {
 
         // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
-        return links.create(linkTo(methodOn(DetailedEmployeeController.class).findById(id)))
+        return linkBuilder.create(linkTo(methodOn(DetailedEmployeeController.class).findById(id)))
             .withTitle("The employee with ID " + id + ", with embedded resources for her managers and colleagues")
             .withTemplateTitle("A link template to detailed data for a single employee by ID")
             .build();

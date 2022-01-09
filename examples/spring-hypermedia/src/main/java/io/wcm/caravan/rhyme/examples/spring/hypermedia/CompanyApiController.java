@@ -64,42 +64,56 @@ class CompanyApiController implements CompanyApi {
   @GetMapping("/")
   CompanyApi get() {
 
-    // this controller is directly implementing CompanyApi, which is LinkableResource and
-    // can therefore automatically be rendered by the LinkableResourceMessageConverter
+    // Since the controller class is directly implementing the CompanyApi interface we can simply return this.
+
+    // Because CompanyApi extends LinkableResource, all methods from the interface will be automatically invoked later,
+    // when the response is being rendered by the LinkableResourceMessageConverter.
     return this;
   }
 
-  // All following methods will be automatically invoked later, when the response is being rendered
-  // by the LinkableResourceMessageConverter. All they do to create the links and templates is to delegate the
-  // call do the corresponding controller methods (which again return LinkableResource instances)
+  // To create the links in the entry point, we are simply delegating to the controllers that create
+  // server-side implementations of each HAL API interface. When this entry point resource is being rendered,
+  // the #createLink() method (but nothing else) of those related resources will be called, and
+  // the link will be added to the response (using the relation from the @Related annotation of the
+  // method declaration in the CompanyApi interface)
 
   @Override
   public EmployeeCollectionResource getEmployees() {
+
     return employees.findAll();
   }
 
   @Override
   public ManagerCollectionResource getManagers() {
+
     return managers.findAll();
   }
+
+  // For any link *templates* defined in the CompanyApi interface, the response renderer will invoke
+  // the corresponding method with a null value for the "id" parameter, since the ID is unknown at that point.
+  // The resource implementations created by the controllers are able to handle this,
+  // and will create a URI template with an "id" variable when #createLink() is being called during rendering.
 
   @Override
   public EmployeeResource getEmployeeById(Long id) {
 
     // Note that even though the ID is always null when this entry point is rendered as a HAL resource,
-    // we still pass the given ID to the controller method. This allows these methods
-    // to also be called directly by API consumers in the same application (which do know the ID of
-    // the entity they are looking for).
+    // we still pass the given ID to the controller method.
+    // This allows these methods to also be called directly by API consumers in the same application context
+    // (which do know the ID of the entity they are looking for).
     return employees.findById(id);
   }
 
   @Override
   public ManagerResource getManagerById(Long id) {
+
     return managers.findById(id);
   }
 
   @Override
+
   public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
+
     return detailedEmployees.findById(id);
   }
 

@@ -61,13 +61,13 @@ public interface UrlFingerprinting {
   UrlFingerprinting withTimestampParameter(String name, Supplier<Instant> source);
 
   /**
-   * Adds another additional query parameter to all links being build with this instance
+   * Adds another additional query parameter to all links being built with this instance
    * (unless a query parameter with the same name already exists)
    * @param name of the query parameter to be added
    * @param value of the parameter to be added
    * @return this
    */
-  UrlFingerprinting addQueryParameter(String name, Object value);
+  UrlFingerprinting withQueryParameter(String name, Object value);
 
   /**
    * Allows the URL fingerprinting logic to modify the max-age cache-control directive for the response that is

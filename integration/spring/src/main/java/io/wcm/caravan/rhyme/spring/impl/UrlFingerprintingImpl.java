@@ -73,7 +73,7 @@ class UrlFingerprintingImpl implements UrlFingerprinting {
   }
 
   @Override
-  public UrlFingerprinting addQueryParameter(String name, Object value) {
+  public UrlFingerprinting withQueryParameter(String name, Object value) {
 
     additionalQueryParameters.put(name, value);
     return this;
