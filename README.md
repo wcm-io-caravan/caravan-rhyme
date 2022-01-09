@@ -48,7 +48,7 @@ Another example for usage with Spring Boot can be found at https://github.com/fe
 
 ## Build from sources
 
-Using **JDK 8 or 11** and **Apache Maven 3.6.0** (or higher) you should be able to build all modules (and run the integration tests) from the root directory:
+Using **JDK 8, 11 or 17** and **Apache Maven 3.6.3** (or higher) you should be able to build all modules (and run the integration tests) from the root directory:
 
 ```
 mvn clean install
