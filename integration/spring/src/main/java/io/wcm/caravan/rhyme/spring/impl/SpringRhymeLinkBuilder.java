@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -108,22 +109,40 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
       fingerprintingParameters.forEach(uriBuilder::queryParam);
     }
 
-    UriComponents components = uriBuilder.build();
-    String uri = components.toUriString();
-
-    if (!additionalQueryVariableNames.isEmpty()) {
-
-      String names = additionalQueryVariableNames.stream()
-          .collect(Collectors.joining(","));
-
-      String operator = components.getQuery() != null ? "&" : "?";
-
-      uri = uri + "{" + operator + names + "}";
+    if (additionalQueryVariableNames.isEmpty()) {
+      return link.setHref(uriBuilder.build().toString());
     }
 
-    link.setHref(uri);
+    return link.setHref(buildTemplateWithAdditionalVariables(uriBuilder));
 
-    return link;
+  }
+
+  private String buildTemplateWithAdditionalVariables(UriComponentsBuilder uriBuilder) {
+
+    stripQueryParams(uriBuilder, additionalQueryVariableNames);
+
+    UriComponents components = uriBuilder.build();
+
+    String names = additionalQueryVariableNames.stream()
+        .collect(Collectors.joining(","));
+
+    String operator = components.getQuery() != null ? "&" : "?";
+
+    return components.toUriString() + "{" + operator + names + "}";
+  }
+
+  private static void stripQueryParams(UriComponentsBuilder uriBuilder, List<String> namesToStrip) {
+
+    UriComponents components = uriBuilder.build();
+
+    MultiValueMap<String, String> existingParams = components.getQueryParams();
+    MultiValueMap<String, String> strippedParams = new LinkedMultiValueMap<>();
+
+    existingParams.keySet().stream()
+        .filter(name -> !namesToStrip.contains(name))
+        .forEach(name -> strippedParams.put(name, existingParams.get(name)));
+
+    uriBuilder.replaceQueryParams(strippedParams);
   }
 
   private void appendQueryParams(UriComponentsBuilder uriBuilder) {
@@ -138,7 +157,7 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
   }
 
   @Override
-  public <T extends LinkableResource> T buildProxyOf(Class<T> halApiInterface) {
+  public <T extends LinkableResource> T buildLinked(Class<T> halApiInterface) {
 
     Link linkToResource = build();
 

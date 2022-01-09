@@ -86,7 +86,7 @@ public interface CompanyApi extends LinkableResource {
    * @param useFingerprinting if set to false, no time stamp parameters will be added to the URLs
    * @param embedRhymeMetadata if set to true, extensive information for developers
    *          will be embedded into every resource
-   * @return a new {@link CompanyApi} instance with the given settings
+   * @return a new {@link CompanyApi} instance that links to the entry point with the given parameters
    */
   @Related("company:preferences")
   CompanyApi withClientPreferences(

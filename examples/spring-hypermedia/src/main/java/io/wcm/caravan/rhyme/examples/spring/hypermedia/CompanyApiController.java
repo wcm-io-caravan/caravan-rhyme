@@ -64,11 +64,14 @@ class CompanyApiController implements CompanyApi {
   @GetMapping("/")
   CompanyApi get() {
 
+    // this controller is directly implementing CompanyApi, which is LinkableResource and
+    // can therefore automatically be rendered by the LinkableResourceMessageConverter
     return this;
   }
 
-  // All methods from the interface will be automatically invoked later, when the response is being rendered
-  // by the LinkableResourceMessageConverter.
+  // All following methods will be automatically invoked later, when the response is being rendered
+  // by the LinkableResourceMessageConverter. All they do to create the links and templates is to delegate the
+  // call do the corresponding controller methods (which again return Linkableresource instances)
 
   @Override
   public EmployeeCollectionResource getEmployees() {
@@ -103,10 +106,12 @@ class CompanyApiController implements CompanyApi {
   @Override
   public CompanyApi withClientPreferences(Boolean useEmbeddedResources, Boolean useFingerprinting, Boolean embedRhymeMetadata) {
 
+    // create a link to this controller, but explicitly add template variables for parameters
+    // that will only be picked up by CompanyApiLinkBuilder
     return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
         .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, EMBED_RHYME_METADATA)
         .withTitle("Reload the entry point with different settings")
-        .buildProxyOf(CompanyApi.class);
+        .buildLinked(CompanyApi.class);
   }
 
   @Override
