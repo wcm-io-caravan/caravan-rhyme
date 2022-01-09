@@ -79,13 +79,11 @@ class CompanyApiController implements CompanyApi {
 
   @Override
   public EmployeeCollectionResource getEmployees() {
-
     return employees.findAll();
   }
 
   @Override
   public ManagerCollectionResource getManagers() {
-
     return managers.findAll();
   }
 
@@ -106,14 +104,12 @@ class CompanyApiController implements CompanyApi {
 
   @Override
   public ManagerResource getManagerById(Long id) {
-
     return managers.findById(id);
   }
 
   @Override
 
   public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
-
     return detailedEmployees.findById(id);
   }
 
@@ -133,6 +129,7 @@ class CompanyApiController implements CompanyApi {
   @Override
   public Link createLink() {
 
+    // the link title should vary depending on whether the entry point was re-loaded via CompanyApi#withClientPreferences
     String title = "The entry point of the hypermedia example API";
     if (linkBuilder.hasClientPreferences()) {
       title += " (with custom client preferences)";
