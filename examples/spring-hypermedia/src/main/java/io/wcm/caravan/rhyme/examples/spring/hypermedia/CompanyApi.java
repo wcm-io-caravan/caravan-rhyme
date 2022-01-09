@@ -78,14 +78,18 @@ public interface CompanyApi extends LinkableResource {
   DetailedEmployeeResource getDetailedEmployeeById(@TemplateVariable(ID) Long id);
 
   /**
-   * reload the API entry point with different settings, which will persist across all resources that are loaded
-   * afterwards.
+   * Reload the API entry point with different client preferences, which will lead to all links
+   * being generated with additional parameters that enforce those preferences.
+   * <p>
+   * Note that this affects the HAL+JSON generation only, so it doesn't make sense (and will fail)
+   * if you call this as an internal consumer that's working directly with the server side API implementation
+   * </p>
    * @param useEmbeddedResources if set to false, the server will never embed any resources, but only use links
    * @param useFingerprinting if set to false, the server will not add any time stamp parameters to the URLs
    * @return a new {@link CompanyApi} instance with the given settings
    */
-  @Related("company:settings")
-  CompanyApi withSettings(
+  @Related("company:preferences")
+  CompanyApi withClientPreferences(
       @TemplateVariable(USE_EMBEDDED_RESOURCES) Boolean useEmbeddedResources,
       @TemplateVariable(USE_FINGERPRINTING) Boolean useFingerprinting);
 }

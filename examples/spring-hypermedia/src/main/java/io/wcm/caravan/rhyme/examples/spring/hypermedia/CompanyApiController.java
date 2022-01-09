@@ -100,7 +100,7 @@ class CompanyApiController implements CompanyApi {
   }
 
   @Override
-  public CompanyApi withSettings(Boolean useEmbeddedResources, Boolean useFingerprinting) {
+  public CompanyApi withClientPreferences(Boolean useEmbeddedResources, Boolean useFingerprinting) {
 
     return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
         .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING)

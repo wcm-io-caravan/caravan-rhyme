@@ -37,7 +37,7 @@ public class CompanyApiSettingsIT extends MockMvcClientIT {
     return super.getApiImplementionOrClientProxy()
         // and we are returning the alternative entry point with the settings
         // that disable the usage of embedded resource
-        .withSettings(useEmbeddedResources, useFingerprinting);
+        .withClientPreferences(useEmbeddedResources, useFingerprinting);
   }
 
   @Test
