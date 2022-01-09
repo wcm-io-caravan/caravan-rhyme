@@ -54,7 +54,7 @@ public class InternalConsumerIT extends AbstractCompanyApiIT {
 
     // calling any other method than createLink on the CompanyApi instance will fail,
     // because this method is only meant for external consumers accessing the API through HTTP
-    Throwable ex = catchThrowable(() -> api.withClientPreferences(true, true).getEmployees());
+    Throwable ex = catchThrowable(() -> api.withClientPreferences(true, true, false).getEmployees());
 
     assertThat(ex)
         .isInstanceOf(HalApiDeveloperException.class);

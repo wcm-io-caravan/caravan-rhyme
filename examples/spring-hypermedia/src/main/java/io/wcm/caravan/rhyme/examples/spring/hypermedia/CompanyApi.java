@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.QUERY_PARAM_TOGGLE;
+
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
@@ -91,5 +93,6 @@ public interface CompanyApi extends LinkableResource {
   @Related("company:preferences")
   CompanyApi withClientPreferences(
       @TemplateVariable(USE_EMBEDDED_RESOURCES) Boolean useEmbeddedResources,
-      @TemplateVariable(USE_FINGERPRINTING) Boolean useFingerprinting);
+      @TemplateVariable(USE_FINGERPRINTING) Boolean useFingerprinting,
+      @TemplateVariable(QUERY_PARAM_TOGGLE) Boolean embedRhymeMetadata);
 }

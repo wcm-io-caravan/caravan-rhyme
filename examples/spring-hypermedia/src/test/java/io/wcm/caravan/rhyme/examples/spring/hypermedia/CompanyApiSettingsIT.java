@@ -1,5 +1,6 @@
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.QUERY_PARAM_TOGGLE;
 import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_EMBEDDED_RESOURCES;
 import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_FINGERPRINTING;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +28,7 @@ public class CompanyApiSettingsIT extends MockMvcClientIT {
 
   private Boolean useEmbeddedResources = false;
   private Boolean useFingerprinting = true;
+  private Boolean embedRhymeMetadata = false;
 
   @Override
   protected CompanyApi getApiImplementionOrClientProxy() {
@@ -37,7 +39,7 @@ public class CompanyApiSettingsIT extends MockMvcClientIT {
     return super.getApiImplementionOrClientProxy()
         // and we are returning the alternative entry point with the settings
         // that disable the usage of embedded resource
-        .withClientPreferences(useEmbeddedResources, useFingerprinting);
+        .withClientPreferences(useEmbeddedResources, useFingerprinting, embedRhymeMetadata);
   }
 
   @Test
@@ -45,6 +47,7 @@ public class CompanyApiSettingsIT extends MockMvcClientIT {
 
     useEmbeddedResources = null;
     useFingerprinting = null;
+    embedRhymeMetadata = null;
 
     Link settingsLink = getApiImplementionOrClientProxy().createLink();
 
@@ -54,7 +57,7 @@ public class CompanyApiSettingsIT extends MockMvcClientIT {
     String[] variables = UriTemplate.fromTemplate(settingsLink.getHref()).getVariables();
 
     assertThat(variables)
-        .containsExactlyInAnyOrder(USE_EMBEDDED_RESOURCES, CompanyApi.USE_FINGERPRINTING);
+        .containsExactlyInAnyOrder(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, QUERY_PARAM_TOGGLE);
   }
 
   @Test
