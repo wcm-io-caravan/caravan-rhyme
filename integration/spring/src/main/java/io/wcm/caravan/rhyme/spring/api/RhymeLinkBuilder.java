@@ -22,6 +22,8 @@ package io.wcm.caravan.rhyme.spring.api;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
@@ -52,6 +54,14 @@ public interface RhymeLinkBuilder {
   RhymeLinkBuilder withTemplateTitle(String title);
 
   /**
+   * Ensures that a link template is generated that contains query parameter variables with all the given names.
+   * If the link already contains resolved query parameters with the same names, they are removed.
+   * @param names of the query parameter variables to add
+   * @return this
+   */
+  RhymeLinkBuilder withTemplateVariables(String... names);
+
+  /**
    * Allows to disable the addition of fingerprinting parameters only for the link that is currently being built
    * @return this
    */
@@ -64,4 +74,17 @@ public interface RhymeLinkBuilder {
    */
   Link build();
 
+  /**
+   * Finishes building the link and create a proxy instance that returns this link when
+   * {@link LinkableResource#createLink()} is called.
+   * <p>
+   * This can be used to implement a method annotated with
+   * {@link Related} where you can't create a full implementation of a given {@link HalApiInterface},
+   * but you can create a {@link Link} with a URI pointing to such a resource.
+   * </p>
+   * @param <T> the return type
+   * @param halApiInterface an interface annotated with {@link HalApiInterface}
+   * @return a proxy instance on which only {@link LinkableResource#createLink()} can be called
+   */
+  <T extends LinkableResource> T buildLinked(Class<T> halApiInterface);
 }

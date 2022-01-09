@@ -19,12 +19,20 @@
  */
 package io.wcm.caravan.rhyme.spring.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.ResourceConversions;
 import io.wcm.caravan.rhyme.spring.api.RhymeLinkBuilder;
 
 /**
@@ -35,13 +43,18 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
   private final Link link;
   private final Map<String, String> fingerprintingParameters;
+  private final Map<String, Object> additionalQueryParameters;
+
+  private final List<String> additionalQueryVariableNames = new ArrayList<>();
 
   private boolean withFingerprinting = true;
 
-  SpringRhymeLinkBuilder(WebMvcLinkBuilder webMvcLinkBuilder, Map<String, String> fingerprintingParameters) {
+  SpringRhymeLinkBuilder(WebMvcLinkBuilder webMvcLinkBuilder, Map<String, String> fingerprintingParameters, Map<String, Object> stickyParameters) {
 
     this.link = new Link(webMvcLinkBuilder.toString());
+
     this.fingerprintingParameters = fingerprintingParameters;
+    this.additionalQueryParameters = stickyParameters;
   }
 
   @Override
@@ -70,6 +83,15 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
   }
 
   @Override
+  public RhymeLinkBuilder withTemplateVariables(String... queryParameterNames) {
+
+    for (String name : queryParameterNames) {
+      additionalQueryVariableNames.add(name);
+    }
+    return this;
+  }
+
+  @Override
   public SpringRhymeLinkBuilder withoutFingerprint() {
 
     withFingerprinting = false;
@@ -81,12 +103,64 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
 
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(link.getHref());
 
+    appendQueryParams(uriBuilder);
+
     if (withFingerprinting) {
       fingerprintingParameters.forEach(uriBuilder::queryParam);
     }
 
-    link.setHref(uriBuilder.build().toUriString());
+    if (additionalQueryVariableNames.isEmpty()) {
+      return link.setHref(uriBuilder.build().toString());
+    }
 
-    return link;
+    return link.setHref(buildTemplateWithAdditionalVariables(uriBuilder));
+
+  }
+
+  private String buildTemplateWithAdditionalVariables(UriComponentsBuilder uriBuilder) {
+
+    stripQueryParams(uriBuilder, additionalQueryVariableNames);
+
+    UriComponents components = uriBuilder.build();
+
+    String names = additionalQueryVariableNames.stream()
+        .collect(Collectors.joining(","));
+
+    String operator = components.getQuery() != null ? "&" : "?";
+
+    return components.toUriString() + "{" + operator + names + "}";
+  }
+
+  private static void stripQueryParams(UriComponentsBuilder uriBuilder, List<String> namesToStrip) {
+
+    UriComponents components = uriBuilder.build();
+
+    MultiValueMap<String, String> existingParams = components.getQueryParams();
+    MultiValueMap<String, String> strippedParams = new LinkedMultiValueMap<>();
+
+    existingParams.keySet().stream()
+        .filter(name -> !namesToStrip.contains(name))
+        .forEach(name -> strippedParams.put(name, existingParams.get(name)));
+
+    uriBuilder.replaceQueryParams(strippedParams);
+  }
+
+  private void appendQueryParams(UriComponentsBuilder uriBuilder) {
+
+    MultiValueMap<String, String> existingParams = uriBuilder.build().getQueryParams();
+
+    additionalQueryParameters.forEach((name, value) -> {
+      if (!existingParams.containsKey(name) && !additionalQueryVariableNames.contains(name)) {
+        uriBuilder.queryParam(name, value);
+      }
+    });
+  }
+
+  @Override
+  public <T extends LinkableResource> T buildLinked(Class<T> halApiInterface) {
+
+    Link linkToResource = build();
+
+    return ResourceConversions.asLinkableResource(linkToResource, halApiInterface);
   }
 }

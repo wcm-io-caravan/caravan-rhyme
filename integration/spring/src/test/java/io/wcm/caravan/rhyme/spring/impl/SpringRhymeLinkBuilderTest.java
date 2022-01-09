@@ -29,6 +29,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
+import com.damnhandy.uri.template.UriTemplate;
+
 import io.wcm.caravan.hal.resource.Link;
 import wiremock.com.google.common.collect.ImmutableMap;
 
@@ -42,7 +44,14 @@ public class SpringRhymeLinkBuilderTest {
 
     WebMvcLinkBuilder linkBuilder = linkTo(methodOn(SpringLinkBuilderTestController.class).responseStatus(statusCode));
 
-    return new SpringRhymeLinkBuilder(linkBuilder, timestampParameters);
+    return new SpringRhymeLinkBuilder(linkBuilder, timestampParameters, Collections.emptyMap());
+  }
+
+  private SpringRhymeLinkBuilder createLinkBuilderWithAdditionalParameters(Map<String, Object> additionalParameters) {
+
+    WebMvcLinkBuilder linkBuilder = linkTo(methodOn(SpringLinkBuilderTestController.class).responseStatus(200));
+
+    return new SpringRhymeLinkBuilder(linkBuilder, Collections.emptyMap(), additionalParameters);
   }
 
   private SpringRhymeLinkBuilder buildResolvedUri() {
@@ -200,5 +209,75 @@ public class SpringRhymeLinkBuilderTest {
 
     assertThat(link.isTemplated()).isTrue();
     assertThat(link.getTitle()).isEqualTo("template title");
+  }
+
+  @Test
+  public void withTemplateVariables_adds_single_variable() throws Exception {
+
+    SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
+
+    Link link = linkBuilder
+        .withTemplateVariables("foo")
+        .build();
+
+    assertThat(link.isTemplated()).isTrue();
+
+    UriTemplate template = UriTemplate.fromTemplate(link.getHref());
+    assertThat(template.getVariables())
+        .containsOnly("foo");
+  }
+
+  @Test
+  public void withTemplateVariables_adds_multiple_variables() throws Exception {
+
+    SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
+
+    Link link = linkBuilder
+        .withTemplateVariables("foo", "bar")
+        .build();
+
+    assertThat(link.isTemplated()).isTrue();
+
+    UriTemplate template = UriTemplate.fromTemplate(link.getHref());
+    assertThat(template.getVariables())
+        .containsExactly("foo", "bar");
+  }
+
+  @Test
+  public void withTemplateVariables_replaces_original_query_param() throws Exception {
+
+    SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
+
+    Link link = linkBuilder
+        .withTemplateVariables("statusCode")
+        .build();
+
+    assertThat(link.isTemplated()).isTrue();
+
+    UriTemplate template = UriTemplate.fromTemplate(link.getHref());
+    assertThat(template.getVariables())
+        .containsExactly("statusCode");
+
+    assertThat(link.getHref())
+        .doesNotContain("?statusCode=200");
+  }
+
+  @Test
+  public void withTemplateVariables_replaces_variable_from_template() throws Exception {
+
+    SpringRhymeLinkBuilder linkBuilder = createLinkBuilderWithAdditionalParameters(ImmutableMap.of("foo", "bar"));
+
+    Link link = linkBuilder
+        .withTemplateVariables("foo")
+        .build();
+
+    assertThat(link.isTemplated()).isTrue();
+
+    UriTemplate template = UriTemplate.fromTemplate(link.getHref());
+    assertThat(template.getVariables())
+        .containsExactly("foo");
+
+    assertThat(link.getHref())
+        .doesNotContain("?foo=bar");
   }
 }
