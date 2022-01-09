@@ -15,7 +15,7 @@ can easily componse a resource based on other HAL+JSON resources retrieved by HT
 # Build and Run
 
 
-Using **JDK 8 or 11** and **Apache Maven 3.6.0** (or higher) you should be able to build and run the example like this:
+Using **JDK 8, 11 or 17** and **Apache Maven 3.6.3** (or higher) you should be able to build and run the example like this:
 
 ```
 git clone https://github.com/wcm-io-caravan/caravan-rhyme.git
@@ -25,7 +25,7 @@ mvn -f examples/spring-hypermedia/ spring-boot:run
 ```
 You can then open http://localhost:8081/browser/index.html in your web browser to start exploring the API. 
 
-The **docs** icons in the HAL browser will link to a context-sensitive HTML documentation for each resource and relation.
+The **docs** icons in the HAL browser will link to a HTML documentation for each resource and relation (which is automatically generated from the source code).
 
 # Source Code Structure
 
@@ -38,8 +38,8 @@ in the Spring HATEOAS example project (on which it is based) to understand the s
 The test package [io.wcm.caravan.rhyme.examples.spring.hypermedia](src/test/java/io/wcm/caravan/rhyme/examples/spring/hypermedia) contains simple yet extensive tests for for the example service.
 
 One key thing to note here is that all test cases defined in `AbstractCompanyApiIT` are using only the `CompanyApi` entry point interface
-to access the resources under test. This allows the same set of tests to be run three times (by the subclasses):
-- directly testing the server-side implementations of those interfaces
+to access the resources under test. This allows the same set of tests to be run multiple times (by the subclasses):
+- directly accesing the server-side implementations (as a consumer of the API running in the same application context would)
 - using Spring's `MockMvc` to create mock requests to the contollers (to also test the path mappings, and JSON (de)serialization)
 - actually starting up the complete application and using a regular HTTP client to retrieve the resources from http://localhost:8081
 
