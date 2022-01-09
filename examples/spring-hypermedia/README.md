@@ -74,7 +74,7 @@ Linking to other resources works by calling the methods of other controllers to 
 
 ## Embedded Resources
 
-The [EmployeeResourceImpl](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/EmployeeController.java#L134) class is a good example how you can control whether a resource should be embedded. Simply implementing the `EmbeddedableResource` interface would embed this resource wherever it is linked. By overriding `#isEmbedded()` you can control when this should happen. In this example, it depends on which constructor you use, but you can use any logic you want to make that decision. 
+The [EmployeeResourceImpl](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/EmployeeController.java#L134) class is a good example how you can control whether a resource should be embedded. Simply implementing the `EmbeddedableResource` interface would embed this resource wherever it is linked. By overriding `#isEmbedded()` you can control when this should happen.
 
 In this example, the clients are giving full control over whether they want to have employee and manager resources embedded or not. By default, these resources are usually embedded, but clients can follow the `company:preferences` link from the entry point, and set the `useEmbeddedResources` variable to `false`. This will reload the entry point with all links modified so that the server will only render links to these resources.
 
@@ -90,6 +90,6 @@ There is no code required within the resource implementations (and no parameters
 
 ## Including embedded metadata
 
-For any resource in the example, you can add an `embedRhymeMetadata` query parameter to the URL to see additional details from the framework that were collected while rendering the resource. If you set this parameter in the `company:prferences` link template in the entry point, this parameter will be automatically added to all links while browsing through the resources.
+For any resource in the example, you can add an `embedRhymeMetadata` query parameter to the URL to see additional details from the framework that were collected while rendering the resource. If you set this parameter in the `company:preferences` link template in the entry point, this parameter will be automatically added to all links while browsing through the resources.
 
 This metadata is especially interesting on the `company:detailedEmployee` resources, as it will also show you exactly which other employee and manager resources have been loaded in the background using the `HalApiClient`.
