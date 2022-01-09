@@ -25,10 +25,12 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -110,7 +112,20 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
       fingerprintingParameters.forEach(uriBuilder::queryParam);
     }
 
-    link.setHref(uriBuilder.build().toUriString());
+    UriComponents components = uriBuilder.build();
+    String uri = components.toUriString();
+
+    if (!additionalQueryVariableNames.isEmpty()) {
+
+      String names = additionalQueryVariableNames.stream()
+          .collect(Collectors.joining(","));
+
+      String operator = components.getQuery() != null ? "&" : "?";
+
+      uri = uri + "{" + operator + names + "}";
+    }
+
+    link.setHref(uri);
 
     return link;
   }
@@ -120,14 +135,8 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
     MultiValueMap<String, String> existingParams = uriBuilder.build().getQueryParams();
 
     additionalQueryParameters.forEach((name, value) -> {
-      if (!existingParams.containsKey(name)) {
+      if (!existingParams.containsKey(name) && !additionalQueryVariableNames.contains(name)) {
         uriBuilder.queryParam(name, value);
-      }
-    });
-
-    additionalQueryVariableNames.forEach(name -> {
-      if (!existingParams.containsKey(name)) {
-        uriBuilder.queryParam(name, "{" + name + "}");
       }
     });
   }

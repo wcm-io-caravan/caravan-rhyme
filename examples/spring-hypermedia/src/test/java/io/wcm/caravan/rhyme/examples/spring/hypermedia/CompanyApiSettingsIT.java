@@ -105,7 +105,7 @@ public class CompanyApiSettingsIT extends MockMvcClientIT {
 
     String relation = entry.getKey();
 
-    return !(relation.equals("curies") || relation.equals("company:settings"));
+    return !(relation.equals("curies") || relation.equals("company:preferences"));
   }
 
   private List<HalResponse> crawlAllResponses() {
