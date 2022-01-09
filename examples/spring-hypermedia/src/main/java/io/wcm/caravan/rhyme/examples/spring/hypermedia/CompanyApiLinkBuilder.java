@@ -70,6 +70,8 @@ class CompanyApiLinkBuilder {
 
   private final UrlFingerprinting fingerprinting;
 
+  private boolean hasClientPreferences = false;
+
   private Boolean useEmbeddedResources;
   private Boolean useFingerprinting;
 
@@ -96,6 +98,8 @@ class CompanyApiLinkBuilder {
       return true;
     }
 
+    hasClientPreferences = true;
+
     // if the parameter *was* present, then make sure it's also added to every other link
     Boolean boolValue = BooleanUtils.toBoolean(fromRequest);
     fingerprinting.addQueryParameter(name, boolValue);
@@ -104,6 +108,10 @@ class CompanyApiLinkBuilder {
 
   boolean isUseEmbeddedResources() {
     return useEmbeddedResources;
+  }
+
+  boolean hasClientPreferences() {
+    return hasClientPreferences;
   }
 
   /**

@@ -71,7 +71,7 @@ class CompanyApiController implements CompanyApi {
 
   // All following methods will be automatically invoked later, when the response is being rendered
   // by the LinkableResourceMessageConverter. All they do to create the links and templates is to delegate the
-  // call do the corresponding controller methods (which again return Linkableresource instances)
+  // call do the corresponding controller methods (which again return LinkableResource instances)
 
   @Override
   public EmployeeCollectionResource getEmployees() {
@@ -107,19 +107,25 @@ class CompanyApiController implements CompanyApi {
   public CompanyApi withClientPreferences(Boolean useEmbeddedResources, Boolean useFingerprinting, Boolean embedRhymeMetadata) {
 
     // create a link to this controller, but explicitly add template variables for parameters
-    // that will only be picked up by CompanyApiLinkBuilder
+    // that will then be picked up by CompanyApiLinkBuilder when the link is followed
     return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
         .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, EMBED_RHYME_METADATA)
         .withTitle("Reload the entry point with different settings")
+        // since this method is never called by internal consumers, we don't have to return a full server-side
+        // CompanyApi implementation. Instead we create and return a minimal proxy that only can render the link.
         .buildLinked(CompanyApi.class);
   }
 
   @Override
   public Link createLink() {
 
-    return linkBuilder.create(linkTo(methodOn(CompanyApiController.class)
-        .get()))
-        .withTitle("The entry point of the hypermedia example API")
+    String title = "The entry point of the hypermedia example API";
+    if (linkBuilder.hasClientPreferences()) {
+      title += " (with custom client preferences)";
+    }
+
+    return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
+        .withTitle(title)
         .build();
   }
 }
