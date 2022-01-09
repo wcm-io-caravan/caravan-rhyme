@@ -205,7 +205,7 @@ public class HalApiServletTest {
 
     Resource resource = context.create().resource(TEST_RESOURCE_PATH);
 
-    context.request().setQueryString(RequestMetricsCollector.QUERY_PARAM_TOGGLE);
+    context.request().setQueryString(RequestMetricsCollector.EMBED_RHYME_METADATA);
 
     MockSlingHttpServletResponse response = requestResource(resource, SelectorSlingTestResource.SELECTOR);
 

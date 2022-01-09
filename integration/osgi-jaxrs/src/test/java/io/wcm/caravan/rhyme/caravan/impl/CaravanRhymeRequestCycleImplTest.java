@@ -189,7 +189,7 @@ public class CaravanRhymeRequestCycleImplTest {
   public void processRequest_should_include_metadata_if_query_param_is_set() throws Exception {
 
     MultivaluedMap<String, String> queryParams = new MultivaluedHashMap<String, String>();
-    queryParams.put(RequestMetricsCollector.QUERY_PARAM_TOGGLE, Collections.emptyList());
+    queryParams.put(RequestMetricsCollector.EMBED_RHYME_METADATA, Collections.emptyList());
 
     when(uriInfo.getQueryParameters()).thenReturn(queryParams);
 

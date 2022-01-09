@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
-import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.QUERY_PARAM_TOGGLE;
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.EMBED_RHYME_METADATA;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -104,7 +104,7 @@ class CompanyApiController implements CompanyApi {
   public CompanyApi withClientPreferences(Boolean useEmbeddedResources, Boolean useFingerprinting, Boolean embedRhymeMetadata) {
 
     return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
-        .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, QUERY_PARAM_TOGGLE)
+        .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, EMBED_RHYME_METADATA)
         .withTitle("Reload the entry point with different settings")
         .buildProxyOf(CompanyApi.class);
   }

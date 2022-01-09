@@ -1,6 +1,6 @@
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
-import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.QUERY_PARAM_TOGGLE;
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.EMBED_RHYME_METADATA;
 import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_EMBEDDED_RESOURCES;
 import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_FINGERPRINTING;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,7 +57,7 @@ public class CompanyApiSettingsIT extends MockMvcClientIT {
     String[] variables = UriTemplate.fromTemplate(settingsLink.getHref()).getVariables();
 
     assertThat(variables)
-        .containsExactlyInAnyOrder(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, QUERY_PARAM_TOGGLE);
+        .containsExactlyInAnyOrder(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, EMBED_RHYME_METADATA);
   }
 
   @Test

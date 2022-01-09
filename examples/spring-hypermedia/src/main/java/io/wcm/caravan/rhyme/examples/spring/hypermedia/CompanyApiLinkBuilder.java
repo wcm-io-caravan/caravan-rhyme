@@ -19,6 +19,9 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.EMBED_RHYME_METADATA;
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_FINGERPRINTING;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -78,8 +81,10 @@ class CompanyApiLinkBuilder {
         .withConditionalMaxAge(Duration.ofSeconds(10), Duration.ofDays(100))
         .withTimestampParameter(TIMESTAMP_QUERY_PARAM, repositoryListener::getLastModified);
 
-    useEmbeddedResources = initialiseStickySettingsParmeter(request, CompanyApi.USE_EMBEDDED_RESOURCES);
-    useFingerprinting = initialiseStickySettingsParmeter(request, CompanyApi.USE_FINGERPRINTING);
+    useEmbeddedResources = initialiseStickySettingsParmeter(request, USE_EMBEDDED_RESOURCES);
+    useFingerprinting = initialiseStickySettingsParmeter(request, USE_FINGERPRINTING);
+
+    initialiseStickySettingsParmeter(request, EMBED_RHYME_METADATA);
   }
 
   private Boolean initialiseStickySettingsParmeter(HttpServletRequest request, String name) {
@@ -87,7 +92,7 @@ class CompanyApiLinkBuilder {
     // if the query parameter was not present in the incoming request, then don't add it to any other links
     String fromRequest = request.getParameter(name);
     if (StringUtils.isBlank(fromRequest)) {
-      // but for both parameters, the default behavior should be as if this parameter was set to true
+      // but the default behavior should be as if this parameter was set to true
       return true;
     }
 
@@ -95,10 +100,6 @@ class CompanyApiLinkBuilder {
     Boolean boolValue = BooleanUtils.toBoolean(fromRequest);
     fingerprinting.addQueryParameter(name, boolValue);
     return boolValue;
-  }
-
-  boolean isUseFingerprinting() {
-    return useFingerprinting;
   }
 
   boolean isUseEmbeddedResources() {
@@ -119,7 +120,7 @@ class CompanyApiLinkBuilder {
 
     RhymeLinkBuilder linkBuilder = fingerprinting.createLinkWith(webMvcLinkBuilder);
 
-    if (!isUseFingerprinting()) {
+    if (!useFingerprinting) {
       linkBuilder = linkBuilder.withoutFingerprint();
     }
     return linkBuilder;
@@ -135,7 +136,7 @@ class CompanyApiLinkBuilder {
 
     RhymeLinkBuilder linkBuilder = create(linkTo(methodOn(CompanyApiController.class).get()));
 
-    if (!isUseFingerprinting() || !fingerprinting.isUsedInIncomingRequest()) {
+    if (!useFingerprinting || !fingerprinting.isUsedInIncomingRequest()) {
       linkBuilder = linkBuilder.withoutFingerprint();
     }
 

@@ -19,10 +19,9 @@
  */
 package io.wcm.caravan.rhyme.spring.impl;
 
-import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.QUERY_PARAM_TOGGLE;
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.EMBED_RHYME_METADATA;
 
 import java.time.Duration;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -102,9 +101,7 @@ class SpringRhymeImpl implements SpringRhyme {
 
   private static boolean isEmbedMetdata(HttpServletRequest httpRequest) {
 
-    Map<String, String[]> map = httpRequest.getParameterMap();
-
-    String[] embedMetadata = map.get(QUERY_PARAM_TOGGLE);
+    String[] embedMetadata = httpRequest.getParameterMap().get(EMBED_RHYME_METADATA);
     return embedMetadata != null && Stream.of(embedMetadata).noneMatch(value -> "false".equals(value));
   }
 

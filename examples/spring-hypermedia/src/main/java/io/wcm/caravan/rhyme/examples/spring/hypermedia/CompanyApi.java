@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
-import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.QUERY_PARAM_TOGGLE;
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.EMBED_RHYME_METADATA;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
@@ -82,17 +82,15 @@ public interface CompanyApi extends LinkableResource {
   /**
    * Reload the API entry point with different client preferences, which will lead to all links
    * being generated with additional parameters that enforce those preferences.
-   * <p>
-   * Note that this affects the HAL+JSON generation only, so it doesn't make sense (and will fail)
-   * if you call this as an internal consumer that's working directly with the server side API implementation
-   * </p>
    * @param useEmbeddedResources if set to false, the server will never embed any resources, but only use links
-   * @param useFingerprinting if set to false, the server will not add any time stamp parameters to the URLs
+   * @param useFingerprinting if set to false, no time stamp parameters will be added to the URLs
+   * @param embedRhymeMetadata if set to true, extensive information for developers
+   *          will be embedded into every resource
    * @return a new {@link CompanyApi} instance with the given settings
    */
   @Related("company:preferences")
   CompanyApi withClientPreferences(
       @TemplateVariable(USE_EMBEDDED_RESOURCES) Boolean useEmbeddedResources,
       @TemplateVariable(USE_FINGERPRINTING) Boolean useFingerprinting,
-      @TemplateVariable(QUERY_PARAM_TOGGLE) Boolean embedRhymeMetadata);
+      @TemplateVariable(EMBED_RHYME_METADATA) Boolean embedRhymeMetadata);
 }

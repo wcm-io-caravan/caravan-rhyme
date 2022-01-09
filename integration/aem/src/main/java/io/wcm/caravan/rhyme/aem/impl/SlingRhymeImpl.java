@@ -59,7 +59,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     RhymeBuilder rhymeBuilder = RhymeBuilder.withResourceLoader(resourceLoaders.getResourceLoader())
         .withRhymeDocsSupport(rhymeDocs);
 
-    if (request.getParameterMap().containsKey(RequestMetricsCollector.QUERY_PARAM_TOGGLE)) {
+    if (request.getParameterMap().containsKey(RequestMetricsCollector.EMBED_RHYME_METADATA)) {
       rhymeBuilder = rhymeBuilder.withEmbeddedMetadata();
     }
 
