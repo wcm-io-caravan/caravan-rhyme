@@ -19,14 +19,10 @@
  */
 package io.wcm.caravan.rhyme.spring.impl;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.util.MultiValueMap;
@@ -34,8 +30,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.ResourceConversions;
 import io.wcm.caravan.rhyme.spring.api.RhymeLinkBuilder;
 
 /**
@@ -144,24 +140,8 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
   @Override
   public <T extends LinkableResource> T buildProxyOf(Class<T> halApiInterface) {
 
-    Class[] interfaces = Stream.of(halApiInterface, LinkableResource.class).toArray(Class[]::new);
+    Link linkToResource = build();
 
-    InvocationHandler handler = new InvocationHandler() {
-
-      @Override
-      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
-        if (!method.getName().equals("createLink") && method.getParameterCount() == 0) {
-          throw new HalApiDeveloperException("Proxies created with RhymeLinkBuilder can only be used to call createLink on them");
-        }
-
-        return build();
-      }
-    };
-
-    @SuppressWarnings("unchecked")
-    T proxy = (T)Proxy.newProxyInstance(halApiInterface.getClassLoader(), interfaces, handler);
-
-    return proxy;
+    return ResourceConversions.asLinkableResource(linkToResource, halApiInterface);
   }
 }

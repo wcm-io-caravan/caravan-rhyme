@@ -38,12 +38,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.ResourceConversions;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 
@@ -288,12 +290,12 @@ public final class HalApiReflectionUtils {
   }
 
   public static String getPropertyName(Method method, HalApiTypeSupport typeSupport) {
-  
+
     String fromAnnotation = typeSupport.getPropertyName(method);
     if (StringUtils.isNotBlank(fromAnnotation)) {
       return fromAnnotation;
     }
-  
+
     String name = method.getName();
     if (name.startsWith("get")) {
       return Introspector.decapitalize(name.substring(3));
@@ -302,6 +304,42 @@ public final class HalApiReflectionUtils {
       return Introspector.decapitalize(name.substring(2));
     }
     return Introspector.decapitalize(name);
+  }
+
+  /**
+   * Creates a proxy that implements the given interface as well as {@link LinkableResource},
+   * but which can only used to create links to that resource.
+   * @param link to be returned by {@link LinkableResource#createLink()}
+   * @param halApiInterface the interface that should be implemented
+   * @return a proxy instance on which you can only call {@link LinkableResource#createLink()} and
+   *         {@link Object#toString()}
+   */
+  public static <T> T createLinkableResourceProxy(Link link, Class<T> halApiInterface) {
+
+    Class[] interfaces = Stream.of(halApiInterface, LinkableResource.class).toArray(Class[]::new);
+
+    InvocationHandler handler = new InvocationHandler() {
+
+      @Override
+      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+        if ("toString".equals(method.getName())) {
+          return "Link-based proxy of " + halApiInterface.getSimpleName();
+        }
+
+        if ("createLink".equals(method.getName()) && method.getParameterCount() == 0) {
+          return link;
+        }
+
+        throw new HalApiDeveloperException("You cannot call anything but #createLink on this " + halApiInterface.getSimpleName()
+            + " instance, because it is only a proxy that was created from a Link");
+      }
+    };
+
+    @SuppressWarnings("unchecked")
+    T proxy = (T)Proxy.newProxyInstance(halApiInterface.getClassLoader(), interfaces, handler);
+
+    return proxy;
   }
 
 }
