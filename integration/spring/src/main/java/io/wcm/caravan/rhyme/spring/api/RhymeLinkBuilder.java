@@ -51,6 +51,8 @@ public interface RhymeLinkBuilder {
    */
   RhymeLinkBuilder withTemplateTitle(String title);
 
+  RhymeLinkBuilder withTemplateVariables(String... queryParameterNames);
+
   /**
    * Allows to disable the addition of fingerprinting parameters only for the link that is currently being built
    * @return this
@@ -64,4 +66,5 @@ public interface RhymeLinkBuilder {
    */
   Link build();
 
+  <T extends LinkableResource> T buildProxyOf(Class<T> halApiInterface);
 }
