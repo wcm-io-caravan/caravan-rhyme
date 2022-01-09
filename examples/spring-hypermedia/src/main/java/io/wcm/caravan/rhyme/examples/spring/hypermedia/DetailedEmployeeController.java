@@ -115,20 +115,28 @@ class DetailedEmployeeController {
         // You can load any resource with an "embedRhymeMetadata" query parameter to
         // see the performance costs of these repeated calls, and then optimize if necessary.
 
-        // We could return this resource proxy directly, but then only a link to the upstream resource would be added.
-        // Since we want to embed the manager resource, we need to convert it to another proxy that also implements EmbeddableResource.
-        return ResourceConversions.asEmbeddedResourceWithoutLink(manager);
+        // If we want to embed the manager resource, we need to convert it to another proxy that also implements EmbeddableResource.
+        if (linkBuilder.isUseEmbeddedResources()) {
+          return ResourceConversions.asEmbeddedResourceWithoutLink(manager);
+        }
+
+        // if we return this resource proxy directly, only a link to the manager resource
+        return manager;
       }
 
       @Override
       public Stream<EmployeeResource> getColleagues() {
 
         // create a stream from the links to all employees managed by the same manager
-        return getEmployee().getManager().getManagedEmployees().stream()
+        Stream<EmployeeResource> colleagues = getEmployee().getManager().getManagedEmployees().stream()
             // ignore the employee for which we are just generating the detailed resource
-            .filter(employee -> !employee.getState().getId().equals(id))
-            // and again ensure that these resources are embedded rather than linked
-            .map(ResourceConversions::asEmbeddedResourceWithoutLink);
+            .filter(employee -> !employee.getState().getId().equals(id));
+
+        // and again ensure that these resources are embedded rather than linked
+        if (linkBuilder.isUseEmbeddedResources()) {
+          colleagues = colleagues.map(ResourceConversions::asEmbeddedResourceWithoutLink);
+        }
+        return colleagues;
       }
 
       @Override

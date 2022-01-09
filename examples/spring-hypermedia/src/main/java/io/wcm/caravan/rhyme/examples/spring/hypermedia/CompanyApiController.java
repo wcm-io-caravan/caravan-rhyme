@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.EMBED_RHYME_METADATA;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -64,8 +65,9 @@ class CompanyApiController implements CompanyApi {
   CompanyApi get() {
 
     // Since the controller class is directly implementing the CompanyApi interface we can simply return this.
-    // All methods from the interface will be automatically invoked later, when the response is being rendered
-    // by the LinkableResourceMessageConverter.
+
+    // Because CompanyApi extends LinkableResource, all methods from the interface will be automatically invoked later,
+    // when the response is being rendered by the LinkableResourceMessageConverter.
     return this;
   }
 
@@ -96,10 +98,9 @@ class CompanyApiController implements CompanyApi {
   public EmployeeResource getEmployeeById(Long id) {
 
     // Note that even though the ID is always null when this entry point is rendered as a HAL resource,
-    // we still pass the given ID to the controller method. This allows these methods
-    // to also be called directly by API consumers in the same application (which do know the ID of
-    // the entity they are looking for).
-
+    // we still pass the given ID to the controller method.
+    // This allows these methods to also be called directly by API consumers in the same application context
+    // (which do know the ID of the entity they are looking for).
     return employees.findById(id);
   }
 
@@ -110,17 +111,35 @@ class CompanyApiController implements CompanyApi {
   }
 
   @Override
+
   public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
 
     return detailedEmployees.findById(id);
   }
 
   @Override
+  public CompanyApi withClientPreferences(Boolean useEmbeddedResources, Boolean useFingerprinting, Boolean embedRhymeMetadata) {
+
+    // create a link to this controller, but explicitly add template variables for parameters
+    // that will then be picked up by CompanyApiLinkBuilder when the link is followed
+    return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
+        .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, EMBED_RHYME_METADATA)
+        .withTitle("Reload the entry point with different settings")
+        // since this method is never called by internal consumers, we don't have to return a full server-side
+        // CompanyApi implementation. Instead we create and return a minimal proxy that only can render the link.
+        .buildLinked(CompanyApi.class);
+  }
+
+  @Override
   public Link createLink() {
 
-    // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
+    String title = "The entry point of the hypermedia example API";
+    if (linkBuilder.hasClientPreferences()) {
+      title += " (with custom client preferences)";
+    }
+
     return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
-        .withTitle("The entry point of the hypermedia example API")
+        .withTitle(title)
         .build();
   }
 }

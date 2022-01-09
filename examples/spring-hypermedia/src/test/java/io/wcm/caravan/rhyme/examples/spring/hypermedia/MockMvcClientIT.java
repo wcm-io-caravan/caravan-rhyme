@@ -45,7 +45,7 @@ import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration
  * are executed with Spring's {@link MockMvc} class.
  * <p>
  * Without adding further code,
- * it can verify a few aspects that the {@link ServerSideIT} doesn't cover.
+ * it can verify a few aspects that the {@link InternalConsumerIT} doesn't cover.
  * </p>
  * <ul>
  * <li>The path mappings and parameter parsing of the controller methods</li>
@@ -73,7 +73,7 @@ import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration
 public class MockMvcClientIT extends AbstractCompanyApiIT {
 
   @Autowired
-  private HalResourceLoader mockMvcResourceLoader;
+  protected HalResourceLoader mockMvcResourceLoader;
 
   @Override
   protected CompanyApi getApiImplementionOrClientProxy() {

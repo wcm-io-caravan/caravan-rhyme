@@ -73,7 +73,7 @@ class ManagerController {
 
       @Override
       public CompanyApi getApi() {
-        return api;
+        return api.get();
       }
 
       @Override
@@ -139,7 +139,7 @@ class ManagerController {
     private ManagerResourceImpl(Manager manager) {
       this.id = manager.getId();
       this.state = Lazy.of(manager);
-      this.embedded = true;
+      this.embedded = linkBuilder.isUseEmbeddedResources();
     }
 
     @Override
@@ -165,6 +165,11 @@ class ManagerController {
     }
 
     @Override
+    public boolean isLinkedWhenEmbedded() {
+      return false;
+    }
+
+    @Override
     public Link createLink() {
 
       // every link to this type of resource is created here, with the help of CompanyApiLinkBuilder
@@ -173,6 +178,7 @@ class ManagerController {
           .withTemplateTitle("A link template to load a single manager by ID")
           .build();
     }
+
   }
 
   /**

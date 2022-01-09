@@ -19,10 +19,15 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration;
 
 /**
@@ -33,13 +38,25 @@ import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration
  */
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
-public class ServerSideIT extends AbstractCompanyApiIT {
+public class InternalConsumerIT extends AbstractCompanyApiIT {
 
-  @Autowired // This will inject the {@link CompanyApiController} as it implements that interface
+  /** This will inject the {@link CompanyApiController} instance as it's implementing that public interface */
+  @Autowired
   private CompanyApi api;
 
   @Override
   protected CompanyApi getApiImplementionOrClientProxy() {
     return api;
+  }
+
+  @Test
+  void will_fail_if_withClientPreferences_is_called() {
+
+    // calling any other method than createLink on the CompanyApi instance will fail,
+    // because this method is only meant for external consumers accessing the API through HTTP
+    Throwable ex = catchThrowable(() -> api.withClientPreferences(true, true, false).getEmployees());
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class);
   }
 }

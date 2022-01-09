@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_FINGERPRINTING;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
@@ -32,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.damnhandy.uri.template.UriTemplate;
 import com.google.common.collect.Iterables;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -39,6 +42,7 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.testing.client.HalCrawler;
 import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration;
+import wiremock.com.google.common.collect.ImmutableMap;
 
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
@@ -66,8 +70,11 @@ public class UrlFingerprintingIT {
 
   private String getTimestampQueryParamFromUri(String uri) {
 
-    return UriComponentsBuilder.fromUriString(uri)
-        .build()
+    String expanded = UriTemplate.expand(uri, ImmutableMap.of(USE_EMBEDDED_RESOURCES, true, USE_FINGERPRINTING, true, CompanyApi.ID, 1));
+
+    UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(expanded);
+
+    return builder.build()
         .getQueryParams()
         .getFirst("timestamp");
   }

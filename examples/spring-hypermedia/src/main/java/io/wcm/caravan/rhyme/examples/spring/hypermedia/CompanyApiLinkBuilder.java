@@ -19,12 +19,18 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.EMBED_RHYME_METADATA;
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.examples.spring.hypermedia.CompanyApi.USE_FINGERPRINTING;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.time.Duration;
-import java.util.function.Function;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
@@ -64,47 +70,75 @@ class CompanyApiLinkBuilder {
 
   private final UrlFingerprinting fingerprinting;
 
-  CompanyApiLinkBuilder(@Autowired SpringRhyme rhyme, @Autowired RepositoryModificationListener repositoryListener) {
+  private boolean hasClientPreferences = false;
+
+  private Boolean useEmbeddedResources;
+  private Boolean useFingerprinting;
+
+  CompanyApiLinkBuilder(@Autowired SpringRhyme rhyme, @Autowired RepositoryModificationListener repositoryListener,
+      @Autowired HttpServletRequest request) {
 
     this.fingerprinting = rhyme
         .enableUrlFingerprinting()
         .withConditionalMaxAge(Duration.ofSeconds(10), Duration.ofDays(100))
         .withTimestampParameter(TIMESTAMP_QUERY_PARAM, repositoryListener::getLastModified);
+
+    useEmbeddedResources = addStickyParameter(request, USE_EMBEDDED_RESOURCES);
+    useFingerprinting = addStickyParameter(request, USE_FINGERPRINTING);
+
+    addStickyParameter(request, EMBED_RHYME_METADATA);
+  }
+
+  /**
+   * If a query parameter with the given name is present in the incoming request, it will also be added
+   * (with the same value) to all other links being built by this libk builder instance
+   * @param request the incoming request
+   * @param name of the query parameter
+   * @return the value of the parameter (or true if it was not present)
+   */
+  private Boolean addStickyParameter(HttpServletRequest request, String name) {
+
+    // if the query parameter was not present in the incoming request, then don't add it to any other links
+    String fromRequest = request.getParameter(name);
+    if (StringUtils.isBlank(fromRequest)) {
+      // but the default behavior should be as if this parameter was set to true
+      return true;
+    }
+
+    hasClientPreferences = true;
+
+    // if the parameter *was* present, then make sure it's also added to every other link
+    Boolean boolValue = BooleanUtils.toBoolean(fromRequest);
+    fingerprinting.withQueryParameter(name, boolValue);
+    return boolValue;
+  }
+
+  boolean isUseEmbeddedResources() {
+    return useEmbeddedResources;
+  }
+
+  boolean hasClientPreferences() {
+    return hasClientPreferences;
   }
 
   /**
    * Start building a link to a controller handler method. The URL for that link is generated
    * by the {@link WebMvcLinkBuilder} class, but additional query parameters that are not directly
    * present in the API and controller signatures can be appended by {@link UrlFingerprinting}.
-   * @param linkBuilder created with {@link WebMvcLinkBuilder#linkTo(Class)} and
+   * @param webMvcLinkBuilder created with {@link WebMvcLinkBuilder#linkTo(Class)} and
    *          {@link WebMvcLinkBuilder#methodOn(Class, Object...)}
    * @return a {@link RhymeLinkBuilder} that you can use to decorate the link with name and title attributes, and
    *         then finally build it
    * @see WebMvcLinkBuilder
    */
-  RhymeLinkBuilder create(WebMvcLinkBuilder linkBuilder) {
+  RhymeLinkBuilder create(WebMvcLinkBuilder webMvcLinkBuilder) {
 
-    return fingerprinting.createLinkWith(linkBuilder);
-  }
+    RhymeLinkBuilder linkBuilder = fingerprinting.createLinkWith(webMvcLinkBuilder);
 
-  /**
-   * An alternative signature to {@link #create(WebMvcLinkBuilder)} that allows you to specify
-   * the controller class and method call directly. It's using {@link WebMvcLinkBuilder} as well,
-   * so note that the function you are passing isn't called on the actual controller class,
-   * but a proxy instance that does nothing else but to capture the method call and the parameters.
-   * @param <T> the type of controller you want to link to
-   * @param controllerClass the controller class you want to link to
-   * @param handlerMethodCall a function that calls a method on a proxy of the given controller,
-   *          to find the path mapping and expand any URI template variables if required
-   * @return a {@link RhymeLinkBuilder} that you can use to decorate the link with name and title attributes, and
-   *         then finally build it
-   * @see WebMvcLinkBuilder
-   */
-  <T> RhymeLinkBuilder createLinkTo(Class<T> controllerClass, Function<T, LinkableResource> handlerMethodCall) {
-
-    WebMvcLinkBuilder linkBuilder = linkTo(handlerMethodCall.apply(methodOn(controllerClass)));
-
-    return create(linkBuilder);
+    if (!useFingerprinting) {
+      linkBuilder = linkBuilder.withoutFingerprint();
+    }
+    return linkBuilder;
   }
 
   /**
@@ -115,12 +149,13 @@ class CompanyApiLinkBuilder {
    */
   String getLocalEntryPointUrl() {
 
-    RhymeLinkBuilder linkBuilder = createLinkTo(CompanyApiController.class, CompanyApiController::get);
+    RhymeLinkBuilder linkBuilder = create(linkTo(methodOn(CompanyApiController.class).get()));
 
-    if (!fingerprinting.isUsedInIncomingRequest()) {
+    if (!useFingerprinting || !fingerprinting.isUsedInIncomingRequest()) {
       linkBuilder = linkBuilder.withoutFingerprint();
     }
 
-    return linkBuilder.build().getHref();
+    return linkBuilder.build()
+        .getHref();
   }
 }
