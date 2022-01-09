@@ -62,7 +62,7 @@ public interface RequestMetricsCollector {
    * configuration. To enable the inclusion of the metadata programmatically, call
    * {@link RhymeBuilder#withEmbeddedMetadata()}.
    */
-  public static final String QUERY_PARAM_TOGGLE = "embedRhymeMetadata";
+  public static final String EMBED_RHYME_METADATA = "embedRhymeMetadata";
 
   /**
    * Calculates the "max-age" Cache-Control header value to be used when rendering the response.

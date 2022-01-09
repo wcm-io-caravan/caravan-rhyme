@@ -84,7 +84,7 @@ public class CaravanRhymeRequestCycleImpl implements CaravanRhymeRequestCycle {
 
       // only use the full implementation of RequestMetricsCollector (which will will collect and render extensive metadata
       // into the response) if the request parameter that toggles this behaviour is set
-      this.metrics = requestUri.getQueryParameters().containsKey(RequestMetricsCollector.QUERY_PARAM_TOGGLE)
+      this.metrics = requestUri.getQueryParameters().containsKey(RequestMetricsCollector.EMBED_RHYME_METADATA)
           ? RequestMetricsCollector.create()
           : RequestMetricsCollector.createEssentialCollector();
 

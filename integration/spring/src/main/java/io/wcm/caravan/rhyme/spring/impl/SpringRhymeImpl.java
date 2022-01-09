@@ -19,8 +19,11 @@
  */
 package io.wcm.caravan.rhyme.spring.impl;
 
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.EMBED_RHYME_METADATA;
+
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,7 +43,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
-import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
@@ -90,11 +92,17 @@ class SpringRhymeImpl implements SpringRhyme {
         .withRhymeDocsSupport(rhymeDocs)
         .withExceptionStrategy(EXCEPTION_STRATEGY);
 
-    if (httpRequest.getParameterMap().containsKey(RequestMetricsCollector.QUERY_PARAM_TOGGLE)) {
+    if (isEmbedMetdata(httpRequest)) {
       rhymeBuilder = rhymeBuilder.withEmbeddedMetadata();
     }
 
     return rhymeBuilder;
+  }
+
+  private static boolean isEmbedMetdata(HttpServletRequest httpRequest) {
+
+    String[] embedMetadata = httpRequest.getParameterMap().get(EMBED_RHYME_METADATA);
+    return embedMetadata != null && Stream.of(embedMetadata).noneMatch(value -> "false".equals(value));
   }
 
   private static String getRequestUrl(HttpServletRequest httpRequest) {

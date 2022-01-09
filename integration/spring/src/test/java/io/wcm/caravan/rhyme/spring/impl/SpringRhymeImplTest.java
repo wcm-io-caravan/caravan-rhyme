@@ -149,7 +149,7 @@ public class SpringRhymeImplTest {
     MinimalTestResourceImpl resource = new MinimalTestResourceImpl();
 
     when(request.getParameterMap())
-        .thenReturn(ImmutableMap.of(RequestMetricsCollector.QUERY_PARAM_TOGGLE, new String[0]));
+        .thenReturn(ImmutableMap.of(RequestMetricsCollector.EMBED_RHYME_METADATA, new String[0]));
 
     SpringRhymeImpl rhymeWithMetadata = new SpringRhymeImpl(request, resourceLoader, rhymeDocs);
 
