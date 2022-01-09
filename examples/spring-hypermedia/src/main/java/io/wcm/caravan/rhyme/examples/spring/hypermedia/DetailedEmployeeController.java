@@ -120,7 +120,7 @@ class DetailedEmployeeController {
           return ResourceConversions.asEmbeddedResourceWithoutLink(manager);
         }
 
-        // if we return this resource proxy directly, only a link to the manager resource
+        // if we return this resource proxy directly, only a link to the manager resource will be rendered
         return manager;
       }
 
@@ -132,7 +132,7 @@ class DetailedEmployeeController {
             // ignore the employee for which we are just generating the detailed resource
             .filter(employee -> !employee.getState().getId().equals(id));
 
-        // and again ensure that these resources are embedded rather than linked
+        // and again ensure that these resources are either embedded or only linked
         if (linkBuilder.isUseEmbeddedResources()) {
           colleagues = colleagues.map(ResourceConversions::asEmbeddedResourceWithoutLink);
         }
