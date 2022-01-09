@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,7 @@ import io.wcm.caravan.rhyme.testing.client.HalCrawler;
  * if the {@link CompanyApi} functionality remains the same when no embedded resources are used.
  * Additional tests check that
  */
-public class CompanyApiSettingsIT extends MockMvcClientIT {
+public class ClientPreferencesIT extends MockMvcClientIT {
 
   private Boolean useEmbeddedResources = false;
   private Boolean useFingerprinting = true;
@@ -100,8 +101,24 @@ public class CompanyApiSettingsIT extends MockMvcClientIT {
           .extracting(Link::getHref)
           .as("all links in resource at " + response.getUri())
           .allMatch(href -> href.contains(USE_EMBEDDED_RESOURCES + "=" + useEmbeddedResources))
-          .allMatch(href -> href.contains(USE_FINGERPRINTING + "=" + useFingerprinting));
+          .allMatch(href -> href.contains(USE_FINGERPRINTING + "=" + useFingerprinting))
+          .allMatch(href -> href.contains(EMBED_RHYME_METADATA + "=" + embedRhymeMetadata));
     }
+  }
+
+  @Test
+  public void should_disable_fingerprinting_for_all_resources_via_preferences() {
+
+    useFingerprinting = false;
+
+    Stream<URI> nonEntryPointUris = crawlAllResponses().stream()
+        .map(HalResponse::getUri)
+        .map(URI::create)
+        .distinct()
+        .filter(uri -> !uri.getPath().equals("/"));
+
+    assertThat(nonEntryPointUris)
+        .noneMatch(uri -> uri.getQuery().contains("timestamp="));
   }
 
   private boolean isLinkThatShouldHaveStickyParameter(Entry<String, Link> entry) {
