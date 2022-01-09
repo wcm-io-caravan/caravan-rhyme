@@ -19,9 +19,12 @@
  */
 package io.wcm.caravan.rhyme.api.server;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
+import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 
 /**
@@ -61,6 +64,24 @@ public final class ResourceConversions {
   public static <T> T asEmbeddedResourceWithoutLink(T linkableResource) {
 
     return HalApiReflectionUtils.createEmbeddedResourceProxy(linkableResource, false);
+  }
+
+  /**
+   * Create a proxy for the given interface that can only be used to create links to that resource.
+   * This can be returned from server-side implementations of {@link Related} methods if it's not feasible to
+   * create a complete resource implementation, but you do have a {@link Link} pointing to a URI where a
+   * resource of the given interface can be retrieved.
+   * <p>
+   * Note that calling any other method than {@link LinkableResource#createLink()} on the proxy will fail.
+   * </p>
+   * @param link to be returned by {@link LinkableResource#createLink()}
+   * @param halApiInterface the interface that should be implemented
+   * @return a proxy instance implementing {@link LinkableResource} which you can only call
+   *         {@link LinkableResource#createLink()}
+   */
+  public static <T> T asLinkableResource(Link link, Class<T> halApiInterface) {
+
+    return HalApiReflectionUtils.createLinkableResourceProxy(link, halApiInterface);
   }
 
 }

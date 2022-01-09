@@ -20,12 +20,14 @@
 package io.wcm.caravan.rhyme.api.server;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
@@ -158,4 +160,75 @@ public class ResourceConversionsTest {
     assertThat(((EmbeddableResource)proxy).isLinkedWhenEmbedded())
         .isFalse();
   }
+
+  @Test
+  public void asLinkableResource_should_create_proxy_that_returns_given_link() throws Exception {
+
+    Link link = new Link("/foo");
+
+    LinkableTestResource proxy = ResourceConversions.asLinkableResource(link, LinkableTestResource.class);
+
+    assertThat(proxy.createLink())
+        .isSameAs(link);
+  }
+
+  @Test
+  public void asLinkableResource_should_create_proxy_that_implements_toString() throws Exception {
+
+    Link link = new Link("/foo");
+
+    LinkableTestResource proxy = ResourceConversions.asLinkableResource(link, LinkableTestResource.class);
+
+    assertThat(proxy.toString())
+        .isNotNull();
+  }
+
+  @Test
+  public void asLinkableResource_should_fail_if_any_other_method_is_called_on_proxy() throws Exception {
+
+    Link link = new Link("/foo");
+
+    LinkableTestResource proxy = ResourceConversions.asLinkableResource(link, LinkableTestResource.class);
+
+    Throwable ex = catchThrowable(() -> proxy.getState());
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class);
+  }
+
+  @Test
+  public void asLinkableResource_can_be_used_for_interfaces_not_extending_LinkableResource() throws Exception {
+
+    Link link = new Link("/foo");
+
+    ResourceWithOddOverload proxy = ResourceConversions.asLinkableResource(link, ResourceWithOddOverload.class);
+
+    assertThat(proxy)
+        .isInstanceOf(LinkableResource.class);
+
+    assertThat(((LinkableResource)proxy).createLink())
+        .isSameAs(link);
+  }
+
+  @Test
+  public void asLinkableResource_should_fail_if_a_createLink_overload_is_called_on_proxy() throws Exception {
+
+    Link link = new Link("/foo");
+
+    ResourceWithOddOverload proxy = ResourceConversions.asLinkableResource(link, ResourceWithOddOverload.class);
+
+    Throwable ex = catchThrowable(() -> proxy.createLink("foo"));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class);
+  }
+
+
+  @HalApiInterface
+  interface ResourceWithOddOverload {
+
+    String createLink(String overload);
+  }
+
+
 }
