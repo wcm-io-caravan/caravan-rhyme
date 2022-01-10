@@ -520,9 +520,10 @@ public class RhymeBuilderImplTest {
 
     LinkableTestResource resourceImpl = new ResourceWithNullStateFields();
 
-    Rhyme builder = RhymeBuilder.create().buildForRequestTo("/foo");
+    Rhyme rhyme = RhymeBuilder.create()
+        .buildForRequestTo("/foo");
 
-    HalResource hal = builder.renderResponse(resourceImpl).blockingGet().getBody();
+    HalResource hal = rhyme.renderResponse(resourceImpl).blockingGet().getBody();
 
     assertThat(hal.getModel().path("string").getNodeType())
         .isEqualTo(JsonNodeType.NULL);
@@ -539,11 +540,11 @@ public class RhymeBuilderImplTest {
 
     LinkableTestResource resourceImpl = new ResourceWithNullStateFields();
 
-    Rhyme builder = RhymeBuilder.create()
+    Rhyme rhyme = RhymeBuilder.create()
         .withObjectMapper(customMapper)
         .buildForRequestTo("/foo");
 
-    HalResource hal = builder.renderResponse(resourceImpl).blockingGet().getBody();
+    HalResource hal = rhyme.renderResponse(resourceImpl).blockingGet().getBody();
 
     assertThat(hal.getModel().path("string").getNodeType())
         .isEqualTo(JsonNodeType.MISSING);
