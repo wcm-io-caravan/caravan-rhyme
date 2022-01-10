@@ -21,6 +21,8 @@ package io.wcm.caravan.rhyme.api.server;
 
 import org.osgi.annotation.versioning.ProviderType;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
@@ -90,6 +92,13 @@ public interface HalResponseRendererBuilder {
    * @return this
    */
   HalResponseRendererBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy);
+
+  /**
+   * Replace the default Jackson {@link ObjectMapper} used for JSON serialization with a customized instance
+   * @param objectMapper a configured {@link ObjectMapper} instance (which can be a single shared instance)
+   * @return this
+   */
+  HalResponseRendererBuilder withObjectMapper(ObjectMapper objectMapper);
 
   /**
    * @return the new {@link AsyncHalResponseRenderer} instance

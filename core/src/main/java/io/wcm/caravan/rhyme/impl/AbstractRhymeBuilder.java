@@ -209,7 +209,7 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
 
     HalApiTypeSupport typeSupport = getEffectiveTypeSupport();
 
-    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
+    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport, objectMapper);
 
     ExceptionStatusAndLoggingStrategy exceptionStrategy = getEffectiveExceptionStrategy();
 
