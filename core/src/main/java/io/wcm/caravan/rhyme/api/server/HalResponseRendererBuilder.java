@@ -34,7 +34,7 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.RhymeBuilders;
 
 /**
- * A fluent builder for {@link HalResponseRendererBuilder} instances which is only used in advanced integration
+ * A fluent builder for {@link AsyncHalResponseRenderer} instances which is only used in advanced integration
  * scenarios. As a regular user of the framework, simply use {@link RhymeBuilder} instead.
  * @see RhymeBuilder
  * @see Rhyme#renderResponse(LinkableResource)

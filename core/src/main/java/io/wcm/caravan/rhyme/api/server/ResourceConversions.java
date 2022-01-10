@@ -76,7 +76,7 @@ public final class ResourceConversions {
    * </p>
    * @param link to be returned by {@link LinkableResource#createLink()}
    * @param halApiInterface the interface that should be implemented
-   * @return a proxy instance implementing {@link LinkableResource} which you can only call
+   * @return a proxy instance implementing {@link LinkableResource} on which you can only call
    *         {@link LinkableResource#createLink()}
    */
   public static <T> T asLinkableResource(Link link, Class<T> halApiInterface) {
