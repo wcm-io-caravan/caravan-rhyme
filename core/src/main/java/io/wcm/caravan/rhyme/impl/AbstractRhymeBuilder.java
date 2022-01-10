@@ -19,12 +19,15 @@
  */
 package io.wcm.caravan.rhyme.impl;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Stopwatch;
 
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -59,6 +62,9 @@ import io.wcm.caravan.rhyme.impl.renderer.CompositeExceptionStatusAndLoggingStra
  */
 abstract class AbstractRhymeBuilder<BuilderInterface> {
 
+  private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
+      .disable(FAIL_ON_UNKNOWN_PROPERTIES);
+
   private final Stopwatch stopwatch = Stopwatch.createStarted();
 
   private HalResourceLoader resourceLoader;
@@ -72,6 +78,8 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
   private RhymeDocsSupport rhymeDocsSupport;
 
   private RhymeMetadataConfiguration metadataConfiguration;
+
+  private ObjectMapper objectMapper;
 
   protected boolean wasUsedToBuild;
 
@@ -125,6 +133,13 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
   public BuilderInterface withMetadataConfiguration(RhymeMetadataConfiguration configuration) {
 
     metadataConfiguration = configuration;
+    return (BuilderInterface)this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public BuilderInterface withObjectMapper(ObjectMapper customMapper) {
+
+    objectMapper = customMapper;
     return (BuilderInterface)this;
   }
 
@@ -182,6 +197,10 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
         metrics = RequestMetricsCollector.createEssentialCollector();
       }
     }
+
+    if (objectMapper == null) {
+      objectMapper = DEFAULT_OBJECT_MAPPER;
+    }
   }
 
   AsyncHalResponseRenderer buildAsyncRenderer() {
@@ -203,7 +222,7 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
 
     HalApiTypeSupport effectiveTypeSupport = getEffectiveTypeSupport();
 
-    return new HalApiClientImpl(resourceLoader, metrics, effectiveTypeSupport);
+    return new HalApiClientImpl(resourceLoader, metrics, effectiveTypeSupport, objectMapper);
   }
 
   @SuppressWarnings("deprecation")

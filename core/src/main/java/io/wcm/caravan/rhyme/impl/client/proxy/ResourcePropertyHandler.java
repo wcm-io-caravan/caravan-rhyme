@@ -19,9 +19,8 @@
  */
 package io.wcm.caravan.rhyme.impl.client.proxy;
 
-import static io.wcm.caravan.rhyme.impl.client.proxy.ResourceStateHandler.OBJECT_MAPPER;
-
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
@@ -34,10 +33,12 @@ class ResourcePropertyHandler {
 
   private final HalResource contextResource;
   private final HalApiTypeSupport typeSupport;
+  private final ObjectMapper objectMapper;
 
-  ResourcePropertyHandler(HalResource contextResource, HalApiTypeSupport typeSupport) {
+  ResourcePropertyHandler(HalResource contextResource, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
     this.contextResource = contextResource;
     this.typeSupport = typeSupport;
+    this.objectMapper = objectMapper;
   }
 
   Observable<Object> handleMethodInvocation(HalApiMethodInvocation invocation) {
@@ -77,8 +78,7 @@ class ResourcePropertyHandler {
   }
 
   Object convertToJavaObject(HalApiMethodInvocation invocation, JsonNode jsonNode) {
-    Object propertyValue = OBJECT_MAPPER.convertValue(jsonNode, invocation.getEmissionType());
-    return propertyValue;
+    return objectMapper.convertValue(jsonNode, invocation.getEmissionType());
   }
 
   Observable<Object> errorObservable(String msg) {
