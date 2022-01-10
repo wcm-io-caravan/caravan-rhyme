@@ -71,6 +71,8 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
 
   private RhymeDocsSupport rhymeDocsSupport;
 
+  private RhymeMetadataConfiguration metadataConfiguration;
+
   protected boolean wasUsedToBuild;
 
   @SuppressWarnings("unchecked")
@@ -122,9 +124,7 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
   @SuppressWarnings("unchecked")
   public BuilderInterface withMetadataConfiguration(RhymeMetadataConfiguration configuration) {
 
-    if (configuration.isMetadataGenerationEnabled()) {
-      this.metrics = RequestMetricsCollector.create();
-    }
+    metadataConfiguration = configuration;
     return (BuilderInterface)this;
   }
 
@@ -168,8 +168,19 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
       resourceLoader = HalResourceLoader.create();
     }
 
+    if (metadataConfiguration == null) {
+      metadataConfiguration = new RhymeMetadataConfiguration() {
+        // use default implementations from interface only
+      };
+    }
+
     if (metrics == null) {
-      metrics = RequestMetricsCollector.createEssentialCollector();
+      if (metadataConfiguration.isMetadataGenerationEnabled()) {
+        metrics = RequestMetricsCollector.create();
+      }
+      else {
+        metrics = RequestMetricsCollector.createEssentialCollector();
+      }
     }
   }
 
