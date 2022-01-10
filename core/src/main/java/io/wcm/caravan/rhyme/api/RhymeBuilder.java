@@ -21,6 +21,8 @@ package io.wcm.caravan.rhyme.api;
 
 import org.osgi.annotation.versioning.ProviderType;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
@@ -119,6 +121,15 @@ public interface RhymeBuilder {
    * @return this
    */
   RhymeBuilder withMetadataConfiguration(RhymeMetadataConfiguration configuration);
+
+  /**
+   * Replace the default Jackson {@link ObjectMapper} used for JSON (de)serialization with a customized instance.
+   * Note that this object mapper is only used when converting Java to JSON objects (and vice versa). It's not
+   * used when the raw JSON response from an upstream service is parsed.
+   * @param objectMapper a configured {@link ObjectMapper} instance (which can be a single shared instance)
+   * @return this
+   */
+  RhymeBuilder withObjectMapper(ObjectMapper objectMapper);
 
   /**
    * Create the {@link Rhyme} instance to be used to throughout the lifecycle of an incoming request

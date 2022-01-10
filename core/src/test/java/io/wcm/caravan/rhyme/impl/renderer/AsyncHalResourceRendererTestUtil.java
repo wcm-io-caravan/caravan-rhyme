@@ -21,6 +21,8 @@ package io.wcm.caravan.rhyme.impl.renderer;
 
 import org.apache.commons.lang3.RandomUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -40,7 +42,7 @@ public final class AsyncHalResourceRendererTestUtil {
   public static HalResource render(Object resourceImplInstance) {
 
     RequestMetricsCollector metrics = new FullMetadataGenerator();
-    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, new DefaultHalApiTypeSupport());
+    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, new DefaultHalApiTypeSupport(), new ObjectMapper());
 
     Single<HalResource> rxResource;
     if (resourceImplInstance instanceof LinkableResource) {

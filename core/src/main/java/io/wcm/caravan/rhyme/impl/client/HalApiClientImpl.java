@@ -19,6 +19,7 @@
  */
 package io.wcm.caravan.rhyme.impl.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
@@ -43,13 +44,14 @@ public class HalApiClientImpl implements HalApiClient {
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance relevant data for the current
    *          incoming request
    * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
+   * @param objectMapper the Jackson {@link ObjectMapper} to use for all JSON deserialisation
    */
-  public HalApiClientImpl(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
+  public HalApiClientImpl(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
 
     Preconditions.checkNotNull(resourceLoader, "A " + HalResourceLoader.class.getName() + " instance must be provided");
     HalResourceLoaderWrapper wrapper = new HalResourceLoaderWrapper(resourceLoader, metrics);
 
-    factory = new HalApiClientProxyFactory(wrapper, metrics, typeSupport);
+    factory = new HalApiClientProxyFactory(wrapper, metrics, typeSupport, objectMapper);
 
     this.typeSupport = typeSupport;
   }

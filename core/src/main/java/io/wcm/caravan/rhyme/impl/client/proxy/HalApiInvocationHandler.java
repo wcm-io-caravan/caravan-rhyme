@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
@@ -56,9 +57,10 @@ final class HalApiInvocationHandler implements InvocationHandler {
   private final HalApiClientProxyFactory proxyFactory;
   private final RequestMetricsCollector metrics;
   private final HalApiTypeSupport typeSupport;
+  private final ObjectMapper objectMapper;
 
   HalApiInvocationHandler(Single<HalResource> rxResource, Class resourceInterface, Link linkToResource,
-      HalApiClientProxyFactory proxyFactory, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
+      HalApiClientProxyFactory proxyFactory, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
 
     this.rxResource = rxResource;
     this.resourceInterface = resourceInterface;
@@ -66,6 +68,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
     this.proxyFactory = proxyFactory;
     this.metrics = metrics;
     this.typeSupport = typeSupport;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -127,7 +130,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
 
       Maybe<Object> state = rxResource
           .onErrorResumeNext(ex -> addContextToHalApiClientException(ex, invocation))
-          .map(hal -> new ResourceStateHandler(hal, typeSupport))
+          .map(hal -> new ResourceStateHandler(hal, typeSupport, objectMapper))
           .flatMapMaybe(handler -> handler.handleMethodInvocation(invocation));
 
       return RxJavaReflectionUtils.convertAndCacheReactiveType(state, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
@@ -137,7 +140,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
 
       Observable<Object> property = rxResource
           .onErrorResumeNext(ex -> addContextToHalApiClientException(ex, invocation))
-          .map(hal -> new ResourcePropertyHandler(hal, typeSupport))
+          .map(hal -> new ResourcePropertyHandler(hal, typeSupport, objectMapper))
           .flatMapObservable(handler -> handler.handleMethodInvocation(invocation));
 
       return RxJavaReflectionUtils.convertAndCacheReactiveType(property, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
