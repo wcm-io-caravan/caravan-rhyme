@@ -28,7 +28,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * Used to declare a method that provide a link to the resource instance. The return type of the method must be a
+ * Used to declare a method that provides a link to the resource instance. The return type of the method must be a
  * {@link Link} or {@link String}.
  * <p>
  * On the client side, it will allow to access only the {@link Link} or URI that is pointing to a resource
