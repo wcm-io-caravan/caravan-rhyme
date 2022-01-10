@@ -67,8 +67,8 @@ public interface HalApiClientBuilder {
    * If you only want to consume HAL APIs and not use Rhyme to render your responses, you don't need
    * to worry about the {@link RequestMetricsCollector}.
    * </p>
-   * * @param metricsSharedWithRenderer the same instance that will be used to create the
-   * {@link AsyncHalResourceRenderer}
+   * @param metricsSharedWithRenderer the same instance that will be used to create the
+   *          {@link AsyncHalResourceRenderer}
    * @return this
    */
   HalApiClientBuilder withMetrics(RequestMetricsCollector metricsSharedWithRenderer);

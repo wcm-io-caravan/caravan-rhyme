@@ -32,6 +32,7 @@ import io.wcm.caravan.rhyme.api.client.HalApiClientBuilder;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
+import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.impl.metadata.FullMetadataGenerator;
 import io.wcm.caravan.rhyme.impl.metadata.MaxAgeOnlyCollector;
 
@@ -42,8 +43,8 @@ import io.wcm.caravan.rhyme.impl.metadata.MaxAgeOnlyCollector;
  * <p>
  * You shouldn't have to interact with this interface directly except for advanced integration or testing scenarios.
  * Usually an instance of this interface is automatically created for each {@link Rhyme} instance, and can choose
- * whether you want to include the embedded metadata in the response by calling
- * {@link RhymeBuilder#withEmbeddedMetadata()}.
+ * whether you want to include the embedded metadata in the response via
+ * {@link RhymeBuilder#withMetadataConfiguration(RhymeMetadataConfiguration)}.
  * </p>
  * <p>
  * If you are not working with {@link RhymeBuilder}, but are integrating {@link HalApiClient} and
@@ -52,6 +53,7 @@ import io.wcm.caravan.rhyme.impl.metadata.MaxAgeOnlyCollector;
  * {@link HalApiClientBuilder#withMetrics(RequestMetricsCollector)}
  * and {@link HalResponseRendererBuilder#withMetrics(RequestMetricsCollector)}.
  * </p>
+ * @see RhymeMetadataConfiguration
  */
 @ProviderType
 public interface RequestMetricsCollector {
@@ -59,8 +61,7 @@ public interface RequestMetricsCollector {
   /**
    * The name of the query parameter that toggles whether the "rhyme:metadata" resource is embedded when rendering
    * resources. This applies only if you are using one of the framework integrations (e.g. Spring, AEM) in default
-   * configuration. To enable the inclusion of the metadata programmatically, call
-   * {@link RhymeBuilder#withEmbeddedMetadata()}.
+   * configuration, where this logic is implemented with a framework specific {@link RhymeMetadataConfiguration}
    */
   public static final String EMBED_RHYME_METADATA = "embedRhymeMetadata";
 
@@ -123,10 +124,10 @@ public interface RequestMetricsCollector {
   /**
    * Create a new instance to collect the full data on upstream requests and measure performance for the current
    * incoming request. When this instance is used with {@link AsyncHalResponseRenderer}, a metadata resource with
-   * insight on performance and upstream requests will be automatically embedded in the response.If you don't need or
+   * insight on performance and upstream requests will be automatically embedded in the response. If you don't need or
    * want this, then use {@link RequestMetricsCollector#createEssentialCollector()} instead
    * @return a new full-featured instance of {@link RequestMetricsCollector}
-   * @see RhymeBuilder#withEmbeddedMetadata()
+   * @see HalApiClientBuilder#withMetrics(RequestMetricsCollector)
    * @see HalResponseRendererBuilder#withMetrics(RequestMetricsCollector)
    */
   static RequestMetricsCollector create() {

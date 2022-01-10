@@ -35,6 +35,7 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
+import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
@@ -119,9 +120,11 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
   }
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withEmbeddedMetadata() {
+  public BuilderInterface withMetadataConfiguration(RhymeMetadataConfiguration configuration) {
 
-    this.metrics = RequestMetricsCollector.create();
+    if (configuration.isMetadataGenerationEnabled()) {
+      this.metrics = RequestMetricsCollector.create();
+    }
     return (BuilderInterface)this;
   }
 

@@ -44,6 +44,7 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.impl.renderer.blocking.RenderResourceStateTest.TestResourceWithRequiredState;
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
@@ -204,7 +205,14 @@ public class RhymeImplTest {
 
     Rhyme rhymeWithMetadata = RhymeBuilder
         .create()
-        .withEmbeddedMetadata()
+        .withMetadataConfiguration(new RhymeMetadataConfiguration() {
+
+          @Override
+          public boolean isMetadataGenerationEnabled() {
+            return true;
+          }
+
+        })
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
     MeasuringTestResource resourceImpl = new MeasuringTestResource(rhymeWithMetadata);

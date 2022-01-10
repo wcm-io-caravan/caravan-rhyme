@@ -1,5 +1,7 @@
 package io.wcm.caravan.rhyme.aem.impl;
 
+import static io.wcm.caravan.rhyme.api.common.RequestMetricsCollector.EMBED_RHYME_METADATA;
+
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Objects;
@@ -26,10 +28,10 @@ import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
-import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingHttpServletRequest.class, adapters = { SlingRhyme.class, SlingRhymeImpl.class })
@@ -56,14 +58,15 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     // created for different context-resources.
     this.urlHandler = request.adaptTo(UrlHandler.class);
 
-    RhymeBuilder rhymeBuilder = RhymeBuilder.withResourceLoader(resourceLoaders.getResourceLoader())
-        .withRhymeDocsSupport(rhymeDocs);
+    this.rhyme = RhymeBuilder.withResourceLoader(resourceLoaders.getResourceLoader())
+        .withRhymeDocsSupport(rhymeDocs)
+        .withMetadataConfiguration(new RhymeMetadataConfiguration() {
 
-    if (request.getParameterMap().containsKey(RequestMetricsCollector.EMBED_RHYME_METADATA)) {
-      rhymeBuilder = rhymeBuilder.withEmbeddedMetadata();
-    }
-
-    this.rhyme = rhymeBuilder
+          @Override
+          public boolean isMetadataGenerationEnabled() {
+            return request.getParameterMap().containsKey(EMBED_RHYME_METADATA);
+          }
+        })
         .buildForRequestTo(request.getRequestURL().toString());
   }
 
