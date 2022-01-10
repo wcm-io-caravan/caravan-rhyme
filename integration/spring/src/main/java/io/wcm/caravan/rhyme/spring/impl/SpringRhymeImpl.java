@@ -44,6 +44,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
@@ -60,6 +61,7 @@ import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
 @Component
 @RequestScope
 class SpringRhymeImpl implements SpringRhyme {
+
 
   private static final Logger log = LoggerFactory.getLogger(SpringRhymeImpl.class);
 
@@ -87,22 +89,11 @@ class SpringRhymeImpl implements SpringRhyme {
 
   private static RhymeBuilder createRhymeBuilder(HttpServletRequest httpRequest, HalResourceLoader resourceLoader, SpringRhymeDocsIntegration rhymeDocs) {
 
-    RhymeBuilder rhymeBuilder = RhymeBuilder
+    return RhymeBuilder
         .withResourceLoader(resourceLoader)
         .withRhymeDocsSupport(rhymeDocs)
-        .withExceptionStrategy(EXCEPTION_STRATEGY);
-
-    if (isEmbedMetdata(httpRequest)) {
-      rhymeBuilder = rhymeBuilder.withEmbeddedMetadata();
-    }
-
-    return rhymeBuilder;
-  }
-
-  private static boolean isEmbedMetdata(HttpServletRequest httpRequest) {
-
-    String[] embedMetadata = httpRequest.getParameterMap().get(EMBED_RHYME_METADATA);
-    return embedMetadata != null && Stream.of(embedMetadata).noneMatch(value -> "false".equals(value));
+        .withExceptionStrategy(EXCEPTION_STRATEGY)
+        .withMetadataConfiguration(new DefaultMetadataConfiguration(httpRequest));
   }
 
   private static String getRequestUrl(HttpServletRequest httpRequest) {
@@ -181,5 +172,20 @@ class SpringRhymeImpl implements SpringRhyme {
     }
 
     return builder.body(halResponse.getBody().getModel());
+  }
+
+  private static final class DefaultMetadataConfiguration implements RhymeMetadataConfiguration {
+
+    private final HttpServletRequest httpRequest;
+
+    private DefaultMetadataConfiguration(HttpServletRequest httpRequest) {
+      this.httpRequest = httpRequest;
+    }
+
+    @Override
+    public boolean isMetadataGenerationEnabled() {
+      String[] embedMetadata = httpRequest.getParameterMap().get(EMBED_RHYME_METADATA);
+      return embedMetadata != null && Stream.of(embedMetadata).noneMatch(value -> "false".equals(value));
+    }
   }
 }

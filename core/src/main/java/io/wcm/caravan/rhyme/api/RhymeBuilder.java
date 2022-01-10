@@ -24,6 +24,7 @@ import org.osgi.annotation.versioning.ProviderType;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
@@ -112,11 +113,12 @@ public interface RhymeBuilder {
   RhymeBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy);
 
   /**
-   * Enables the capturing of extensive performance and upstream response metadata for this request,
-   * which will be included as an embedded resource in the response.
+   * Configures the capturing of extensive performance and upstream response metadata for this request,
+   * which can be included as an embedded resource in the response.
+   * @param configuration to determine whether metadata should be rendered and included in the current request
    * @return this
    */
-  RhymeBuilder withEmbeddedMetadata();
+  RhymeBuilder withMetadataConfiguration(RhymeMetadataConfiguration configuration);
 
   /**
    * Create the {@link Rhyme} instance to be used to throughout the lifecycle of an incoming request

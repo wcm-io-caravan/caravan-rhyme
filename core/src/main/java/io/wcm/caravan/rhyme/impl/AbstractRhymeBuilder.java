@@ -35,6 +35,7 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
+import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
@@ -69,6 +70,8 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
   private final List<HalApiTypeSupport> typeSupports = new ArrayList<>();
 
   private RhymeDocsSupport rhymeDocsSupport;
+
+  private RhymeMetadataConfiguration metadataConfiguration;
 
   protected boolean wasUsedToBuild;
 
@@ -119,9 +122,9 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
   }
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withEmbeddedMetadata() {
+  public BuilderInterface withMetadataConfiguration(RhymeMetadataConfiguration configuration) {
 
-    this.metrics = RequestMetricsCollector.create();
+    metadataConfiguration = configuration;
     return (BuilderInterface)this;
   }
 
@@ -165,8 +168,19 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
       resourceLoader = HalResourceLoader.create();
     }
 
+    if (metadataConfiguration == null) {
+      metadataConfiguration = new RhymeMetadataConfiguration() {
+        // use default implementations from interface only
+      };
+    }
+
     if (metrics == null) {
-      metrics = RequestMetricsCollector.createEssentialCollector();
+      if (metadataConfiguration.isMetadataGenerationEnabled()) {
+        metrics = RequestMetricsCollector.create();
+      }
+      else {
+        metrics = RequestMetricsCollector.createEssentialCollector();
+      }
     }
   }
 
