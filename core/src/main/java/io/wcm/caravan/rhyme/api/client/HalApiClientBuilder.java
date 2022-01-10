@@ -92,7 +92,9 @@ public interface HalApiClientBuilder {
   HalApiClientBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport);
 
   /**
-   * Replace the default Jackson {@link ObjectMapper} used for JSON deserialization with a customized instance
+   * Replace the default Jackson {@link ObjectMapper} used for JSON deserialization with a customized instance.
+   * Note that this object mapper is only used when converting JSON to Java Objects. It's not
+   * used when the raw JSON response from an upstream service is parsed.
    * @param objectMapper a configured {@link ObjectMapper} instance (which can be a single shared instance)
    * @return this
    */
