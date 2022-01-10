@@ -237,6 +237,18 @@ public class RhymeImplTest {
         .endsWith("- 1x invocation of #createLink");
   }
 
+  @Test
+  public void startStopwatch_should_not_create_metadata_with_defaut_configuration() throws Exception {
+
+    MeasuringTestResource resourceImpl = new MeasuringTestResource(rhyme);
+
+    HalResponse response = rhyme.renderResponse(resourceImpl).blockingGet();
+
+    HalResource metadata = response.getBody().getEmbeddedResource(RHYME_METADATA_RELATION);
+
+    assertThat(metadata).isNull();
+  }
+
   static class MeasuringTestResource implements LinkableTestResource {
 
     private final Rhyme rhyme;
