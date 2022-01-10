@@ -248,4 +248,44 @@ public class RenderRelatedResourceTest {
         .hasMessageStartingWith("Your server side resource implementation classes must implement either EmbeddableResource or LinkableResource.");
   }
 
+  @Test
+  public void should_support_extensions_of_linkable_resource() {
+
+    ResourceWithCustomLink resourceImpl = new ResourceWithCustomLink() {
+
+      @Override
+      public Link createLink() {
+        return new Link("/foo");
+      }
+
+      @Override
+      public Single<CustomLinkableResource> getCustomExternal() {
+        return Single.just(new CustomLinkableResource() {
+
+          @Override
+          public Link createLink() {
+            return new Link("/bar");
+          }
+        });
+      }
+    };
+
+    HalResource hal = render(resourceImpl);
+
+    assertThat(hal.getLink("item"))
+        .isNotNull()
+        .extracting(Link::getHref)
+        .isEqualTo("/bar");
+  }
+
+  interface CustomLinkableResource extends LinkableResource {
+    // no additional methods required, as the test just verifies that custom subtypes are accepted
+  }
+
+  @HalApiInterface
+  public interface ResourceWithCustomLink extends LinkableResource {
+
+    @Related("item")
+    Single<CustomLinkableResource> getCustomExternal();
+  }
 }

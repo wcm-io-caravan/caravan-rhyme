@@ -39,6 +39,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ResourceStateTest.ResourceWithSingleState;
 import io.wcm.caravan.rhyme.testing.TestState;
@@ -326,6 +327,24 @@ public class RelatedResourceTest {
 
     @Related(SECTION)
     Single<TestState> notAnInterface();
+  }
+
+  @Test
+  public void related_resource_method_can_return_linkable_resource() throws Exception {
+
+    TestResource linkedItem = entryPoint.createLinked(ITEM);
+
+    LinkableResource item = client.createProxy(ResourceWithLinkableRelated.class).getItem().blockingGet();
+
+    assertThat(item.createLink().getHref())
+        .isEqualTo(linkedItem.getUrl());
+  }
+
+  @HalApiInterface
+  interface ResourceWithLinkableRelated {
+
+    @Related(ITEM)
+    Single<LinkableResource> getItem();
   }
 
   @Test

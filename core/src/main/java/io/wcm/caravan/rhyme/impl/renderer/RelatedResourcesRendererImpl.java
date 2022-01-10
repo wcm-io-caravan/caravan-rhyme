@@ -133,7 +133,8 @@ final class RelatedResourcesRendererImpl {
     // get the emitted result resource type from the method signature
     Class<?> relatedResourceInterface = RxJavaReflectionUtils.getObservableEmissionType(method, typeSupport);
 
-    if (!HalApiReflectionUtils.isHalApiInterface(relatedResourceInterface, typeSupport) && !LinkableResource.class.equals(relatedResourceInterface)) {
+    if (!HalApiReflectionUtils.isHalApiInterface(relatedResourceInterface, typeSupport)
+        && !HalApiReflectionUtils.isPlainLinkableResource(relatedResourceInterface)) {
 
       String returnTypeDesc = getReturnTypeDescription(method, relatedResourceInterface);
 

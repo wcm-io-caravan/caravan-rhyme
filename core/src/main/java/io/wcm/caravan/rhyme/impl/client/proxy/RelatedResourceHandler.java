@@ -39,6 +39,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 
 class RelatedResourceHandler {
 
@@ -60,7 +61,8 @@ class RelatedResourceHandler {
     String relation = invocation.getRelation();
     Class<?> relatedResourceType = invocation.getEmissionType();
 
-    if (!isHalApiInterface(relatedResourceType, annotationSupport)) {
+    if (!isHalApiInterface(relatedResourceType, annotationSupport)
+        && !HalApiReflectionUtils.isPlainLinkableResource(relatedResourceType)) {
       throw new HalApiDeveloperException("The method " + invocation + " has an invalid emission type " + relatedResourceType.getName() +
           " which does not have a @" + HalApiInterface.class.getSimpleName() + " annotation.");
     }

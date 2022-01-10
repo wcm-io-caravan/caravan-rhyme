@@ -64,6 +64,24 @@ public final class HalApiReflectionUtils {
         .collectFromClassAndAllSuperClasses(clazz);
   }
 
+  /**
+   * @param clazz the type to check
+   * @return true if the class is {@link LinkableResource} or an interface extending it
+   */
+  public static boolean isPlainLinkableResource(Class clazz) {
+
+    if (!clazz.isInterface()) {
+      return false;
+    }
+
+    if (!LinkableResource.class.isAssignableFrom(clazz)) {
+      return false;
+    }
+
+    return collectInterfaces(clazz).stream()
+        .allMatch(interfaze -> LinkableResource.class.isAssignableFrom(interfaze));
+  }
+
   private static final class InterfaceCollector {
 
     private final Set<Class<?>> collected = new LinkedHashSet<>();

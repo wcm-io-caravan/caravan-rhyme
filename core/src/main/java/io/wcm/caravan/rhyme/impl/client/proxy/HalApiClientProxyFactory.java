@@ -40,8 +40,10 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
+import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 
 /**
@@ -147,6 +149,12 @@ public final class HalApiClientProxyFactory {
 
       // check that the given class is indeed a HAL api interface
       if (!isHalApiInterface(relatedResourceType, typeSupport)) {
+
+        // if not then it may be a method that uses LinkableResource as return type
+        // in that case, we can create a full implementation based on the link
+        if (HalApiReflectionUtils.isPlainLinkableResource(relatedResourceType)) {
+          return createPlainLinkableResource(linkToResource);
+        }
         throw new HalApiDeveloperException(
             "The given resource interface " + relatedResourceType.getName() + " does not have a @" + HalApiInterface.class.getSimpleName() + " annotation.");
       }
@@ -161,6 +169,20 @@ public final class HalApiClientProxyFactory {
 
       return proxy;
     }
+  }
+
+  private <T> T createPlainLinkableResource(Link linkToResource) {
+
+    @SuppressWarnings("unchecked")
+    T resourceImpl = (T)new LinkableResource() {
+
+      @Override
+      public Link createLink() {
+        return linkToResource;
+      }
+    };
+
+    return resourceImpl;
   }
 
   private <T> Class[] getInterfacesToImplement(Class<T> relatedResourceType) {
