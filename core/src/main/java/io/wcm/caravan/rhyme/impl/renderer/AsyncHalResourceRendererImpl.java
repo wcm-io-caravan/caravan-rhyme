@@ -53,22 +53,23 @@ import io.wcm.caravan.rhyme.impl.renderer.RelatedResourcesRendererImpl.RelationR
  */
 public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRenderer {
 
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
   private final RelatedResourcesRendererImpl relatedRenderer;
   private final RequestMetricsCollector metrics;
   private final HalApiTypeSupport typeSupport;
+  private final ObjectMapper objectMapper;
 
   /**
    * Create a new renderer to use (only) for the current incoming request
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance and caching information for
    *          the current incoming request
    * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
+   * @param objectMapper the Jackson {@link ObjectMapper} to used for JSON serialization
    */
-  public AsyncHalResourceRendererImpl(RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
+  public AsyncHalResourceRendererImpl(RequestMetricsCollector metrics, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
     this.relatedRenderer = new RelatedResourcesRendererImpl(this::renderResourceAndEmbedded, metrics, typeSupport);
     this.metrics = metrics;
     this.typeSupport = typeSupport;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -135,7 +136,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
     // invoke the method to get the state observable
     return RxJavaReflectionUtils.invokeMethodAndReturnObservable(resourceImplInstance, method.get(), metrics, typeSupport)
         // convert the emitted state instance to a JSON object node
-        .map(object -> OBJECT_MAPPER.convertValue(object, ObjectNode.class))
+        .map(object -> objectMapper.convertValue(object, ObjectNode.class))
         // or use an empty object if the method returned an empty Maybe or Observable
         .singleElement()
         .switchIfEmpty(emptyObject);
@@ -160,7 +161,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
 
           return rxReturnValue
               // convert the emitted property value to a JSON  node
-              .map(returnValue -> OBJECT_MAPPER.convertValue(returnValue, JsonNode.class))
+              .map(returnValue -> objectMapper.convertValue(returnValue, JsonNode.class))
               .map(jsonNode -> Pair.of(propertyName, jsonNode));
         });
   }

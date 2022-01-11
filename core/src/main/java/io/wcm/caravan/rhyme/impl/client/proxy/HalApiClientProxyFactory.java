@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
@@ -58,17 +59,21 @@ public final class HalApiClientProxyFactory {
   private final HalResourceLoader resourceLoader;
   private final RequestMetricsCollector metrics;
   private final HalApiTypeSupport typeSupport;
+  private final ObjectMapper objectMapper;
 
   /**
    * @param resourceLoader used to load/cache HAL+JSON resources
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance relevant data for the current
    *          incoming request
    * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
+   * @param objectMapper the Jackson {@link ObjectMapper} to use for all JSON deserialisation
    */
-  public HalApiClientProxyFactory(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
+  public HalApiClientProxyFactory(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
     this.metrics = metrics;
     this.resourceLoader = resourceLoader;
     this.typeSupport = typeSupport;
+    this.objectMapper = objectMapper;
+
   }
 
   public <T> T createProxyFromUrl(Class<T> relatedResourceType, String url) {
@@ -162,7 +167,7 @@ public final class HalApiClientProxyFactory {
       Class[] interfaces = getInterfacesToImplement(relatedResourceType);
 
       // the main logic of the proxy is implemented in this InvocationHandler
-      HalApiInvocationHandler invocationHandler = new HalApiInvocationHandler(rxHal, relatedResourceType, linkToResource, this, metrics, typeSupport);
+      HalApiInvocationHandler invocationHandler = new HalApiInvocationHandler(rxHal, relatedResourceType, linkToResource, this, metrics, typeSupport, objectMapper);
 
       @SuppressWarnings("unchecked")
       T proxy = (T)Proxy.newProxyInstance(relatedResourceType.getClassLoader(), interfaces, invocationHandler);

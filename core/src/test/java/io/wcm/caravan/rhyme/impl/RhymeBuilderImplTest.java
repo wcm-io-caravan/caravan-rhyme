@@ -41,10 +41,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -511,4 +515,54 @@ public class RhymeBuilderImplTest {
   }
 
 
+  @Test
+  public void should_use_default_object_mapper_which_serialises_null_fields() {
+
+    LinkableTestResource resourceImpl = new ResourceWithNullStateFields();
+
+    Rhyme rhyme = RhymeBuilder.create()
+        .buildForRequestTo("/foo");
+
+    HalResource hal = rhyme.renderResponse(resourceImpl).blockingGet().getBody();
+
+    assertThat(hal.getModel().path("string").getNodeType())
+        .isEqualTo(JsonNodeType.NULL);
+
+    assertThat(hal.getModel().path("number").getNodeType())
+        .isEqualTo(JsonNodeType.NULL);
+  }
+
+  @Test
+  public void should_use_custom_object_mapper_which_ignores_null_fields() {
+
+    ObjectMapper customMapper = new ObjectMapper()
+        .setSerializationInclusion(Include.NON_NULL);
+
+    LinkableTestResource resourceImpl = new ResourceWithNullStateFields();
+
+    Rhyme rhyme = RhymeBuilder.create()
+        .withObjectMapper(customMapper)
+        .buildForRequestTo("/foo");
+
+    HalResource hal = rhyme.renderResponse(resourceImpl).blockingGet().getBody();
+
+    assertThat(hal.getModel().path("string").getNodeType())
+        .isEqualTo(JsonNodeType.MISSING);
+
+    assertThat(hal.getModel().path("number").getNodeType())
+        .isEqualTo(JsonNodeType.MISSING);
+  }
+
+  private static final class ResourceWithNullStateFields implements LinkableTestResource {
+
+    @Override
+    public Maybe<TestState> getState() {
+      return Maybe.just(new TestState());
+    }
+
+    @Override
+    public Link createLink() {
+      return new Link("/foo");
+    }
+  }
 }

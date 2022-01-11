@@ -11,7 +11,6 @@
   com.fasterxml.jackson.core/jackson-core
   com.fasterxml.jackson.core/jackson-annotations
   com.fasterxml.jackson.core/jackson-databind
-  com.fasterxml.jackson.datatype/jackson-datatype-guava
   commons-beanutils/commons-beanutils
   javax.annotation/javax.annotation-api
   org.apache.commons/commons-lang3/3.3.2

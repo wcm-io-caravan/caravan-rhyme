@@ -34,6 +34,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -53,6 +54,8 @@ import io.wcm.caravan.rhyme.testing.resources.TestResource;
 
 @ExtendWith(MockitoExtension.class)
 public class CompositeHalApiTypeSupportTest {
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
 
@@ -120,7 +123,7 @@ public class CompositeHalApiTypeSupportTest {
 
     HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(null, mockReturnTypeSupport);
 
-    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
+    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport, OBJECT_MAPPER);
 
     assertThatMockReturnTypeSupportIsEffective(renderer.getTypeSupport());
   }
@@ -130,7 +133,7 @@ public class CompositeHalApiTypeSupportTest {
 
     HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(mockAnnotationSupport, null);
 
-    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
+    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport, OBJECT_MAPPER);
 
     assertThatMockAnnotationSupportIsEffective(renderer.getTypeSupport());
   }

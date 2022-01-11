@@ -21,6 +21,8 @@ package io.wcm.caravan.rhyme.api.client;
 
 import org.osgi.annotation.versioning.ProviderType;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
@@ -88,6 +90,15 @@ public interface HalApiClientBuilder {
    * @return this
    */
   HalApiClientBuilder withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport);
+
+  /**
+   * Replace the default Jackson {@link ObjectMapper} used for JSON deserialization with a customized instance.
+   * Note that this object mapper is only used when converting JSON to Java Objects. It's not
+   * used when the raw JSON response from an upstream service is parsed.
+   * @param objectMapper a configured {@link ObjectMapper} instance (which can be a single shared instance)
+   * @return this
+   */
+  HalApiClientBuilder withObjectMapper(ObjectMapper objectMapper);
 
   /**
    * @return the new {@link HalApiClient} instance
