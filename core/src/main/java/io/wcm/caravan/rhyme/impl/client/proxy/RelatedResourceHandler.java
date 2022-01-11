@@ -174,13 +174,14 @@ class RelatedResourceHandler {
     return Observable.fromIterable(links)
         // if the link is templated then expand it with the method parameters
         .map(link -> link.isTemplated() ? expandLinkTemplates(link, parameters) : link)
-        // then create a new proxy
         .map(link -> {
 
+          // if the method returns a link, then there is no need for a proxy, but we can return it directly
           if (Link.class.equals(relatedResourceType)) {
             return link;
           }
 
+          // otherwise create a new proxy implementing the HalApiInterface of the link target
           return proxyFactory.createProxyFromLink(relatedResourceType, link);
         });
   }
