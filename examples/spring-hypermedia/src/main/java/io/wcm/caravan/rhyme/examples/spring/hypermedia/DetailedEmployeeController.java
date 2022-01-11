@@ -141,7 +141,7 @@ class DetailedEmployeeController {
       }
 
       @Override
-      public Link getExternalHtmlPage() {
+      public Link getHtmlProfileLink() {
 
         String name = getEmployee().getState().getName();
 

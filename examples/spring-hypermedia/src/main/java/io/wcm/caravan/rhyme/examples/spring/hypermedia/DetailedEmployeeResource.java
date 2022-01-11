@@ -65,5 +65,5 @@ public interface DetailedEmployeeResource extends LinkableResource {
    * @return a link to an external HTML profile page for the employee
    */
   @Related("company:htmlProfile")
-  Link getExternalHtmlPage();
+  Link getHtmlProfileLink();
 }
