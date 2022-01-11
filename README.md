@@ -462,7 +462,7 @@ To see all this in action, check out the [examples/spring-hypermedia](examples/s
 
 There is another benefit of re-using the same `Rhyme` instance while handling an incoming request: Every upstream resource that is fetched, and every annotated method called by the framework will be tracked by the Rhyme instance.
 
-When a HAL response is rendered, it will include a small embedded resource (using the `rhyme:metadata` relation) that allows you to inspect what exactly the framework did to generate the response.
+When a HAL response is rendered, it can include a small embedded resource (using the `rhyme:metadata` relation) that allows you to inspect what exactly the framework did to generate the response. This is disabled by default, but for the existing integration modules (e.g. Spring, OSGi/JAX-RS) you can add a `embedRhymeMetadata` query parameter to any request to have this embedded resource included.
 
 This resource will contain the following information:
 - a list of `via` links to every HAL resource that was fetched from an upstream service. The `title` and `name` attributes from the original `self` links of those resources will be included as well, giving you a very nice overview which external resources were retrieved to generate your resource. This is super helpful to dive directly into the relevant source data of your upstream services.
