@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.testing.client;
 
+import static com.google.common.collect.ImmutableList.of;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -32,9 +34,12 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ListMultimap;
+
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 /**
@@ -51,6 +56,8 @@ public class HalCrawler {
   private final Map<String, HalResponse> crawledUrlsAndResponses = new LinkedHashMap<>();
 
   private int limit = 1000;
+
+  private final List<String> relationsToIgnore = new LinkedList<>(of(StandardRelations.CURIES));
 
   private Function<String, String> urlModifier = Function.identity();
 
@@ -80,6 +87,17 @@ public class HalCrawler {
   public HalCrawler withLimit(int maxNumResources) {
 
     limit = maxNumResources;
+    return this;
+  }
+
+  /**
+   * Do not follow links (or look into links from embedded resources) with the given relatins
+   * @param relations the relations that should not be crawled
+   * @return this
+   */
+  public HalCrawler withIgnoredRelations(Iterable<String> relations) {
+
+    relations.forEach(relationsToIgnore::add);
     return this;
   }
 
@@ -153,15 +171,21 @@ public class HalCrawler {
 
   private Stream<Link> collectResolvedLinks(HalResource hal) {
 
-    Stream<Link> directlyLinked = hal.getLinks().entries().stream()
-        .filter(entry -> !"curies".equals(entry.getKey()))
-        .map(Entry::getValue)
+    Stream<Link> directlyLinked = filterCrawlableRelationsFrom(hal.getLinks())
+        .filter(link -> link.getType() == null || link.getType().equals(HalResource.CONTENT_TYPE))
         .filter(link -> !link.isTemplated());
 
-    Stream<Link> linkedFromEmbedded = hal.getEmbedded().values().stream()
+    Stream<Link> linkedFromEmbedded = filterCrawlableRelationsFrom(hal.getEmbedded())
         .flatMap(this::collectResolvedLinks);
 
     return Stream.concat(directlyLinked, linkedFromEmbedded)
         .distinct();
+  }
+
+  private <T> Stream<T> filterCrawlableRelationsFrom(ListMultimap<String, T> mapWithRelationKeys) {
+
+    return mapWithRelationKeys.entries().stream()
+        .filter(entry -> !relationsToIgnore.contains(entry.getKey()))
+        .map(Entry::getValue);
   }
 }

@@ -24,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
+import com.google.common.collect.ImmutableList;
+
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -102,6 +104,20 @@ public class HalCrawlerTest {
         .hasSize(10)
         .extracting(HalResponse::getUri)
         .containsExactly("/", "/1", "/2", "/3", "/4", "/5", "/6", "/7", "/8", "/9");
+  }
+
+  @Test
+  public void should_ignore_relations() throws Exception {
+
+    MockResourceChainLoader loader = new MockResourceChainLoader();
+
+    HalCrawler crawler = new HalCrawler(loader)
+        .withIgnoredRelations(ImmutableList.of(StandardRelations.NEXT));
+
+    assertThat(crawler.getAllResponses())
+        .hasSize(1)
+        .extracting(HalResponse::getUri)
+        .containsExactly("/");
   }
 
   @Test
