@@ -21,6 +21,7 @@ package io.wcm.caravan.rhyme.aem.impl.resources;
 
 import java.util.List;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.api.adaptation.SlingResourceAdapter;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -43,5 +44,5 @@ public interface AemApiDiscoveryResource {
    * @return a list of {@link LinkableResource} used to create the link
    */
   @Related("hal:api")
-  List<LinkableResource> getApiEntryPoints();
+  List<Link> getApiEntryPoints();
 }
