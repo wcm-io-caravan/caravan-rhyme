@@ -25,6 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.ResourceConversions;
 import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 
@@ -137,6 +139,21 @@ class DetailedEmployeeController {
           colleagues = colleagues.map(ResourceConversions::asEmbeddedResourceWithoutLink);
         }
         return colleagues;
+      }
+
+      @Override
+      public LinkableResource getExternalHtmlPage() {
+
+        return new LinkableResource() {
+
+          @Override
+          public Link createLink() {
+            String name = getEmployee().getState().getName();
+            return new Link("https://lotr.fandom.com/wiki/" + name)
+                .setTitle(name + "'s LOTR Wiki page")
+                .setType(MediaType.TEXT_HTML_VALUE);
+          }
+        };
       }
 
       @Override
