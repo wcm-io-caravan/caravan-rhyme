@@ -429,7 +429,7 @@ To ensure that your rendered API responses contain valid CURIE links pointing to
 
 All this is usually done once in the integration module for your platform. For example if you are using OSGi / JAX-RS, this all happens in the [docs package](integration/osgi-jaxrs/src/main/java/io/wcm/caravan/rhyme/jaxrs/impl/docs), and as a service developer you don't need to do anything than configure the maven plugin.
 
-## Controlling caching
+## Cache-Control Header and URL Fingerprinting
 
 The `cache-control: max-age` header is arguably the most useful way of controlling caching in a system of distributed stateless web services. It does not require clients to keep track of last-modified dates or Etags, and there is also good support for it in CDNs, browsers and caching proxies.
 
@@ -454,9 +454,9 @@ For all this to work best, you should build your API with the following pattern:
 - when a resource with such a fingerprint in the URL is rendered, you can set the max-age to a very high value as they are now essentially immutable (because if data changes, the clients will fetch them with a different URL instead)
 - Consumers will now automatically "poll" the entry point repeatedly. But as long as the data (and therefore the URLs) doesn't change, they will continue to use the same fingerprinted URLs to fetch the more expensive resources (and there is a high chance that those can be found in cache)
 
-Your consumers will not have to anything to benefit from these immutable resoures, as the additional fingerprinting in your URLs is not exposed anywhere in your API. It's entirely up to the server-side implementation to decide for which links these fingerprints are added, and the clients will just pick it up by following the links.
+Your consumers will not have to do anything to benefit from these immutable resoures, as the additional fingerprinting in your URLs is not exposed anywhere in your API. It's entirely up to the server-side implementation to decide for which links these fingerprints are added, and the clients will just pick it up by following the links.
 
-To see all this in action, check out the [examples/spring-hypermedia](examples/spring-hypermedia) module.
+The [SpringRhyme](integration/spring/src/main/java/io/wcm/caravan/rhyme/spring/api/SpringRhyme.java) integration has some built-in support for this via the [UrlFingerprinting](integration/spring/src/main/java/io/wcm/caravan/rhyme/spring/api/UrlFingerprinting.java) interface. To see it action, check out the [examples/spring-hypermedia](examples/spring-hypermedia) module.
 
 ## Data debugging and performance analysis
 
