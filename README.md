@@ -17,7 +17,7 @@ The key concepts and features of **Rhyme** are:
 - The same interfaces are also used to **keep the server-side implementation well structured**, and always in sync with the API interfaces.
 - simple and transparent support for **embedded resources**
 - generation and integration of **HTML API documentation** from the annotated interfaces
--  **controlling caching** using the `cache-control: max-age` header
+- a **simple and effecting caching model** based on URL fingerprinting and the `cache-control: max-age` header
 - Simplify **data debugging and performance analysis** (by including embedded metadata in every response)
 - **Retaining error information over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
 - **Supporting asynchronous, reactive programming** on the client and server side
