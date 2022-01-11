@@ -62,7 +62,7 @@ class RelatedResourceHandler {
     Class<?> relatedResourceType = invocation.getEmissionType();
 
     if (!isHalApiInterface(relatedResourceType, annotationSupport)
-        && !HalApiReflectionUtils.isPlainLinkableResource(relatedResourceType)) {
+        && !HalApiReflectionUtils.isPlainLink(relatedResourceType)) {
       throw new HalApiDeveloperException("The method " + invocation + " has an invalid emission type " + relatedResourceType.getName() +
           " which does not have a @" + HalApiInterface.class.getSimpleName() + " annotation.");
     }
@@ -175,7 +175,14 @@ class RelatedResourceHandler {
         // if the link is templated then expand it with the method parameters
         .map(link -> link.isTemplated() ? expandLinkTemplates(link, parameters) : link)
         // then create a new proxy
-        .map(link -> proxyFactory.createProxyFromLink(relatedResourceType, link));
+        .map(link -> {
+
+          if (Link.class.equals(relatedResourceType)) {
+            return link;
+          }
+
+          return proxyFactory.createProxyFromLink(relatedResourceType, link);
+        });
   }
 
   private static Link expandLinkTemplates(Link link, Map<String, Object> parameters) {

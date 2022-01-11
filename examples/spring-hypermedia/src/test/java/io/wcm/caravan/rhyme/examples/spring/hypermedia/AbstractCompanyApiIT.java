@@ -245,7 +245,7 @@ abstract class AbstractCompanyApiIT {
 
     Long firstId = getIdOfFirstEmployee();
 
-    Link external = api.getDetailedEmployeeById(firstId).getExternalHtmlPage().createLink();
+    Link external = api.getDetailedEmployeeById(firstId).getExternalHtmlPage();
 
     assertThat(external.getHref())
         .endsWith("/" + api.getEmployeeById(firstId).getState().getName());

@@ -52,25 +52,25 @@ public class RenderRelatedResourceTest {
   public interface ResourceWithManyRelations extends LinkableResource {
 
     @Related("custom:ghi")
-    Single<LinkableResource> getCustomGhi();
+    Single<Link> getCustomGhi();
 
     @Related("item")
-    Single<LinkableResource> getItem();
+    Single<Link> getItem();
 
     @Related("section")
-    Single<LinkableResource> getSection();
+    Single<Link> getSection();
 
     @Related("custom:abc")
-    Single<LinkableResource> getCustomAbc();
+    Single<Link> getCustomAbc();
 
     @Related("canonical")
-    Single<LinkableResource> getCanonical();
+    Single<Link> getCanonical();
 
     @Related("custom:def")
-    Single<LinkableResource> getCustomDef();
+    Single<Link> getCustomDef();
 
     @Related("alternate")
-    Single<LinkableResource> getAlternate();
+    Single<Link> getAlternate();
 
   }
 
@@ -80,37 +80,37 @@ public class RenderRelatedResourceTest {
     ResourceWithManyRelations resourceImpl = new ResourceWithManyRelations() {
 
       @Override
-      public Single<LinkableResource> getSection() {
+      public Single<Link> getSection() {
         return createSingleExternalLinkedResource("/section");
       }
 
       @Override
-      public Single<LinkableResource> getCustomGhi() {
+      public Single<Link> getCustomGhi() {
         return createSingleExternalLinkedResource("/ghi");
       }
 
       @Override
-      public Single<LinkableResource> getItem() {
+      public Single<Link> getItem() {
         return createSingleExternalLinkedResource("/item");
       }
 
       @Override
-      public Single<LinkableResource> getCustomAbc() {
+      public Single<Link> getCustomAbc() {
         return createSingleExternalLinkedResource("/abc");
       }
 
       @Override
-      public Single<LinkableResource> getCanonical() {
+      public Single<Link> getCanonical() {
         return createSingleExternalLinkedResource("/canonical");
       }
 
       @Override
-      public Single<LinkableResource> getCustomDef() {
+      public Single<Link> getCustomDef() {
         return createSingleExternalLinkedResource("/def");
       }
 
       @Override
-      public Single<LinkableResource> getAlternate() {
+      public Single<Link> getAlternate() {
         return createSingleExternalLinkedResource("/alternate");
       }
 
@@ -165,9 +165,7 @@ public class RenderRelatedResourceTest {
         () -> render(resourceImpl));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageEndingWith(
-            "returns Maybe<TestState>, but it must return an interface annotated with the @HalApiInterface annotation "
-                + "(or a supported generic type that provides such instances, e.g. Observable)");
+        .hasMessageContaining("it must return a Link or an interface annotated with the @HalApiInterface annotation");
   }
 
   @HalApiInterface
@@ -218,9 +216,7 @@ public class RenderRelatedResourceTest {
         () -> render(resourceImpl));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageEndingWith(
-            "returns Observable<TestState>, but it must return an interface annotated with the @HalApiInterface annotation "
-                + "(or a supported generic type that provides such instances, e.g. Observable)");
+        .hasMessageContaining("it must return a Link or an interface annotated with the @HalApiInterface annotation");
   }
 
   @Test
@@ -249,7 +245,7 @@ public class RenderRelatedResourceTest {
   }
 
   @Test
-  public void should_support_extensions_of_linkable_resource() {
+  public void should_support_plain_external_links() {
 
     ResourceWithCustomLink resourceImpl = new ResourceWithCustomLink() {
 
@@ -259,14 +255,8 @@ public class RenderRelatedResourceTest {
       }
 
       @Override
-      public Single<CustomLinkableResource> getCustomExternal() {
-        return Single.just(new CustomLinkableResource() {
-
-          @Override
-          public Link createLink() {
-            return new Link("/bar");
-          }
-        });
+      public Single<Link> getCustomExternal() {
+        return Single.just(new Link("/bar"));
       }
     };
 
@@ -286,6 +276,6 @@ public class RenderRelatedResourceTest {
   public interface ResourceWithCustomLink extends LinkableResource {
 
     @Related("item")
-    Single<CustomLinkableResource> getCustomExternal();
+    Single<Link> getCustomExternal();
   }
 }

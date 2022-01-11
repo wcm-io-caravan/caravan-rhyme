@@ -40,7 +40,6 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 import io.wcm.caravan.rhyme.testing.TestResource;
 
@@ -267,7 +266,7 @@ public class RenderLinkedResourceTest {
   public interface TestResourceWithSingleExternalLink {
 
     @Related(LINKED)
-    Single<LinkableResource> getExternal();
+    Single<Link> getExternal();
   }
 
   @Test
@@ -278,7 +277,7 @@ public class RenderLinkedResourceTest {
     TestResourceWithSingleExternalLink resourceImpl = new TestResourceWithSingleExternalLink() {
 
       @Override
-      public Single<LinkableResource> getExternal() {
+      public Single<Link> getExternal() {
         return createSingleExternalLinkedResource(externalLink);
       }
     };

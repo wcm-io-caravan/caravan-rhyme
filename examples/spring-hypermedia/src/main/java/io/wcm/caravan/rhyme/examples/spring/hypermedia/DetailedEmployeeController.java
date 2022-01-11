@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.ResourceConversions;
 import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 
@@ -142,18 +141,13 @@ class DetailedEmployeeController {
       }
 
       @Override
-      public LinkableResource getExternalHtmlPage() {
+      public Link getExternalHtmlPage() {
 
-        return new LinkableResource() {
+        String name = getEmployee().getState().getName();
 
-          @Override
-          public Link createLink() {
-            String name = getEmployee().getState().getName();
-            return new Link("https://lotr.fandom.com/wiki/" + name)
-                .setTitle(name + "'s LOTR Wiki page")
-                .setType(MediaType.TEXT_HTML_VALUE);
-          }
-        };
+        return new Link("https://lotr.fandom.com/wiki/" + name)
+            .setTitle(name + "'s LOTR Wiki page")
+            .setType(MediaType.TEXT_HTML_VALUE);
       }
 
       @Override
