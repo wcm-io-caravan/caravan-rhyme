@@ -32,7 +32,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Iterables;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 
@@ -236,6 +238,20 @@ abstract class AbstractCompanyApiIT {
     Manager manager = api.getDetailedEmployeeById(firstId).getManager().getState();
 
     assertThat(manager.getName()).isEqualTo("Gandalf");
+  }
+
+  @Test
+  public void getDetailedEmployeeById_should_provide_external_link() throws Exception {
+
+    Long firstId = getIdOfFirstEmployee();
+
+    Link external = api.getDetailedEmployeeById(firstId).getHtmlProfileLink();
+
+    assertThat(external.getHref())
+        .endsWith("/" + api.getEmployeeById(firstId).getState().getName());
+
+    assertThat(external.getType())
+        .isEqualTo(MediaType.TEXT_HTML_VALUE);
   }
 
   private void assertThat404isReturnedFor(ThrowingCallable codeThatThrows) {

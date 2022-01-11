@@ -181,7 +181,7 @@ public class RenderLinkedResourceTest {
   public interface TestResourceWithRequiredExternalLink {
 
     @Related(LINKED)
-    LinkableResource getExternal();
+    Link getExternal();
   }
 
   @Test
@@ -192,14 +192,8 @@ public class RenderLinkedResourceTest {
     TestResourceWithRequiredExternalLink resourceImpl = new TestResourceWithRequiredExternalLink() {
 
       @Override
-      public LinkableResource getExternal() {
-        return new LinkableResource() {
-
-          @Override
-          public Link createLink() {
-            return externalLink;
-          }
-        };
+      public Link getExternal() {
+        return externalLink;
       }
     };
 
@@ -207,6 +201,26 @@ public class RenderLinkedResourceTest {
 
     assertThat(hal.getLinks(LINKED)).containsExactly(externalLink);
     assertThat(hal.getModel().path("_links").path(LINKED).isObject()).isTrue();
+  }
+
+  @Test
+  public void returning_null_as_external_link_should_throw_exception() {
+
+    TestResourceWithRequiredExternalLink resourceImpl = new TestResourceWithRequiredExternalLink() {
+
+      @Override
+      public Link getExternal() {
+        return null;
+      }
+
+    };
+
+    Throwable ex = catchThrowable(
+        () -> render(resourceImpl));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("#getExternal of anonymous")
+        .hasMessageContaining("must not return null");
   }
 
   @Test

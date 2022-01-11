@@ -55,17 +55,11 @@ public final class AsyncHalResourceRendererTestUtil {
     return rxResource.toObservable().blockingFirst();
   }
 
-  static Single<LinkableResource> createSingleExternalLinkedResource(Link link) {
-    return Single.just(new LinkableResource() {
-
-      @Override
-      public Link createLink() {
-        return link;
-      }
-    });
+  static Single<Link> createSingleExternalLinkedResource(Link link) {
+    return Single.just(link);
   }
 
-  static Single<LinkableResource> createSingleExternalLinkedResource(String uri) {
+  static Single<Link> createSingleExternalLinkedResource(String uri) {
     return createSingleExternalLinkedResource(new Link(uri));
   }
 

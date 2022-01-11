@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import org.apache.sling.models.annotations.Model;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
@@ -41,11 +42,12 @@ public class AemApiDiscoveryResourceImpl extends AbstractLinkableResource implem
   private RhymeResourceRegistry registry;
 
   @Override
-  public List<LinkableResource> getApiEntryPoints() {
+  public List<Link> getApiEntryPoints() {
 
     rhyme.setResponseMaxAge(Duration.ofSeconds(MAX_AGE_SECONDS));
 
     return registry.getAllApiEntryPoints(resourceAdapter)
+        .map(LinkableResource::createLink)
         .collect(Collectors.toList());
   }
 

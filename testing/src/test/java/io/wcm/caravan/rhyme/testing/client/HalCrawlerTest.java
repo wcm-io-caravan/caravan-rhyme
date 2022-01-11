@@ -21,8 +21,13 @@ package io.wcm.caravan.rhyme.testing.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+
+import com.google.common.collect.ImmutableList;
 
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
@@ -105,6 +110,50 @@ public class HalCrawlerTest {
   }
 
   @Test
+  public void should_ignore_relations() throws Exception {
+
+    MockResourceChainLoader loader = new MockResourceChainLoader();
+
+    HalCrawler crawler = new HalCrawler(loader)
+        .withIgnoredRelations(ImmutableList.of(StandardRelations.NEXT));
+
+    assertThat(crawler.getAllResponses())
+        .hasSize(1)
+        .extracting(HalResponse::getUri)
+        .containsExactly("/");
+  }
+
+  @Test
+  public void should_filter_links_with_custom_content_type() throws Exception {
+
+    MockResourceChainLoader loader = new MockResourceChainLoader()
+        .withAdditionalLink(new Link("/foo").setType("text/html"));
+
+    HalCrawler crawler = new HalCrawler(loader)
+        .withLimit(10);
+
+    assertThat(crawler.getAllResponses())
+        .hasSize(10)
+        .extracting(HalResponse::getUri)
+        .doesNotContain("/foo");
+  }
+
+  @Test
+  public void should_not_filter_links_with_hal_content_type() throws Exception {
+
+    MockResourceChainLoader loader = new MockResourceChainLoader()
+        .withAdditionalLink(new Link("/foo").setType(HalResource.CONTENT_TYPE));
+
+    HalCrawler crawler = new HalCrawler(loader)
+        .withLimit(10);
+
+    assertThat(crawler.getAllResponses())
+        .hasSize(10)
+        .extracting(HalResponse::getUri)
+        .contains("/foo");
+  }
+
+  @Test
   public void should_not_crawl_multiple_times() throws Exception {
 
     MockResourceChainLoader loader = new MockResourceChainLoader()
@@ -147,6 +196,8 @@ public class HalCrawlerTest {
 
     private boolean includeLinkTemplate;
 
+    private List<Link> additionalLinks = new ArrayList<>();
+
     MockResourceChainLoader withLinkTemplate() {
       includeLinkTemplate = true;
       return this;
@@ -154,6 +205,12 @@ public class HalCrawlerTest {
 
     MockResourceChainLoader withLimit(int maxNumResources) {
       this.limit = maxNumResources;
+      return this;
+    }
+
+
+    MockResourceChainLoader withAdditionalLink(Link link) {
+      this.additionalLinks.add(link);
       return this;
     }
 
@@ -170,6 +227,8 @@ public class HalCrawlerTest {
         body.addLinks("foo:template", new Link("/{index}"));
         body.addLinks("curies", new Link("/docs/foo").setName("foo"));
       }
+
+      body.addLinks("additional", additionalLinks);
 
       return Single.just(new HalResponse()
           .withStatus(200)

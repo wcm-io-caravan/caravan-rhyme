@@ -64,6 +64,15 @@ public final class HalApiReflectionUtils {
         .collectFromClassAndAllSuperClasses(clazz);
   }
 
+  /**
+   * @param clazz the type to check
+   * @return true if the class is a {@link Link}
+   */
+  public static boolean isPlainLink(Class clazz) {
+
+    return Link.class.equals(clazz);
+  }
+
   private static final class InterfaceCollector {
 
     private final Set<Class<?>> collected = new LinkedHashSet<>();

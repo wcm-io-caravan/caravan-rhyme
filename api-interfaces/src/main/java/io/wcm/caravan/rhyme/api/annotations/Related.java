@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
  * Used to declare methods which defines a link relation and the expected type for linked or embedded resources.
@@ -39,8 +39,9 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
  * or one of the supported reactive types (e.g. Single, Maybe, Observable).
  * </p>
  * <p>
- * You can also represent links to other non-HAL resources (e.g. HTML, text or binary) by using {@link LinkableResource}
- * as return type.
+ * You can also represent links to other non-HAL resources (e.g. HTML, text or binary) by using {@link Link}
+ * as return type. Again this can be wrapped as appropriate (e.g. a {@link Stream} of {@link Link}s for multiple
+ * external links.
  * </p>
  * <p>
  * Methods with this annotation can have parameters with {@link TemplateVariable} or

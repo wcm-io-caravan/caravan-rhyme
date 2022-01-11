@@ -25,6 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -137,6 +138,16 @@ class DetailedEmployeeController {
           colleagues = colleagues.map(ResourceConversions::asEmbeddedResourceWithoutLink);
         }
         return colleagues;
+      }
+
+      @Override
+      public Link getHtmlProfileLink() {
+
+        String name = getEmployee().getState().getName();
+
+        return new Link("https://lotr.fandom.com/wiki/" + name)
+            .setTitle(name + "'s LOTR Wiki page")
+            .setType(MediaType.TEXT_HTML_VALUE);
       }
 
       @Override

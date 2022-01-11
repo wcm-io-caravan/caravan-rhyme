@@ -39,6 +39,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
+import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 
 class RelatedResourceHandler {
 
@@ -60,7 +61,8 @@ class RelatedResourceHandler {
     String relation = invocation.getRelation();
     Class<?> relatedResourceType = invocation.getEmissionType();
 
-    if (!isHalApiInterface(relatedResourceType, annotationSupport)) {
+    if (!isHalApiInterface(relatedResourceType, annotationSupport)
+        && !HalApiReflectionUtils.isPlainLink(relatedResourceType)) {
       throw new HalApiDeveloperException("The method " + invocation + " has an invalid emission type " + relatedResourceType.getName() +
           " which does not have a @" + HalApiInterface.class.getSimpleName() + " annotation.");
     }
@@ -172,8 +174,16 @@ class RelatedResourceHandler {
     return Observable.fromIterable(links)
         // if the link is templated then expand it with the method parameters
         .map(link -> link.isTemplated() ? expandLinkTemplates(link, parameters) : link)
-        // then create a new proxy
-        .map(link -> proxyFactory.createProxyFromLink(relatedResourceType, link));
+        .map(link -> {
+
+          // if the method returns a link, then there is no need for a proxy, but we can return it directly
+          if (Link.class.equals(relatedResourceType)) {
+            return link;
+          }
+
+          // otherwise create a new proxy implementing the HalApiInterface of the link target
+          return proxyFactory.createProxyFromLink(relatedResourceType, link);
+        });
   }
 
   private static Link expandLinkTemplates(Link link, Map<String, Object> parameters) {

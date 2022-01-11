@@ -35,7 +35,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.RhymeResourceRegistration;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
-import io.wcm.caravan.rhyme.aem.impl.resources.AemApiDiscoveryResourceImpl;
 import io.wcm.caravan.rhyme.aem.testing.context.AppAemContext;
 import io.wcm.caravan.rhyme.aem.testing.models.SelectorSlingTestResource;
 import io.wcm.caravan.rhyme.aem.testing.models.TestResourceRegistration;
@@ -81,12 +80,14 @@ public class AemApiDiscoveryResourceImplTest {
   @Test
   void getAllEntryPoints_should_return_single_entrypoint_from_testResourceSelectorProvider() {
 
-    List<LinkableResource> entryPoints = resource.getApiEntryPoints();
+    List<Link> entryPoints = resource.getApiEntryPoints();
 
     assertThat(entryPoints)
         .hasSize(1)
         .first()
-        .isInstanceOf(SelectorSlingTestResource.class);
+        .extracting(Link::getHref)
+        .asString()
+        .contains("." + SelectorSlingTestResource.SELECTOR + ".");
   }
 
   @Test
@@ -95,11 +96,10 @@ public class AemApiDiscoveryResourceImplTest {
     Mockito.when(mockRegistration.getApiEntryPoint(ArgumentMatchers.any()))
         .thenAnswer(invocation -> Optional.of(new TestEntryPointResource()));
 
-    List<LinkableResource> entryPoints = resource.getApiEntryPoints();
+    List<Link> entryPoints = resource.getApiEntryPoints();
 
     assertThat(entryPoints)
         .hasSize(2)
-        .extracting(LinkableResource::createLink)
         .extracting(Link::getHref)
         .containsExactlyInAnyOrder("/foo", "/.selectortest.rhyme");
   }

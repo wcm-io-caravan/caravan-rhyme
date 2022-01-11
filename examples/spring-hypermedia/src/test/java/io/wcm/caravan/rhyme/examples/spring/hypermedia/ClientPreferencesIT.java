@@ -123,6 +123,10 @@ public class ClientPreferencesIT extends MockMvcClientIT {
 
   private boolean isLinkThatShouldHaveStickyParameter(Entry<String, Link> entry) {
 
+    if (entry.getValue().getType() != null) {
+      return false;
+    }
+
     String relation = entry.getKey();
 
     return !(relation.equals("curies") || relation.equals("company:preferences"));

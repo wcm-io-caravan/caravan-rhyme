@@ -21,6 +21,7 @@ package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
 import java.util.stream.Stream;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
@@ -49,14 +50,20 @@ public interface DetailedEmployeeResource extends LinkableResource {
   String getManagerName();
 
   /**
-   * @return an embedded resource for the manager of this employee
+   * @return the manager of this employee
    */
   @Related("company:manager")
   ManagerResource getManager();
 
   /**
-   * @return embedded resources for every other employee with the same manager
+   * @return every other employee with the same manager
    */
   @Related("company:colleague")
   Stream<EmployeeResource> getColleagues();
+
+  /**
+   * @return a link to an external HTML profile page for the employee
+   */
+  @Related("company:htmlProfile")
+  Link getHtmlProfileLink();
 }

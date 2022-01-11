@@ -123,6 +123,7 @@ final class RelatedResourcesRendererImpl {
     return rxRelatedResources
         .filter(res -> !(res instanceof LinkableResource))
         .filter(res -> !(res instanceof EmbeddableResource))
+        .filter(res -> !HalApiReflectionUtils.isPlainLink(res.getClass()))
         .map(res -> HalApiReflectionUtils.getSimpleClassName(res, typeSupport))
         .distinct()
         .toList();
@@ -133,13 +134,14 @@ final class RelatedResourcesRendererImpl {
     // get the emitted result resource type from the method signature
     Class<?> relatedResourceInterface = RxJavaReflectionUtils.getObservableEmissionType(method, typeSupport);
 
-    if (!HalApiReflectionUtils.isHalApiInterface(relatedResourceInterface, typeSupport) && !LinkableResource.class.equals(relatedResourceInterface)) {
+    if (!HalApiReflectionUtils.isHalApiInterface(relatedResourceInterface, typeSupport)
+        && !HalApiReflectionUtils.isPlainLink(relatedResourceInterface)) {
 
       String returnTypeDesc = getReturnTypeDescription(method, relatedResourceInterface);
 
       String fullMethodName = getClassAndMethodName(resourceImplInstance, method, typeSupport);
       throw new HalApiDeveloperException("The method " + fullMethodName + " returns " + returnTypeDesc + ", "
-          + "but it must return an interface annotated with the @" + HalApiInterface.class.getSimpleName()
+          + "but it must return a Link or an interface annotated with the @" + HalApiInterface.class.getSimpleName()
           + " annotation (or a supported generic type that provides such instances, e.g. Observable)");
     }
   }
@@ -155,7 +157,7 @@ final class RelatedResourcesRendererImpl {
 
   private Single<List<Link>> createLinksTo(Observable<?> rxRelatedResources) {
 
-    // filter only those resources that are Linkable
+    // filter only those resources that are implementing LinkableResource
     Observable<LinkableResource> rxLinkedResourceImpls = rxRelatedResources
         .filter(r -> r instanceof LinkableResource)
         // decide whether to write links to resource that are also embedded
@@ -163,7 +165,7 @@ final class RelatedResourcesRendererImpl {
         .map(r -> (LinkableResource)r);
 
     // and let each resource create a link to itself
-    Observable<Link> rxLinks = rxLinkedResourceImpls
+    Observable<Link> rxCreatedLinks = rxLinkedResourceImpls
         .map(linkedResource -> {
 
           try (RequestMetricsStopwatch sw = metrics.startStopwatch(AsyncHalResponseRenderer.class,
@@ -178,7 +180,13 @@ final class RelatedResourcesRendererImpl {
           }
         });
 
-    return rxLinks.toList();
+    // Related methods also can return links directly instead
+    Observable<Link> rxDirectLinks = rxRelatedResources
+        .filter(r -> r instanceof Link)
+        .map(l -> (Link)l);
+
+    return Observable.concat(rxCreatedLinks, rxDirectLinks)
+        .toList();
   }
 
   private String getSimpleClassName(LinkableResource linkedResource) {
