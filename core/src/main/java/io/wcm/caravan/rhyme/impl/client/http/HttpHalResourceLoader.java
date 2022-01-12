@@ -91,7 +91,6 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     private final AtomicBoolean responseOrErrorWasEmitted = new AtomicBoolean();
 
     private final String originalUri;
-    private volatile URI actualUri;
 
     private volatile HttpHeadersParser parsedHeaders;
 
@@ -106,7 +105,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
       try {
         updateUri(originalUri);
 
-        actualUri = URI.create(originalUri);
+        URI actualUri = URI.create(originalUri);
 
         client.executeGetRequest(actualUri, this);
       }
@@ -139,7 +138,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     private void emitHalResponse() {
 
       if (responseOrErrorWasEmitted.compareAndSet(false, true)) {
-        log.debug("HTTP response from {} was retrieved in {}", actualUri, stopwatch);
+        log.debug("HTTP response from {} was retrieved in {}", halResponse.getUri(), stopwatch);
 
         subscriber.onSuccess(halResponse);
       }
@@ -165,8 +164,6 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
     @Override
     public void onUrlModified(URI uri) {
-
-      actualUri = uri;
 
       updateUri(uri.toString());
     }
