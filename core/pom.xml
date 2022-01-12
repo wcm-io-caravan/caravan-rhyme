@@ -30,7 +30,7 @@
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.1.0</version>
   <packaging>bundle</packaging>
 
   <name>Rhyme - Core Framework</name>
@@ -53,7 +53,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.1.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -156,18 +156,6 @@
   
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
