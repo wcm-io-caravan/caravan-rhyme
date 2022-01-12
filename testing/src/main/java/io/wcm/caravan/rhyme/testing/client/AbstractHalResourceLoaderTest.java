@@ -130,11 +130,16 @@ public abstract class AbstractHalResourceLoaderTest {
 
   private static void stubHtmlResponseWithStatusCode(int statusCode) {
 
+    stubResponseWithContentTypeAndBody(statusCode, "text/html", "<h1>This is an HTML document</h1>");
+  }
+
+  private static void stubResponseWithContentTypeAndBody(int statusCode, String contentType, String body) {
+
     wireMockServer.stubFor(get(urlEqualTo(TEST_PATH))
         .willReturn(aResponse()
             .withStatus(statusCode)
-            .withHeader(HttpHeaders.CONTENT_TYPE, "text/html")
-            .withBody("<h1>This is an HTML document</h1>")));
+            .withHeader(HttpHeaders.CONTENT_TYPE, contentType)
+            .withBody(body)));
   }
 
   private static void stubJsonResponseWithStatusCode(int statusCode) {
@@ -156,11 +161,7 @@ public abstract class AbstractHalResourceLoaderTest {
 
   private static void stub500VndErrorResponse() {
 
-    wireMockServer.stubFor(get(urlEqualTo(TEST_PATH))
-        .willReturn(aResponse()
-            .withStatus(500)
-            .withHeader(HttpHeaders.CONTENT_TYPE.toLowerCase(), VndErrorResponseRenderer.CONTENT_TYPE)
-            .withBody("{}")));
+    stubResponseWithContentTypeAndBody(500, VndErrorResponseRenderer.CONTENT_TYPE, "{}");
   }
 
   private void stubEmptyResponseWithStatusCode(int statusCode) {
@@ -177,7 +178,6 @@ public abstract class AbstractHalResourceLoaderTest {
             .withStatus(statusCode)
             .withFault(fault)));
   }
-
 
   protected HalResponse loadResource() {
 
@@ -378,6 +378,19 @@ public abstract class AbstractHalResourceLoaderTest {
   public void error_body_should_be_null_in_HalApiClientException_for_non_ok_response_without_body() throws Exception {
 
     stubEmptyResponseWithStatusCode(204);
+
+    HalApiClientException ex = loadResourceAndExpectClientException();
+
+    assertThat(ex.getErrorResponse())
+        .isNotNull();
+    assertThat(ex.getErrorResponse().getBody())
+        .isNull();
+  }
+
+  @Test
+  public void error_body_should_be_null_in_HalApiClientException_for_non_ok_text_response() throws Exception {
+
+    stubResponseWithContentTypeAndBody(500, "text/json", "500");
 
     HalApiClientException ex = loadResourceAndExpectClientException();
 
