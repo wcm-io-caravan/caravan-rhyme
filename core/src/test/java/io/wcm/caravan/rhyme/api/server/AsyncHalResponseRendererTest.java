@@ -35,7 +35,7 @@ import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
 @ExtendWith(MockitoExtension.class)
-public class AsyncHalResponseRendererTest {
+class AsyncHalResponseRendererTest {
 
   private static final String REQUEST_URI = "/";
 
