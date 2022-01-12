@@ -92,7 +92,7 @@
       <plugin>
         <groupId>io.wcm.caravan.maven.plugins</groupId>
         <artifactId>rhyme-docs-maven-plugin</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <executions>
           <execution>
             <goals>
@@ -141,7 +141,7 @@
                   <pluginExecutionFilter>
                     <groupId>io.wcm.caravan.maven.plugins</groupId>
                     <artifactId>rhyme-docs-maven-plugin</artifactId>
-                    <versionRange>1.0.0-SNAPSHOT,)</versionRange>
+                    <versionRange>1.0.0,)</versionRange>
                     <goals>
                       <goal>generate-rhyme-docs</goal>
                     </goals>
