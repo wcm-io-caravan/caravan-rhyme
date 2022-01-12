@@ -103,7 +103,8 @@ public class UrlFingerprintingImplTest {
         .controllerWithRequiredAnnotatedParamFoo(null)))
         .build();
 
-    assertThat(link.isTemplated());
+    assertThat(link.isTemplated())
+        .isTrue();
     assertThat(link.getHref())
         .endsWith("?foo={foo}");
   }

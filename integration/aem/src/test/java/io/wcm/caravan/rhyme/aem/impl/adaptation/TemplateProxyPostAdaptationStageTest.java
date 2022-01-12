@@ -74,7 +74,8 @@ public class TemplateProxyPostAdaptationStageTest {
         .adaptTo(SlingTestResource.class)
         .getOptional();
 
-    assertThat(resource.isPresent());
+    assertThat(resource)
+        .isPresent();
   }
 
   @Test
