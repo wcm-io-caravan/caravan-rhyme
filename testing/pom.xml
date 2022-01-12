@@ -114,12 +114,6 @@
       <version>2.27.2</version>
     </dependency>
     <dependency>
-      <groupId>com.mercateo</groupId>
-      <artifactId>test-clock</artifactId>
-      <version>1.0.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
     </dependency>
