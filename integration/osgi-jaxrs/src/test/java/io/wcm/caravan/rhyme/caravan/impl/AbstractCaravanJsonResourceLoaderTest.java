@@ -166,6 +166,17 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
+  public void getHalResource_should_throw_HalApiClientException_for_500_responses_with_status_code_in_body() throws Exception {
+
+    mockIllegalResponseRuntimeException(500, "500 Internal Server Error");
+
+    Throwable ex = catchThrowable(this::getHalResponse);
+
+    assertThat(ex).isInstanceOf(HalApiClientException.class)
+        .hasMessageContaining("has failed with status code 500");
+  }
+
+  @Test
   public void getHalResource_should_throw_HalApiClientException_for_unexpected_exceptions() throws Exception {
 
     // trigger a runtime exception within JsonPipeline by having the http client return an unexpected empty observable

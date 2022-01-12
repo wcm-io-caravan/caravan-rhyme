@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import hu.akarnokd.rxjava3.interop.RxJavaInterop;
 import io.reactivex.rxjava3.core.Single;
@@ -43,6 +44,8 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 
 class CaravanJsonPipelineResourceLoader implements HalResourceLoader {
+
+  private static final JsonFactory JSON_FACTORY = new JsonFactory(new ObjectMapper());
 
   private final JsonPipelineFactory pipelineFactory;
   private final String serviceId;
@@ -96,12 +99,14 @@ class CaravanJsonPipelineResourceLoader implements HalResourceLoader {
 
     JsonPipelineInputException jpie = (JsonPipelineInputException)ex;
 
-    JsonNode responseNode = tryToReadResponseBodyFromException(jpie);
-
     HalResponse errorResponse = new HalResponse()
         .withUri(uri)
-        .withStatus(jpie.getStatusCode())
-        .withBody(responseNode);
+        .withStatus(jpie.getStatusCode());
+
+    JsonNode responseNode = tryToReadResponseBodyFromException(jpie);
+    if (responseNode != null) {
+      errorResponse = errorResponse.withBody(responseNode);
+    }
 
     return Single.error(new HalApiClientException(errorResponse, ex));
   }
@@ -116,7 +121,7 @@ class CaravanJsonPipelineResourceLoader implements HalResourceLoader {
       String responseBody = irre.getResponseBody();
       if (responseBody != null) {
         try {
-          responseNode = new JsonFactory(new ObjectMapper()).createParser(responseBody).readValueAs(JsonNode.class);
+          responseNode = JSON_FACTORY.createParser(responseBody).readValueAs(ObjectNode.class);
         }
         // CHECKSTYLE:OFF - we really want to just try to parse the response body as JSON if possible
         catch (Exception ex) {
