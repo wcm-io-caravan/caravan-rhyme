@@ -93,7 +93,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -120,7 +120,7 @@
       <plugin>
         <groupId>io.wcm.caravan.maven.plugins</groupId>
         <artifactId>rhyme-docs-maven-plugin</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <executions>
           <execution>
             <goals>
@@ -174,7 +174,7 @@
                       rhyme-docs-maven-plugin
                     </artifactId>
                     <versionRange>
-                      [1.0.0-SNAPSHOT,)
+                      [1.0.0,)
                     </versionRange>
                     <goals>
                       <goal>generate-rhyme-docs</goal>
