@@ -30,7 +30,7 @@
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Rhyme - Testing Support</name>
