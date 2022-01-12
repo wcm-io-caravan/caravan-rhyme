@@ -23,7 +23,7 @@ import static org.apache.http.HttpStatus.SC_NOT_IMPLEMENTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
@@ -123,7 +123,7 @@ public class CaravanRhymeRequestCycleImplTest {
 
     LinkableTestResource resource = rhyme.getRemoteResource("/serviceId", REQUEST_URI, LinkableTestResource.class);
 
-    verifyZeroInteractions(httpClient);
+    verifyNoInteractions(httpClient);
 
     assertThat(resource.getState()).isNotNull();
     verify(httpClient).execute(ArgumentMatchers.any());

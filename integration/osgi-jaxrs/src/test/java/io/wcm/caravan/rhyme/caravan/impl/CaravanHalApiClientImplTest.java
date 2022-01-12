@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.time.Duration;
 
@@ -138,7 +138,7 @@ public class CaravanHalApiClientImplTest {
 
     // no HTTP requests will be made before the state is accessed
     assertThat(resource).isNotNull();
-    verifyZeroInteractions(httpClient);
+    verifyNoInteractions(httpClient);
 
     // but when it is accessed, a single http client request will be executed
     assertThat(resource.getState()).isNotNull();

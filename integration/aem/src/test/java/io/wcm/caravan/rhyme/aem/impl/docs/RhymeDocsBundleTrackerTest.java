@@ -22,7 +22,7 @@ package io.wcm.caravan.rhyme.aem.impl.docs;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.apache.sling.testing.mock.osgi.MockOsgi;
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
@@ -37,8 +37,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 
-import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsBundleTracker;
-import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 
@@ -99,7 +97,7 @@ public class RhymeDocsBundleTrackerTest {
 
     startBundle(bundleWithoutDocs);
 
-    verifyZeroInteractions(docsSupport);
+    verifyNoInteractions(docsSupport);
   }
 
   @Test
@@ -137,7 +135,7 @@ public class RhymeDocsBundleTrackerTest {
 
     stopBundle(bundleWithoutDocs);
 
-    verifyZeroInteractions(docsSupport);
+    verifyNoInteractions(docsSupport);
   }
 
 }
