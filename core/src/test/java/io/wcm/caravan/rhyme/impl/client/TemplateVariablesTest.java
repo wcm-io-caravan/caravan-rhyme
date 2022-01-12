@@ -24,7 +24,6 @@ import static io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ENTRY_POINT_URI
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -45,7 +44,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 
 public class TemplateVariablesTest {
@@ -209,8 +208,9 @@ public class TemplateVariablesTest {
         () -> client.createProxy(ResourceWithTemplateVariablesDtoWithPrivateFields.class).getItem(dto));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageContaining("Make sure that all fields in your classes used as parameters annotated with @TemplateVariables are public")
-        .hasCauseInstanceOf(IllegalAccessException.class);
+        .hasMessageStartingWith("Failed to extract template variables from class ")
+        .hasCauseInstanceOf(HalApiDeveloperException.class)
+        .hasRootCauseInstanceOf(IllegalAccessException.class);
   }
 
   public interface VariablesInterface {
@@ -281,8 +281,9 @@ public class TemplateVariablesTest {
         () -> client.createProxy(ResourceWithTemplateVariablesInterface.class).getItem(variables));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("Failed to extract template variables")
-        .hasCauseInstanceOf(InvocationTargetException.class);
+        .hasMessageStartingWith("Failed to extract template variables from interface")
+        .hasCauseInstanceOf(HalApiDeveloperException.class)
+        .hasRootCauseInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -325,5 +326,33 @@ public class TemplateVariablesTest {
         .blockingGet();
 
     assertThat(linkedState).isNotNull();
+  }
+
+  @Test
+  public void should_fail_if_no_bean_properties_defined_in_interface() throws Exception {
+
+    Throwable ex = catchThrowable(() -> client.createProxy(ResourceWithInvalidTemplateVariables.class).getItem(null));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class);
+
+    assertThat(ex.getCause())
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("Not a single getter method following the JavaBeans naming convention");
+  }
+
+  @HalApiInterface
+  interface ResourceWithInvalidTemplateVariables {
+
+    @Related(ITEM)
+    Single<LinkedResourceWithSingleState> getItem(@TemplateVariables DtoWithInvalidSignatures dto);
+  }
+
+  public interface DtoWithInvalidSignatures {
+
+    Integer foo();
+
+    // this is not a valid bean property, since the "is" variation is only valid for primitive boolean properties
+    Boolean isFlag();
   }
 }

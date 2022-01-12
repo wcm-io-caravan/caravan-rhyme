@@ -19,35 +19,76 @@
  */
 package io.wcm.caravan.rhyme.api;
 
+import org.osgi.annotation.versioning.ProviderType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.impl.RhymeBuilderImpl;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
+import io.wcm.caravan.rhyme.impl.RhymeBuilders;
 
 /**
- * A builder to configure and create a {@link Rhyme} instance to be used throughout the lifecycle of the incoming
- * request.
+ * A fluent builder to configure and create a single {@link Rhyme} instance, which then should be used throughout the
+ * lifecycle of the current incoming request.
+ * <p>
+ * If you are only using {@link Rhyme} as a HAL client library
+ * (but not to render HAL+JSON responses), you can also use {@link HalApiClient} directly.
+ * </p>
+ * @see Rhyme
  */
+@ProviderType
 public interface RhymeBuilder {
 
   /**
    * Create a {@link RhymeBuilder} that can only build {@link Rhyme} instances which do not request any resources
    * from upstream services
    * @return the new instance
+   * @deprecated no longer required because there is now a default {@link HalResourceLoader} implementation available,
+   *             use {@link #create()} instead
    */
+  @Deprecated
   static RhymeBuilder withoutResourceLoader() {
-    return new RhymeBuilderImpl(null);
+
+    return create();
+  }
+
+  /**
+   * Create a {@link RhymeBuilder} to build {@link Rhyme} instances that use a simple default HTTP client
+   * to load upstream resources. If you need to customize your HTTP request handling (e.g. authentication or caching),
+   * then use {@link #withResourceLoader(HalResourceLoader)} instead.
+   * @return the new instance
+   */
+  static RhymeBuilder create() {
+
+    return RhymeBuilders.rhyme();
   }
 
   /**
    * Create a {@link RhymeBuilder} to build {@link Rhyme} instances that use the given {@link HalResourceLoader}
-   * @param resourceLoader to load resources from upstream services
+   * @param resourceLoader used to to load resources from upstream services
    * @return the new instance
    */
   static RhymeBuilder withResourceLoader(HalResourceLoader resourceLoader) {
-    return new RhymeBuilderImpl(resourceLoader);
+
+    return RhymeBuilders.rhyme(resourceLoader);
   }
+
+  /**
+   * Enable generation of "curies" links (to HTML documentation generated with the rhyme-docs-maven-plugin)
+   * when rendering {@link HalResponse}s with {@link Rhyme#renderResponse(LinkableResource)}.
+   * If you call this method, you also have to ensure that you actually serve the generated HTML files using
+   * {@link RhymeDocsSupport#loadGeneratedHtml(RhymeDocsSupport, String)}
+   * @param rhymeDocsSupport the SPI instance that handles loading of the generated HTML
+   * @return this
+   */
+  RhymeBuilder withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport);
 
   /**
    * Extend the core framework to support additional return types in your annotated HAL API interfaces.
@@ -72,6 +113,23 @@ public interface RhymeBuilder {
    * @return this
    */
   RhymeBuilder withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy);
+
+  /**
+   * Configures the capturing of extensive performance and upstream response metadata for this request,
+   * which can be included as an embedded resource in the response.
+   * @param configuration to determine whether metadata should be rendered and included in the current request
+   * @return this
+   */
+  RhymeBuilder withMetadataConfiguration(RhymeMetadataConfiguration configuration);
+
+  /**
+   * Replace the default Jackson {@link ObjectMapper} used for JSON (de)serialization with a customized instance.
+   * Note that this object mapper is only used when converting Java to JSON objects (and vice versa). It's not
+   * used when the raw JSON response from an upstream service is parsed.
+   * @param objectMapper a configured {@link ObjectMapper} instance (which can be a single shared instance)
+   * @return this
+   */
+  RhymeBuilder withObjectMapper(ObjectMapper objectMapper);
 
   /**
    * Create the {@link Rhyme} instance to be used to throughout the lifecycle of an incoming request

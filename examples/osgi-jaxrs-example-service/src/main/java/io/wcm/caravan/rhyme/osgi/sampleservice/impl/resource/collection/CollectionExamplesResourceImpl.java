@@ -22,14 +22,11 @@ package io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionExamplesResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 
 public class CollectionExamplesResourceImpl implements CollectionExamplesResource, LinkableResource {
 
@@ -40,19 +37,13 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
   }
 
   @Override
-  public Single<TitledState> getState() {
-
-    return Single.just(new TitledState());
-  }
-
-  @Override
-  public Single<ItemCollectionResource> getCollection(CollectionParameters params) {
+  public Single<ItemCollectionResource> getDelayedCollection(CollectionParameters params) {
 
     return Single.just(new DelayableCollectionResourceImpl(context, null));
   }
 
   @Override
-  public Single<ItemResource> getItem(Integer index, Integer delayMs) {
+  public Single<ItemResource> getDelayedItem(Integer index, Integer delayMs) {
 
     return Single.just(new DelayableItemResourceImpl(context, index, delayMs));
   }
@@ -67,12 +58,6 @@ public class CollectionExamplesResourceImpl implements CollectionExamplesResourc
   public Single<ItemResource> getItemThroughClient(Integer index, Integer delayMs) {
 
     return Single.just(new ClientItemResourceImpl(context, index, delayMs));
-  }
-
-  @Override
-  public Single<ExamplesEntryPointResource> getEntryPoint() {
-
-    return Single.just(new ExamplesEntryPointResourceImpl(context));
   }
 
   @Override

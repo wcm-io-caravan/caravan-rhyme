@@ -20,7 +20,7 @@
 package io.wcm.caravan.rhyme.impl.renderer.blocking;
 
 import static io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererTestUtil.render;
-import static io.wcm.caravan.ryhme.testing.TestRelations.LINKED;
+import static io.wcm.caravan.rhyme.testing.TestRelations.LINKED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -37,8 +37,8 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestResource;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestResource;
 
 /**
  * Variation of the tests in {@link io.wcm.caravan.rhyme.impl.renderer.RenderLinkedResourceTest}
@@ -181,7 +181,7 @@ public class RenderLinkedResourceTest {
   public interface TestResourceWithRequiredExternalLink {
 
     @Related(LINKED)
-    LinkableResource getExternal();
+    Link getExternal();
   }
 
   @Test
@@ -192,14 +192,8 @@ public class RenderLinkedResourceTest {
     TestResourceWithRequiredExternalLink resourceImpl = new TestResourceWithRequiredExternalLink() {
 
       @Override
-      public LinkableResource getExternal() {
-        return new LinkableResource() {
-
-          @Override
-          public Link createLink() {
-            return externalLink;
-          }
-        };
+      public Link getExternal() {
+        return externalLink;
       }
     };
 
@@ -207,6 +201,26 @@ public class RenderLinkedResourceTest {
 
     assertThat(hal.getLinks(LINKED)).containsExactly(externalLink);
     assertThat(hal.getModel().path("_links").path(LINKED).isObject()).isTrue();
+  }
+
+  @Test
+  public void returning_null_as_external_link_should_throw_exception() {
+
+    TestResourceWithRequiredExternalLink resourceImpl = new TestResourceWithRequiredExternalLink() {
+
+      @Override
+      public Link getExternal() {
+        return null;
+      }
+
+    };
+
+    Throwable ex = catchThrowable(
+        () -> render(resourceImpl));
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("#getExternal of anonymous")
+        .hasMessageContaining("must not return null");
   }
 
   @Test

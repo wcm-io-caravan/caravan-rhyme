@@ -24,7 +24,7 @@ import javax.ws.rs.WebApplicationException;
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
+import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
 
@@ -32,26 +32,22 @@ public class ServerSideErrorResourceImpl implements ErrorResource, LinkableResou
 
   private final ExampleServiceRequestContext context;
 
-  private final Integer statusCode;
-  private final String message;
-  private final Boolean withCause;
+  private final ErrorParametersBean parameters;
 
-  public ServerSideErrorResourceImpl(ExampleServiceRequestContext context, Integer statusCode, String message, Boolean withCause) {
+  public ServerSideErrorResourceImpl(ExampleServiceRequestContext context, ErrorParameters parameters) {
     this.context = context;
-    this.statusCode = statusCode;
-    this.message = message;
-    this.withCause = withCause;
+    this.parameters = ErrorParametersBean.clone(parameters);
   }
 
   @Override
-  public Maybe<TitledState> getState() {
+  public Maybe<String> getTitle() {
 
     Exception exception;
-    if (withCause != null && withCause.booleanValue()) {
-      exception = new WebApplicationException(new RuntimeException(message), statusCode);
+    if (parameters.getWrapException()) {
+      exception = new WebApplicationException(new RuntimeException(parameters.getMessage()), parameters.getStatusCode());
     }
     else {
-      exception = new WebApplicationException(message, statusCode);
+      exception = new WebApplicationException(parameters.getMessage(), parameters.getStatusCode());
     }
 
     return Maybe.error(exception);
@@ -60,7 +56,7 @@ public class ServerSideErrorResourceImpl implements ErrorResource, LinkableResou
   @Override
   public Link createLink() {
 
-    return context.buildLinkTo((resource, uriInfo, response) -> resource.getServerSideError(uriInfo, response, statusCode, message, withCause))
+    return context.buildLinkTo((resource, uriInfo, response) -> resource.getServerSideError(uriInfo, response, parameters))
         .setTitle("Simulate a server-side error with the given status code and message");
   }
 }

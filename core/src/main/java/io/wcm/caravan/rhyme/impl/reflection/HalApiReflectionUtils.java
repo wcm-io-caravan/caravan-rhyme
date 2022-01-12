@@ -19,33 +19,34 @@
  */
 package io.wcm.caravan.rhyme.impl.reflection;
 
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
-import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
+import io.wcm.caravan.rhyme.api.server.ResourceConversions;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 
 /**
@@ -61,6 +62,15 @@ public final class HalApiReflectionUtils {
 
     return new InterfaceCollector()
         .collectFromClassAndAllSuperClasses(clazz);
+  }
+
+  /**
+   * @param clazz the type to check
+   * @return true if the class is a {@link Link}
+   */
+  public static boolean isPlainLink(Class clazz) {
+
+    return Link.class.equals(clazz);
   }
 
   private static final class InterfaceCollector {
@@ -147,6 +157,18 @@ public final class HalApiReflectionUtils {
   /**
    * @param apiInterface an interface annotated with {@link HalApiInterface} (either directly or by extending)
    * @param annotationSupport the strategy to detect HAL API annotations
+   * @return the method annotated with {@link ResourceState}
+   */
+  public static List<Method> findResourcePropertyMethods(Class<?> apiInterface, HalApiAnnotationSupport annotationSupport) {
+
+    return Stream.of(apiInterface.getMethods())
+        .filter(annotationSupport::isResourcePropertyMethod)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * @param apiInterface an interface annotated with {@link HalApiInterface} (either directly or by extending)
+   * @param annotationSupport the strategy to detect HAL API annotations
    * @return a list of all methods annotated with {@link Related}
    */
   public static List<Method> getSortedRelatedResourceMethods(Class<?> apiInterface, HalApiAnnotationSupport annotationSupport) {
@@ -157,58 +179,6 @@ public final class HalApiReflectionUtils {
         .filter(annotationSupport::isRelatedResourceMethod)
         .sorted(comparator)
         .collect(Collectors.toList());
-  }
-
-  /**
-   * @param dto the DTO objet from which to extract the template variables
-   * @param dtoClass the type of the object that was used in the parameter definition
-   * @return a map with the names and values of all fields in the given object
-   */
-  public static Map<String, Object> getTemplateVariablesFrom(Object dto, Class dtoClass) {
-
-    if (dtoClass.isInterface()) {
-      return getPublicGetterValuesAsMap(dto, dtoClass);
-    }
-
-    return getFieldValuesAsMap(dto, dtoClass);
-  }
-
-  private static Map<String, Object> getPublicGetterValuesAsMap(Object instance, Class dtoClass) {
-    try {
-      Map<String, Object> map = new LinkedHashMap<>();
-      for (PropertyDescriptor property : Introspector.getBeanInfo(dtoClass).getPropertyDescriptors()) {
-        Object value = instance != null ? property.getReadMethod().invoke(instance, new Object[0]) : null;
-        map.put(property.getName(), value);
-      }
-      return map;
-    }
-    catch (IntrospectionException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-      throw new HalApiDeveloperException("Failed to extract template variables from class " + dtoClass.getName() + " through reflection", ex);
-    }
-  }
-
-  private static Map<String, Object> getFieldValuesAsMap(Object instance, Class dtoClass) {
-
-    Map<String, Object> map = new LinkedHashMap<>();
-
-    for (Field field : FieldUtils.getAllFields(dtoClass)) {
-      if (!field.isSynthetic()) {
-        Object value = instance != null ? getFieldValue(field, instance) : null;
-        map.put(field.getName(), value);
-      }
-    }
-
-    return map;
-  }
-
-  private static Object getFieldValue(Field field, Object instance) {
-    try {
-      return FieldUtils.readField(field, instance, false);
-    }
-    catch (IllegalArgumentException | IllegalAccessException ex) {
-      throw new HalApiDeveloperException("Failed to read value of field " + field.getName() + " from class " + instance.getClass().getSimpleName()
-          + ". Make sure that all fields in your classes used as parameters annotated with @" + TemplateVariables.class.getSimpleName() + " are public", ex);
-    }
   }
 
   /**
@@ -274,4 +244,111 @@ public final class HalApiReflectionUtils {
     }
 
   }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T createEmbeddedResourceProxy(T linkableResource, boolean linkedWhenEmbedded) {
+
+    Set<Class<?>> interfaces = collectInterfaces(linkableResource.getClass());
+
+    interfaces.add(EmbeddableResource.class);
+
+    return (T)Proxy.newProxyInstance(linkableResource.getClass().getClassLoader(),
+        interfaces.stream().toArray(Class[]::new),
+        new EmbeddedResourceProxyInvocationHandler<T>(linkableResource, linkedWhenEmbedded));
+  }
+
+  static final class EmbeddedResourceProxyInvocationHandler<T> implements InvocationHandler {
+
+    private final T linkableResource;
+    private final boolean linkedWhenEmbedded;
+
+    EmbeddedResourceProxyInvocationHandler(T linkableResource, boolean linkedWhenEmbedded) {
+      this.linkableResource = linkableResource;
+      this.linkedWhenEmbedded = linkedWhenEmbedded;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) {
+
+      try {
+        if ("isEmbedded".equals(method.getName())) {
+          return true;
+        }
+        if ("isLinkedWhenEmbedded".equals(method.getName())) {
+          return this.linkedWhenEmbedded;
+        }
+
+        return method.invoke(this.linkableResource, args);
+      }
+      catch (IllegalAccessException | InvocationTargetException | RuntimeException ex) {
+
+        // if the original implementation method just threw a runtime exception then re-throw that cause
+        if (ex instanceof InvocationTargetException) {
+          if (ex.getCause() instanceof RuntimeException) {
+            throw (RuntimeException)ex.getCause();
+          }
+        }
+
+        throw new HalApiServerException(500,
+            "Failed to invoke method " + method.getName() + " on proxy created with class "
+                + ResourceConversions.class.getSimpleName(),
+            ex);
+      }
+
+    }
+  }
+
+  public static String getPropertyName(Method method, HalApiTypeSupport typeSupport) {
+
+    String fromAnnotation = typeSupport.getPropertyName(method);
+    if (StringUtils.isNotBlank(fromAnnotation)) {
+      return fromAnnotation;
+    }
+
+    String name = method.getName();
+    if (name.startsWith("get")) {
+      return Introspector.decapitalize(name.substring(3));
+    }
+    if (name.startsWith("is")) {
+      return Introspector.decapitalize(name.substring(2));
+    }
+    return Introspector.decapitalize(name);
+  }
+
+  /**
+   * Creates a proxy that implements the given interface as well as {@link LinkableResource},
+   * but which can only used to create links to that resource.
+   * @param link to be returned by {@link LinkableResource#createLink()}
+   * @param halApiInterface the interface that should be implemented
+   * @return a proxy instance on which you can only call {@link LinkableResource#createLink()} and
+   *         {@link Object#toString()}
+   */
+  public static <T> T createLinkableResourceProxy(Link link, Class<T> halApiInterface) {
+
+    Class[] interfaces = Stream.of(halApiInterface, LinkableResource.class).toArray(Class[]::new);
+
+    InvocationHandler handler = new InvocationHandler() {
+
+      @Override
+      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+        if ("toString".equals(method.getName())) {
+          return "Link-based proxy of " + halApiInterface.getSimpleName();
+        }
+
+        if ("createLink".equals(method.getName()) && method.getParameterCount() == 0) {
+          return link;
+        }
+
+        throw new HalApiDeveloperException("You cannot call anything but #createLink on this " + halApiInterface.getSimpleName()
+            + " instance, because it is only a proxy that was created from a Link");
+      }
+    };
+
+    @SuppressWarnings("unchecked")
+    T proxy = (T)Proxy.newProxyInstance(halApiInterface.getClassLoader(), interfaces, handler);
+
+    return proxy;
+  }
+
 }

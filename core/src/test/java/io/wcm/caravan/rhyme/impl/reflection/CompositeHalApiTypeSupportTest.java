@@ -34,26 +34,30 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 
 import io.reactivex.rxjava3.core.Observable;
+import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
+import io.wcm.caravan.rhyme.api.client.HalApiClientBuilder;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
-import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
+import io.wcm.caravan.rhyme.api.server.HalResponseRendererBuilder;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
 
 @ExtendWith(MockitoExtension.class)
 public class CompositeHalApiTypeSupportTest {
 
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
-  private final ExceptionStatusAndLoggingStrategy exceptionStrategy = null;
 
   @Mock
   private HalResourceLoader jsonLoader;
@@ -66,37 +70,42 @@ public class CompositeHalApiTypeSupportTest {
 
   private Method firstMethod = CompositeHalApiTypeSupportTest.class.getMethods()[0];
 
-  private HalApiTypeSupportAdapter assertThatCompositeHasDefaultAndAdapter(CompositeHalApiTypeSupport composite) {
+  @HalApiInterface
+  interface TestInterface {
 
-    assertThat(composite.getDelegates()).hasSize(2);
-    assertThat(composite.getDelegates().get(0)).isInstanceOf(DefaultHalApiTypeSupport.class);
-    assertThat(composite.getDelegates().get(1)).isInstanceOf(HalApiTypeSupportAdapter.class);
-
-    return (HalApiTypeSupportAdapter)composite.getDelegates().get(1);
+    String getString();
   }
 
-  private void assertThatMockAnnotationSupportIsEffective(HalApiAnnotationSupport annotationSupport) {
+  private void assertThatMockAnnotationSupportIsEffective(HalApiAnnotationSupport annotationSupport) throws Exception {
 
-    assertThat(annotationSupport).isInstanceOf(CompositeHalApiTypeSupport.class);
-    CompositeHalApiTypeSupport composite = (CompositeHalApiTypeSupport)annotationSupport;
+    Method method = TestInterface.class.getMethod("getString");
 
-    HalApiTypeSupportAdapter adapter = assertThatCompositeHasDefaultAndAdapter(composite);
-    assertThat(adapter.getAnnotationSupport()).isSameAs(mockAnnotationSupport);
+    when(mockAnnotationSupport.isRelatedResourceMethod(method))
+        .thenReturn(true);
+
+    assertThat(annotationSupport.isRelatedResourceMethod(method))
+        .isTrue();
+
+    verify(mockAnnotationSupport).isRelatedResourceMethod(method);
   }
 
-  private void assertThatMockReturnTypeSupportIsEffective(HalApiTypeSupport typeSupport) {
+  private void assertThatMockReturnTypeSupportIsEffective(HalApiReturnTypeSupport typeSupport) {
 
-    assertThat(typeSupport).isInstanceOf(CompositeHalApiTypeSupport.class);
-    CompositeHalApiTypeSupport composite = (CompositeHalApiTypeSupport)typeSupport;
+    Class type = Iterator.class;
 
-    HalApiTypeSupportAdapter adapter = assertThatCompositeHasDefaultAndAdapter(composite);
-    assertThat(adapter.getReturnTypeSupport()).isSameAs(mockReturnTypeSupport);
+    when(mockReturnTypeSupport.isProviderOfMultiplerValues(type))
+        .thenReturn(true);
+
+    assertThat(typeSupport.isProviderOfMultiplerValues(type))
+        .isTrue();
+
+    verify(mockReturnTypeSupport).isProviderOfMultiplerValues(type);
   }
 
   @Test
   public void client_should_use_custom_return_types() throws Exception {
 
-    HalApiClient client = HalApiClient.create(jsonLoader, metrics, null, mockReturnTypeSupport);
+    HalApiClient client = HalApiClientBuilder.create().withReturnTypeSupport(mockReturnTypeSupport).build();
 
     assertThatMockReturnTypeSupportIsEffective(((HalApiClientImpl)client).getTypeSupport());
   }
@@ -104,7 +113,7 @@ public class CompositeHalApiTypeSupportTest {
   @Test
   public void client_should_use_custom_annotations() throws Exception {
 
-    HalApiClient client = HalApiClient.create(jsonLoader, metrics, mockAnnotationSupport, null);
+    HalApiClient client = HalApiClientBuilder.create().withAnnotationTypeSupport(mockAnnotationSupport).build();
 
     assertThatMockAnnotationSupportIsEffective(((HalApiClientImpl)client).getTypeSupport());
   }
@@ -114,7 +123,7 @@ public class CompositeHalApiTypeSupportTest {
 
     HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(null, mockReturnTypeSupport);
 
-    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
+    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport, OBJECT_MAPPER);
 
     assertThatMockReturnTypeSupportIsEffective(renderer.getTypeSupport());
   }
@@ -124,7 +133,7 @@ public class CompositeHalApiTypeSupportTest {
 
     HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(mockAnnotationSupport, null);
 
-    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
+    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, typeSupport, OBJECT_MAPPER);
 
     assertThatMockAnnotationSupportIsEffective(renderer.getTypeSupport());
   }
@@ -132,7 +141,7 @@ public class CompositeHalApiTypeSupportTest {
   @Test
   public void response_renderer_should_use_custom_annotations() throws Exception {
 
-    AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, exceptionStrategy, mockAnnotationSupport, null);
+    AsyncHalResponseRenderer renderer = HalResponseRendererBuilder.create().withAnnotationTypeSupport(mockAnnotationSupport).build();
 
     assertThatMockAnnotationSupportIsEffective(((AsyncHalResponseRendererImpl)renderer).getAnnotationSupport());
   }
@@ -226,6 +235,19 @@ public class CompositeHalApiTypeSupportTest {
   }
 
   @Test
+  public void isResourcePropertyMethod_should_return_first_true_value() throws Exception {
+
+    assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourcePropertyMethod(firstMethod));
+  }
+
+  @Test
+  public void getPropertyName_should_return_first_non_null_value() throws Exception {
+
+    assertThatCompositeReturnsFirstNonNullValueOfMock(a -> a.getPropertyName(firstMethod), "prop");
+  }
+
+
+  @Test
   public void convertFromObservable_should_return_first_non_null_value() throws Exception {
 
     Function<Observable, Iterator> fun = o -> ((List)o.toList().blockingGet()).iterator();
@@ -244,6 +266,12 @@ public class CompositeHalApiTypeSupportTest {
   public void isProviderOfMultiplerValues_should_return_first_true_value() throws Exception {
 
     assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfMultiplerValues(Set.class));
+  }
+
+  @Test
+  public void isProviderOptionalValues_should_return_first_true_value() throws Exception {
+
+    assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfOptionalValue(Set.class));
   }
 
 }

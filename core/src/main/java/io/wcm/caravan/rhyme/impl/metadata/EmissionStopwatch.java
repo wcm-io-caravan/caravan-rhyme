@@ -19,12 +19,7 @@
  */
 package io.wcm.caravan.rhyme.impl.metadata;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.Stopwatch;
+import java.util.function.Supplier;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableSource;
@@ -33,6 +28,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleSource;
 import io.reactivex.rxjava3.core.SingleTransformer;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 
 /**
  * A transformer that measures the time between subscription and completion of any {@link Single} or {@link Observable}
@@ -40,13 +36,12 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
  */
 public class EmissionStopwatch<T> implements SingleTransformer<T, T>, ObservableTransformer<T, T> {
 
-  private final Stopwatch stopwatch = Stopwatch.createUnstarted();
-
   private final RequestMetricsCollector metrics;
-  private final String message;
-  private final AtomicInteger itemCounter = new AtomicInteger();
+  private final Supplier<String> message;
 
-  EmissionStopwatch(RequestMetricsCollector metrics, String message) {
+  private RequestMetricsStopwatch stopwatch;
+
+  EmissionStopwatch(RequestMetricsCollector metrics, Supplier<String> message) {
     this.metrics = metrics;
     this.message = message;
   }
@@ -57,7 +52,7 @@ public class EmissionStopwatch<T> implements SingleTransformer<T, T>, Observable
    * @return a Transformer to use with {@link Single#compose(SingleTransformer)} or
    *         {@link Observable#compose(ObservableTransformer)}
    */
-  public static <T> EmissionStopwatch<T> collectMetrics(String message, RequestMetricsCollector metrics) {
+  public static <T> EmissionStopwatch<T> collectMetrics(Supplier<String> message, RequestMetricsCollector metrics) {
     return new EmissionStopwatch<T>(metrics, message);
   }
 
@@ -66,7 +61,7 @@ public class EmissionStopwatch<T> implements SingleTransformer<T, T>, Observable
 
     return upstream
         .doOnSubscribe(d -> startStopwatch())
-        .doOnSuccess(o -> sendMetrics());
+        .doOnTerminate(this::sendMetrics);
   }
 
   @Override
@@ -74,21 +69,19 @@ public class EmissionStopwatch<T> implements SingleTransformer<T, T>, Observable
 
     return upstream
         .doOnSubscribe(d -> startStopwatch())
-        .doOnNext(i -> itemCounter.incrementAndGet())
         .doOnTerminate(this::sendMetrics);
   }
 
 
   private void startStopwatch() {
-    if (!stopwatch.isRunning()) {
-      stopwatch.start();
+
+    if (stopwatch == null) {
+      stopwatch = metrics.startStopwatch(EmissionStopwatch.class, message);
     }
   }
 
   private void sendMetrics() {
-    String desc = StringUtils.replace(message, "{}", itemCounter.get() > 1 ? itemCounter.get() + " " : "");
-
-    metrics.onMethodInvocationFinished(EmissionStopwatch.class, desc, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+    stopwatch.close();
   }
 
 }

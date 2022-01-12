@@ -29,12 +29,12 @@ public final class VndErrorRelations {
   }
 
   /**
-   * Relation to use for links to the resources for which an error has occured
+   * Relation to use for links to the resources for which an error has occurred
    */
   public static final String ABOUT = "about";
 
   /**
-   * Relation to use for embedded resources with add
+   * Relation to use for embedded resources with additional information on the root cause
    */
   public static final String ERRORS = "errors";
 

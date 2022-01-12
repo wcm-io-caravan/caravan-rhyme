@@ -29,9 +29,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.wcm.caravan.hal.resource.HalResource;
 
 /**
- * Used to annotate a method that allows clients to get the full JSON representation of the resource
- * (including the _links and _embedded properties). The return type of the method must be a reactive
- * stream of {@link JsonNode} or {@link HalResource}.
+ * Used to declare the method that allows clients to get the full JSON representation of the resource
+ * (including the _links and _embedded properties).
+ * <p>
+ * Adding a method with this annotation is only required if you want your clients to conveniently process the HAL
+ * resources manually (or with another HAL library). It's not required if you are working exclusively with Rhyme.
+ * </p>
+ * <p>
+ * The method must return a {@link JsonNode} or {@link HalResource} (either directly or wrapped in a supported reactive
+ * type).
+ * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

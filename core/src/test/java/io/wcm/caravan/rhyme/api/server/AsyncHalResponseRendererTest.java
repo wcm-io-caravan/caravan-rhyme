@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.rhyme.api.server;
 
-import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.CARAVAN_METADATA_RELATION;
+import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RHYME_METADATA_RELATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -67,7 +67,7 @@ public class AsyncHalResponseRendererTest {
     assertThat(response).isNotNull();
     assertThat(response.getContentType()).isEqualTo(HalResource.CONTENT_TYPE);
     assertThat(response.getBody().getLink()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(CARAVAN_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
   }
 
   @Test
@@ -86,6 +86,18 @@ public class AsyncHalResponseRendererTest {
     assertThat(response).isNotNull();
     assertThat(response.getContentType()).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(CARAVAN_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
+  }
+
+
+  @Test
+  public void deprecated_method_without_RhymeDocsSupport_should_not_throw_exception() throws Exception {
+
+    RequestMetricsCollector metrics = RequestMetricsCollector.create();
+    ExceptionStatusAndLoggingStrategy strategy = new ExceptionStatusAndLoggingStrategy() {
+      // we want to cover the default implementation here, so we don't override anything
+    };
+
+    AsyncHalResponseRenderer.create(metrics, strategy, null, null);
   }
 }

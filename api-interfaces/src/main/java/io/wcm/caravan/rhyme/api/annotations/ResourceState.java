@@ -23,11 +23,20 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Optional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Used to annotate the method that allows to access the state/properties of a HAL resource.
- * The return value of the method must be a reactive single of a JSON node or Java
- * class that matches the JSON object structure (either with public properties or following bean conventions)
+ * Used to declare the method that allows to access the HAL resources' state (all JSON properties except for
+ * "_links" and "_embedded") as a single object.
+ * <p>
+ * The method must provide either a Jackson {@link ObjectNode} or a Java object that that matches the JSON object
+ * structure (and can be deserialised by a default Jackson {@link ObjectMapper}). This object can either be returned
+ * directly from the annotated method, but can also be wrapped with {@link Optional} or a supported reactive type.
+ * </p>
+ * @see ResourceProperty
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

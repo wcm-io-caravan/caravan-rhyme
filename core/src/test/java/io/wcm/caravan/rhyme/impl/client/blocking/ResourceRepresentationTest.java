@@ -30,11 +30,10 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
-import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 /**
  * Variation of the tests in {@link io.wcm.caravan.rhyme.impl.client.ResourceRepresentationTest}
@@ -43,16 +42,14 @@ import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class ResourceRepresentationTest {
 
-  private RequestMetricsCollector metrics;
-  private HalResourceLoader jsonLoader;
+  private HalResourceLoader resourceLoader;
   private TestResource entryPoint;
 
   @BeforeEach
   public void setUp() {
-    metrics = RequestMetricsCollector.create();
 
     TestResourceTree testResourceTree = new TestResourceTree();
-    jsonLoader = testResourceTree;
+    resourceLoader = testResourceTree;
     entryPoint = testResourceTree.getEntryPoint();
 
     entryPoint.setText("test");
@@ -62,7 +59,7 @@ public class ResourceRepresentationTest {
   }
 
   private <T> T createClientProxy(Class<T> halApiInterface) {
-    HalApiClient client = HalApiClient.create(jsonLoader, metrics);
+    HalApiClient client = HalApiClient.create(resourceLoader);
     T clientProxy = client.getRemoteResource(entryPoint.getUrl(), halApiInterface);
     assertThat(clientProxy).isNotNull();
     return clientProxy;

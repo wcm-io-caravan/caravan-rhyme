@@ -27,24 +27,32 @@
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
     <version>1.0.0</version>
-    <relativePath>parent/pom.xml</relativePath>
+    <relativePath>tooling/parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>io.wcm.caravan</groupId>
   <artifactId>io.wcm.caravan.rhyme</artifactId>
   <version>1</version>
   <packaging>pom</packaging>
 
-  <name>Rhyme Root</name>
+  <name>Rhyme</name>
   <description>A framework to build reactive HAL web services</description>
 
   <modules>
     <module>api-interfaces</module>
     <module>core</module>
+    <module>examples/aem-hal-browser</module>
     <module>examples/osgi-jaxrs-example-launchpad</module>
     <module>examples/osgi-jaxrs-example-service</module>
-    <module>parent</module>
-    <module>osgi-jaxrs</module>
+    <module>examples/spring-hello-world</module>
+    <module>examples/spring-hypermedia</module>
+    <module>integration/aem</module>
+    <module>integration/osgi-jaxrs</module>
+    <module>integration/spring</module>    
+    <module>testing</module>    
+    <module>tooling/coverage</module>
+    <module>tooling/docs-maven-plugin</module>    
+    <module>tooling/parent</module>
+
   </modules>
 
   <build>

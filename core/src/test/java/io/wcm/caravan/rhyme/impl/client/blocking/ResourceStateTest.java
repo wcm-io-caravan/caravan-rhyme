@@ -36,10 +36,9 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
-import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.ryhme.testing.ConversionFunctions;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
+import io.wcm.caravan.rhyme.testing.ConversionFunctions;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 /**
  * Variation of the tests in {@link io.wcm.caravan.rhyme.impl.client.ResourceStateTest}
@@ -49,17 +48,15 @@ public class ResourceStateTest {
 
   private static final String RESOURCE_URL = "/";
 
-  private RequestMetricsCollector metrics;
-  private HalResourceLoader jsonLoader;
+  private HalResourceLoader resourceLoader;
 
   @BeforeEach
   public void setUp() {
-    metrics = RequestMetricsCollector.create();
-    jsonLoader = Mockito.mock(HalResourceLoader.class);
+    resourceLoader = Mockito.mock(HalResourceLoader.class);
   }
 
   private <T> T createClientProxy(Class<T> halApiInterface) {
-    HalApiClient client = HalApiClient.create(jsonLoader, metrics);
+    HalApiClient client = HalApiClient.create(resourceLoader);
     T clientProxy = client.getRemoteResource(RESOURCE_URL, halApiInterface);
     assertThat(clientProxy).isNotNull();
     return clientProxy;
@@ -69,7 +66,7 @@ public class ResourceStateTest {
 
     HalResource hal = new HalResource(state, RESOURCE_URL);
 
-    when(jsonLoader.getHalResource(eq(RESOURCE_URL)))
+    when(resourceLoader.getHalResource(eq(RESOURCE_URL)))
         .thenReturn(Single.just(ConversionFunctions.toJsonResponse(hal)));
   }
 

@@ -1,0 +1,68 @@
+# Project-specific AEM configuration
+
+# Inherit default AEM functionality from "AEM Definitions", see http://devops.wcm.io/conga/definitions/aem/
+inherits:
+- role: aem-cms
+
+variants:
+- variant: aem-author
+- variant: aem-publish
+
+templateDir: aem-hal-browser-aem-cms
+
+files:
+
+
+# AEM OSGi System Configuration
+- file: aem-hal-browser-aem-cms-config.provisioning
+  dir: packages
+  template: aem-hal-browser-aem-cms-config.provisioning.hbs
+  postProcessors:
+  - aem-contentpackage-osgiconfig
+  postProcessorOptions:
+    contentPackage:
+      name: aem-hal-browser-aem-cms-config
+      rootPath: /apps/aem-hal-browser/config
+      filters:
+      - filter: /apps/aem-hal-browser
+        rules:
+        - rule: include
+          pattern: /apps/aem-hal-browser/config(\..*)?(/.*)?
+        - rule: exclude
+          pattern: /apps/aem-hal-browser/config/rewriter(/.*)?
+
+# Include URL handler in Sling Rewriter configuration
+- file: aem-hal-browser-aem-cms-rewriter-config.json
+  dir: packages
+  template: aem-hal-browser-aem-cms-rewriter-config.json.hbs
+  validatorOptions:
+    contentPackage.validatorsSettings:
+      jackrabbit-filter:
+        options:
+          validRoots: /apps/aem-hal-browser/config
+  postProcessors:
+  - aem-contentpackage
+  postProcessorOptions:
+    contentPackage:
+      name: aem-hal-browser-aem-cms-rewriter-config
+      packageType: application
+      acHandling: merge
+      rootPath: /apps/aem-hal-browser/config/rewriter
+
+# Application package
+- url: mvn:io.wcm.caravan/io.wcm.caravan.rhyme.examples.aem-hal-browser.complete//zip
+  dir: packages
+
+# Defines configuration parameters and default values
+config:
+  contentPackage:
+    group: aem-hal-browser
+    version: ${version}
+
+  app:
+    confContent: true
+    sampleContent: false
+
+  # Log levels
+  log:
+    projectSpecificLogLevel: warn

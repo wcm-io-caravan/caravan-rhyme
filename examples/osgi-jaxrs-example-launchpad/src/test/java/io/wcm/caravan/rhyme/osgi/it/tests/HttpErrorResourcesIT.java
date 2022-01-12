@@ -20,40 +20,46 @@
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.VIA;
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVER_URL;
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVICE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.relations.VndErrorRelations;
-import io.wcm.caravan.rhyme.osgi.it.extensions.HalApiClientExtension;
+import io.wcm.caravan.rhyme.osgi.it.IntegrationTestEnvironment;
 import io.wcm.caravan.rhyme.osgi.it.extensions.WaitForServerStartupExtension;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
+import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.errors.ErrorResource;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ErrorParametersBean;
 
 
-@ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
+@ExtendWith({ WaitForServerStartupExtension.class })
 public class HttpErrorResourcesIT {
 
-  private final ExamplesEntryPointResource entryPoint;
+  private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
-  public HttpErrorResourcesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
+  private final ErrorParametersBean defaultParams;
+
+  public HttpErrorResourcesIT() {
+
+    this.defaultParams = new ErrorParametersBean()
+        .withStatusCode(503)
+        .withMessage("Something went wrong")
+        .withWrapException(false);
   }
 
-  private HalApiClientException executeRequestAndGetExpectedHalApiClientException(Integer statusCode, String message, Boolean withCause) {
-
+  HalApiClientException catchExceptionForRequestWith(ErrorParameters parameters) {
     return assertThrows(HalApiClientException.class, () -> {
       entryPoint.getErrorExamples()
-          .flatMap(errors -> errors.provokeHttpClientError(statusCode, message, withCause))
-          .flatMapMaybe(ErrorResource::getState)
+          .flatMap(errors -> errors.testClientErrorHandling(parameters))
+          .flatMapMaybe(ErrorResource::getTitle)
           .blockingGet();
     });
   }
@@ -61,70 +67,76 @@ public class HttpErrorResourcesIT {
   @Test
   public void should_respond_with_specified_status_code() {
 
-    Integer statusCode = 403;
-    String message = "Something went wrong";
-    Boolean withCause = false;
+    ErrorParameters params = defaultParams.withStatusCode(403);
 
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
+    HalApiClientException ex = catchExceptionForRequestWith(params);
 
-    assertThat(ex.getStatusCode()).isEqualTo(statusCode);
+    assertThat(ex.getStatusCode())
+        .isEqualTo(params.getStatusCode());
   }
 
   @Test
   public void should_respond_with_vnd_error_resource() {
 
-    Integer statusCode = 403;
-    String message = "Something went wrong";
-    Boolean withCause = false;
+    HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
-
-    assertThat(ex.getErrorResponse().getContentType()).isEqualTo("application/vnd.error+json");
+    assertThat(ex.getErrorResponse().getContentType())
+        .isEqualTo("application/vnd.error+json");
   }
 
   @Test
   public void error_response_should_contain_about_link() {
 
-    Integer statusCode = 403;
-    String message = "Something went wrong";
-    Boolean withCause = false;
-
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
+    HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
     Link aboutLink = ex.getErrorResponse().getBody().getLink(VndErrorRelations.ABOUT);
-    assertThat(aboutLink).isNotNull();
-    assertThat(aboutLink.getHref()).isEqualTo(SERVER_URL + ex.getRequestUrl());
+
+    assertThat(aboutLink)
+        .isNotNull();
+    assertThat(aboutLink.getHref())
+        .isEqualTo(ex.getRequestUrl());
   }
 
   @Test
-  public void error_response_should_contain_embedded_metadata() {
+  public void error_response_should_not_contain_embedded_metadata_if_request_param_is_not_set() {
 
-    Integer statusCode = 403;
-    String message = "Something went wrong";
-    Boolean withCause = false;
+    HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
+    HalResource metadata = ex.getErrorResponse().getBody().getEmbeddedResource("rhyme:metadata");
 
-    HalResource metadata = ex.getErrorResponse().getBody().getEmbeddedResource("caravan:metadata");
-    assertThat(metadata).isNotNull();
+    assertThat(metadata)
+        .isNull();
   }
 
   @Test
   public void error_response_should_contain_embedded_cause() {
 
-    Integer statusCode = 403;
-    String message = "Something went wrong";
-    Boolean withCause = true;
+    ErrorParameters params = defaultParams.withWrapException(true);
 
-    HalApiClientException ex = executeRequestAndGetExpectedHalApiClientException(statusCode, message, withCause);
+    HalApiClientException ex = catchExceptionForRequestWith(params);
 
     HalResource vndBody = ex.getErrorResponse().getBody();
 
-    HalResource cause = vndBody.getEmbeddedResource(VndErrorRelations.ERRORS);
-    assertThat(cause).isNotNull();
+    List<HalResource> errors = vndBody.getEmbedded(VndErrorRelations.ERRORS);
 
-    Link viaLink = vndBody.getLink(VIA);
-    assertThat(viaLink).isNotNull();
-    assertThat(viaLink.getHref()).startsWith("/caravan/hal/sample-service/errors/serverSide?");
+    assertThat(errors)
+        .hasSize(4);
+
+    assertThat(errors.get(3).getModel().path("message").asText())
+        .isEqualTo(params.getMessage());
+  }
+
+  @Test
+  public void error_response_should_have_via_link() {
+
+    HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
+
+    Link via = ex.getErrorResponse().getBody().getLink(VIA);
+
+    assertThat(via)
+        .isNotNull();
+
+    assertThat(via.getHref())
+        .startsWith("/errors/server?");
   }
 }

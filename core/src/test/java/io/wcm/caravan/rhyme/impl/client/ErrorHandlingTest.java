@@ -48,8 +48,8 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestState;
 
 public class ErrorHandlingTest {
 
@@ -145,7 +145,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void fails_if_json_resource_loader_throws_exception() {
+  public void fails_if_json_resource_loader_throws_unexpected_exception() {
 
     IllegalStateException cause = new IllegalStateException();
 
@@ -212,6 +212,11 @@ public class ErrorHandlingTest {
       public boolean isProviderOfMultiplerValues(Class<?> returnType) {
         return false;
       }
+
+      @Override
+      public boolean isProviderOfOptionalValue(Class<?> returnType) {
+        return false;
+      }
     };
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestState());
@@ -225,7 +230,7 @@ public class ErrorHandlingTest {
     Throwable ex = catchThrowable(() -> entryPoint.getStream());
 
     assertThat(ex).isInstanceOf(RuntimeException.class)
-        .hasMessageStartingWith("The invocation of ResourceWithCustomReturnType#getStream() has failed with an unexpected exception")
+        .hasMessageStartingWith("The invocation of ResourceWithCustomReturnType#getStream() on a client proxy has failed with an unexpected exception")
         .hasCause(cause);
   }
 

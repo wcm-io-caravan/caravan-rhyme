@@ -37,14 +37,13 @@ import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
-import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.ErrorHandlingTest;
 import io.wcm.caravan.rhyme.impl.client.blocking.ResourceStateTest.ResourceWithRequiredState;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 /**
  * Variation of the tests in {@link io.wcm.caravan.rhyme.impl.client.RelatedResourceTest}
@@ -53,21 +52,19 @@ import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class RelatedResourceTest {
 
-  private RequestMetricsCollector metrics;
-  private HalResourceLoader jsonLoader;
+  private HalResourceLoader resourceLoader;
   private TestResource entryPoint;
 
   @BeforeEach
   public void setUp() {
-    metrics = RequestMetricsCollector.create();
 
     TestResourceTree testResourceTree = new TestResourceTree();
-    jsonLoader = testResourceTree;
+    resourceLoader = testResourceTree;
     entryPoint = testResourceTree.getEntryPoint();
   }
 
   private <T> T createClientProxy(Class<T> halApiInterface) {
-    HalApiClient client = HalApiClient.create(jsonLoader, metrics);
+    HalApiClient client = HalApiClient.create(resourceLoader);
     T clientProxy = client.getRemoteResource(entryPoint.getUrl(), halApiInterface);
     assertThat(clientProxy).isNotNull();
     return clientProxy;
@@ -348,5 +345,20 @@ public class RelatedResourceTest {
         .collect(Collectors.toList());
 
     assertThat(embedded1).containsExactlyElementsOf(embedded2);
+  }
+
+  @Test
+  public void calling_hashCode_on_client_proxy_throws_exception() throws Exception {
+
+    entryPoint.createLinked(ITEM).setText("item text");
+
+    ResourceWithRequiredState linkedResource = createClientProxy(ResourceWithSingleRelated.class)
+        .getItem();
+
+    Throwable ex = catchThrowable(() -> linkedResource.hashCode());
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("You cannot call hashCode() on dynamic client proxies.");
   }
 }

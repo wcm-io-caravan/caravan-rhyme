@@ -19,8 +19,11 @@
  */
 package io.wcm.caravan.rhyme.api.server;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
+import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
@@ -28,25 +31,30 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
-import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
-import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererImpl;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
 
 /**
  * Asynchronously creates a {@link HalResponse} from a server-side {@link HalApiInterface} implementation instance,
  * using {@link AsyncHalResourceRenderer} to render a {@link HalResource}, and {@link VndErrorResponseRenderer} to
  * handle any errors that might happen during resource rendering.
+ * <p>
+ * This renderer is used internally to implement {@link Rhyme#renderResponse(LinkableResource)}, but may also be used
+ * directly in advanced testing or integration scenarios.
+ * </p>
  * @see AsyncHalResourceRenderer
  * @see VndErrorResponseRenderer
  */
+@ProviderType
 public interface AsyncHalResponseRenderer {
 
   /**
+   * Asynchronously render the given resource as a {@link HalResponse} instance. If rendering is successful, that
+   * instance will have a 200 status code and a HAL+JSON media type. If any errors were thrown and handled, a vnd.error
+   * response will be rendered instead (using the status code obtained from the
+   * {@link ExceptionStatusAndLoggingStrategy})
    * @param requestUri the URI of the incoming request
    * @param resourceImpl a server-side implementation instance of an interface annotated with {@link HalApiInterface}
-   * @return a {@link Single} that emits a {@link HalResponse}
+   * @return a {@link Single} that emits a {@link HalResponse} with initialized properties
    */
   Single<HalResponse> renderResponse(String requestUri, LinkableResource resourceImpl);
 
@@ -55,14 +63,15 @@ public interface AsyncHalResponseRenderer {
    *          the current incoming request
    * @param exceptionStrategy allows to control the status code and logging of exceptions being thrown during rendering
    * @return a new {@link AsyncHalResponseRenderer} to use for the current incoming request
+   * @deprecated Use {@link HalResponseRendererBuilder} instead
    */
+  @Deprecated
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy) {
 
-    HalApiTypeSupport typeSupport = new DefaultHalApiTypeSupport();
-
-    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
-
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport);
+    return HalResponseRendererBuilder.create()
+        .withMetrics(metrics)
+        .withExceptionStrategy(exceptionStrategy)
+        .build();
   }
 
   /**
@@ -75,15 +84,17 @@ public interface AsyncHalResponseRenderer {
    * @param returnTypeSupport an (optional) strategy to support additional return types in your HAL API interface
    *          methods
    * @return a new {@link AsyncHalResponseRenderer} to use for the current incoming request
+   * @deprecated Use {@link HalResponseRendererBuilder} instead
    */
+  @Deprecated
   static AsyncHalResponseRenderer create(RequestMetricsCollector metrics, ExceptionStatusAndLoggingStrategy exceptionStrategy,
       HalApiAnnotationSupport annotationSupport, HalApiReturnTypeSupport returnTypeSupport) {
 
-    HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(annotationSupport, returnTypeSupport);
-
-    AsyncHalResourceRenderer resourceRenderer = new AsyncHalResourceRendererImpl(metrics, typeSupport);
-
-    return new AsyncHalResponseRendererImpl(resourceRenderer, metrics, exceptionStrategy, typeSupport);
+    return HalResponseRendererBuilder.create()
+        .withMetrics(metrics)
+        .withExceptionStrategy(exceptionStrategy)
+        .withAnnotationTypeSupport(annotationSupport)
+        .withReturnTypeSupport(returnTypeSupport)
+        .build();
   }
-
 }

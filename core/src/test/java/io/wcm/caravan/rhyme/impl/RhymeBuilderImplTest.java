@@ -21,6 +21,9 @@ package io.wcm.caravan.rhyme.impl;
 
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ITEM;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,8 +31,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -37,6 +41,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
+
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
@@ -46,6 +58,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
@@ -53,10 +66,11 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestState;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
+import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 @ExtendWith(MockitoExtension.class)
 public class RhymeBuilderImplTest {
@@ -66,9 +80,24 @@ public class RhymeBuilderImplTest {
 
   private final TestResourceTree upstreamResourceTree = new TestResourceTree();
 
+  @Test
+  public void build_cannot_be_called_multiple_times() {
+
+    RhymeBuilder builder = RhymeBuilder.create();
+
+    builder.buildForRequestTo("/foo");
+
+    Throwable ex = catchThrowable(() -> builder.buildForRequestTo("/bar"));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiDeveloperException.class)
+        .hasMessage("You shouldn't re-use this builder to create more than once instance");
+  }
+
+
   private Rhyme createRhymeWithCustomExceptionStrategy() {
 
-    return RhymeBuilder.withoutResourceLoader()
+    return RhymeBuilder.create()
         .withExceptionStrategy(new CustomExceptionStrategy())
         .buildForRequestTo(INCOMING_REQUEST_URI);
   }
@@ -116,7 +145,7 @@ public class RhymeBuilderImplTest {
   @Test
   public void withExceptionStrategy_should_allow_multiple_custom_strategies() {
 
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader()
+    Rhyme rhyme = RhymeBuilder.create()
         .withExceptionStrategy(new CustomExceptionStrategy())
         .withExceptionStrategy(new AdditionalExceptionStrategy())
         .buildForRequestTo(INCOMING_REQUEST_URI);
@@ -157,25 +186,26 @@ public class RhymeBuilderImplTest {
     }
   }
 
-  private Rhyme createRhymeWithStreamReturnTypeSupport() {
+  private Rhyme createRhymeWithSetReturnTypeSupport() {
 
     return RhymeBuilder.withResourceLoader(upstreamResourceTree)
-        .withReturnTypeSupport(new StreamSupport())
+        .withReturnTypeSupport(new SetSupport())
         .buildForRequestTo(INCOMING_REQUEST_URI);
   }
 
   @HalApiInterface
-  public interface ResourceWithStreamOfLinks extends LinkableResource {
+  public interface ResourceWithSetOfLinks extends LinkableResource {
 
     @Related(StandardRelations.ITEM)
-    Stream<LinkableTestResource> getLinks();
+    Set<LinkableTestResource> getLinks();
   }
 
-  private static final class ResourcewithStreamOfLinksImpl implements ResourceWithStreamOfLinks {
+  private static final class ResourcewithSetOfLinksImpl implements ResourceWithSetOfLinks {
 
     @Override
-    public Stream<LinkableTestResource> getLinks() {
-      return Stream.of(new LinkableTestResource() {
+    public Set<LinkableTestResource> getLinks() {
+
+      return ImmutableSet.of(new LinkableTestResource() {
 
         @Override
         public Link createLink() {
@@ -193,9 +223,9 @@ public class RhymeBuilderImplTest {
   @Test
   public void withReturnTypeSupport_should_enable_rendering_of_resources_with_custom_return_types() {
 
-    Rhyme rhyme = createRhymeWithStreamReturnTypeSupport();
+    Rhyme rhyme = createRhymeWithSetReturnTypeSupport();
 
-    ResourceWithStreamOfLinks resourceImpl = new ResourcewithStreamOfLinksImpl();
+    ResourceWithSetOfLinks resourceImpl = new ResourcewithSetOfLinksImpl();
 
     HalResponse response = rhyme.renderResponse(resourceImpl).blockingGet();
     assertThat(response.getStatus()).isEqualTo(200);
@@ -210,24 +240,27 @@ public class RhymeBuilderImplTest {
     upstreamResourceTree.createLinked(StandardRelations.ITEM);
     upstreamResourceTree.createLinked(StandardRelations.ITEM);
 
-    Rhyme rhyme = createRhymeWithStreamReturnTypeSupport();
+    Rhyme rhyme = createRhymeWithSetReturnTypeSupport();
 
-    ResourceWithStreamOfLinks entryPoint = rhyme.getRemoteResource(UPSTREAM_ENTRY_POINT_URI, ResourceWithStreamOfLinks.class);
+    ResourceWithSetOfLinks entryPoint = rhyme.getRemoteResource(UPSTREAM_ENTRY_POINT_URI, ResourceWithSetOfLinks.class);
 
-    List<LinkableTestResource> linked = entryPoint.getLinks().collect(Collectors.toList());
+    Set<LinkableTestResource> linked = entryPoint.getLinks();
 
     assertThat(linked).hasSize(2);
   }
 
-  private static final class StreamSupport implements HalApiReturnTypeSupport {
+  private static final class SetSupport implements HalApiReturnTypeSupport {
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> Function<Observable, T> convertFromObservable(Class<T> targetType) {
-      if (targetType.isAssignableFrom(Stream.class)) {
+      if (targetType.isAssignableFrom(Set.class)) {
         return obs -> {
           List<?> list = (List<?>)obs.toList().blockingGet();
-          return (T)list.stream();
+          // we cannot use TreeSet here, as #hashCode is not implemented by the proxy
+          TreeSet<Object> set = Sets.newTreeSet(Ordering.natural().onResultOf(Object::toString));
+          set.addAll(list);
+          return (T)set;
         };
       }
       return null;
@@ -236,8 +269,8 @@ public class RhymeBuilderImplTest {
     @SuppressWarnings("unchecked")
     @Override
     public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
-      if (Stream.class.isAssignableFrom(sourceType)) {
-        return o -> Observable.fromStream((Stream)o);
+      if (Set.class.isAssignableFrom(sourceType)) {
+        return o -> Observable.fromIterable((Set)o);
       }
       return null;
     }
@@ -246,6 +279,13 @@ public class RhymeBuilderImplTest {
     public boolean isProviderOfMultiplerValues(Class<?> returnType) {
       return false;
     }
+
+    /* disabled as long as (in version 1.1.0) there is a default implementation available
+    @Override
+    public boolean isProviderOfOptionalValue(Class<?> returnType) {
+      return false;
+    }
+    */
 
   }
 
@@ -391,6 +431,16 @@ public class RhymeBuilderImplTest {
     }
 
     @Override
+    public boolean isResourcePropertyMethod(Method method) {
+      return false;
+    }
+
+    @Override
+    public String getPropertyName(Method method) {
+      return null;
+    }
+
+    @Override
     public String getRelation(Method method) {
 
       if (isRelatedResourceMethod(method)) {
@@ -402,4 +452,117 @@ public class RhymeBuilderImplTest {
 
   }
 
+  @Test
+  public void no_curies_are_rendered_if_withRhymeDocsSupport_is_not_called() {
+
+    Rhyme rhyme = RhymeBuilder.create()
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    Link curieLink = renderResourceAndGetCuriesLink(rhyme);
+
+    assertThat(curieLink).isNull();
+  }
+
+  @Test
+  public void curies_are_rendered_if_withRhymeDocsSupport_is_called() {
+
+    String baseUrl = "/docs/";
+
+    RhymeDocsSupport docsSupport = mock(RhymeDocsSupport.class);
+
+    when(docsSupport.getRhymeDocsBaseUrl())
+        .thenReturn(baseUrl);
+
+    Rhyme rhyme = RhymeBuilder.create()
+        .withRhymeDocsSupport(docsSupport)
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    Link curieLink = renderResourceAndGetCuriesLink(rhyme);
+
+    assertThat(curieLink).isNotNull();
+
+    assertThat(curieLink.getHref())
+        .startsWith(baseUrl);
+  }
+
+  private Link renderResourceAndGetCuriesLink(Rhyme rhyme) {
+
+    HalResponse response = rhyme.renderResponse(new ResourceWithCustomRelationImpl()).blockingGet();
+
+    assertThat(response.getStatus()).isEqualTo(200);
+
+    return response.getBody().getLink("curies");
+  }
+
+  @HalApiInterface
+  public interface ResourceWithCustomRelation extends LinkableResource {
+
+    @Related("foo:bar")
+    ResourceWithCustomRelation getBar();
+  }
+
+  class ResourceWithCustomRelationImpl implements ResourceWithCustomRelation {
+
+    @Override
+    public ResourceWithCustomRelation getBar() {
+      return new ResourceWithCustomRelationImpl();
+    }
+
+    @Override
+    public Link createLink() {
+      return new Link(INCOMING_REQUEST_URI);
+    }
+  }
+
+
+  @Test
+  public void should_use_default_object_mapper_which_serialises_null_fields() {
+
+    LinkableTestResource resourceImpl = new ResourceWithNullStateFields();
+
+    Rhyme rhyme = RhymeBuilder.create()
+        .buildForRequestTo("/foo");
+
+    HalResource hal = rhyme.renderResponse(resourceImpl).blockingGet().getBody();
+
+    assertThat(hal.getModel().path("string").getNodeType())
+        .isEqualTo(JsonNodeType.NULL);
+
+    assertThat(hal.getModel().path("number").getNodeType())
+        .isEqualTo(JsonNodeType.NULL);
+  }
+
+  @Test
+  public void should_use_custom_object_mapper_which_ignores_null_fields() {
+
+    ObjectMapper customMapper = new ObjectMapper()
+        .setSerializationInclusion(Include.NON_NULL);
+
+    LinkableTestResource resourceImpl = new ResourceWithNullStateFields();
+
+    Rhyme rhyme = RhymeBuilder.create()
+        .withObjectMapper(customMapper)
+        .buildForRequestTo("/foo");
+
+    HalResource hal = rhyme.renderResponse(resourceImpl).blockingGet().getBody();
+
+    assertThat(hal.getModel().path("string").getNodeType())
+        .isEqualTo(JsonNodeType.MISSING);
+
+    assertThat(hal.getModel().path("number").getNodeType())
+        .isEqualTo(JsonNodeType.MISSING);
+  }
+
+  private static final class ResourceWithNullStateFields implements LinkableTestResource {
+
+    @Override
+    public Maybe<TestState> getState() {
+      return Maybe.just(new TestState());
+    }
+
+    @Override
+    public Link createLink() {
+      return new Link("/foo");
+    }
+  }
 }

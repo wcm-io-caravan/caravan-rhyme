@@ -21,12 +21,20 @@ package io.wcm.caravan.rhyme.osgi.sampleservice.api.errors;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
-import io.wcm.caravan.rhyme.api.annotations.ResourceState;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 
+/**
+ * This is used as target resource type by the error handling examples,
+ * but you'll never see a resource of this type being successfully rendered, because the examples
+ * are implemented to always throw an exception which is rendered as a vnd.error resource
+ */
 @HalApiInterface
 public interface ErrorResource {
 
-  @ResourceState
-  Maybe<TitledState> getState();
+  /**
+   * @return an optional title (to be displayed in the HAL browser when this resource is embedded)
+   */
+  @ResourceProperty
+  Maybe<String> getTitle();
+
 }

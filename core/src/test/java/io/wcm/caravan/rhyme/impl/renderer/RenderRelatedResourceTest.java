@@ -22,7 +22,7 @@ package io.wcm.caravan.rhyme.impl.renderer;
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ITEM;
 import static io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererTestUtil.createSingleExternalLinkedResource;
 import static io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRendererTestUtil.render;
-import static io.wcm.caravan.ryhme.testing.TestRelations.LINKED;
+import static io.wcm.caravan.rhyme.testing.TestRelations.LINKED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -39,9 +39,9 @@ import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.renderer.RenderLinkedResourceTest.TestResourceWithObservableLinks;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestResource;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestResource;
+import io.wcm.caravan.rhyme.testing.TestState;
 
 /**
  * contains tests for @RelatedResource methods that are identical for linked and embedded resources
@@ -52,25 +52,25 @@ public class RenderRelatedResourceTest {
   public interface ResourceWithManyRelations extends LinkableResource {
 
     @Related("custom:ghi")
-    Single<LinkableResource> getCustomGhi();
+    Single<Link> getCustomGhi();
 
     @Related("item")
-    Single<LinkableResource> getItem();
+    Single<Link> getItem();
 
     @Related("section")
-    Single<LinkableResource> getSection();
+    Single<Link> getSection();
 
     @Related("custom:abc")
-    Single<LinkableResource> getCustomAbc();
+    Single<Link> getCustomAbc();
 
     @Related("canonical")
-    Single<LinkableResource> getCanonical();
+    Single<Link> getCanonical();
 
     @Related("custom:def")
-    Single<LinkableResource> getCustomDef();
+    Single<Link> getCustomDef();
 
     @Related("alternate")
-    Single<LinkableResource> getAlternate();
+    Single<Link> getAlternate();
 
   }
 
@@ -80,37 +80,37 @@ public class RenderRelatedResourceTest {
     ResourceWithManyRelations resourceImpl = new ResourceWithManyRelations() {
 
       @Override
-      public Single<LinkableResource> getSection() {
+      public Single<Link> getSection() {
         return createSingleExternalLinkedResource("/section");
       }
 
       @Override
-      public Single<LinkableResource> getCustomGhi() {
+      public Single<Link> getCustomGhi() {
         return createSingleExternalLinkedResource("/ghi");
       }
 
       @Override
-      public Single<LinkableResource> getItem() {
+      public Single<Link> getItem() {
         return createSingleExternalLinkedResource("/item");
       }
 
       @Override
-      public Single<LinkableResource> getCustomAbc() {
+      public Single<Link> getCustomAbc() {
         return createSingleExternalLinkedResource("/abc");
       }
 
       @Override
-      public Single<LinkableResource> getCanonical() {
+      public Single<Link> getCanonical() {
         return createSingleExternalLinkedResource("/canonical");
       }
 
       @Override
-      public Single<LinkableResource> getCustomDef() {
+      public Single<Link> getCustomDef() {
         return createSingleExternalLinkedResource("/def");
       }
 
       @Override
-      public Single<LinkableResource> getAlternate() {
+      public Single<Link> getAlternate() {
         return createSingleExternalLinkedResource("/alternate");
       }
 
@@ -165,9 +165,7 @@ public class RenderRelatedResourceTest {
         () -> render(resourceImpl));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageEndingWith(
-            "returns Maybe<TestState>, but it must return an interface annotated with the @HalApiInterface annotation "
-                + "(or a supported generic type that provides such instances, e.g. Observable)");
+        .hasMessageContaining("it must return a Link or an interface annotated with the @HalApiInterface annotation");
   }
 
   @HalApiInterface
@@ -218,9 +216,7 @@ public class RenderRelatedResourceTest {
         () -> render(resourceImpl));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageEndingWith(
-            "returns Observable<TestState>, but it must return an interface annotated with the @HalApiInterface annotation "
-                + "(or a supported generic type that provides such instances, e.g. Observable)");
+        .hasMessageContaining("it must return a Link or an interface annotated with the @HalApiInterface annotation");
   }
 
   @Test
@@ -248,4 +244,38 @@ public class RenderRelatedResourceTest {
         .hasMessageStartingWith("Your server side resource implementation classes must implement either EmbeddableResource or LinkableResource.");
   }
 
+  @Test
+  public void should_support_plain_external_links() {
+
+    ResourceWithCustomLink resourceImpl = new ResourceWithCustomLink() {
+
+      @Override
+      public Link createLink() {
+        return new Link("/foo");
+      }
+
+      @Override
+      public Single<Link> getCustomExternal() {
+        return Single.just(new Link("/bar"));
+      }
+    };
+
+    HalResource hal = render(resourceImpl);
+
+    assertThat(hal.getLink("item"))
+        .isNotNull()
+        .extracting(Link::getHref)
+        .isEqualTo("/bar");
+  }
+
+  interface CustomLinkableResource extends LinkableResource {
+    // no additional methods required, as the test just verifies that custom subtypes are accepted
+  }
+
+  @HalApiInterface
+  public interface ResourceWithCustomLink extends LinkableResource {
+
+    @Related("item")
+    Single<Link> getCustomExternal();
+  }
 }

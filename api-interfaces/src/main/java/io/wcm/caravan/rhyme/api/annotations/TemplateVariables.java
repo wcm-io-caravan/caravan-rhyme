@@ -25,11 +25,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used on parameters of methods annotated with {@link Related} to mark
- * a single DTO parameter that is used to expand multiple template variables. This can be used
- * to simply method signatures with a lot of parameters, by defining a single composite DTO type with
- * multiple fields that are named exactly as the corresponding template variables. Parameters with
- * this annotation can either be of a class with public fields, or an interface with public getters.
+ * Annotation to be used on parameters of methods annotated with {@link Related} to define
+ * a single DTO parameter that is used to expand multiple template variables.
+ * <p>
+ * This can be used to simply method signatures with a lot of parameters, and making it easier to extend additional
+ * variables later without breaking your method signatures.
+ * </p>
+ * <p>
+ * To use this annotation you also need to define a single composite DTO type
+ * with multiple fields that are named exactly as the corresponding template variables. DTO types to be used with
+ * this annotation must either be a class with only public fields, or an interface with public getters. If you are using
+ * interfaces then the variable names will be derived using Java bean conventions.
+ * </p>
+ * @see TemplateVariable
+ * @see Related
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)

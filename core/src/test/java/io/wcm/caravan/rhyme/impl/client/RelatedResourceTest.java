@@ -35,15 +35,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ResourceTreeClientTestSupport;
 import io.wcm.caravan.rhyme.impl.client.ResourceStateTest.ResourceWithSingleState;
-import io.wcm.caravan.ryhme.testing.TestState;
-import io.wcm.caravan.ryhme.testing.resources.TestResource;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceState;
+import io.wcm.caravan.rhyme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.resources.TestResource;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
 public class RelatedResourceTest {
@@ -326,6 +327,24 @@ public class RelatedResourceTest {
 
     @Related(SECTION)
     Single<TestState> notAnInterface();
+  }
+
+  @Test
+  public void related_resource_method_can_return_links_directly() throws Exception {
+
+    TestResource linkedItem = entryPoint.createLinked(ITEM);
+
+    Link link = client.createProxy(ResourceWithLinkReturnType.class).getItem().blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo(linkedItem.getUrl());
+  }
+
+  @HalApiInterface
+  interface ResourceWithLinkReturnType {
+
+    @Related(ITEM)
+    Single<Link> getItem();
   }
 
   @Test

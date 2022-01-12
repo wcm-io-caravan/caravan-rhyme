@@ -94,6 +94,16 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
   }
 
   @Override
+  public boolean isResourcePropertyMethod(Method method) {
+    return annotationSupport.isResourcePropertyMethod(method);
+  }
+
+  @Override
+  public String getPropertyName(Method method) {
+    return annotationSupport.getPropertyName(method);
+  }
+
+  @Override
   public String getRelation(Method method) {
     return annotationSupport.getRelation(method);
   }
@@ -113,12 +123,9 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
     return returnTypeSupport.isProviderOfMultiplerValues(returnType);
   }
 
-  HalApiAnnotationSupport getAnnotationSupport() {
-    return annotationSupport;
-  }
-
-  HalApiReturnTypeSupport getReturnTypeSupport() {
-    return returnTypeSupport;
+  @Override
+  public boolean isProviderOfOptionalValue(Class<?> returnType) {
+    return returnTypeSupport.isProviderOfOptionalValue(returnType);
   }
 
   static class NoAdditionalReturnTypeSupport implements HalApiReturnTypeSupport {
@@ -135,6 +142,11 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
 
     @Override
     public boolean isProviderOfMultiplerValues(Class<?> returnType) {
+      return false;
+    }
+
+    @Override
+    public boolean isProviderOfOptionalValue(Class<?> returnType) {
       return false;
     }
 
@@ -173,9 +185,21 @@ public class HalApiTypeSupportAdapter implements HalApiTypeSupport {
     }
 
     @Override
+    public boolean isResourcePropertyMethod(Method method) {
+      return false;
+    }
+
+    @Override
+    public String getPropertyName(Method method) {
+      return null;
+    }
+
+    @Override
     public String getRelation(Method method) {
       return null;
     }
 
+
   }
+
 }

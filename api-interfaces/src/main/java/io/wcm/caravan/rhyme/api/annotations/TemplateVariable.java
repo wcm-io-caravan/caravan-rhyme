@@ -26,9 +26,18 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to be used on parameters of methods annotated with {@link Related} to define
- * which variable in the URI template should be expanded with the given parameter value. If you
- * have link templates with many variables, consider using {@link TemplateVariables} to simplify
+ * the name of the variable in the URI template that corresponds to the given parameter value.
+ * <p>
+ * If the template variable should have the same name as the parameter in the java method, then
+ * you can omit this annotation, but you have to ensure that your parameter names are not stripped
+ * out during compilation.
+ * </p>
+ * <p>
+ * If you have link templates with many variables, consider using {@link TemplateVariables} to simplify
  * your method signatures.
+ * </p>
+ * @see TemplateVariables
+ * @see Related
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)

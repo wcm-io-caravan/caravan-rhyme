@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,14 +73,25 @@ public class VndErrorResponseRendererImpl implements VndErrorResponseRenderer {
     addEmbeddedCauses(vndResource, error);
     addMetadata(metrics, vndResource, resourceImpl);
 
-    int status = ObjectUtils.defaultIfNull(strategy.extractStatusCode(error), 500);
+    int status = getNonZeroStatusCode(error);
 
     logError(error, requestUri, status);
 
     return new HalResponse()
+        .withUri(requestUri)
         .withStatus(status)
         .withContentType(VndErrorResponseRenderer.CONTENT_TYPE)
         .withBody(vndResource);
+  }
+
+  private int getNonZeroStatusCode(Throwable error) {
+
+    Integer statusFromStrategy = strategy.extractStatusCode(error);
+    if (statusFromStrategy == null || statusFromStrategy <= 0) {
+      return 500;
+    }
+
+    return statusFromStrategy;
   }
 
   private String getShortErrorMessage(Throwable t) {
@@ -166,7 +176,7 @@ public class VndErrorResponseRendererImpl implements VndErrorResponseRenderer {
     }
 
     HalResource causeFromBody = new HalResource(upstreamBody.getModel().deepCopy());
-    causeFromBody.removeEmbedded(ResponseMetadataRelations.CARAVAN_METADATA_RELATION);
+    causeFromBody.removeEmbedded(ResponseMetadataRelations.RHYME_METADATA_RELATION);
 
     List<HalResource> embeddedCauses = causeFromBody.getEmbedded(ERRORS);
 

@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.api.exceptions;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 
@@ -26,23 +28,34 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
  * Thrown whenever the {@link HalApiClient} implementation fails to load a HAL resource, and provides
  * access to the status code and URL of the failed HTTP request.
  */
+@ProviderType
 public class HalApiClientException extends RuntimeException {
 
   private static final long serialVersionUID = -2265405683402689209L;
 
   private final HalResponse errorResponse;
-  private final String requestUrl;
+
+  /**
+   * Kept for backward compatibility
+   * @param errorResponse the error response as received from the upstream service
+   * @param requestUrl the URI of the request that failed
+   * @param cause the root cause for the failed HTTP request
+   * @deprecated use {@link HalApiClientException#HalApiClientException(HalResponse, Throwable)} instead, and make
+   *             sure that {@link HalResponse#withUri(String)} was called
+   */
+  @Deprecated
+  public HalApiClientException(HalResponse errorResponse, String requestUrl, Throwable cause) {
+    this(errorResponse.withUri(requestUrl), cause);
+  }
 
   /**
    * Constructor to use if the request failed with a non-successful HTTP status code
    * @param errorResponse the error response as received from the upstream service
-   * @param requestUrl the URI of the request that failed
    * @param cause the root cause for the failed HTTP request
    */
-  public HalApiClientException(HalResponse errorResponse, String requestUrl, Throwable cause) {
-    super("HTTP request failed with status code " + errorResponse.getStatus(), cause);
+  public HalApiClientException(HalResponse errorResponse, Throwable cause) {
+    super(createMessage(errorResponse), cause);
     this.errorResponse = errorResponse;
-    this.requestUrl = requestUrl;
   }
 
   /**
@@ -55,8 +68,9 @@ public class HalApiClientException extends RuntimeException {
    */
   public HalApiClientException(String message, Integer statusCode, String requestUrl, Throwable cause) {
     super(message, cause);
-    this.errorResponse = new HalResponse().withStatus(statusCode);
-    this.requestUrl = requestUrl;
+    this.errorResponse = new HalResponse()
+        .withStatus(statusCode)
+        .withUri(requestUrl);
   }
 
   /**
@@ -67,7 +81,20 @@ public class HalApiClientException extends RuntimeException {
   public HalApiClientException(String message, HalApiClientException cause) {
     super(message, cause);
     this.errorResponse = cause.getErrorResponse();
-    this.requestUrl = cause.getRequestUrl();
+  }
+
+  private static String createMessage(HalResponse errorResponse) {
+
+    String msg = "HAL client request to " + errorResponse.getUri() + " has failed ";
+
+    if (errorResponse.getStatus() == null) {
+      return msg + "before a status code was available";
+    }
+    if (errorResponse.getStatus() == 200) {
+      return msg + "because the response body is malformed";
+    }
+
+    return msg + "with status code " + errorResponse.getStatus();
   }
 
   /**
@@ -90,7 +117,7 @@ public class HalApiClientException extends RuntimeException {
    * @return the URI of the request that failed
    */
   public String getRequestUrl() {
-    return requestUrl;
+    return getErrorResponse().getUri();
   }
 
 }

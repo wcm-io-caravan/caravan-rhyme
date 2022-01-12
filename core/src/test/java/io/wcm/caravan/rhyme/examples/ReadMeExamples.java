@@ -42,7 +42,9 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
+import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
@@ -122,18 +124,25 @@ public class ReadMeExamples {
 
   private void convertToFrameworkResponse(HalResponse response) {
 
-    response.getBody().removeEmbedded("caravan:metadata");
+    response.getBody().removeEmbedded("rhyme:metadata");
     if (response.getBody().getModel().path("_embedded").size() == 0) {
       response.getBody().getModel().remove("_embedded");
     }
     System.out.println(response.getBody().getModel().toString());
   }
 
+  // create a HalApiClient that uses a default HTTP implementation
+  private final HalApiClient client = HalApiClient.create();
+
   private ApiEntryPoint getApiEntryPoint() {
 
-    // create a Rhyme instance that knows how to load any external JSON resource
-    Rhyme rhyme = RhymeBuilder.withResourceLoader(resourceLoader)
-        .buildForRequestTo(incomingRequest.getUrl());
+    // create a dynamic proxy that knows how to fetch the entry point from the given URL
+    return client.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
+  }
+
+  private Rhyme rhyme;
+
+  private ApiEntryPoint getApiEntryPointWithRhyme() {
 
     // create a dynamic proxy that knows how to fetch the entry point from the given URL
     return rhyme.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
@@ -189,7 +198,7 @@ public class ReadMeExamples {
   void handleEntryPointRequest() {
 
     // create a single Rhyme instance as early as possible in the request-cycle
-    Rhyme rhyme = RhymeBuilder.withoutResourceLoader().buildForRequestTo(incomingRequest.getUrl());
+    Rhyme rhyme = RhymeBuilder.create().buildForRequestTo(incomingRequest.getUrl());
 
     // instantiate your server-side implementation of the requested @HalApiInterface resource
     ApiEntryPoint entryPoint = new ApiEntryPointImpl(database);
@@ -442,5 +451,15 @@ public class ReadMeExamples {
       return allItems.size();
     }
 
+  }
+
+  class YourClass {
+
+    private void doExpensiveStuffWith(String param) {
+
+      try (RequestMetricsStopwatch sw = rhyme.startStopwatch(YourClass.class, () -> "calls to #doExpensiveStuff(" + param + ")")) {
+        // actually do expensiveStuff
+      }
+    }
   }
 }

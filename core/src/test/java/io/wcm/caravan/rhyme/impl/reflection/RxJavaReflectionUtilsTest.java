@@ -19,7 +19,7 @@
  */
 package io.wcm.caravan.rhyme.impl.reflection;
 
-import static io.wcm.caravan.ryhme.testing.TestRelations.LINKED;
+import static io.wcm.caravan.rhyme.testing.TestRelations.LINKED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 

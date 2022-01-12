@@ -23,19 +23,35 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
-import io.wcm.caravan.rhyme.api.annotations.ResourceState;
-import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 
+/**
+ * Defines the common structure and available link relations for all collections of test resources in this example
+ * service.
+ */
 @HalApiInterface
 public interface ItemCollectionResource {
 
-  @ResourceState
-  Maybe<TitledState> getState();
+  /**
+   * @return an optional title (to be displayed in the HAL browser when this resource is embedded)
+   */
+  @ResourceProperty
+  Maybe<String> getTitle();
 
+  /**
+   * Allows to switch between two versions of this resource: one that is based on embedded resource items, and one that
+   * is only using links.
+   * @return a {@link Maybe} that emits the same {@link ItemCollectionResource} with different parameters
+   */
   @Related(StandardRelations.ALTERNATE)
-  Maybe<ItemCollectionResource> getAlternate(@TemplateVariable("embedItems") Boolean embedItems);
+  Maybe<ItemCollectionResource> getAlternate();
 
-  @Related(StandardRelations.ITEM)
+  /**
+   * The test resources contained in this collection. Depending on the parameters used to fetch this
+   * resource, the item resources may be embedded or only linked.
+   * @return an {@link Observable} that emits all linked (or embedded) {@link ItemResource} instances
+   */
+  @Related("examples:item")
   Observable<ItemResource> getItems();
 }

@@ -19,16 +19,20 @@
  */
 package io.wcm.caravan.rhyme.impl;
 
-import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.CARAVAN_METADATA_RELATION;
+import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.INVOCATION_TIMES;
+import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RHYME_METADATA_RELATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
@@ -37,14 +41,15 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
-import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
+import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.impl.renderer.blocking.RenderResourceStateTest.TestResourceWithRequiredState;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
-import io.wcm.caravan.ryhme.testing.TestState;
-import io.wcm.caravan.ryhme.testing.resources.TestResourceTree;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 public class RhymeImplTest {
 
@@ -84,18 +89,40 @@ public class RhymeImplTest {
     assertThat(ex.getCause()).hasMessageContaining(NON_EXISTING_PATH);
   }
 
-  @Test
-  public void getEntryPoint_should_fail_if_no_resource_loader_was_provided() throws Exception {
+  private TestState getResourceFromUnknownHost(Rhyme rhymeWithoutResourceLoader) {
 
+    return rhymeWithoutResourceLoader
+        .getRemoteResource("http://foo.bar", TestResourceWithRequiredState.class)
+        .getState();
+  }
+
+  @Test
+  public void withoutResourceLoader_should_use_a_default_http_implementation() throws Exception {
+
+    @SuppressWarnings("deprecation")
     Rhyme rhymeWithoutResourceLoader = RhymeBuilder
         .withoutResourceLoader()
         .buildForRequestTo(INCOMING_REQUEST_URI);
 
-    Throwable ex = catchThrowable(
-        () -> rhymeWithoutResourceLoader.getRemoteResource(UPSTREAM_ENTRY_POINT_URI, TestResourceWithRequiredState.class));
+    Throwable ex = catchThrowable(() -> getResourceFromUnknownHost(rhymeWithoutResourceLoader));
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageContaining("#getRemoteResource can only be used if you have provided a HalResourceLoader");
+    assertThat(ex)
+        .isInstanceOf(HalApiClientException.class)
+        .hasRootCauseInstanceOf(UnknownHostException.class);
+  }
+
+  @Test
+  public void create_should_use_a_default_http_implementation() throws Exception {
+
+    Rhyme rhymeWithoutResourceLoader = RhymeBuilder
+        .create()
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    Throwable ex = catchThrowable(() -> getResourceFromUnknownHost(rhymeWithoutResourceLoader));
+
+    assertThat(ex)
+        .isInstanceOf(HalApiClientException.class)
+        .hasRootCauseInstanceOf(UnknownHostException.class);
   }
 
   @Test
@@ -114,7 +141,7 @@ public class RhymeImplTest {
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getLink()).isNotNull();
     assertThat(response.getBody().getLink().getHref()).isEqualTo(INCOMING_REQUEST_URI);
-    assertThat(response.getBody().hasEmbedded(CARAVAN_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
 
     TestState properties = response.getBody().adaptTo(TestState.class);
     assertThat(properties.string).isEqualTo("foo");
@@ -154,7 +181,7 @@ public class RhymeImplTest {
     assertThat(response.getContentType()).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
     assertThat(response.getMaxAge()).isNull();
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(CARAVAN_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
   }
 
   private class LinkableTestResourceImpl implements LinkableTestResource {
@@ -170,6 +197,72 @@ public class RhymeImplTest {
     @Override
     public Maybe<TestState> getState() {
       return Maybe.just(new TestState("foo")).delay(30, TimeUnit.MILLISECONDS);
+    }
+  }
+
+  @Test
+  public void startStopwatch_should_start_a_measurement_that_shows_up_in_metadata() throws Exception {
+
+    Rhyme rhymeWithMetadata = RhymeBuilder
+        .create()
+        .withMetadataConfiguration(new RhymeMetadataConfiguration() {
+
+          @Override
+          public boolean isMetadataGenerationEnabled() {
+            return true;
+          }
+
+        })
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    MeasuringTestResource resourceImpl = new MeasuringTestResource(rhymeWithMetadata);
+
+    HalResponse response = rhymeWithMetadata.renderResponse(resourceImpl).blockingGet();
+
+    HalResource metadata = response.getBody().getEmbeddedResource(RHYME_METADATA_RELATION);
+    assertThat(metadata).isNotNull();
+
+    HalResource metrics = metadata.getEmbeddedResource(INVOCATION_TIMES);
+    assertThat(metrics).isNotNull();
+
+    assertThat(metrics.getModel().path("title").asText())
+        .isEqualTo("Invocations of methods in class " + MeasuringTestResource.class.getSimpleName());
+
+    JsonNode measurements = metrics.getModel().path("measurements");
+
+    assertThat(measurements)
+        .hasSize(1);
+
+    assertThat(measurements.get(0).asText())
+        .endsWith("- 1x invocation of #createLink");
+  }
+
+  @Test
+  public void startStopwatch_should_not_create_metadata_with_defaut_configuration() throws Exception {
+
+    MeasuringTestResource resourceImpl = new MeasuringTestResource(rhyme);
+
+    HalResponse response = rhyme.renderResponse(resourceImpl).blockingGet();
+
+    HalResource metadata = response.getBody().getEmbeddedResource(RHYME_METADATA_RELATION);
+
+    assertThat(metadata).isNull();
+  }
+
+  static class MeasuringTestResource implements LinkableTestResource {
+
+    private final Rhyme rhyme;
+
+    MeasuringTestResource(Rhyme rhyme) {
+      this.rhyme = rhyme;
+    }
+
+    @Override
+    public Link createLink() {
+      try (RequestMetricsStopwatch sw = rhyme.startStopwatch(MeasuringTestResource.class,
+          () -> "invocation of #createLink")) {
+        return new Link("/foo");
+      }
     }
   }
 }

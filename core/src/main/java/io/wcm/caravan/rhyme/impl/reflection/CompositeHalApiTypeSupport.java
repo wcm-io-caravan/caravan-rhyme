@@ -91,6 +91,18 @@ public class CompositeHalApiTypeSupport implements HalApiTypeSupport {
   }
 
   @Override
+  public boolean isResourcePropertyMethod(Method method) {
+
+    return anyMatch(delegate -> delegate.isResourcePropertyMethod(method));
+  }
+
+  @Override
+  public String getPropertyName(Method method) {
+
+    return firstNonNull(delegate -> delegate.getPropertyName(method));
+  }
+
+  @Override
   public String getRelation(Method method) {
 
     return firstNonNull(delegate -> delegate.getRelation(method));
@@ -114,8 +126,10 @@ public class CompositeHalApiTypeSupport implements HalApiTypeSupport {
     return anyMatch(delegate -> delegate.isProviderOfMultiplerValues(returnType));
   }
 
-  List<HalApiTypeSupport> getDelegates() {
-    return delegates;
+  @Override
+  public boolean isProviderOfOptionalValue(Class<?> returnType) {
+
+    return anyMatch(delegate -> delegate.isProviderOfOptionalValue(returnType));
   }
 
 }

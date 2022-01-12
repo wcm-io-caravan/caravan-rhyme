@@ -22,12 +22,10 @@ package io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.caching;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.caching.CachingExamplesResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.caching.EvenOddItemsResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 
 public class CachingExamplesResourceImpl implements CachingExamplesResource, LinkableResource {
 
@@ -44,15 +42,9 @@ public class CachingExamplesResourceImpl implements CachingExamplesResource, Lin
   }
 
   @Override
-  public Single<ExamplesEntryPointResource> getEntryPoint() {
-
-    return Single.just(new ExamplesEntryPointResourceImpl(context));
-  }
-
-  @Override
   public Link createLink() {
 
     return context.buildLinkTo((resource, uriInfo, response) -> resource.getCachingExamples(uriInfo, response))
-        .setTitle("Examples for resources that need local caching to avoid multiple identical requests to upstream server");
+        .setTitle("Examples for Rhyme's internal caching logic");
   }
 }

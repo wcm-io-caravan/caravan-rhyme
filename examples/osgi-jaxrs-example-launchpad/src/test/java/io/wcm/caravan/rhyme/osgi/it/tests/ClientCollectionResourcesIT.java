@@ -1,6 +1,5 @@
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVICE_ID;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,28 +11,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import com.google.common.base.Stopwatch;
 
 import io.reactivex.rxjava3.core.Single;
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
-import io.wcm.caravan.rhyme.osgi.it.extensions.HalApiClientExtension;
+import io.wcm.caravan.rhyme.osgi.it.IntegrationTestEnvironment;
 import io.wcm.caravan.rhyme.osgi.it.extensions.WaitForServerStartupExtension;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParameters;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemState;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 
-@ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
+@ExtendWith({ WaitForServerStartupExtension.class })
 public class ClientCollectionResourcesIT {
 
-  private final ExamplesEntryPointResource entryPoint;
-
-  public ClientCollectionResourcesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
-  }
+  private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
   private Single<ItemCollectionResource> getCollectionThroughClient(Integer numItems, Boolean embedItems, Integer delayMs) {
 
-    CollectionParameters params = new CollectionParametersImpl()
+    CollectionParameters params = new CollectionParametersBean()
         .withNumItems(numItems)
         .withEmbedItems(embedItems)
         .withDelayMs(delayMs);

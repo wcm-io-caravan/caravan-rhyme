@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import com.google.common.collect.ImmutableMap;
@@ -32,31 +33,54 @@ import io.wcm.caravan.rhyme.caravan.api.CaravanRhyme;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsBundleInfo;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsLinkBuilder;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.jaxrs.ExampleServiceJaxRsComponent;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 
 public class ExampleServiceRequestContext {
 
-  private CaravanRhyme rhyme;
-  private JaxRsBundleInfo bundleInfo;
+  private static final String BUNDLE_VERSION_QUERY_PARAM = "bundleVersion";
 
-  private ExamplesEntryPointResource upstreamEntryPoint;
+  public static final String LOCALHOST_CARAVAN_SERVICE_ID = "localhost";
 
-  private JaxRsLinkBuilder<ExampleServiceJaxRsComponent> linkBuilder;
+  private final CaravanRhyme rhyme;
+  private final JaxRsBundleInfo bundleInfo;
+
+  private final ExamplesEntryPointResource upstreamEntryPoint;
+
+  private final JaxRsLinkBuilder<ExampleServiceJaxRsComponent> linkBuilder;
 
   public ExampleServiceRequestContext(CaravanRhyme rhyme, JaxRsBundleInfo bundleInfo) {
+
     this.rhyme = rhyme;
     this.bundleInfo = bundleInfo;
 
     this.linkBuilder = createLinkBuilder(bundleInfo);
 
-    limitMaxAge(Duration.ofDays(365));
+    this.upstreamEntryPoint = rhyme.getRemoteResource(LOCALHOST_CARAVAN_SERVICE_ID, constructEntryPointUrl(), ExamplesEntryPointResource.class);
+
+    setResponseMaxAge(rhyme);
+  }
+
+  private String constructEntryPointUrl() {
+
+    return new ExamplesEntryPointResourceImpl(this, true).createLink().getHref();
   }
 
   private static JaxRsLinkBuilder<ExampleServiceJaxRsComponent> createLinkBuilder(JaxRsBundleInfo bundleInfo) {
 
-    Map<String, Object> fingerPrintingParams = ImmutableMap.of("bundleVersion", bundleInfo.getBundleVersion());
+    Map<String, Object> fingerPrintingParams = ImmutableMap.of(BUNDLE_VERSION_QUERY_PARAM, bundleInfo.getBundleVersion());
 
     return JaxRsLinkBuilder.create(bundleInfo.getApplicationPath(), ExampleServiceJaxRsComponent.class)
         .withAdditionalQueryParameters(fingerPrintingParams);
+  }
+
+  private static void setResponseMaxAge(CaravanRhyme rhyme) {
+
+    MultivaluedMap<String, String> queryParameters = rhyme.getRequestUri().getQueryParameters();
+    boolean fingerPrintingParamPresent = queryParameters.containsKey(BUNDLE_VERSION_QUERY_PARAM);
+
+    Duration maxAge = fingerPrintingParamPresent ? Duration.ofDays(365) : Duration.ofMinutes(1);
+    rhyme.setResponseMaxAge(maxAge);
   }
 
   public interface ControllerCall {
@@ -71,19 +95,18 @@ public class ExampleServiceRequestContext {
     });
   }
 
-  public void limitMaxAge(Duration duration) {
-    rhyme.setResponseMaxAge(duration);
-  }
-
   public ExamplesEntryPointResource getUpstreamEntryPoint() {
-    if (upstreamEntryPoint == null) {
-      String serviceId = getServiceId();
-      upstreamEntryPoint = rhyme.getRemoteResource(serviceId, serviceId, ExamplesEntryPointResource.class);
-    }
+
     return upstreamEntryPoint;
   }
 
-  public String getServiceId() {
-    return bundleInfo.getApplicationPath();
+  public boolean hasFingerPrintedUrl() {
+
+    return rhyme.getRequestUri().getQueryParameters().containsKey(BUNDLE_VERSION_QUERY_PARAM);
+  }
+
+  public String getBundleVersion() {
+
+    return bundleInfo.getBundleVersion();
   }
 }

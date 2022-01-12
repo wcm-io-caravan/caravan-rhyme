@@ -23,7 +23,7 @@ package io.wcm.caravan.rhyme.api.relations;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 
 /**
- * Constants for standard link relations used in {@link Related} annotations.
+ * Constants for some standard link relations used in {@link Related} annotations.
  * @see <a href="http://www.iana.org/assignments/link-relations/link-relations.xhtml">IANA Link Relation Types</a>
  */
 public final class StandardRelations {
@@ -55,6 +55,16 @@ public final class StandardRelations {
    * @see <a href="http://www.iana.org/go/rfc6573">RFC6573</a>
    */
   public static final String COLLECTION = "collection";
+
+  /**
+   * A reserved link relation which you can use to hint at the location of resource documentation.
+   * There can be multiple links in the 'curies' section. They come with a 'name' and a templated 'href' which must
+   * contain the {rel} placeholder.
+   * To retrieve documentation about the latest-posts resource, the client will expand the associated CURIE link with
+   * the actual link's 'rel'
+   * @see <a href="https://datatracker.ietf.org/doc/html/draft-kelly-json-hal#section-8.2">draft-kelly-json-hal-08</a>
+   */
+  public static final String CURIES = "curies";
 
   /**
    * Refers to a resource that is not part of the same site as the current context.

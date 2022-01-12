@@ -22,19 +22,26 @@ package io.wcm.caravan.rhyme.osgi.sampleservice.api.caching;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
-import io.wcm.caravan.rhyme.api.relations.StandardRelations;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 
+/**
+ * A resource that fetches a collection of item resources from localhost,
+ * and divides it into two collections.
+ */
 @HalApiInterface
 public interface EvenOddItemsResource {
 
+  /**
+   * a collection that contains all the item resources with an even index property
+   * @return a {@link Single} that emits the embedded {@link ItemCollectionResource}
+   */
   @Related("example:evenItems")
   Single<ItemCollectionResource> getEvenItems();
 
+  /**
+   * a collection that contains all the item resources with an odd index property
+   * @return a {@link Single} that emits the embedded {@link ItemCollectionResource}
+   */
   @Related("example:oddItems")
   Single<ItemCollectionResource> getOddItems();
-
-  @Related(StandardRelations.INDEX)
-  Single<ExamplesEntryPointResource> getEntryPoint();
 }

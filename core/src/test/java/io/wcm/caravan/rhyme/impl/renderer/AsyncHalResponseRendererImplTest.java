@@ -50,7 +50,7 @@ import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
-import io.wcm.caravan.ryhme.testing.LinkableTestResource;
+import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 @ExtendWith(MockitoExtension.class)
 public class AsyncHalResponseRendererImplTest {
@@ -70,7 +70,7 @@ public class AsyncHalResponseRendererImplTest {
 
   private HalResponse renderResponse() {
 
-    AsyncHalResponseRenderer responseRenderer = new AsyncHalResponseRendererImpl(renderer, metrics, exceptionStrategy, new DefaultHalApiTypeSupport());
+    AsyncHalResponseRenderer responseRenderer = new AsyncHalResponseRendererImpl(renderer, metrics, exceptionStrategy, new DefaultHalApiTypeSupport(), null);
 
     return responseRenderer.renderResponse(REQUEST_URI, resource).blockingGet();
   }
@@ -85,6 +85,16 @@ public class AsyncHalResponseRendererImplTest {
 
     when(renderer.renderResource(eq(resource))).thenReturn(Single.error(exception));
     return exception;
+  }
+
+  @Test
+  public void response_should_have_uri_set_if_resource_was_rendered_succesfully() throws Exception {
+
+    mockRenderedResource();
+
+    HalResponse response = renderResponse();
+
+    assertThat(response.getUri()).isEqualTo(REQUEST_URI);
   }
 
   @Test
@@ -146,8 +156,8 @@ public class AsyncHalResponseRendererImplTest {
     HalResponse response = renderResponse();
 
     HalResource hal = response.getBody();
-    assertThat(hal.hasEmbedded(ResponseMetadataRelations.CARAVAN_METADATA_RELATION));
-    assertThat(hal.getEmbeddedResource(ResponseMetadataRelations.CARAVAN_METADATA_RELATION).getModel()).isEqualTo(metadata.getModel());
+    assertThat(hal.hasEmbedded(ResponseMetadataRelations.RHYME_METADATA_RELATION));
+    assertThat(hal.getEmbeddedResource(ResponseMetadataRelations.RHYME_METADATA_RELATION).getModel()).isEqualTo(metadata.getModel());
   }
 
   @Test
@@ -170,6 +180,17 @@ public class AsyncHalResponseRendererImplTest {
 
     assertThat(response.getMaxAge()).isEqualTo(99);
   }
+
+  @Test
+  public void error_response_should_contain_uri() {
+
+    mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
+
+    HalResponse response = renderResponse();
+
+    assertThat(response.getUri()).isEqualTo(REQUEST_URI);
+  }
+
 
   @Test
   public void error_response_should_have_status_code_500_for_unknown_exceptions() {
@@ -222,6 +243,44 @@ public class AsyncHalResponseRendererImplTest {
     HalResponse response = renderResponse();
 
     assertThat(response.getStatus()).isEqualTo(404);
+  }
+
+  @Test
+  public void error_response_should_use_500_instead_of_null_status_code() {
+
+    exceptionStrategy = new ExceptionStatusAndLoggingStrategy() {
+
+      @Override
+      public Integer extractStatusCode(Throwable error) {
+        return null;
+      }
+
+    };
+
+    mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
+
+    HalResponse response = renderResponse();
+
+    assertThat(response.getStatus()).isEqualTo(500);
+  }
+
+  @Test
+  public void error_response_should_use_500_instead_of_0_status_code() {
+
+    exceptionStrategy = new ExceptionStatusAndLoggingStrategy() {
+
+      @Override
+      public Integer extractStatusCode(Throwable error) {
+        return 0;
+      }
+
+    };
+
+    mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
+
+    HalResponse response = renderResponse();
+
+    assertThat(response.getStatus()).isEqualTo(500);
   }
 
   @Test
@@ -326,10 +385,11 @@ public class AsyncHalResponseRendererImplTest {
     vndErrorResource.getModel().put("message", message);
 
     HalResponse upstreamResponse = new HalResponse()
+        .withUri("/failed/upstream/url")
         .withStatus(status)
         .withBody(vndErrorResource);
 
-    HalApiClientException cause = new HalApiClientException(upstreamResponse, "/failed/upstream/url", null);
+    HalApiClientException cause = new HalApiClientException(upstreamResponse, null);
     RuntimeException ex = new RuntimeException(cause);
     return ex;
   }
@@ -349,7 +409,7 @@ public class AsyncHalResponseRendererImplTest {
 
     List<HalResource> causes = response.getBody().getEmbedded(ERRORS);
     assertThat(causes).hasSize(2);
-    assertThat(causes.get(0).getModel().path("message").asText()).isEqualTo("HTTP request failed with status code 501");
+    assertThat(causes.get(0).getModel().path("message").asText()).contains("has failed with status code 501");
     assertThat(causes.get(1).getModel().path("message").asText()).isEqualTo(upstreamMessage);
   }
 
@@ -383,10 +443,11 @@ public class AsyncHalResponseRendererImplTest {
   private RuntimeException createWrappedHalClientExceptionWithEmptyBody(int status) {
 
     HalResponse upstreamResponse = new HalResponse()
+        .withUri("/failed/upstream/url")
         .withStatus(status)
         .withBody(new HalResource());
 
-    HalApiClientException cause = new HalApiClientException(upstreamResponse, "/failed/upstream/url", null);
+    HalApiClientException cause = new HalApiClientException(upstreamResponse, null);
     RuntimeException ex = new RuntimeException(cause);
     return ex;
   }
@@ -405,6 +466,6 @@ public class AsyncHalResponseRendererImplTest {
 
     List<HalResource> causes = response.getBody().getEmbedded(ERRORS);
     assertThat(causes).hasSize(1);
-    assertThat(causes.get(0).getModel().path("message").asText()).isEqualTo("HTTP request failed with status code 404");
+    assertThat(causes.get(0).getModel().path("message").asText()).contains("has failed with status code 404");
   }
 }

@@ -19,11 +19,28 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.api.collection;
 
+import io.wcm.caravan.rhyme.api.annotations.Related;
+import io.wcm.caravan.rhyme.api.annotations.TemplateVariables;
+
+/**
+ * an interface to be used as {@link TemplateVariables} parameter for
+ * some {@link Related} methods in the {@link CollectionExamplesResource}
+ */
 public interface CollectionParameters {
 
+  /**
+   * @return how many items should be included in the collection
+   */
   Integer getNumItems();
 
+  /**
+   * @return determines whether the item resources should also be embedded
+   *         in the collection resource (when it is generated)
+   */
   Boolean getEmbedItems();
 
+  /**
+   * @return the minimum response times of the item resources (in milliseconds)
+   */
   Integer getDelayMs();
 }

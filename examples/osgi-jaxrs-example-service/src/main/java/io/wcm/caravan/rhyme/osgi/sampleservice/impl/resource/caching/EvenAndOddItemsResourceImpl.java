@@ -28,24 +28,21 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.caching.EvenOddItemsResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
-import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.TitledState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.context.ExampleServiceRequestContext;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.ExamplesEntryPointResourceImpl;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.ClientCollectionResourceImpl;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.util.RxJavaTransformers;
 
 public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, LinkableResource {
 
   private final ExampleServiceRequestContext context;
 
-  private final CollectionParametersImpl params;
+  private final CollectionParametersBean params;
 
-  public EvenAndOddItemsResourceImpl(ExampleServiceRequestContext context, CollectionParametersImpl parameters) {
+  public EvenAndOddItemsResourceImpl(ExampleServiceRequestContext context, CollectionParametersBean parameters) {
     this.context = context;
     this.params = parameters;
   }
@@ -53,9 +50,9 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
   @Override
   public Single<ItemCollectionResource> getEvenItems() {
 
-    Observable<ItemResource> rxEvenItems = fetchAndFilter(this::isEvenItem);
+    Observable<ItemResource> evenItems = fetchAndFilter(this::isEvenItem);
 
-    return Single.just(new EmbeddedCollectionResourceImpl(rxEvenItems));
+    return Single.just(new EmbeddedCollectionResourceImpl(evenItems));
   }
 
   private Single<Boolean> isEvenItem(ItemResource resource) {
@@ -66,9 +63,9 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
   @Override
   public Single<ItemCollectionResource> getOddItems() {
 
-    Observable<ItemResource> rxOddItems = fetchAndFilter(this::isOddItem);
+    Observable<ItemResource> oddItems = fetchAndFilter(this::isOddItem);
 
-    return Single.just(new EmbeddedCollectionResourceImpl(rxOddItems));
+    return Single.just(new EmbeddedCollectionResourceImpl(oddItems));
   }
 
   private Single<Boolean> isOddItem(ItemResource resource) {
@@ -80,7 +77,7 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
 
     return context.getUpstreamEntryPoint()
         .getCollectionExamples()
-        .flatMap(r -> r.getCollection(params))
+        .flatMap(r -> r.getDelayedCollection(params))
         .flatMapObservable(ItemCollectionResource::getItems);
   }
 
@@ -88,12 +85,6 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
 
     return fetchAllItems()
         .compose(RxJavaTransformers.filterWith(filterFunc));
-  }
-
-  @Override
-  public Single<ExamplesEntryPointResource> getEntryPoint() {
-
-    return Single.just(new ExamplesEntryPointResourceImpl(context));
   }
 
   @Override
@@ -114,26 +105,30 @@ public class EvenAndOddItemsResourceImpl implements EvenOddItemsResource, Linkab
     }
 
     @Override
-    public Observable<ItemResource> getItems() {
-      return items.map(ClientCollectionResourceImpl.EmbeddedItemResourceImpl::new);
-    }
-
-    @Override
-    public Maybe<TitledState> getState() {
+    public Maybe<String> getTitle() {
 
       return items.count()
-          .map(numItems -> new TitledState().withTitle("A collection of " + numItems + " items"))
+          .map(numItems -> "A collection of " + numItems + " items")
           .toMaybe();
     }
 
     @Override
-    public Maybe<ItemCollectionResource> getAlternate(Boolean embedItems) {
+    public Observable<ItemResource> getItems() {
+
+      return items.map(ClientCollectionResourceImpl.EmbeddedItemResourceImpl::new);
+    }
+
+    @Override
+    public Maybe<ItemCollectionResource> getAlternate() {
+
       return Maybe.empty();
     }
 
     @Override
     public boolean isEmbedded() {
+
       return true;
     }
+
   }
 }

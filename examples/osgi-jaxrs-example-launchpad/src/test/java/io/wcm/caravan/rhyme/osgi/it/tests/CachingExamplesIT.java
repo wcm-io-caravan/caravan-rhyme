@@ -19,7 +19,6 @@
  */
 package io.wcm.caravan.rhyme.osgi.it.tests;
 
-import static io.wcm.caravan.rhyme.osgi.it.TestEnvironmentConstants.SERVICE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -32,28 +31,23 @@ import com.google.common.base.Stopwatch;
 
 import io.reactivex.rxjava3.core.SingleSource;
 import io.reactivex.rxjava3.functions.Function;
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
-import io.wcm.caravan.rhyme.osgi.it.extensions.HalApiClientExtension;
+import io.wcm.caravan.rhyme.osgi.it.IntegrationTestEnvironment;
 import io.wcm.caravan.rhyme.osgi.it.extensions.WaitForServerStartupExtension;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.caching.EvenOddItemsResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemCollectionResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemResource;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemState;
-import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersImpl;
+import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 
-@ExtendWith({ WaitForServerStartupExtension.class, HalApiClientExtension.class })
+@ExtendWith({ WaitForServerStartupExtension.class })
 public class CachingExamplesIT {
 
-  private final ExamplesEntryPointResource entryPoint;
-
-  public CachingExamplesIT(HalApiClient halApiClient) {
-    this.entryPoint = halApiClient.getRemoteResource(SERVICE_ID, ExamplesEntryPointResource.class);
-  }
+  private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
   private List<ItemState> getItems(int numItems, int delayMs, Function<EvenOddItemsResource, SingleSource<ItemCollectionResource>> func) {
 
-    CollectionParametersImpl parameters = new CollectionParametersImpl()
+    CollectionParametersBean parameters = new CollectionParametersBean()
         .withNumItems(numItems)
         .withEmbedItems(false)
         .withDelayMs(delayMs);
@@ -96,7 +90,7 @@ public class CachingExamplesIT {
   public void second_call_should_use_cached_items() {
 
     // measure the time it takes to load a collection of even resources, where each item takes 200ms to generate
-    int delayMs = 200;
+    int delayMs = 1000;
     Stopwatch uncachedStopwatch = Stopwatch.createStarted();
     getItemsWithDelay(10, delayMs, EvenOddItemsResource::getEvenItems);
 

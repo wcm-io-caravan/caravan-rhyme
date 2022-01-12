@@ -52,6 +52,7 @@ public class LinkRewritingTest {
   private static final String INVALID_URI = "/<>";
   private static final String ENTRY_POINT_PATH = "/";
   private static final String PAGE_PATH_TEMPLATE = "/pages/{index}";
+  private static final String ROOT_PATH_TEMPLATE = "{+path}.rhyme";
 
   private static final String BASE_URL = "http://example.org:12345";
   private static final String ENTRY_POINT_URL = BASE_URL + ENTRY_POINT_PATH;
@@ -83,7 +84,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void templates_should_be_rewritten() {
+  public void templates_with_path_variables_should_be_rewritten() {
 
     LinkRewriting rewriting = new LinkRewriting(BASE_URL);
 
@@ -91,6 +92,17 @@ public class LinkRewritingTest {
     rewriting.rewriteLink(link);
 
     assertThat(link.getHref()).isEqualTo(BASE_URL + PAGE_PATH_TEMPLATE);
+  }
+
+  @Test
+  public void templates_beginning_with_path_variables_should_be_rewritten() {
+
+    LinkRewriting rewriting = new LinkRewriting(BASE_URL);
+
+    Link link = new Link(ROOT_PATH_TEMPLATE);
+    rewriting.rewriteLink(link);
+
+    assertThat(link.getHref()).isEqualTo(BASE_URL + ROOT_PATH_TEMPLATE);
   }
 
   @Test

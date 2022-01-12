@@ -21,8 +21,8 @@ package io.wcm.caravan.rhyme.impl.metadata;
 
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.VIA;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.EMISSION_TIMES;
-import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.INVOCATION_TIMES;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.MAX_AGE;
+import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RENDERING_TIMES;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RESPONSE_TIMES;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.SOURCE_LINKS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,8 +41,8 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator.TimeMeasurement;
-import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
+import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
+import io.wcm.caravan.rhyme.impl.metadata.FullMetadataGenerator.TimeMeasurement;
 
 @ExtendWith(MockitoExtension.class)
 public class ResponseMetadataGeneratorTest {
@@ -59,7 +59,7 @@ public class ResponseMetadataGeneratorTest {
   @Mock
   private LinkableResource resource;
 
-  private final ResponseMetadataGenerator metrics = new ResponseMetadataGenerator();
+  private final FullMetadataGenerator metrics = new FullMetadataGenerator();
 
   @Test
   public void default_output_max_age_should_be_null() throws Exception {
@@ -221,7 +221,7 @@ public class ResponseMetadataGeneratorTest {
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 500);
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD2, 2000);
 
-    List<TimeMeasurement> maxAge = metrics.getGroupedAndSortedInvocationTimes(HalApiClient.class, true);
+    List<TimeMeasurement> maxAge = metrics.getGroupedAndSortedInvocationTimes(HalApiClient.class.getSimpleName(), true);
 
     assertThat(maxAge).hasSize(2);
     assertThat(maxAge.get(0).getUnit()).isEqualTo(TimeUnit.MILLISECONDS);
@@ -239,7 +239,7 @@ public class ResponseMetadataGeneratorTest {
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 800);
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD2, 1000);
 
-    List<TimeMeasurement> maxAge = metrics.getGroupedAndSortedInvocationTimes(HalApiClient.class, false);
+    List<TimeMeasurement> maxAge = metrics.getGroupedAndSortedInvocationTimes(HalApiClient.class.getSimpleName(), false);
 
     assertThat(maxAge).hasSize(2);
     assertThat(maxAge.get(0).getUnit()).isEqualTo(TimeUnit.MILLISECONDS);
@@ -287,14 +287,29 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void metadata_resource_contains_embedded_details_metrics() throws Exception {
+  public void metadata_resource_contains_embedded_details_metrics_if_timings_were_collected() throws Exception {
+
+    metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, 10, ANY_RESPONSE_TIME);
+    metrics.onMethodInvocationFinished(EmissionStopwatch.class, METHOD1, ANY_RESPONSE_TIME);
+    metrics.onMethodInvocationFinished(AsyncHalResponseRenderer.class, METHOD1, ANY_RESPONSE_TIME);
 
     HalResource metadata = metrics.createMetadataResource(resource);
 
     assertThat(metadata.hasEmbedded(RESPONSE_TIMES)).isTrue();
     assertThat(metadata.hasEmbedded(EMISSION_TIMES)).isTrue();
-    assertThat(metadata.hasEmbedded(INVOCATION_TIMES)).isTrue();
+    assertThat(metadata.hasEmbedded(RENDERING_TIMES)).isTrue();
     assertThat(metadata.hasEmbedded(MAX_AGE)).isTrue();
+  }
+
+  @Test
+  public void metadata_resource_contains_no_embedded_details_metrics_if_no_timings_were_collected() throws Exception {
+
+    HalResource metadata = metrics.createMetadataResource(resource);
+
+    assertThat(metadata.hasEmbedded(RESPONSE_TIMES)).isFalse();
+    assertThat(metadata.hasEmbedded(EMISSION_TIMES)).isFalse();
+    assertThat(metadata.hasEmbedded(RENDERING_TIMES)).isFalse();
+    assertThat(metadata.hasEmbedded(MAX_AGE)).isFalse();
   }
 
   @Test
@@ -306,8 +321,8 @@ public class ResponseMetadataGeneratorTest {
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 200);
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 300);
 
-    metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class, METHOD1, 100);
-    metrics.onMethodInvocationFinished(AsyncHalResourceRenderer.class, METHOD1, 200);
+    metrics.onMethodInvocationFinished(AsyncHalResponseRenderer.class, METHOD1, 100);
+    metrics.onMethodInvocationFinished(AsyncHalResponseRenderer.class, METHOD1, 200);
 
     HalResource metadata = metrics.createMetadataResource(resource);
 

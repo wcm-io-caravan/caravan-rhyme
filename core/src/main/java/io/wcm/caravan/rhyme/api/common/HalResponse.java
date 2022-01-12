@@ -19,6 +19,10 @@
  */
 package io.wcm.caravan.rhyme.api.common;
 
+import java.time.Instant;
+
+import org.osgi.annotation.versioning.ProviderType;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.wcm.caravan.hal.resource.HalResource;
@@ -26,29 +30,52 @@ import io.wcm.caravan.hal.resource.HalResource;
 /**
  * A response to a successful or failed HTTP request to retrieve a {@link HalResource}
  */
+@ProviderType
 public class HalResponse {
 
+  private final String uri;
   private final Integer status;
   private final String contentType;
   private final HalResource body;
   private final Integer maxAge;
+  private final Instant timestamp;
 
   /**
    * Creates an instance with all fields set to null, you have to use the #withXyz method to actually populate the
    * fields
    */
   public HalResponse() {
+    this.uri = null;
     this.status = null;
     this.contentType = null;
     this.body = null;
     this.maxAge = null;
+    this.timestamp = Instant.now();
   }
 
-  private HalResponse(Integer status, String contentType, HalResource body, Integer maxAge) {
+
+  private HalResponse(String uri, Integer status, String contentType, HalResource body, Integer maxAge, Instant date) {
+    this.uri = uri;
     this.status = status;
     this.contentType = contentType;
     this.body = body;
     this.maxAge = maxAge;
+    this.timestamp = date;
+  }
+
+  /**
+   * @return the URI from which this response was retrieved
+   */
+  public String getUri() {
+    return uri;
+  }
+
+  /**
+   * @param value the URI from which this response was retrieved
+   * @return a new instance with the given URI
+   */
+  public HalResponse withUri(String value) {
+    return new HalResponse(value, status, contentType, body, maxAge, timestamp);
   }
 
   /**
@@ -63,7 +90,7 @@ public class HalResponse {
    * @return a new instance with the given status code
    */
   public HalResponse withStatus(Integer value) {
-    return new HalResponse(value, contentType, body, maxAge);
+    return new HalResponse(uri, value, contentType, body, maxAge, timestamp);
   }
 
   /**
@@ -78,7 +105,7 @@ public class HalResponse {
    * @return a new instance with the given content type
    */
   public HalResponse withContentType(String value) {
-    return new HalResponse(status, value, body, maxAge);
+    return new HalResponse(uri, status, value, body, maxAge, timestamp);
   }
 
   /**
@@ -94,7 +121,7 @@ public class HalResponse {
    * @return a new instance with the given body
    */
   public HalResponse withBody(HalResource value) {
-    return new HalResponse(status, contentType, value, maxAge);
+    return new HalResponse(uri, status, contentType, value, maxAge, timestamp);
   }
 
   /**
@@ -103,7 +130,7 @@ public class HalResponse {
    */
   public HalResponse withBody(JsonNode value) {
     HalResource hal = value != null ? new HalResource(value) : null;
-    return new HalResponse(status, contentType, hal, maxAge);
+    return new HalResponse(uri, status, contentType, hal, maxAge, timestamp);
   }
 
   /**
@@ -118,6 +145,21 @@ public class HalResponse {
    * @return a new instance with the given max age
    */
   public HalResponse withMaxAge(Integer value) {
-    return new HalResponse(status, contentType, body, value);
+    return new HalResponse(uri, status, contentType, body, value, timestamp);
+  }
+
+  /**
+   * @return the moment when which this response was retrieved (or generated)
+   */
+  public Instant getTimestamp() {
+    return timestamp;
+  }
+
+  /**
+   * @param value the moment when which this response was retrieved (or generated)
+   * @return a new instance with the given date
+   */
+  public HalResponse withTimestamp(Instant value) {
+    return new HalResponse(uri, status, contentType, body, maxAge, value);
   }
 }

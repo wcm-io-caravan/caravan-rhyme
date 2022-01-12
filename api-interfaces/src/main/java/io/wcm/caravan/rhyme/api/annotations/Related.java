@@ -23,21 +23,46 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import io.wcm.caravan.hal.resource.Link;
+import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 
 /**
- * Used to annotate methods that allow access to linked or embedded resources. The return value of methods
- * annotated with {@link Related} must provide one ore more instances of other {@link HalApiInterface} objects.
+ * Used to declare methods which defines a link relation and the expected type for linked or embedded resources.
+ * For each link relation there must be only one corresponding {@link Related} method in your {@link HalApiInterface}.
+ * <p>
+ * The return value of the methods must provide one ore more instances of another {@link HalApiInterface} type.
+ * These can either be returned directly, or wrapped in an {@link Optional}, {@link Stream}, {@link List},
+ * or one of the supported reactive types (e.g. Single, Maybe, Observable).
+ * </p>
+ * <p>
+ * You can also represent links to other non-HAL resources (e.g. HTML, text or binary) by using {@link Link}
+ * as return type. Again this can be wrapped as appropriate (e.g. a {@link Stream} of {@link Link}s for multiple
+ * external links.
+ * </p>
+ * <p>
  * Methods with this annotation can have parameters with {@link TemplateVariable} or
- * {@link TemplateVariables} annotations to allow clients to expand link templates with the values specified
- * in those parameters.
+ * {@link TemplateVariables} annotations to define URI templates that clients can expand with the values
+ * specified in those parameters.
+ * </p>
+ * <p>
+ * On the server side, these methods will be called by the framework when the resource is rendered. Any parameters for
+ * template parameters will be invoked with a null value.
+ * </p>
+ * @see TemplateVariables
+ * @see TemplateVariable
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Related {
 
   /**
-   * Defines the relation of the target resource to this context resource.
+   * Defines the relation of the linked or embedded resource to this context resource.
    * @return a standard relation or CURI of a custom relation (i.e. "prefix:relation")
+   * @see StandardRelations
    */
   String value();
 

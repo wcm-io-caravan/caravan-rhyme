@@ -19,16 +19,19 @@
  */
 package io.wcm.caravan.rhyme.impl.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
+import io.wcm.caravan.rhyme.impl.client.proxy.HalApiClientProxyFactory;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 
 /**
- * A full implementation of {@link HalApiClientImpl} that delegates the actual loading of resources via the
- * {@link HalResourceLoader} interface
+ * The implementation of {@link HalApiClient} that delegates the actual loading of resources via the
+ * {@link HalResourceLoader} interface to the {@link HalResourceLoaderWrapper}, and creates dynamic
+ * client proxies with the {@link HalApiClientProxyFactory}.
  */
 public class HalApiClientImpl implements HalApiClient {
 
@@ -37,17 +40,18 @@ public class HalApiClientImpl implements HalApiClient {
   private final HalApiTypeSupport typeSupport;
 
   /**
-   * jsonLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
+   * @param resourceLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance relevant data for the current
    *          incoming request
    * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
+   * @param objectMapper the Jackson {@link ObjectMapper} to use for all JSON deserialisation
    */
-  public HalApiClientImpl(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport) {
+  public HalApiClientImpl(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
 
     Preconditions.checkNotNull(resourceLoader, "A " + HalResourceLoader.class.getName() + " instance must be provided");
     HalResourceLoaderWrapper wrapper = new HalResourceLoaderWrapper(resourceLoader, metrics);
 
-    factory = new HalApiClientProxyFactory(wrapper, metrics, typeSupport);
+    factory = new HalApiClientProxyFactory(wrapper, metrics, typeSupport, objectMapper);
 
     this.typeSupport = typeSupport;
   }

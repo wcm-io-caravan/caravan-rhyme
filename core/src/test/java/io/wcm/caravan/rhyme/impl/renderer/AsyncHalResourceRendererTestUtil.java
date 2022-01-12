@@ -21,14 +21,16 @@ package io.wcm.caravan.rhyme.impl.renderer;
 
 import org.apache.commons.lang3.RandomUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
-import io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataGenerator;
+import io.wcm.caravan.rhyme.impl.metadata.FullMetadataGenerator;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
-import io.wcm.caravan.ryhme.testing.TestState;
+import io.wcm.caravan.rhyme.testing.TestState;
 
 
 public final class AsyncHalResourceRendererTestUtil {
@@ -39,31 +41,25 @@ public final class AsyncHalResourceRendererTestUtil {
 
   public static HalResource render(Object resourceImplInstance) {
 
-    RequestMetricsCollector metrics = new ResponseMetadataGenerator();
-    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, new DefaultHalApiTypeSupport());
+    RequestMetricsCollector metrics = new FullMetadataGenerator();
+    AsyncHalResourceRendererImpl renderer = new AsyncHalResourceRendererImpl(metrics, new DefaultHalApiTypeSupport(), new ObjectMapper());
 
     Single<HalResource> rxResource;
     if (resourceImplInstance instanceof LinkableResource) {
       rxResource = renderer.renderResource((LinkableResource)resourceImplInstance);
     }
     else {
-      rxResource = renderer.renderLinkedOrEmbeddedResource(resourceImplInstance);
+      rxResource = renderer.renderResourceAndEmbedded(resourceImplInstance);
     }
 
     return rxResource.toObservable().blockingFirst();
   }
 
-  static Single<LinkableResource> createSingleExternalLinkedResource(Link link) {
-    return Single.just(new LinkableResource() {
-
-      @Override
-      public Link createLink() {
-        return link;
-      }
-    });
+  static Single<Link> createSingleExternalLinkedResource(Link link) {
+    return Single.just(link);
   }
 
-  static Single<LinkableResource> createSingleExternalLinkedResource(String uri) {
+  static Single<Link> createSingleExternalLinkedResource(String uri) {
     return createSingleExternalLinkedResource(new Link(uri));
   }
 
