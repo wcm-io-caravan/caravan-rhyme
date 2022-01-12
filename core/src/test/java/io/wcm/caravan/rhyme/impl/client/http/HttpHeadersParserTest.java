@@ -60,7 +60,7 @@ public class HttpHeadersParserTest {
   void parseMaxAge_should_handle_no_store_as_0() {
 
     assertThat(parseMaxAge("no-store"))
-        .isEqualTo(0);
+        .isZero();
   }
 
   @Test

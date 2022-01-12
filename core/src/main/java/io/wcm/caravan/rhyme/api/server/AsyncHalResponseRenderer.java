@@ -45,7 +45,7 @@ import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResourceRenderer;
  * @see VndErrorResponseRenderer
  */
 @ProviderType
-public interface AsyncHalResponseRenderer {
+interface AsyncHalResponseRenderer {
 
   /**
    * Asynchronously render the given resource as a {@link HalResponse} instance. If rendering is successful, that
