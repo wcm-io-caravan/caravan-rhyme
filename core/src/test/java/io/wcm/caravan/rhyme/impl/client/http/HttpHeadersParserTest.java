@@ -45,7 +45,7 @@ public class HttpHeadersParserTest {
   @Test
   void parseMaxAge_should_handle_immutable() {
 
-    assertThat(parseMaxAge("public, max-age=604800, immutable"))
+    assertThat((long)parseMaxAge("public, max-age=604800, immutable"))
         .isEqualTo(Duration.ofDays(365).getSeconds());
   }
 
