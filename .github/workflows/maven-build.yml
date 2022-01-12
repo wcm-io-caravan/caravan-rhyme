@@ -8,6 +8,7 @@ on:
       - master
       - experimental/**
   pull_request:
+    types: [opened, synchronize, reopened]
     branches-ignore:
       - master
       - experimental/**
@@ -24,11 +25,11 @@ jobs:
         distribution: [temurin]
 
     steps:
-      # Check out Git repository
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
-      # Set up environment with Java and Maven
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -36,10 +37,21 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: 'maven'
 
-      # Build & install (install target is used rather than verify to ensure that modules from the main build are available for the examples builds)
-      - name: Build and install
-        run: ./mvnw -s ./.maven-settings.xml -Pcontinuous-integration -B -U clean install
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
-      # Run code coverage check
-      - name: Run code coverage check
-        run: bash <(curl -s https://codecov.io/bash)
+      # install target is used rather than verify to ensure that modules from the main build are available for the examples builds
+      - name: Build and install (with SonarCloud)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./mvnw -s ./.maven-settings.xml -Pcontinuous-integration -B -U clean install sonar:sonar -Dsonar.projectKey=${{github.repository_owner}}_${{github.event.repository.name}} -Dsonar.projectName=${{github.event.repository.name}}
+        if: ${{ matrix.java == '11' && matrix.os == 'ubuntu-latest' }}
+
+      - name: Build and install (without SonarCloud)
+        run: ./mvnw -s ./.maven-settings.xml -Pcontinuous-integration -B -U clean install
+        if: ${{ matrix.java != '11' || matrix.os != 'ubuntu-latest' }}
