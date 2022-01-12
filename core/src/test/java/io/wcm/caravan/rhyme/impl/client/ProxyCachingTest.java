@@ -42,6 +42,7 @@ import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
@@ -111,10 +112,10 @@ public class ProxyCachingTest {
   }
 
   @HalApiInterface
-  interface AltEntryPointInterface {
+  interface AltEntryPointInterface extends EntryPoint {
 
-    @ResourceState
-    Maybe<TestState> getState();
+    @ResourceProperty
+    Maybe<String> getAdditionalProperty();
   }
 
   @Test

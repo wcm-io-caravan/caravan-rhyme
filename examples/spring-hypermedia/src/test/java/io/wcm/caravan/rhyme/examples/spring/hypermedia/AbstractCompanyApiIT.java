@@ -258,8 +258,9 @@ abstract class AbstractCompanyApiIT {
 
     Throwable ex = catchThrowable(codeThatThrows);
 
-    assertThat(ex).isNotNull()
-        .withFailMessage("No exception was thrown by the given callable");
+    assertThat(ex)
+        .withFailMessage("No exception was thrown by the given callable")
+        .isNotNull();
 
     if (ex instanceof HalApiClientException) {
       assertThat(((HalApiClientException)ex).getStatusCode())

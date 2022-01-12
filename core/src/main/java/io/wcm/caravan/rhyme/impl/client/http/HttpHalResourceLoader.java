@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,7 +91,6 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     private final AtomicBoolean responseOrErrorWasEmitted = new AtomicBoolean();
 
     private final String originalUri;
-    private volatile URI actualUri;
 
     private volatile HttpHeadersParser parsedHeaders;
 
@@ -105,7 +105,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
       try {
         updateUri(originalUri);
 
-        actualUri = URI.create(originalUri);
+        URI actualUri = URI.create(originalUri);
 
         client.executeGetRequest(actualUri, this);
       }
@@ -138,7 +138,7 @@ public class HttpHalResourceLoader implements HalResourceLoader {
     private void emitHalResponse() {
 
       if (responseOrErrorWasEmitted.compareAndSet(false, true)) {
-        log.debug("HTTP response from {} was retrieved in {}", actualUri, stopwatch);
+        log.debug("HTTP response from {} was retrieved in {}", halResponse.getUri(), stopwatch);
 
         subscriber.onSuccess(halResponse);
       }
@@ -164,8 +164,6 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
     @Override
     public void onUrlModified(URI uri) {
-
-      actualUri = uri;
 
       updateUri(uri.toString());
     }
@@ -244,8 +242,8 @@ public class HttpHalResourceLoader implements HalResourceLoader {
 
   private static JsonNode parseJson(InputStream is) {
 
-    try (InputStream autoClosingStream = is) {
-      JsonNode jsonNode = JSON_FACTORY.createParser(autoClosingStream).readValueAsTree();
+    try (InputStream autoClosingStream = is; JsonParser parser = JSON_FACTORY.createParser(autoClosingStream)) {
+      JsonNode jsonNode = parser.readValueAsTree();
       if (jsonNode == null) {
         throw new HttpClientSupportException("The response body was completely empty (or consisted only of whitespace)");
       }

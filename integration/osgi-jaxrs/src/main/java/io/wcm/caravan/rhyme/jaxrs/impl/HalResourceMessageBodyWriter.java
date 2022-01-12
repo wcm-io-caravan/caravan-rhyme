@@ -68,9 +68,8 @@ public class HalResourceMessageBodyWriter implements MessageBodyWriter<HalResour
   public void writeTo(HalResource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
 
-    JsonGenerator generator = jsonFactory.createGenerator(entityStream);
-
-    generator.writeTree(t.getModel());
+    try (JsonGenerator generator = jsonFactory.createGenerator(entityStream)) {
+      generator.writeTree(t.getModel());
+    }
   }
-
 }

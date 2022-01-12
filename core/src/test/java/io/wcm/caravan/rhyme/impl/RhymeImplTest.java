@@ -141,7 +141,6 @@ public class RhymeImplTest {
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getLink()).isNotNull();
     assertThat(response.getBody().getLink().getHref()).isEqualTo(INCOMING_REQUEST_URI);
-    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
 
     TestState properties = response.getBody().adaptTo(TestState.class);
     assertThat(properties.string).isEqualTo("foo");
@@ -181,7 +180,6 @@ public class RhymeImplTest {
     assertThat(response.getContentType()).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
     assertThat(response.getMaxAge()).isNull();
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
   }
 
   private class LinkableTestResourceImpl implements LinkableTestResource {

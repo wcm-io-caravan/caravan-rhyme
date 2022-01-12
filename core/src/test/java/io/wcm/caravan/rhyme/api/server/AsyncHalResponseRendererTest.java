@@ -35,7 +35,7 @@ import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
 @ExtendWith(MockitoExtension.class)
-public class AsyncHalResponseRendererTest {
+class AsyncHalResponseRendererTest {
 
   private static final String REQUEST_URI = "/";
 
@@ -67,7 +67,7 @@ public class AsyncHalResponseRendererTest {
     assertThat(response).isNotNull();
     assertThat(response.getContentType()).isEqualTo(HalResource.CONTENT_TYPE);
     assertThat(response.getBody().getLink()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION)).isTrue();
   }
 
   @Test
@@ -86,7 +86,7 @@ public class AsyncHalResponseRendererTest {
     assertThat(response).isNotNull();
     assertThat(response.getContentType()).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION)).isTrue();
   }
 
 
@@ -98,6 +98,8 @@ public class AsyncHalResponseRendererTest {
       // we want to cover the default implementation here, so we don't override anything
     };
 
-    AsyncHalResponseRenderer.create(metrics, strategy, null, null);
+    AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, strategy, null, null);
+    assertThat(renderer)
+        .isNotNull();
   }
 }
