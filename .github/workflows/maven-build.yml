@@ -45,13 +45,13 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       # install target is used rather than verify to ensure that modules from the main build are available for the examples builds
-      - name: Build and install (with SonarCloud)
+      - name: Build and install
+        run: ./mvnw -s ./.maven-settings.xml -Pcontinuous-integration -B -U clean install
+
+      - name: Analyze in SonarCloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw -s ./.maven-settings.xml -Pcontinuous-integration -B -U clean install sonar:sonar -Dsonar.projectKey=${{github.repository_owner}}_${{github.event.repository.name}} -Dsonar.projectName=${{github.event.repository.name}}
+        # SONAR_TOKEN is not present when building for external PR
+        run:  ([ -z $SONAR_TOKEN ] || ./mvnw -s ./.maven-settings.xml -Pcontinuous-integration -B sonar:sonar -Dsonar.projectKey=${{github.repository_owner}}_${{github.event.repository.name}} -Dsonar.projectName=${{github.event.repository.name}})
         if: ${{ matrix.java == '11' && matrix.os == 'ubuntu-latest' }}
-
-      - name: Build and install (without SonarCloud)
-        run: ./mvnw -s ./.maven-settings.xml -Pcontinuous-integration -B -U clean install
-        if: ${{ matrix.java != '11' || matrix.os != 'ubuntu-latest' }}
