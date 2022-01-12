@@ -174,6 +174,9 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
 
     assertThat(ex).isInstanceOf(HalApiClientException.class)
         .hasMessageContaining("has failed with status code 500");
+
+    assertThat(((HalApiClientException)ex).getErrorResponse().getBody())
+        .isNull();
   }
 
   @Test

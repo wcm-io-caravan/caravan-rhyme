@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import hu.akarnokd.rxjava3.interop.RxJavaInterop;
@@ -113,15 +112,13 @@ class CaravanJsonPipelineResourceLoader implements HalResourceLoader {
 
   private JsonNode tryToReadResponseBodyFromException(JsonPipelineInputException jpie) {
 
-    JsonNode responseNode = JsonNodeFactory.instance.objectNode();
-
     Throwable cause = jpie.getCause();
     if (cause instanceof IllegalResponseRuntimeException) {
       IllegalResponseRuntimeException irre = ((IllegalResponseRuntimeException)cause);
       String responseBody = irre.getResponseBody();
       if (responseBody != null) {
         try {
-          responseNode = JSON_FACTORY.createParser(responseBody).readValueAs(ObjectNode.class);
+          return JSON_FACTORY.createParser(responseBody).readValueAs(ObjectNode.class);
         }
         // CHECKSTYLE:OFF - we really want to just try to parse the response body as JSON if possible
         catch (Exception ex) {
@@ -130,6 +127,6 @@ class CaravanJsonPipelineResourceLoader implements HalResourceLoader {
       }
     }
 
-    return responseNode;
+    return null;
   }
 }
