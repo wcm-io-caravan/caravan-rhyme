@@ -50,7 +50,8 @@
     <module>integration/spring</module>    
     <module>testing</module>    
     <module>tooling/coverage</module>
-    <module>tooling/docs-maven-plugin</module>    
+    <module>tooling/docs-maven-plugin</module>
+    <module>tooling/microbenchmark</module>
     <module>tooling/parent</module>
 
   </modules>
