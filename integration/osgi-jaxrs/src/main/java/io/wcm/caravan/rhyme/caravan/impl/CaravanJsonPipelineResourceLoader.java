@@ -22,6 +22,7 @@ package io.wcm.caravan.rhyme.caravan.impl;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -117,8 +118,8 @@ class CaravanJsonPipelineResourceLoader implements HalResourceLoader {
       IllegalResponseRuntimeException irre = ((IllegalResponseRuntimeException)cause);
       String responseBody = irre.getResponseBody();
       if (responseBody != null) {
-        try {
-          return JSON_FACTORY.createParser(responseBody).readValueAs(ObjectNode.class);
+        try (JsonParser parser = JSON_FACTORY.createParser(responseBody)) {
+          return parser.readValueAs(ObjectNode.class);
         }
         // CHECKSTYLE:OFF - we really want to just try to parse the response body as JSON if possible
         catch (Exception ex) {
