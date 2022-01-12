@@ -30,7 +30,7 @@
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme.spring</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Rhyme - Spring Integration</name>
