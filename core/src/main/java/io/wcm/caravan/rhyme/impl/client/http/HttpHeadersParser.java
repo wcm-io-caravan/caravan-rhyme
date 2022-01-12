@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,9 +20,7 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
  */
 class HttpHeadersParser {
 
-  private static final String MAX_AGE_REGEX = ".*max-age=([0-9]+).*";
-
-  private static final Pattern MAX_AGE_PATTERN = Pattern.compile(MAX_AGE_REGEX);
+  private static final int ONE_YEAR_AS_SECONDS = (int)Duration.ofDays(365).getSeconds();
 
   private final Map<String, ? extends Collection<String>> headers;
 
@@ -57,22 +53,29 @@ class HttpHeadersParser {
         .flatMap(entry -> entry.getValue().stream());
   }
 
-  private static Integer parseMaxAge(String cacheControl) {
+  static Integer parseMaxAge(String cacheControl) {
 
-    if (cacheControl.contains("immutable")) {
-      return (int)Duration.ofDays(365).getSeconds();
-    }
-
-    Matcher matcher = MAX_AGE_PATTERN.matcher(cacheControl);
-    if (!matcher.matches()) {
+    if (cacheControl == null) {
       return null;
     }
 
-    long maxAge = Long.parseLong(matcher.group(1));
-    if (maxAge > Integer.MAX_VALUE) {
-      return Integer.MAX_VALUE;
-    }
-    return (int)maxAge;
-  }
+    String lowerCase = cacheControl.toLowerCase();
 
+    if (lowerCase.contains("immutable")) {
+      return ONE_YEAR_AS_SECONDS;
+    }
+
+    if (lowerCase.contains("no-store")) {
+      return 0;
+    }
+
+    return Stream.of(StringUtils.split(lowerCase, ","))
+        .map(directive -> StringUtils.substringAfter(directive, "max-age="))
+        .map(StringUtils::trimToNull)
+        .filter(Objects::nonNull)
+        .findFirst()
+        .map(Long::parseLong)
+        .map(longValue -> (int)Math.min(longValue, Integer.MAX_VALUE))
+        .orElse(null);
+  }
 }
