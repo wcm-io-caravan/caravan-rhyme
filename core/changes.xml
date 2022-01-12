@@ -23,6 +23,33 @@
     xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/plugins/maven-changes-plugin/xsd/changes-1.0.0.xsd">
   <body>
 
+    <release version="1.1.0" date="2022-01-12">
+      <action type="add" dev="ssauder">
+        Added functions in builder to specify custom ObjectMapper (to avoid jackson-datatype-guava dependency).
+      </action>
+      <action type="add" dev="ssauder">
+        Allow methods annotated with Related to return Link instances directly.
+      </action>
+      <action type="add" dev="ssauder">
+        Introduce RhymeMetadataConfiguration to opt-in for generation of embedded "rhyme:metadata" resource.
+      </action>
+      <action type="add" dev="ssauder">
+        Updated dependencies for Java 17 compatibility.
+      </action>
+      <action type="add" dev="ssauder">
+        Added HalApiClientBuilder and HalResponseRendererBuilder.
+      </action>
+      <action type="add" dev="ssauder">
+        Introduced support for @ResourceProperty annotation.
+      </action>
+      <action type="add" dev="ssauder">
+        Add caching functionality via HalResourceLoaderBuilder.
+      </action>
+      <action type="add" dev="ssauder">
+        Introduced a simpler SPI interface for custom HTTP client implementations.
+      </action>
+    </release>
+
     <release version="1.0.0" date="2021-05-26">
       <action type="add" dev="ssauder">
         Initial release.

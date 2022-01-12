@@ -23,6 +23,12 @@
     xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/plugins/maven-changes-plugin/xsd/changes-1.0.0.xsd">
   <body>
 
+    <release version="1.1.0" date="2022-01-12">
+      <action type="add" dev="ssauder">
+        Use new HTTP client and caching SPIs from 1.1.0 core module
+      </action>
+    </release>
+
     <release version="1.0.0" date="2021-05-26">
       <action type="add" dev="ssauder">
         Initial release.
