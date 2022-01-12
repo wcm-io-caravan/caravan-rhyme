@@ -26,7 +26,7 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
-public class HttpHeadersParserTest {
+class HttpHeadersParserTest {
 
   @Test
   void parseMaxAge_should_handle_null_value() {
