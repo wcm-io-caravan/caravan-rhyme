@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
 
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
@@ -28,7 +29,7 @@ class HttpHeadersParser {
   private final Map<String, ? extends Collection<String>> headers;
 
   HttpHeadersParser(Map<String, ? extends Collection<String>> headers) {
-    this.headers = headers;
+    this.headers = ImmutableMap.copyOf(headers);
   }
 
   Optional<String> getContentType() {
