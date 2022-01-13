@@ -91,8 +91,7 @@ public class HalCrawlerTest {
     HalCrawler crawler = new HalCrawler(loader);
 
     assertThat(crawler.getAllResponses())
-        .hasSize(1000)
-        .extracting(HalResponse::getUri);
+        .hasSize(1000);
   }
 
   @Test
