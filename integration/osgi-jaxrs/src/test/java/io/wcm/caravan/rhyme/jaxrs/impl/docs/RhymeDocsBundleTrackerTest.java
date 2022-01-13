@@ -115,6 +115,8 @@ public class RhymeDocsBundleTrackerTest {
     Bundle bundleWithDocs = mockBundleWithRhymeDocs();
 
     tracker.modifiedBundle(bundleWithDocs, new BundleEvent(BundleEvent.UPDATED, bundleWithDocs), bundleWithDocs.getSymbolicName());
+
+    verifyNoInteractions(docsSupport);
   }
 
   @Test
