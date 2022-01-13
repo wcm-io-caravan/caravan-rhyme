@@ -406,9 +406,12 @@ public class SlingResourceAdapterImplTest {
         context.create().resource("/content/foo/1"),
         context.create().resource("/content/foo/2"));
 
-    adapter.select(stream)
+    List<SlingTestResource> resources = adapter.select(stream)
         .adaptTo(SlingTestResource.class)
-        .getStream();
+        .getStream()
+        .collect(Collectors.toList());
+
+    assertThatResourcesMatch(resources, "/content/foo/1", "/confent/foo2");
   }
 
   @Test
