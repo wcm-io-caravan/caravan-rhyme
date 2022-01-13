@@ -24,8 +24,8 @@ import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ITEM;
 import static io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ENTRY_POINT_URI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.util.List;
 
@@ -108,7 +108,7 @@ public class ProxyCachingTest {
 
     assertThat(proxy1).isSameAs(proxy2);
 
-    verifyZeroInteractions(client.getMockJsonLoader());
+    verifyNoInteractions(client.getMockJsonLoader());
   }
 
   @HalApiInterface
@@ -128,7 +128,7 @@ public class ProxyCachingTest {
 
     assertThat(proxy1).isNotSameAs(proxy2);
 
-    verifyZeroInteractions(client.getMockJsonLoader());
+    verifyNoInteractions(client.getMockJsonLoader());
   }
 
   @Test
@@ -141,7 +141,7 @@ public class ProxyCachingTest {
 
     assertThat(state1).isSameAs(state2);
 
-    verifyZeroInteractions(client.getMockJsonLoader());
+    verifyNoInteractions(client.getMockJsonLoader());
   }
 
   @Test
@@ -154,7 +154,7 @@ public class ProxyCachingTest {
 
     assertThat(linked1).isSameAs(linked2);
 
-    verifyZeroInteractions(client.getMockJsonLoader());
+    verifyNoInteractions(client.getMockJsonLoader());
   }
 
   @Test

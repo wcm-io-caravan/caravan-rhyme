@@ -22,7 +22,7 @@ package io.wcm.caravan.rhyme.spring.impl;
 import static io.wcm.caravan.rhyme.spring.impl.SpringLinkBuilderTestController.BASE_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -176,7 +176,7 @@ public class UrlFingerprintingImplTest {
 
     assertThatFingerprintContains(fingerprinting, valueFromRequest);
 
-    verifyZeroInteractions(rhyme);
+    verifyNoInteractions(rhyme);
   }
 
   @Test
