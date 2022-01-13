@@ -187,11 +187,20 @@ public class RenderRelatedResourceTest {
 
       @Override
       public Maybe<ExtendedLinkableTestResource> getLinked() {
-        return Maybe.empty();
+        return Maybe.just(new ExtendedLinkableTestResource() {
+
+          @Override
+          public Link createLink() {
+            return new Link("/foo");
+          }
+        });
       }
     };
 
-    render(resourceImpl);
+    HalResource hal = render(resourceImpl);
+
+    assertThat(hal.getLink(LINKED))
+        .isNotNull();
   }
 
   @HalApiInterface
