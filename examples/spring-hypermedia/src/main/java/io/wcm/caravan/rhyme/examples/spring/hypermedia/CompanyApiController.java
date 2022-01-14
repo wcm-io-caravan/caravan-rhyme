@@ -116,8 +116,8 @@ class CompanyApiController implements CompanyApi {
   @Override
   public CompanyApi withClientPreferences(Boolean useEmbeddedResources, Boolean useFingerprinting, Boolean embedRhymeMetadata) {
 
-    // create a link to this controller, but explicitly add template variables for parameters
-    // that will then be picked up by CompanyApiLinkBuilder when the link is followed
+    // create a link to this controller, but explicitly add template variables for the preference parameters,
+    // which will be read by the CompanyApiLinkBuilder when a request using these parameters is processed
     return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
         .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, EMBED_RHYME_METADATA)
         .withTitle("Reload the entry point with different settings")

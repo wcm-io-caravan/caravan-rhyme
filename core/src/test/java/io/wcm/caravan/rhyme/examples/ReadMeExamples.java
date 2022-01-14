@@ -131,36 +131,26 @@ public class ReadMeExamples {
     System.out.println(response.getBody().getModel().toString());
   }
 
-  // create a HalApiClient that uses a default HTTP implementation
-  private final HalApiClient client = HalApiClient.create();
-
-  private ApiEntryPoint getApiEntryPoint() {
-
-    // create a dynamic proxy that knows how to fetch the entry point from the given URL
-    return client.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
-  }
-
   private Rhyme rhyme;
 
-  private ApiEntryPoint getApiEntryPointWithRhyme() {
 
-    // create a dynamic proxy that knows how to fetch the entry point from the given URL
-    return rhyme.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
-  }
+  // create a HalApiClient that uses a default HTTP implementation
+  HalApiClient client = HalApiClient.create();
+
+  // create a dynamic proxy that knows how to fetch the entry point from the given URL.
+  ApiEntryPoint api = rhyme.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
 
   void fetchItems() {
-    // obtaining a client proxy will not fetch the entry point resource yet (until you call a method on it)
-    ApiEntryPoint api = getApiEntryPoint();
 
-    // calling the method will fetch the entry point, then find and expand the URI template.
+    // calling a method on the proxy will fetch the entry point, and then find and expand the URI template.
     ItemResource itemResource = api.getItemById("foo");
 
     // now you have a ItemResource that knows the full URL of the resource (and how to fetch it),
-    // but again that resource is only actually fetched when you call a method on the resource
+    // but again that resource is only actually fetched when you call a method on the resource proxy
     Item foo = itemResource.getState();
 
-    // You can call another method on the same instance (without any resource being fetched twice),
-    // and use stream operations to fetch multiple resources with a simple expression.
+    // You can call another method on the same resource instance (without any resource being fetched twice),
+    // and use Stream operations to fetch multiple related resources with a simple expression:
     List<Item> relatedToFoo = itemResource.getRelatedItems()
         .map(ItemResource::getState)
         .collect(Collectors.toList());
@@ -181,8 +171,6 @@ public class ReadMeExamples {
   }
 
   void fetchAllItems() {
-
-    ApiEntryPoint api = getApiEntryPoint();
 
     List<Item> allItems = collectItems(api.getFirstPage())
         .map(ItemResource::getState)
@@ -241,13 +229,16 @@ public class ReadMeExamples {
 
     ReactiveResource resource = rhyme.getRemoteResource("https://foo.bar", ReactiveResource.class);
 
-    Observable<Item> parentsOfRelated = resource.getRelatedItems()
-        .concatMapEager(ReactiveResource::getRelatedItems)
+    Single<List<Item>> parentsOfRelated = resource.getRelatedItems()
         .concatMapMaybe(ReactiveResource::getParentItem)
         .concatMapSingle(ReactiveResource::getState)
-        .distinct(item -> item.id);
+        .distinct(item -> item.id)
+        .toList();
 
-    // all Observable provided by rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
+    // All Observables provided by Rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
+    // But they all will be executed (in parallel where possible) when you subscribe to the Single:
+
+    List<Item> parentItems = parentsOfRelated.blockingGet();
 
     Single<HalResponse> response = rhyme.renderResponse(resource);
   }
