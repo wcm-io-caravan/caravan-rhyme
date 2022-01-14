@@ -1,7 +1,7 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> wcm.io Caravan Rhyme
 ======
 [![Build](https://github.com/wcm-io-caravan/caravan-rhyme/workflows/Build/badge.svg?branch=develop)](https://github.com/wcm-io-caravan/caravan-rhyme/actions?query=workflow%3ABuild+branch%3Adevelop)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=wcm-io-caravan_caravan-rhyme&metric=coverage)](https://sonarcloud.io/summary/new_code?id=wcm-io-caravan_caravan-rhyme)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=wcm-io-caravan_caravan-rhyme&metric=coverage)](https://sonarcloud.io/component_measures?id=wcm-io-caravan_caravan-rhyme&metric=coverage)
 
 ![Caravan](https://github.com/wcm-io-caravan/caravan-tooling/blob/master/public_site/src/site/resources/images/caravan.gif)
 
@@ -29,8 +29,8 @@ The key concepts and features of **Rhyme** are:
 - [api-interfaces](api-interfaces) - contains only annotations, interfaces and dependencies to be used in your API interface definitions
 - [core](core) - the core framework that can be integrated within any Java project
 - **Integration** modules for using Rhyme with specific web service frameworks:
-  - [spring](integration/spring) - code and APIs for implementing HAL web services as a Spring (Boot) application
-  - [osgi-jaxrs](integration/osgi-jaxrs) - code and APIs for implementing HAL web services using the [OSGi R7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
+  - [spring](integration/spring) - for implementing HAL web services as a Spring (Boot) application
+  - [osgi-jaxrs](integration/osgi-jaxrs) - for implementing HAL web services using the [OSGi R7 JAX-RS Whiteboard](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html) and related [wcm.io Caravan](https://github.com/wcm-io-caravan) projects
   - [aem](integration/aem) - code and APIs for usage in Adobe Experience Manager (work in progress and not yet released)
 - **Examples** that show how to use Rhyme in these frameworks:
   - [spring-hypermedia](examples/spring-hypermedia) - a well documented Spring Boot application with examples for most of the key concepts of the core framework
@@ -38,11 +38,11 @@ The key concepts and features of **Rhyme** are:
   - [osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
   - [osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
   - [aem-hal-browser](examples/aem-hal-browser) - an example project for AEM that shows how HAL resources can be implemented as Sling models (work in progress)
-- [testing](testing) additional testing support classes (to be used in test scope only)
+- [testing](testing) - additional integration testing support classes (to be used in test scope only)
 - Maven **Tooling**
-  - [coverage](coverage) - Maven module to generate aggregated code coverage reports
-  - [docs-maven-plugin](docs-maven-plugin) - Maven Plugin to generate and embed HTML API docs from annotated interfaces
-  - [parent](parent) - common parent POM used by most other modules
+  - [coverage](tooling/coverage) - Maven module to generate aggregated code coverage reports
+  - [docs-maven-plugin](tooling/docs-maven-plugin) - Maven Plugin to generate and embed HTML API docs from annotated interfaces
+  - [parent](tooling/parent) - common parent POM used by most other modules
 
 Another example for usage with Spring Boot can be found at https://github.com/feffef/reactive-hal-spring-example.
 
@@ -169,9 +169,9 @@ In the end, an actual HAL resource that matches the `ItemResource` interface def
 }
 ```
 
-[*RESTafarians*](https://mikeschinkel.com/2006/whatisarestafarian/) may say that everything you have read in this section is a bad idea, as it's all about sharing out-of-band information about your API with your clients. However any consumer needs to have some reasonable expectations about the available links and data structures provided by your API to create reliable client code. The aim of those annotated interfaces is to specify exactly these kind of guarantees given by the API in a very concise way, that can directly be used in client-side code. At the same time, the interfaces don't expose too many implementation details (such as URL structures). 
+Some may say that everything you have read in this section so far is a bad idea, as it encourages sharing out-of-band information about your API with your clients. However, any consumer needs to have some reasonable expectations about the available links, parameters and data structures provided by your API to create reliable client code. The aim of those annotated interfaces is to specify exactly these kind of guarantees given by the API in a very concise way using a machine readable format. At the same time, the interfaces don't expose too many implementation details (such as URL structures or even logic). 
 
-If you don't like the idea of sharing the same interfaces in client and server code (as outlined in the next sections), then keep in mind that this is entirely optional. Your API will still be using plain HAL+JSON data structures, and nothing forces you to use the **Rhyme** framework and these interfaces on *both* sides.
+If you don't like the idea of sharing the same interfaces in client and server code (as outlined in the next sections), then keep in mind that this is entirely optional. Your API will still be using plain HAL+JSON data structures, and nothing forces you to use the **Rhyme** framework and these interfaces on **both** sides. If you are just worried about introducing binary dependencies issues, it's also an option to just copy the java sources for those interfaces between projects. There is absolutely no requirement that client and server are using the same interfaces to represent the API.
 
 But especially as long as you (or your team) are the sole consumers of your API anyway, sharing these interfaces between your services will give you many benefits:
 - refactoring of your API (e.g. renaming relations) throughout a distributed system is very easy and reliable
@@ -180,20 +180,17 @@ But especially as long as you (or your team) are the sole consumers of your API 
 
 ## Consuming HAL resources with Rhyme client proxies
 
-Now that you have a set of interfaces that represent your HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example no URL patterns are being exposed in the interfaces).
+Now that you have a set of interfaces that represent your HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example methods are mapped to relations rather then endpoints, and no URL patterns are being exposed in the interfaces).
 
 
 It just requires two lines of code to create a client implementation of your HAL API's entry point interface:
 
 ```java
   // create a HalApiClient that uses a default HTTP implementation
-  private final HalApiClient client = HalApiClient.create();
+  HalApiClient client = HalApiClient.create();
 
-  private ApiEntryPoint getApiEntryPoint() {
-
-    // create a dynamic proxy that knows how to fetch the entry point from the given URL
-    return client.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
-  }
+  // create a dynamic proxy that knows how to fetch the entry point from the given URL.
+  ApiEntryPoint api = rhyme.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
 ```
 
 If you are also using Rhyme to **render** your resources, you shouldn't create the `HalApiClient` yourself, but call the `Rhyme#getRemoteResource` method instead,
@@ -202,30 +199,28 @@ this allows some caching and collection of performance metrics which is explaine
 
 Using the proxy instance of your entry point you can easily navigate through all resources of the API by simply calling the methods defined in your interfaces: 
 ```java
-    // obtaining a client proxy will not fetch the entry point resource yet (until you call a method on it)
-    ApiEntryPoint api = getApiEntryPoint();
-    
-    // calling the method will fetch the entry point, then find and expand the URI template.
+    // calling a method on the proxy will fetch the entry point, and then find and expand the URI template.
     ItemResource itemResource = api.getItemById("foo");
     
     // now you have a ItemResource that knows the full URL of the resource (and how to fetch it),
-    // but again that resource is only actually fetched when you call a method on the resource
+    // but again that resource is only actually fetched when you call a method on the resource proxy
     Item foo = itemResource.getState();
 
-    // You can call another method on the same instance (without any resource being fetched twice),
-    // and use stream operations to fetch multiple resources with a simple expression.
+    // You can call another method on the same resource instance (without any resource being fetched twice),
+    // and use Stream operations to fetch multiple related resources with a simple expression:
     List<Item> relatedToFoo = itemResource.getRelatedItems()
         .map(ItemResource::getState)
         .collect(Collectors.toList());
 ```
-The proxy instance will take care of
+The Rhyme client proxy instances will take care of
 - fetching and parsing the resource
 - finding the links (or embedded resources) that correspond to the method being called (based on the relations defined in the interface methods' annotations)
 - expanding link templates with the parameters from the method invocation
 - automatically fetching further linked resources as required (as soon as any method on a related resource instance is called)
+- converting the resource JSON state to the corresponding Java type
 - keeping track of all resources that have been retrieved
  
-A local in-memory caching will ensure that the each resource is not fetched more than once, and repeated calls to the same method (with the same parameters) return a cached value immediately (as long as you are using the same `Rhyme` or `HalApiClient` instance).
+A local in-memory caching will ensure that each resource is not fetched more than once, and repeated calls to the same method (with the same parameters) return a cached value immediately (as long as you are using the same `Rhyme` or `HalApiClient` instance).
 
 ### Using a custom HTTP client implementation
 
@@ -253,7 +248,7 @@ The `HalResourceLoaderBuilder` also has further method to enable persistent cach
 
 ## Rendering HAL resources in your web service 
 
-For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) facade to automatically render a HAL+JSON representation based on the annotation found in the interfaces.
+For the server-side implementation of your HAL API, you will have to implement the annotated API interfaces you've defined before. You can then use the [Rhyme](core/src/main/java/io/wcm/caravan/rhyme/api/Rhyme.java) facade to automatically render a HAL+JSON representation based on the annotations found in the interfaces.
 
 What's important to note is that **you should only create a single `Rhyme` instance** in the life-cycle of an incoming request. 
 
@@ -307,12 +302,12 @@ Here's what happens in the implementation class:
 ```
 
 
-Note that the implementation of the `@Related` methods look exactly the same as if you were implementing a normal service interface. This ensures that all consumer code running in the same JVM could use your implementation directly through the same interfaces that external clients are using. That would avoid the overhead of http requests and JSON (de)serialisation. 
+Note that the implementation of the `@Related` methods look exactly the same as if you were implementing a normal Java service interface. This ensures that all consumer code running in the same JVM could use your implementation directly through the same interfaces that external clients are using. That would avoid the overhead of http requests and JSON (de)serialisation for internal consumers.
 
 Having the same interfaces on the server- and client-side allows the following approach when designing a larger software system:
 - You can start with keeping everything in the same JVM, but separate the code into modules that are using `@HalApiInterface`s as internal API from the beginning.
-- During development you can easily expose these internal APIs through HTTP using the **Rhyme** framework (even though your other modules are still using the implementation classes). This can be very helpful for inspecting data sources without using a debugger.
-- You can still refactor everything easily during development, and continously verify that the API is designed well.
+- During development you can easily expose these internal APIs through HTTP using the **Rhyme** framework (even though your other modules are still using the services directly). This can be very helpful for inspecting data sources without using a debugger.
+- You can still refactor everything easily during development, and continuously verify that the API is designed well.
 - When there is an actual reason to break up your system into multiple services, you can easily do so. As the interfaces for remote access via HAL+API are exactly the same as for the server-side implementation, you can keep much of the existing code. 
 
 There are a few more **best practices** to keep in mind when implementing your server-side resources. Here is another example that explains the most important things that you need to be aware of:
@@ -405,29 +400,7 @@ You can also create a nested hierarchy of embedded resources. This may for examp
 
 Since the interfaces annotated with `@HalApiInterface` define the structure and relations of all resources in the API, they can also be used to generate a nice context-sensitive documentation for your API, that is automatically integrated in tools such as the [HAL Browser](https://github.com/mikekelly/hal-browser) or [HAL Explorer](https://github.com/toedter/hal-explorer).
 
-All you have to do to generate documentation is to add the following plugin configuration for the [rhyme-docs-maven-plugin](tooling/docs-maven-plugin) into the pom.xml of the module that contains the sources for your interfaces annotated with `@HalApiInterface`:
-
-```
-      <!-- Generate HTML documentation into classpath resources-->
-      <plugin>
-        <groupId>io.wcm.caravan.maven.plugins</groupId>
-        <artifactId>rhyme-docs-maven-plugin</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate-rhyme-docs</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-```
-
-After your API interfaces are compiled, the plugin will use the annotations and javadoc comments of your interfaces to generate HTML documentation files that will be stored within the .jar file of your modules.
-
-To ensure that your rendered API responses contain valid CURIE links pointing to your documentation, an implementation of the [RhymeDocsSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/RhymeDocsSupport.java) interface and a call `RhymeBuilder#withRhymeDocsSupport` is required. You also have to write some code to expose the documentation files from the class path to the base URL defined in your `RhymeDocsSupport` implementation.
-
-All this is usually done once in the integration module for your platform. For example if you are using OSGi / JAX-RS, this all happens in the [docs package](integration/osgi-jaxrs/src/main/java/io/wcm/caravan/rhyme/jaxrs/impl/docs), and as a service developer you don't need to do anything than configure the maven plugin.
+All you have to do to is to configure the [Rhyme Maven Documention Plugin](/tooling/docs-maven-plugin) in your project, and add Javadocs comments to your annotated interfaces and methods. The generated documenation will be deployed (and served) with your application, and is always guaranteed to be up to date with the current implementation on each environment.
 
 ## Cache-Control Header and URL Fingerprinting
 
@@ -448,7 +421,7 @@ Any response retrieved by the **Rhyme** framework will then be stored in this ca
 By default only responses with status code 200 will be cached, and a default max-age of 60 seconds will be used if no such directive is found in the upstream response headers. You can override these defaults by providing your own implementation of [CachingConfiguration](core/src/main/java/io/wcm/caravan/rhyme/api/client/CachingConfiguration.java) to `HalResourceLoaderBuilder#withCachingConfiguration`.
 
 For all this to work best, you should build your API with the following pattern:
-- for the entry point resource to your HAL API you should set a short (but not zero!) max-age value via `Rhyme#setResponseMaxAge(Duration)`
+- for the entry point resource to your HAL API you should set a short max-age value via `Rhyme#setResponseMaxAge(Duration)`
 - you should ensure that the entry point resource is rendering quickly, as it will be requested often (since any interaction with your API starts with requesting the entry point)
 - any links pointing to resources that are expensive to generate should contain some kind of fingerprint (e.g. a hash or timestamp) in the URL that changes whenever the data changes. 
 - when a resource with such a fingerprint in the URL is rendered, you can set the max-age to a very high value as they are now essentially immutable (because if data changes, the clients will fetch them with a different URL instead)
@@ -456,7 +429,7 @@ For all this to work best, you should build your API with the following pattern:
 
 Your consumers will not have to do anything to benefit from these immutable resoures, as the additional fingerprinting in your URLs is not exposed anywhere in your API. It's entirely up to the server-side implementation to decide for which links these fingerprints are added, and the clients will just pick it up by following the links.
 
-The [SpringRhyme](integration/spring/src/main/java/io/wcm/caravan/rhyme/spring/api/SpringRhyme.java) integration has some built-in support for this via the [UrlFingerprinting](integration/spring/src/main/java/io/wcm/caravan/rhyme/spring/api/UrlFingerprinting.java) interface. To see it action, check out the [examples/spring-hypermedia](examples/spring-hypermedia) module.
+The [SpringRhyme](integration/spring/src/main/java/io/wcm/caravan/rhyme/spring/api/SpringRhyme.java) integration has some built-in support for this via the [UrlFingerprinting](integration/spring/src/main/java/io/wcm/caravan/rhyme/spring/api/UrlFingerprinting.java) interface. To see it in action, check out the [examples/spring-hypermedia](examples/spring-hypermedia) module.
 
 ## Data debugging and performance analysis
 
@@ -526,7 +499,7 @@ The embedded `rhyme:metadata` resource with `via` links to all upstream resource
 
 Using asynchronous code to retrieve and render HAL resources can be desired if you have to deal with a lot of long-running requests. It will allow you to execute upstream requests in parallel without blocking your main request handling thread. But don't underestimate the increased complexity that comes with it.
 
-If you want to keep your client and server-side code completely asynchronous and non-blocking, you start with using RxJava reactive types as return values throughout your API interfaces: 
+If you want to keep your client and server-side code completely asynchronous and non-blocking, you start with using RxJava3 reactive types as return values throughout your API interfaces: 
 
 ```java
   @HalApiInterface
@@ -556,20 +529,25 @@ Then you can use the full range of RxJava operators to construct a chain of API 
 ```java
     ReactiveResource resource = rhyme.getRemoteResource("https://foo.bar", ReactiveResource.class);
 
-    Observable<Item> parentsOfRelated = resource.getRelatedItems()
-        .concatMapEager(ReactiveResource::getRelatedItems)
+    Single<List<Item>> parentsOfRelated = resource.getRelatedItems()
         .concatMapMaybe(ReactiveResource::getParentItem)
         .concatMapSingle(ReactiveResource::getState)
-        .distinct(item -> item.id);
-    
-    // all Observable provided by rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
+        .distinct(item -> item.id)
+        .toList();
+
+    // All Observables provided by Rhyme are *cold*, i.e. no HTTP requests would have been executed so far.
+    // But they all will be executed (in parallel where possible) when you subscribe to the Single:
+
+    List<Item> parentItems = parentsOfRelated.blockingGet();
 ```
 
-On the server-side, just use the `renderResponse` function from the `Rhyme` interface, without calling `Single#blockingGet()`  to ensure that your code is not blocking the main thread while rendering the HAL representation of your server-side resource implementations:
+On the server-side, just use the `renderResponse` function from the `Rhyme` interface, without calling `Single#blockingGet()` to ensure that your code is not blocking the main thread while rendering the HAL representation of your server-side resource implementations:
 
 ```java
 Single<HalResponse> response = rhyme.renderResponse(resource);
 ```
+
+Only when you subscribe to this `Single`, all implementation methods of your resource will be called and should return a Maybe, Single or Observable immediately. When all of these return values have emitted their results, the `HalResponse` will finally be constructed and emitted by the `Single`. 
 
 # Related Links
 
