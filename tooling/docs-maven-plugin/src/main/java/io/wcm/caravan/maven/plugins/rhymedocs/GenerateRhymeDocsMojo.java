@@ -49,6 +49,8 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
     requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
 public class GenerateRhymeDocsMojo extends AbstractMojo {
 
+  static final String NO_INTERFACES_FOUND_MSG = "No interfaces annotated with @HalApiInterface were found in the sources for this project";
+
   @Parameter(property = "project", required = true, readonly = true)
   protected MavenProject project;
 
@@ -69,6 +71,10 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
       ClassLoader compileClassLoader = getCompileClassLoader();
 
       RhymeApiDocs apiDocs = new RhymeApiDocs(Paths.get(source), compileClassLoader);
+
+      if (apiDocs.getResourceDocs().isEmpty()) {
+        throw new RuntimeException(NO_INTERFACES_FOUND_MSG);
+      }
 
       Path outputDirectory = createOutputDirectory();
 

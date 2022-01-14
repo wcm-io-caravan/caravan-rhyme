@@ -20,6 +20,9 @@
 package io.wcm.caravan.maven.plugins.rhymedocs;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
@@ -70,16 +73,20 @@ public class GenerateRhymeDocsMojoTest {
   }
 
   @Test
-  public void execute_should_not_do_much_if_there_are_no_classpath_elements() throws Exception {
+  public void execute_should_fail_if_there_are_no_classpath_elements() throws Exception {
 
-    when(projectMock.getBuild()).thenReturn(buildMock);
-    when(buildMock.getDirectory()).thenReturn(tempDir.toString());
+    Throwable ex = catchThrowable(() -> mojo.execute());
 
-    mojo.execute();
+    Assertions.assertThat(ex)
+        .isInstanceOf(MojoExecutionException.class)
+        .hasMessageStartingWith("Generating Rhyme documentation failed")
+        .hasRootCauseMessage(GenerateRhymeDocsMojo.NO_INTERFACES_FOUND_MSG);
+
+    verify(buildMock, never()).addResource(any());
   }
 
   @Test
-  public void execute_should_fail_if_there_invalid_classpath_elements() throws Exception {
+  public void execute_should_fail_if_there_are_invalid_classpath_elements() throws Exception {
 
     when(projectMock.getCompileClasspathElements())
         .thenReturn(Lists.newArrayList("foo", null));
