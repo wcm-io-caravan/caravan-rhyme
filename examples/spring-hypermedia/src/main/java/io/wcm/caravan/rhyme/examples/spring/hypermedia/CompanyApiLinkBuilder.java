@@ -70,10 +70,10 @@ class CompanyApiLinkBuilder {
 
   private final UrlFingerprinting fingerprinting;
 
-  private boolean hasClientPreferences = false;
+  private final Boolean useEmbeddedResources;
+  private final Boolean useFingerprinting;
 
-  private Boolean useEmbeddedResources;
-  private Boolean useFingerprinting;
+  private boolean hasClientPreferences;
 
   CompanyApiLinkBuilder(@Autowired SpringRhyme rhyme, @Autowired RepositoryModificationListener repositoryListener,
       @Autowired HttpServletRequest request) {
@@ -83,8 +83,8 @@ class CompanyApiLinkBuilder {
         .withConditionalMaxAge(Duration.ofSeconds(10), Duration.ofDays(100))
         .withTimestampParameter(TIMESTAMP_QUERY_PARAM, repositoryListener::getLastModified);
 
-    useEmbeddedResources = keepIncomingRequestParameter(request, USE_EMBEDDED_RESOURCES);
-    useFingerprinting = keepIncomingRequestParameter(request, USE_FINGERPRINTING);
+    this.useEmbeddedResources = keepIncomingRequestParameter(request, USE_EMBEDDED_RESOURCES);
+    this.useFingerprinting = keepIncomingRequestParameter(request, USE_FINGERPRINTING);
 
     keepIncomingRequestParameter(request, EMBED_RHYME_METADATA);
   }
