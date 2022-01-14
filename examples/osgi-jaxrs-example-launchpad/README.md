@@ -1,7 +1,5 @@
-<img src="https://wcm.io/images/favicon-16@2x.png"/> wcm.io Caravan Rhyme - OSGi JAX-RS Launchpad
+<img src="https://wcm.io/images/favicon-16@2x.png"/> Rhyme - OSGi JAX-RS Example Launchpad
 ======
-
-# Summary
 
 This module contains a provisioned [Sling Launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) 
 which is used to run the [osgi-jaxrs-example-service](../osgi-jaxrs-example-service) in an Apache Felix OSGi container.
@@ -24,4 +22,4 @@ If you don't want to run the integration tests, but use the launchpad to *run* t
 
 You can then load the HAL browser at http://localhost:8080/hal to navigate through the resources of the example service. 
 
-Use the 'docs' icons in the HAL browser to see documentation generated with the [rhyme-docs-maven-plugin](../../docs-maven-plugin)
+Use the 'docs' icons in the HAL browser to see documentation generated with the [rhyme-docs-maven-plugin](../../tooling/docs-maven-plugin)

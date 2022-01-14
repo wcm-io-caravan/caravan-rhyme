@@ -19,10 +19,10 @@ To build and deploy the application to your local AEM instance use these scripts
 
 The first deployment may take a while until all updated OSGi bundles are installed.
 
-After deployment you can open the sample content page in your browser:
+After deployment you can open the application in your browser:
 
-* Author: http://localhost:4502/editor.html/content/aem-hal-browser/en.html
-* Publish: http://localhost:4503/content/aem-hal-browser/en.html
+* Author: http://localhost:4502/hal
+* Publish: http://localhost:4503/hal
 
 You can deploy individual bundles or content packages to the local AEM instances by using:
 
