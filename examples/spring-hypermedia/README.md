@@ -1,4 +1,4 @@
-<img src="https://wcm.io/images/favicon-16@2x.png"/> wcm.io Caravan Rhyme - Spring Hypermedia Example
+<img src="https://wcm.io/images/favicon-16@2x.png"/> Rhyme - Spring Hypermedia Example
 ======
 
 # Introduction
@@ -20,10 +20,13 @@ Using **JDK 8, 11 or 17** and **Apache Maven 3.6.3** (or higher) you should be a
 ```
 git clone https://github.com/wcm-io-caravan/caravan-rhyme.git
 cd caravan-rhyme
-mvn clean install
-mvn -f examples/spring-hypermedia/ spring-boot:run
+git checkout master
+mvn -f examples/spring-hypermedia/ clean verify spring-boot:run
 ```
-You can then open the API entry point in your web browser to start exploring
+
+If there are any failures during the build or integration tests, then please open an issue on github!
+
+If not, you can then open the API entry point in your web browser to start exploring the API:
 - as raw HAL+JSON: http://localhost:8081/
 - using the HAL Browser: http://localhost:8081/browser/index.html
 - using the HAL Explorer: http://localhost:8081/explorer/index.html#uri=/
@@ -43,12 +46,12 @@ The test package [io.wcm.caravan.rhyme.examples.spring.hypermedia](src/test/java
 One key thing to note here is that all test cases defined in `AbstractCompanyApiIT` are using only the `CompanyApi` entry point interface
 to access the resources under test. This allows the same set of tests to be run multiple times (by the subclasses):
 - directly accesing the server-side implementations (as a consumer of the API running in the same application context would)
-- using Spring's `MockMvc` to create mock requests to the contollers (to also test the path mappings, and JSON (de)serialization)
-- actually starting up the complete application and using a regular HTTP client to retrieve the resources from http://localhost:8081
+- using Spring's `MockMvc` to create mock requests to the contollers (to also test the path mappings, link generation and JSON (de)serialization)
+- actually starting up the complete application and using a regular HTTP client to retrieve the resources from http://localhost:8081, exactly as an external consumer would do
 
 # Examples for Key Concepts
 
-This is an example with very limited functionality, but the point is that is demonstrates most of the key concepts of **Rhyme**:
+This is an example with very limited functionality, but its intention is to demonstrate most of the key concepts of **Rhyme**:
 
 ## Using annotated interfaces to define your API
 
