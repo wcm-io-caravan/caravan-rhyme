@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 
 /**
- * The controller that implements the {@link CompanyApi} interface, which define the entry point of the API.
+ * The controller that implements the {@link CompanyApi} interface, which defines the entry point of the API.
  * <p>
  * If there is a consumer of this API running in the same application, it can simply add an {@link Autowired}
  * field of type {@link CompanyApi} to work directly with the server-side implementations of the API's resources.
