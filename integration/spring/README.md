@@ -10,9 +10,11 @@ Simply add this module as a dependency to your Spring Boot project, and the exte
 
 It currently doesn't give you much control to configure or replace the default behaviour that will become effective through auto-configuration by simply adding this module as a dependency.
 
-If you want to use Rhyme in an existing application, there are some areas where it can break your application (e.g. exception handling) 
+If you want to use Rhyme in an existing application, there are some areas where it can break your application (e.g. exception handling). Also the integration module relies on `@RequestScoped` beans, so it may not be suitable if your service will use additional threads.
 
-In that case, you can always just use the core module instead, and use the Spring integration [implementation classes](/src/main/java/io/wcm/caravan/rhyme/spring/impl) as inspiration for the required glue code.
+In any case, you can always just use the core module instead, and use the Spring integration [implementation classes](/src/main/java/io/wcm/caravan/rhyme/spring/impl) as inspiration for the required glue code.
+
+Suggestions and PRs to extend this module to support more use cases are of course always welcome!
 
 # Key Differences and Extensions to Rhyme Core Module
 
