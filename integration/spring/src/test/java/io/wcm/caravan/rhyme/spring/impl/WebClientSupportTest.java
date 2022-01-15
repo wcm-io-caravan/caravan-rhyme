@@ -24,8 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
-import com.github.tomakehurst.wiremock.http.Fault;
-
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
@@ -43,24 +41,6 @@ public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
   // after upgrading to Spring Boot 2.5.8, WebClient is handling a few edge cases differently,
   // so for now we are overriding the text with updated expectations
-
-  @Override
-  @Test
-  public void cause_should_be_present_in_HalApiClientException_for_malformed_200_response() throws Exception {
-
-    stubFaultyResponseWithStatusCode(200, Fault.MALFORMED_RESPONSE_CHUNK);
-
-    HalApiClientException ex = loadResourceAndExpectClientException();
-
-    assertThat(ex.getStatusCode())
-        .isEqualTo(200);
-
-    assertThat(ex.getErrorResponse().getBody())
-        .isNull();
-
-    assertThat(ex)
-        .hasRootCauseMessage("The response body was completely empty (or consisted only of whitespace)");
-  }
 
   @Override
   @Test

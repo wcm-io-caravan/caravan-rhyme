@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 
 /**
- * The controller that implements the {@link CompanyApi} interface, which define the entry point of the API.
+ * The controller that implements the {@link CompanyApi} interface, which defines the entry point of the API.
  * <p>
  * If there is a consumer of this API running in the same application, it can simply add an {@link Autowired}
  * field of type {@link CompanyApi} to work directly with the server-side implementations of the API's resources.
@@ -116,8 +116,8 @@ class CompanyApiController implements CompanyApi {
   @Override
   public CompanyApi withClientPreferences(Boolean useEmbeddedResources, Boolean useFingerprinting, Boolean embedRhymeMetadata) {
 
-    // create a link to this controller, but explicitly add template variables for parameters
-    // that will then be picked up by CompanyApiLinkBuilder when the link is followed
+    // create a link to this controller, but explicitly add template variables for the preference parameters,
+    // which will be read by the CompanyApiLinkBuilder when a request using these parameters is processed
     return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
         .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, EMBED_RHYME_METADATA)
         .withTitle("Reload the entry point with different settings")

@@ -23,7 +23,7 @@ import io.wcm.caravan.rhyme.testing.client.HalCrawler;
 /**
  * A variation of the {@link MockMvcClientIT} test that verifies
  * if the {@link CompanyApi} functionality remains the same when no embedded resources are used.
- * Additional tests check that
+ * Additional tests check that other client preferences are applied as well.
  */
 public class ClientPreferencesIT extends MockMvcClientIT {
 
