@@ -61,7 +61,7 @@ public final class RxJavaReflectionUtils {
    * @return an {@link Observable} that emits the items from the reactive stream returned by the method
    */
   @SuppressWarnings("PMD.PreserveStackTrace")
-  public static Observable<?> invokeMethodAndReturnObservable(Object resourceImplInstance, Method method, RequestMetricsCollector metrics,
+  public static Observable<Object> invokeMethodAndReturnObservable(Object resourceImplInstance, Method method, RequestMetricsCollector metrics,
       HalApiTypeSupport typeSupport) {
 
     String fullMethodName = HalApiReflectionUtils.getClassAndMethodName(resourceImplInstance, method, typeSupport);
@@ -103,7 +103,7 @@ public final class RxJavaReflectionUtils {
 
     ParameterizedType observableType = (ParameterizedType)returnType;
 
-    Function<Object, Observable<?>> conversion = typeSupport.convertToObservable(method.getReturnType());
+    Function<Object, Observable<Object>> conversion = typeSupport.convertToObservable(method.getReturnType());
 
     if (conversion == null) {
       throw new HalApiDeveloperException("The return type " + method.getReturnType().getSimpleName()
@@ -128,14 +128,14 @@ public final class RxJavaReflectionUtils {
    * @return an instance of the target type that will replay (and cache!) the items emitted by the given reactive
    *         instance
    */
-  public static Observable<?> convertAndCacheReactiveType(Object reactiveInstance, Class<?> targetType, RequestMetricsCollector metrics,
+  public static Observable<Object> convertAndCacheReactiveType(Object reactiveInstance, Class<?> targetType, RequestMetricsCollector metrics,
       Supplier<String> description, HalApiReturnTypeSupport typeSupport) {
 
-    Observable<?> observable = convertToObservable(reactiveInstance, typeSupport)
+    Observable<Object> observable = convertToObservable(reactiveInstance, typeSupport)
         .compose(EmissionStopwatch.collectMetrics(description, metrics));
 
     // do not use Observable#cache() here, because we want consumers to be able to use Observable#retry()
-    Observable<?> cached = observable.compose(RxJavaTransformers.cacheIfCompleted());
+    Observable<Object> cached = observable.compose(RxJavaTransformers.cacheIfCompleted());
 
     return cached;
   }
@@ -159,11 +159,11 @@ public final class RxJavaReflectionUtils {
     return conversion.apply(observable);
   }
 
-  private static Observable<?> convertToObservable(Object reactiveInstance, HalApiReturnTypeSupport typeSupport) {
+  private static Observable<Object> convertToObservable(Object reactiveInstance, HalApiReturnTypeSupport typeSupport) {
 
     Preconditions.checkNotNull(reactiveInstance, "Cannot convert null objects");
 
-    Function<Object, Observable<?>> conversion = typeSupport.convertToObservable(reactiveInstance.getClass());
+    Function<Object, Observable<Object>> conversion = typeSupport.convertToObservable(reactiveInstance.getClass());
     if (conversion == null) {
       throw new HalApiDeveloperException("The given instance of " + reactiveInstance.getClass().getName() + " is not a supported return type");
     }

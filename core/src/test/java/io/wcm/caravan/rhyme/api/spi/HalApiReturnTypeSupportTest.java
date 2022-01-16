@@ -42,7 +42,7 @@ public class HalApiReturnTypeSupportTest {
       }
 
       @Override
-      public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
+      public Function<Object, Observable<Object>> convertToObservable(Class<?> sourceType) {
         return null;
       }
 

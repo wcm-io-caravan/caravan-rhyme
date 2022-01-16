@@ -46,7 +46,7 @@ public interface HalApiReturnTypeSupport {
    * @return a function that will create an {@link Observable} from an instance of the given type,
    *         or null if this is not possible
    */
-  Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType);
+  Function<Object, Observable<Object>> convertToObservable(Class<?> sourceType);
 
   /**
    * @param returnType the return type of an annotated method

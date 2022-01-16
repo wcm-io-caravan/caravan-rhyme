@@ -268,7 +268,7 @@ public class RhymeBuilderImplTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
+    public Function<Object, Observable<Object>> convertToObservable(Class<?> sourceType) {
       if (Set.class.isAssignableFrom(sourceType)) {
         return o -> Observable.fromIterable((Set)o);
       }

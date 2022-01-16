@@ -258,7 +258,7 @@ public class CompositeHalApiTypeSupportTest {
   void convertToObservable_should_return_first_non_null_value() throws Exception {
 
     @SuppressWarnings("unchecked")
-    Function<Object, Observable<?>> fun = o -> Observable.fromIterable(() -> ((List)o).iterator());
+    Function<Object, Observable<Object>> fun = o -> Observable.fromIterable(() -> ((List)o).iterator());
     assertThatCompositeReturnsFirstNonNullValueOfReturnTypeMock(a -> a.convertToObservable(Iterator.class), fun);
   }
 

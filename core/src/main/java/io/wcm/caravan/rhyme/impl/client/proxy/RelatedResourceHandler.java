@@ -55,7 +55,7 @@ class RelatedResourceHandler {
     this.annotationSupport = annotationSupport;
   }
 
-  Observable<?> handleMethodInvocation(HalApiMethodInvocation invocation) {
+  Observable<Object> handleMethodInvocation(HalApiMethodInvocation invocation) {
 
     // check which relation should be followed and what type of objects the Observable emits
     String relation = invocation.getRelation();
