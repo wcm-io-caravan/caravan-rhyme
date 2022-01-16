@@ -222,7 +222,7 @@
       <plugin>
         <groupId>io.wcm.caravan.maven.plugins</groupId>
         <artifactId>rhyme-docs-maven-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
