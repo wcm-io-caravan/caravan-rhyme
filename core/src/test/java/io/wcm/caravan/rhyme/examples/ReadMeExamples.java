@@ -138,7 +138,7 @@ public class ReadMeExamples {
   HalApiClient client = HalApiClient.create();
 
   // create a dynamic proxy that knows how to fetch the entry point from the given URL.
-  ApiEntryPoint api = rhyme.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
+  ApiEntryPoint api = client.getRemoteResource("https://hal-api.example.org", ApiEntryPoint.class);
 
   void fetchItems() {
 
