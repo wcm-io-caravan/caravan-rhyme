@@ -27,6 +27,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.NoSuchElementException;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Build;
@@ -100,7 +101,11 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
 
   private URL createFileUrl(String path) {
     try {
-      return new File(path).toURI().toURL();
+      File file = new File(path);
+      if (!file.exists()) {
+        throw new NoSuchElementException("The classpath element " + file.getAbsolutePath() + " does not exist");
+      }
+      return file.toURI().toURL();
     }
     catch (MalformedURLException | RuntimeException ex) {
       throw new RuntimeException("Failed to create URL from path " + path, ex);
