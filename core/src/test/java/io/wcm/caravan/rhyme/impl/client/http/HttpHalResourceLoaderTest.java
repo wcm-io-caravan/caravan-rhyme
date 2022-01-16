@@ -26,7 +26,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
@@ -37,6 +40,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
+import com.google.common.net.HttpHeaders;
 
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
@@ -123,6 +128,42 @@ public class HttpHalResourceLoaderTest {
 
     assertThat(response.getUri())
         .isEqualTo("http://foo.bar/foo");
+  }
+
+  @Test
+  public void should_extract_content_type_header() throws Exception {
+
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put(HttpHeaders.CONTENT_TYPE, ImmutableList.of("foo/bar"));
+
+    HalResponse response = executeSuccessfullRequestWithReponseHeaders(headers);
+
+    assertThat(response.getContentType())
+        .isEqualTo("foo/bar");
+  }
+
+  @Test
+  public void should_handle_null_header_with_status_line_from_HttpURLConnection_getHeaderFields() throws Exception {
+
+    // HttpURLConnection has an odd behaviour of putting the status line in the header map (using null as key)
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put(null, ImmutableList.of("HTTP/1.1 200 OK"));
+
+    HalResponse response = executeSuccessfullRequestWithReponseHeaders(headers);
+
+    assertThat(response.getStatus())
+        .isEqualTo(200);
+  }
+
+  private HalResponse executeSuccessfullRequestWithReponseHeaders(Map<String, Collection<String>> headers) {
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+
+      callback.onHeadersAvailable(200, headers);
+      callback.onBodyAvailable(createUtf8Stream("{}"));
+    });
+
+    return executeGetRequestWith(VALID_URI, loader);
   }
 
   @Test

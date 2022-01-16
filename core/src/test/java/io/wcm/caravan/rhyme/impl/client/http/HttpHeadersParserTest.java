@@ -50,7 +50,7 @@ class HttpHeadersParserTest {
   }
 
   @Test
-  void parseMaxAge_should_handle_empty_value() {
+  void parseMaxAge_should_ignore_empty_value() {
 
     assertThat(parseMaxAge(""))
         .isNull();
@@ -64,10 +64,17 @@ class HttpHeadersParserTest {
   }
 
   @Test
-  void parseMaxAge_should_handle_uppser_case() {
+  void parseMaxAge_should_handle_upper_case() {
 
     assertThat(parseMaxAge("MAX-AGE=123"))
         .isEqualTo(123);
+  }
+
+  @Test
+  void parseMaxAge_should_ignore_non_numeric_value() {
+
+    assertThat(parseMaxAge("max-age=foo"))
+        .isNull();
   }
 
   @Test
@@ -83,7 +90,6 @@ class HttpHeadersParserTest {
     assertThat(parseMaxAge("max-age=604800, must-revalidate"))
         .isEqualTo(604800);
   }
-
 
   @Test
   void parseMaxAge_should_ignore_multiple_commas() {
