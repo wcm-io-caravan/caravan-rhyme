@@ -49,7 +49,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
   @Reference
   private RhymeDocsOsgiBundleSupport rhymeDocsSupport;
 
-  private BundleTracker bundleTracker;
+  private BundleTracker<String> bundleTracker;
 
   @Activate
   void activate(ComponentContext componentContext) {

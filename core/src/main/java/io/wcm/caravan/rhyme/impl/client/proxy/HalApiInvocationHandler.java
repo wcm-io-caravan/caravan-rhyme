@@ -49,7 +49,7 @@ import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
 final class HalApiInvocationHandler implements InvocationHandler {
 
 
-  private final Cache<String, Observable> returnValueCache = CacheBuilder.newBuilder().build();
+  private final Cache<String, Observable<Object>> returnValueCache = CacheBuilder.newBuilder().build();
 
   private final Single<HalResource> rxResource;
   private final Class resourceInterface;
@@ -83,7 +83,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
 
     // collect the time spend calling all proxy methods during the current request in the HalResponseMetadata object
     try (RequestMetricsStopwatch sw = metrics.startStopwatch(HalApiClient.class, () -> "calling " + invocation)) {
-      Observable rxReturnValue = getCachedObservableReturnValue(invocation);
+      Observable<Object> rxReturnValue = getCachedObservableReturnValue(invocation);
       return RxJavaReflectionUtils.convertObservableTo(rxReturnValue, method.getReturnType(), typeSupport);
     }
     // CHECKSTYLE:OFF
@@ -106,7 +106,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
     }
   }
 
-  private Observable getCachedObservableReturnValue(HalApiMethodInvocation invocation) throws ExecutionException {
+  private Observable<Object> getCachedObservableReturnValue(HalApiMethodInvocation invocation) throws ExecutionException {
     try {
       return returnValueCache.get(invocation.getCacheKey(), () -> callAnnotationSpecificHandler(invocation));
     }
@@ -124,7 +124,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
   }
 
   @SuppressWarnings("PMD.AvoidRethrowingException")
-  private Observable callAnnotationSpecificHandler(HalApiMethodInvocation invocation) {
+  private Observable<Object> callAnnotationSpecificHandler(HalApiMethodInvocation invocation) {
 
     if (invocation.isForMethodAnnotatedWithResourceState()) {
 
