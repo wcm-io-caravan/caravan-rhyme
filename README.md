@@ -590,7 +590,10 @@ On the server-side, just use the `renderResponse` function from the `Rhyme` inte
 Single<HalResponse> response = rhyme.renderResponse(resource);
 ```
 
-Only when you subscribe to this `Single`, all implementation methods of your resource will be called and should return a Maybe, Single or Observable immediately. When all of these return values have emitted their results, the `HalResponse` will finally be constructed and emitted by the `Single`. 
+All implementation methods of your resource will be called and should return a Maybe, Single or Observable immediately.
+This is the "assembly" phase of the rendering where the main thread is being blocked.
+
+As soon as you subscribe to the response `Single`, all the other reactives instances you returned by the resource implementation will be subscribed to and start their actual workload (e.g. requesting upstream resources). Then when all of these objects have emitted their results, the `HalResponse` will finally be constructed and emitted by the `Single`. 
 
 # Related Links
 
