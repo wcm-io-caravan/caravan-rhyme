@@ -99,13 +99,13 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.1.0</version>
+      <version>1.1.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.osgi-jaxrs</artifactId>
-      <version>1.1.0</version>
+      <version>1.1.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
