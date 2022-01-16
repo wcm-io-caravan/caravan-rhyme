@@ -69,14 +69,14 @@ public class HelloWorldTest {
   @Test
   void translated_message_should_have_only_links_to_other_translations() {
 
-    HelloWorldResource translated = helloWorld.getTranslations().findFirst().get();
+    HelloWorldResource firstTranslation = helloWorld.getTranslations().findFirst().get();
 
-    String language = translated.createLink().getName();
+    String firstLanguage = firstTranslation.createLink().getName();
 
-    assertThat(translated.getTranslations())
+    assertThat(firstTranslation.getTranslations())
         .hasSize(2)
         .extracting(resource -> resource.createLink().getName())
-        .doesNotContain(language);
+        .doesNotContain(firstLanguage);
   }
 
   @Test
@@ -92,6 +92,20 @@ public class HelloWorldTest {
   void custom_message_resource_should_have_link_back_to_default_message() {
 
     Optional<HelloWorldResource> defaultLink = helloWorld.withCustomMessage("Foo Bar!").withDefaultMessage();
+
+    assertThat(defaultLink)
+        .isPresent()
+        .get()
+        .extracting(HelloWorldResource::getText)
+        .isEqualTo("Hello World!");
+  }
+
+  @Test
+  void translated_message_resource_should_have_link_back_to_default_message() {
+
+    HelloWorldResource firstTranslation = helloWorld.getTranslations().findFirst().get();
+
+    Optional<HelloWorldResource> defaultLink = firstTranslation.withDefaultMessage();
 
     assertThat(defaultLink)
         .isPresent()
