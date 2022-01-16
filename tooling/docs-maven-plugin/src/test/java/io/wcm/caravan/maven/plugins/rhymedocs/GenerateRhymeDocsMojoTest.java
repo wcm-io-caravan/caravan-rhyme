@@ -73,7 +73,7 @@ public class GenerateRhymeDocsMojoTest {
   }
 
   @Test
-  public void execute_should_fail_if_there_are_no_classpath_elements() throws Exception {
+  void execute_should_fail_if_there_are_no_classpath_elements() throws Exception {
 
     Throwable ex = catchThrowable(() -> mojo.execute());
 
@@ -86,7 +86,7 @@ public class GenerateRhymeDocsMojoTest {
   }
 
   @Test
-  public void execute_should_fail_if_there_are_invalid_classpath_elements() throws Exception {
+  void execute_should_fail_if_there_are_invalid_classpath_elements() throws Exception {
 
     when(projectMock.getCompileClasspathElements())
         .thenReturn(Lists.newArrayList("foo", null));

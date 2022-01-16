@@ -73,7 +73,7 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
       RhymeApiDocs apiDocs = new RhymeApiDocs(Paths.get(source), compileClassLoader);
 
       if (apiDocs.getResourceDocs().isEmpty()) {
-        throw new RuntimeException(NO_INTERFACES_FOUND_MSG);
+        throw new MojoExecutionException(NO_INTERFACES_FOUND_MSG);
       }
 
       Path outputDirectory = createOutputDirectory();
