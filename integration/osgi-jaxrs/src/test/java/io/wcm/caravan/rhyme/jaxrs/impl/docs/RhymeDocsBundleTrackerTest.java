@@ -90,7 +90,7 @@ public class RhymeDocsBundleTrackerTest {
   }
 
   @Test
-  public void addingBundle_shouldnt_register_bundle_without_docs() throws Exception {
+  void addingBundle_shouldnt_register_bundle_without_docs() throws Exception {
 
     Bundle bundleWithoutDocs = Mockito.mock(Bundle.class);
 
@@ -100,7 +100,7 @@ public class RhymeDocsBundleTrackerTest {
   }
 
   @Test
-  public void addingBundle_should_register_bundle_with_docs() throws Exception {
+  void addingBundle_should_register_bundle_with_docs() throws Exception {
 
     Bundle bundleWithDocs = mockBundleWithRhymeDocs();
 
@@ -110,7 +110,7 @@ public class RhymeDocsBundleTrackerTest {
   }
 
   @Test
-  public void modifiedBundle_should_do_nothing() throws Exception {
+  void modifiedBundle_should_do_nothing() throws Exception {
 
     Bundle bundleWithDocs = mockBundleWithRhymeDocs();
 
@@ -120,7 +120,7 @@ public class RhymeDocsBundleTrackerTest {
   }
 
   @Test
-  public void removedBundle_should_unregister_bundle_with_docs() throws Exception {
+  void removedBundle_should_unregister_bundle_with_docs() throws Exception {
 
     Bundle bundleWithDocs = mockBundleWithRhymeDocs();
 
@@ -130,7 +130,7 @@ public class RhymeDocsBundleTrackerTest {
   }
 
   @Test
-  public void removedBundle_shouldnt_unregister_bundle_without_docs() throws Exception {
+  void removedBundle_shouldnt_unregister_bundle_without_docs() throws Exception {
 
     Bundle bundleWithoutDocs = Mockito.mock(Bundle.class);
 

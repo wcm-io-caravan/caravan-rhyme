@@ -69,7 +69,7 @@ public class CachingExamplesIT {
   }
 
   @Test
-  public void odd_items_should_be_correct() {
+  void odd_items_should_be_correct() {
 
     List<ItemState> oddItems = getItemsWithoutDelay(5, EvenOddItemsResource::getOddItems);
 
@@ -78,7 +78,7 @@ public class CachingExamplesIT {
   }
 
   @Test
-  public void even_items_should_be_correct() {
+  void even_items_should_be_correct() {
 
     List<ItemState> evenItems = getItemsWithoutDelay(5, EvenOddItemsResource::getEvenItems);
 
@@ -87,7 +87,7 @@ public class CachingExamplesIT {
   }
 
   @Test
-  public void second_call_should_use_cached_items() {
+  void second_call_should_use_cached_items() {
 
     // measure the time it takes to load a collection of even resources, where each item takes 200ms to generate
     int delayMs = 1000;

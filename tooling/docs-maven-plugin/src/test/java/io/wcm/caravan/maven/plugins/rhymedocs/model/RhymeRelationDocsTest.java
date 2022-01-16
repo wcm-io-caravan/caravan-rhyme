@@ -33,7 +33,7 @@ import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.TestRelations;
 public class RhymeRelationDocsTest {
 
   @Test
-  public void RhymeResourceDocs_getRelations_should_contain_all_relations_used_in_interface() {
+  void RhymeResourceDocs_getRelations_should_contain_all_relations_used_in_interface() {
 
     RhymeResourceDocs entryPointDocs = getDocsFor(RhymeDocTestEntryPoint.class);
 
@@ -65,7 +65,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getDescription_should_return_javadoc_comment() {
+  void getDescription_should_return_javadoc_comment() {
 
     RhymeRelatedMethodDocs multipleDocs = getEntryPointDocsForRelation(TestRelations.MULTIPLE);
 
@@ -74,7 +74,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getRelatedResourceTitle_should_return_class_name() {
+  void getRelatedResourceTitle_should_return_class_name() {
 
     RhymeRelatedMethodDocs multipleDocs = getEntryPointDocsForRelation(TestRelations.MULTIPLE);
 
@@ -83,7 +83,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getRelatedResourceTitle_should_return_null_for_LinkableResource() {
+  void getRelatedResourceTitle_should_return_null_for_LinkableResource() {
 
     RhymeRelatedMethodDocs externalDocs = getEntryPointDocsForRelation(TestRelations.EXTERNAL);
 
@@ -92,7 +92,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getRelatedResourceHref_should_return_html_file_name() {
+  void getRelatedResourceHref_should_return_html_file_name() {
 
     RhymeRelatedMethodDocs multipleDocs = getEntryPointDocsForRelation(TestRelations.MULTIPLE);
 
@@ -101,7 +101,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getRelatedResourceHref_should_return_null_for_LinkableResource() {
+  void getRelatedResourceHref_should_return_null_for_LinkableResource() {
 
     RhymeRelatedMethodDocs externalDocs = getEntryPointDocsForRelation(TestRelations.EXTERNAL);
 
@@ -110,7 +110,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getCardinality_should_be_zero_to_n_for_collections() {
+  void getCardinality_should_be_zero_to_n_for_collections() {
 
     RhymeRelatedMethodDocs multipleDocs = getEntryPointDocsForRelation(TestRelations.MULTIPLE);
 
@@ -122,7 +122,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getCardinality_should_be_zero_to_1_for_optionals() {
+  void getCardinality_should_be_zero_to_1_for_optionals() {
 
     RhymeRelatedMethodDocs optionalDocs = getEntryPointDocsForRelation(TestRelations.OPTIONAL);
 
@@ -134,7 +134,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getCardinality_should_be_1_for_regular_object() {
+  void getCardinality_should_be_1_for_regular_object() {
 
     RhymeRelatedMethodDocs singleDocs = getEntryPointDocsForRelation(TestRelations.SINGLE);
 
@@ -147,7 +147,7 @@ public class RhymeRelationDocsTest {
 
 
   @Test
-  public void getVariables_should_handle_simple_template() {
+  void getVariables_should_handle_simple_template() {
 
     RhymeRelatedMethodDocs templateDocs = getEntryPointDocsForRelation(TestRelations.TEMPLATE);
 
@@ -161,7 +161,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_keep_order_of_multiple_vars() {
+  void getVariables_should_keep_order_of_multiple_vars() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.MULTI_VAR_TEMPLATE);
 
@@ -171,7 +171,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_handle_missing_javadocs_of_multiple_vars() {
+  void getVariables_should_handle_missing_javadocs_of_multiple_vars() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.MULTI_VAR_TEMPLATE);
 
@@ -181,7 +181,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_extract_types_of_multiple_vars() {
+  void getVariables_should_extract_types_of_multiple_vars() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.MULTI_VAR_TEMPLATE);
 
@@ -191,7 +191,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_use_alphabetical_order_of_interface_vars() {
+  void getVariables_should_use_alphabetical_order_of_interface_vars() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.INTERFACE_TEMPLATE);
 
@@ -201,7 +201,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_handle_missing_javadocs_of_interface_vars() {
+  void getVariables_should_handle_missing_javadocs_of_interface_vars() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.INTERFACE_TEMPLATE);
 
@@ -211,7 +211,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_extract_types_of_interface_vars() {
+  void getVariables_should_extract_types_of_interface_vars() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.INTERFACE_TEMPLATE);
 
@@ -221,7 +221,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_use_original_order_of_class_vars_and_ignore_constants() {
+  void getVariables_should_use_original_order_of_class_vars_and_ignore_constants() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.CLASS_TEMPLATE);
 
@@ -231,7 +231,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_handle_missing_javadocs_of_class_vars() {
+  void getVariables_should_handle_missing_javadocs_of_class_vars() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.CLASS_TEMPLATE);
 
@@ -241,7 +241,7 @@ public class RhymeRelationDocsTest {
   }
 
   @Test
-  public void getVariables_should_extract_types_of_class_vars() {
+  void getVariables_should_extract_types_of_class_vars() {
 
     RhymeRelatedMethodDocs templateDocs = getTestResourceDocsForRelation(TestRelations.CLASS_TEMPLATE);
 

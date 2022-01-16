@@ -52,7 +52,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void maybe_resource_state_should_be_rendered() {
+  void maybe_resource_state_should_be_rendered() {
 
     TestState state = createTestState();
 
@@ -80,7 +80,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void single_resource_state_should_be_rendered() {
+  void single_resource_state_should_be_rendered() {
 
     TestState state = createTestState();
 
@@ -107,7 +107,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void observable_resource_state_should_be_rendered() {
+  void observable_resource_state_should_be_rendered() {
 
     TestState state = createTestState();
 
@@ -135,7 +135,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void publisher_resource_state_should_be_rendered() {
+  void publisher_resource_state_should_be_rendered() {
 
     TestState state = createTestState();
 
@@ -162,7 +162,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void should_throw_exception_if_no_HalApiInterface_annotation_can_be_found() {
+  void should_throw_exception_if_no_HalApiInterface_annotation_can_be_found() {
 
     ResourceWithoutAnnotation resourceImpl = new ResourceWithoutAnnotation() {
 
@@ -188,7 +188,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void should_throw_exception_if_HalApiInterface_is_not_public() {
+  void should_throw_exception_if_HalApiInterface_is_not_public() {
 
     ResourceWithNonPublicInterface resourceImpl = new ResourceWithNonPublicInterface() {
 
@@ -206,7 +206,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void should_throw_exception_if_ResourceState_method_returns_null() {
+  void should_throw_exception_if_ResourceState_method_returns_null() {
 
     TestResourceWithMaybeState resourceImpl = new TestResourceWithMaybeState() {
 
@@ -225,7 +225,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void should_throw_runtime_exception_if_ResourceState_method_throws_exception() {
+  void should_throw_runtime_exception_if_ResourceState_method_throws_exception() {
 
     NotImplementedException cause = new NotImplementedException("not implemented");
 
@@ -251,7 +251,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void should_throw_developer_exception_if_return_type_is_not_supported() {
+  void should_throw_developer_exception_if_return_type_is_not_supported() {
 
     ResourceWithIllegalReturnType resourceImpl = new ResourceWithIllegalReturnType() {
 

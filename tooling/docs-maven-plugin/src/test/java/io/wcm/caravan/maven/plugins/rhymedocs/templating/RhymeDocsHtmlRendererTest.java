@@ -72,7 +72,7 @@ public class RhymeDocsHtmlRendererTest {
   }
 
   @Test
-  public void writeHtml_should_generate_one_file_for_each_class() throws Exception {
+  void writeHtml_should_generate_one_file_for_each_class() throws Exception {
 
     renderer.writeHtml(apiDocs);
 
@@ -81,7 +81,7 @@ public class RhymeDocsHtmlRendererTest {
   }
 
   @Test
-  public void writeHtml_should_use_fully_qualified_class_name_for_filename() throws Exception {
+  void writeHtml_should_use_fully_qualified_class_name_for_filename() throws Exception {
 
     renderer.writeHtml(apiDocs);
 
@@ -97,7 +97,7 @@ public class RhymeDocsHtmlRendererTest {
   }
 
   @Test
-  public void writeHtml_should_render_non_empty_html_files() throws Exception {
+  void writeHtml_should_render_non_empty_html_files() throws Exception {
 
     renderer.writeHtml(apiDocs);
 
@@ -112,7 +112,7 @@ public class RhymeDocsHtmlRendererTest {
   }
 
   @Test
-  public void writeHtml_fails_if_directory_doesnt_exist() throws Exception {
+  void writeHtml_fails_if_directory_doesnt_exist() throws Exception {
 
     Files.delete(tempDir);
 

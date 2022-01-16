@@ -70,7 +70,7 @@ public class RhymeDocsHtmlResourceTest {
 
 
   @Test
-  public void getHtmlDocumentation_should_return_404_if_no_InputStream_available_for_given_filename() throws Exception {
+  void getHtmlDocumentation_should_return_404_if_no_InputStream_available_for_given_filename() throws Exception {
 
     Throwable ex = catchThrowable(() -> getHtmlDocumentation("Foo.html"));
 
@@ -81,7 +81,7 @@ public class RhymeDocsHtmlResourceTest {
   }
 
   @Test
-  public void getHtmlDocumentation_should_return_html_if_InputStream_available_for_given_filename() throws Exception {
+  void getHtmlDocumentation_should_return_html_if_InputStream_available_for_given_filename() throws Exception {
 
     String expectedHtml = "<föö></föö>";
 

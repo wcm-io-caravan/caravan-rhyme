@@ -53,7 +53,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void self_link_should_be_rendered() {
+  void self_link_should_be_rendered() {
 
     Link link = new Link("/foo/bar").setTitle("Title of the self link");
 
@@ -71,7 +71,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void single_link_should_be_rendered() {
+  void single_link_should_be_rendered() {
 
     Link testLink = new Link("/test/url").setTitle("Test title").setName("Test name");
 
@@ -106,7 +106,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void maybe_link_should_be_rendered() {
+  void maybe_link_should_be_rendered() {
 
     Link testLink = new Link("/test/url").setTitle("Test title").setName("Test name");
 
@@ -134,7 +134,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void maybe_link_should_be_ignored_if_absent() {
+  void maybe_link_should_be_ignored_if_absent() {
 
     TestResourceWithMaybeLink resourceImpl = new TestResourceWithMaybeLink() {
 
@@ -159,7 +159,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void publisher_link_should_be_rendered() {
+  void publisher_link_should_be_rendered() {
 
     Link testLink = new Link("/test/url").setTitle("Test title").setName("Test name");
 
@@ -194,7 +194,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void multiple_links_should_be_rendered_in_original_order() {
+  void multiple_links_should_be_rendered_in_original_order() {
 
     List<Link> links = Observable.range(0, 10)
         .map(i -> new Link("/test/" + i).setName(Integer.toString(i)))
@@ -235,7 +235,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void single_link_template_should_be_rendered() {
+  void single_link_template_should_be_rendered() {
 
     Link testLink = new Link("/test/{number}");
 
@@ -270,7 +270,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void single_external_link_should_be_rendered() {
+  void single_external_link_should_be_rendered() {
 
     Link externalLink = new Link("http://external.url");
 
@@ -289,7 +289,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void returning_null_in_createLink_should_throw_exception() {
+  void returning_null_in_createLink_should_throw_exception() {
 
     TestResourceWithSingleLink resourceImpl = new TestResourceWithSingleLink() {
 

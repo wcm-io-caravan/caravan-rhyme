@@ -36,7 +36,7 @@ public class ToStringTest {
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();
 
   @Test
-  public void toString_can_be_called_on_resource_with_self_link() {
+  void toString_can_be_called_on_resource_with_self_link() {
 
     ResourceWithSingleRelated resource = client.createProxy(ResourceWithSingleRelated.class);
 
@@ -44,7 +44,7 @@ public class ToStringTest {
   }
 
   @Test
-  public void toString_can_be_called_on_linked_resource() {
+  void toString_can_be_called_on_linked_resource() {
 
     TestResource linkedTest = client.getEntryPoint().createLinked(StandardRelations.ITEM);
 
@@ -55,7 +55,7 @@ public class ToStringTest {
   }
 
   @Test
-  public void toString_can_be_called_on_embedded_resource() {
+  void toString_can_be_called_on_embedded_resource() {
 
     client.getEntryPoint().createEmbedded(StandardRelations.ITEM);
 

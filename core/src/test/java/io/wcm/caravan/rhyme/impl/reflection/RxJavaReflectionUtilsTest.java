@@ -55,7 +55,7 @@ public class RxJavaReflectionUtilsTest {
   }
 
   @Test
-  public void throwing_checked_exceptions_should_be_handled() {
+  void throwing_checked_exceptions_should_be_handled() {
 
     TestResourceWithCheckedExceptionImpl resourceImpl = new TestResourceWithCheckedExceptionImpl();
 
@@ -68,7 +68,7 @@ public class RxJavaReflectionUtilsTest {
   }
 
   @Test
-  public void calling_private_methods_should_throw_exception() {
+  void calling_private_methods_should_throw_exception() {
 
     TestResourceWithCheckedExceptionImpl resourceImpl = new TestResourceWithCheckedExceptionImpl();
     assertThat(resourceImpl.test()).isEqualTo("foo");
@@ -82,7 +82,7 @@ public class RxJavaReflectionUtilsTest {
   }
 
   @Test
-  public void convertObservableTo_should_fail_for_unsupported_types() {
+  void convertObservableTo_should_fail_for_unsupported_types() {
 
     Observable<String> obs = Observable.just("foo");
 

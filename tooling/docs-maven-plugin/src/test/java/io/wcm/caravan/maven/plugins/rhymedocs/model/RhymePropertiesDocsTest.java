@@ -69,7 +69,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void RhymeResourceDocs_getProperties_should_return_empty_list_if_no_ResourceState_is_present() {
+  void RhymeResourceDocs_getProperties_should_return_empty_list_if_no_ResourceState_is_present() {
 
     RhymeResourceDocs docsWithoutState = getDocsFor(RhymeDocTestEntryPoint.class);
 
@@ -78,7 +78,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void RhymeResourceDocs_getProperties_should_return_one_item_for_each_bean_property() {
+  void RhymeResourceDocs_getProperties_should_return_one_item_for_each_bean_property() {
 
     RhymeResourceDocs docsWithBeanProperties = getDocsFor(ResourceWithRxBeanProperties.class);
 
@@ -88,7 +88,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getType_should_use_return_type_for_bean_properties() {
+  void getType_should_use_return_type_for_bean_properties() {
 
     RhymePropertyDocs docs = getDocsForBeanProperty("foo");
 
@@ -97,7 +97,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getType_should_include_generic_parameters_for_bean_property() {
+  void getType_should_include_generic_parameters_for_bean_property() {
 
     RhymePropertyDocs docs = getDocsForBeanProperty("list");
 
@@ -106,7 +106,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getDescription_should_return_empty_string_if_javadocs_are_missing() {
+  void getDescription_should_return_empty_string_if_javadocs_are_missing() {
 
     RhymePropertyDocs docs = getDocsForBeanProperty("foo");
 
@@ -115,7 +115,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getDescription_should_use_javadoc_comment_for_bean_properties() {
+  void getDescription_should_use_javadoc_comment_for_bean_properties() {
 
     RhymePropertyDocs docs = getDocsForBeanProperty("bar");
 
@@ -125,7 +125,7 @@ public class RhymePropertiesDocsTest {
 
 
   @Test
-  public void getDescription_should_fall_back_to_javadoc_return_tag_for_bean_properties() {
+  void getDescription_should_fall_back_to_javadoc_return_tag_for_bean_properties() {
 
     RhymePropertyDocs docs = getDocsForBeanProperty("list");
 
@@ -134,7 +134,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void RhymeResourceDocs_getProperties_should_return_one_item_for_each_field_property() {
+  void RhymeResourceDocs_getProperties_should_return_one_item_for_each_field_property() {
 
     RhymeResourceDocs docsWithBeanProperties = getDocsFor(ResourceWithFieldProperties.class);
 
@@ -144,7 +144,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getType_should_use_return_type_for_field_properties() {
+  void getType_should_use_return_type_for_field_properties() {
 
     RhymePropertyDocs docs = getDocsForFieldProperty("foo");
 
@@ -153,7 +153,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getType_should_include_generic_parameters_for_field() {
+  void getType_should_include_generic_parameters_for_field() {
 
     RhymePropertyDocs docs = getDocsForFieldProperty("list");
 
@@ -162,7 +162,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getDescription_should_return_empty_string_if_field_javadocs_are_missing() {
+  void getDescription_should_return_empty_string_if_field_javadocs_are_missing() {
 
     RhymePropertyDocs docs = getDocsForFieldProperty("foo");
 
@@ -171,7 +171,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getDescription_should_use_javadoc_comment_for_field_properties() {
+  void getDescription_should_use_javadoc_comment_for_field_properties() {
 
     RhymePropertyDocs docs = getDocsForFieldProperty("bar");
 
@@ -180,7 +180,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void RhymeResourceDocs_getProperties_should_recurse_for_arrays_and_objects() {
+  void RhymeResourceDocs_getProperties_should_recurse_for_arrays_and_objects() {
 
     RhymeResourceDocs docsWithNestedProperties = getDocsFor(ResourceWithNestedProperties.class);
 
@@ -193,7 +193,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getPropertyNameWithPadding_should_reflect_object_structure() {
+  void getPropertyNameWithPadding_should_reflect_object_structure() {
 
     String onePaddingLevel = StringUtils.repeat("&nbsp;", 3);
     String twoPaddingLevels = StringUtils.repeat(onePaddingLevel, 2);
@@ -260,7 +260,7 @@ public class RhymePropertiesDocsTest {
 
 
   @Test
-  public void getProperties_should_skip_repeated_properties_of_same_object_class() {
+  void getProperties_should_skip_repeated_properties_of_same_object_class() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithRepeatedObjectTypes.class);
 
@@ -294,7 +294,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_skip_repeated_properties_of_same_object_classes_in_lists() {
+  void getProperties_should_skip_repeated_properties_of_same_object_classes_in_lists() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithRepeatedLists.class);
 
@@ -331,7 +331,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_skip_recursive_properties_of_same_object_class() {
+  void getProperties_should_skip_recursive_properties_of_same_object_class() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithRecursiveObjectTypes.class);
 
@@ -362,7 +362,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_return_single_line_for_json_node_state() {
+  void getProperties_should_return_single_line_for_json_node_state() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithJsonProperties.class);
 
@@ -387,7 +387,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_handle_arrays() {
+  void getProperties_should_handle_arrays() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithArrayProperties.class);
 
@@ -421,7 +421,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_look_into_jackson_annotations() {
+  void getProperties_should_look_into_jackson_annotations() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithAnnotatedProperties.class);
 
@@ -456,7 +456,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_handle_types_without_source() {
+  void getProperties_should_handle_types_without_source() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithPropertiesWithoutSource.class);
 
@@ -490,7 +490,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_handle_type_edge_cases() {
+  void getProperties_should_handle_type_edge_cases() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithEdgeCaseProperties.class);
 
@@ -540,7 +540,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_ignore_fields_and_methods_with_json_ignore() {
+  void getProperties_should_ignore_fields_and_methods_with_json_ignore() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithJsonIgnoreAnnotation.class);
 
@@ -585,7 +585,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_also_use_javadocs_from_private_fields() {
+  void getProperties_should_also_use_javadocs_from_private_fields() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithPrivateFieldsAndBeanProperties.class);
 
@@ -631,7 +631,7 @@ public class RhymePropertiesDocsTest {
   }
 
   @Test
-  public void getProperties_should_use_javadocs_from_ResourceProperty() {
+  void getProperties_should_use_javadocs_from_ResourceProperty() {
 
     RhymeResourceDocs docs = getDocsFor(ResourceWithResourceProperty.class);
 

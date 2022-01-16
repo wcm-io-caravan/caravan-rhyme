@@ -72,7 +72,7 @@ public class RhymeApiDocsTest {
   }
 
   @Test
-  public void getResourceDocs_should_return_docs_for_all_HalApiInterfaces() throws Exception {
+  void getResourceDocs_should_return_docs_for_all_HalApiInterfaces() throws Exception {
 
     List<RhymeResourceDocs> resourceDocs = getApiDocs().getResourceDocs();
 

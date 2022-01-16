@@ -65,7 +65,7 @@ public class HttpErrorResourcesIT {
   }
 
   @Test
-  public void should_respond_with_specified_status_code() {
+  void should_respond_with_specified_status_code() {
 
     ErrorParameters params = defaultParams.withStatusCode(403);
 
@@ -76,7 +76,7 @@ public class HttpErrorResourcesIT {
   }
 
   @Test
-  public void should_respond_with_vnd_error_resource() {
+  void should_respond_with_vnd_error_resource() {
 
     HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
@@ -85,7 +85,7 @@ public class HttpErrorResourcesIT {
   }
 
   @Test
-  public void error_response_should_contain_about_link() {
+  void error_response_should_contain_about_link() {
 
     HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
@@ -98,7 +98,7 @@ public class HttpErrorResourcesIT {
   }
 
   @Test
-  public void error_response_should_not_contain_embedded_metadata_if_request_param_is_not_set() {
+  void error_response_should_not_contain_embedded_metadata_if_request_param_is_not_set() {
 
     HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
@@ -109,7 +109,7 @@ public class HttpErrorResourcesIT {
   }
 
   @Test
-  public void error_response_should_contain_embedded_cause() {
+  void error_response_should_contain_embedded_cause() {
 
     ErrorParameters params = defaultParams.withWrapException(true);
 
@@ -127,7 +127,7 @@ public class HttpErrorResourcesIT {
   }
 
   @Test
-  public void error_response_should_have_via_link() {
+  void error_response_should_have_via_link() {
 
     HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 

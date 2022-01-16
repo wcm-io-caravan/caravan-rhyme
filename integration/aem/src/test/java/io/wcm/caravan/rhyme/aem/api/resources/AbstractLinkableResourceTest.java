@@ -43,7 +43,7 @@ public class AbstractLinkableResourceTest {
   }
 
   @Test
-  public void adaptResource_should_get_all_RhymeObjects_injected() {
+  void adaptResource_should_get_all_RhymeObjects_injected() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 
@@ -54,7 +54,7 @@ public class AbstractLinkableResourceTest {
   }
 
   @Test
-  public void createLink_should_use_default_link_title() {
+  void createLink_should_use_default_link_title() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 
@@ -64,7 +64,7 @@ public class AbstractLinkableResourceTest {
   }
 
   @Test
-  public void createLink_should_use_title_specified_with_setLinkTitle() {
+  void createLink_should_use_title_specified_with_setLinkTitle() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 
@@ -76,7 +76,7 @@ public class AbstractLinkableResourceTest {
   }
 
   @Test
-  public void createLink_should_use_default_link_name_from_resource() {
+  void createLink_should_use_default_link_name_from_resource() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 
@@ -86,7 +86,7 @@ public class AbstractLinkableResourceTest {
   }
 
   @Test
-  public void createLink_should_use_link_name_specified_with_setLinkName() {
+  void createLink_should_use_link_name_specified_with_setLinkName() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 

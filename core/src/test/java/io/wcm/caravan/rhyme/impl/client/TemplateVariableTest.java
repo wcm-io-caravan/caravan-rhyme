@@ -76,7 +76,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void link_template_should_be_expanded_if_only_parameter_is_given() {
+  void link_template_should_be_expanded_if_only_parameter_is_given() {
 
     entryPoint.addLinks(ITEM, new Link("/item/{number}"));
 
@@ -91,7 +91,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void link_template_should_not_be_expanded_if_only_parameter_is_missing() {
+  void link_template_should_not_be_expanded_if_only_parameter_is_missing() {
 
     entryPoint.addLinks(ITEM, new Link("/item/{number}"));
 
@@ -118,7 +118,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void link_template_should_be_expanded_if_one_of_multiple_parameters_is_missing() {
+  void link_template_should_be_expanded_if_one_of_multiple_parameters_is_missing() {
 
     entryPoint.addLinks(ITEM, new Link("/item/{number}{?optionalFlag}"));
 
@@ -133,7 +133,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void link_template_should_be_expanded_if_all_of_multiple_parameters_are_present() {
+  void link_template_should_be_expanded_if_all_of_multiple_parameters_are_present() {
 
     entryPoint.addLinks(ITEM, new Link("/item/{number}{?optionalFlag}"));
 
@@ -158,7 +158,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void ignore_link_template_if_method_without_template_variable_is_called_and_there_are_resolved_links() {
+  void ignore_link_template_if_method_without_template_variable_is_called_and_there_are_resolved_links() {
 
     entryPoint.addLinks(ITEM, new Link("/item/{number}"));
 
@@ -180,7 +180,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void expand_link_template_if_method_without_template_variable_is_called_but_there_are_no_resolved_links() {
+  void expand_link_template_if_method_without_template_variable_is_called_but_there_are_no_resolved_links() {
 
     int numTemplates = 5;
     Observable.range(0, numTemplates).forEach(i -> {
@@ -201,7 +201,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void resolved_links_should_be_ignored_if_method_with_template_variable_is_called() {
+  void resolved_links_should_be_ignored_if_method_with_template_variable_is_called() {
 
     int numResolvedLinks = 5;
     Observable.range(0, numResolvedLinks).forEach(i -> {
@@ -222,7 +222,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void resolved_links_should_not_be_followed_if_method_with_template_variable_is_called_but_there_is_no_matching_template() {
+  void resolved_links_should_not_be_followed_if_method_with_template_variable_is_called_but_there_is_no_matching_template() {
 
     String url = "/item/3";
     entryPoint.addLinks(ITEM, new Link(url));
@@ -247,7 +247,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void should_throw_developer_exception_if_annotation_for_parameter_is_missing() {
+  void should_throw_developer_exception_if_annotation_for_parameter_is_missing() {
 
     Throwable ex = catchThrowable(
         () -> client.createProxy(ResourceWithMissingAnnotations.class).getItem("foo"));
@@ -258,7 +258,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void should_not_throw_developer_exception_if_parameter_names_are_available_instead_of_annotation() {
+  void should_not_throw_developer_exception_if_parameter_names_are_available_instead_of_annotation() {
 
     entryPoint.addLinks(ITEM, new Link("/items/{id}"));
 

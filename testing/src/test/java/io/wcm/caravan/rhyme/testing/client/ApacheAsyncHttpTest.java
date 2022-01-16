@@ -29,7 +29,7 @@ public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void should_use_and_start_custom_HttpClient_instance() {
+  void should_use_and_start_custom_HttpClient_instance() {
 
     CloseableHttpAsyncClient client = Mockito.mock(CloseableHttpAsyncClient.class);
 
@@ -51,7 +51,7 @@ public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void should_not_start_HttpClient_instance_if_already_started() throws IOException {
+  void should_not_start_HttpClient_instance_if_already_started() throws IOException {
 
     CloseableHttpAsyncClient client = Mockito.mock(CloseableHttpAsyncClient.class);
 
@@ -65,7 +65,7 @@ public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void should_use_baseUri() {
+  void should_use_baseUri() {
 
     URI baseUri = URI.create("https://foo.bar");
 

@@ -78,7 +78,7 @@ public class ResourceStateTest {
   }
 
   @Test
-  public void required_resource_state_should_be_emitted() throws Exception {
+  void required_resource_state_should_be_emitted() throws Exception {
 
     mockHalResponseWithSingle(new TestResourceState().withText("test"));
 
@@ -98,7 +98,7 @@ public class ResourceStateTest {
   }
 
   @Test
-  public void optional_resource_state_should_be_emitted() throws Exception {
+  void optional_resource_state_should_be_emitted() throws Exception {
 
     mockHalResponseWithSingle(new TestResourceState().withText("test"));
 
@@ -110,7 +110,7 @@ public class ResourceStateTest {
   }
 
   @Test
-  public void optional_resource_state_should_be_empty_if_no_properties_are_set() throws Exception {
+  void optional_resource_state_should_be_empty_if_no_properties_are_set() throws Exception {
 
     mockHalResponseWithSingle(JsonNodeFactory.instance.objectNode());
 

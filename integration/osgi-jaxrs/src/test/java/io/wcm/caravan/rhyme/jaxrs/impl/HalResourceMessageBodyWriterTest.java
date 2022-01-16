@@ -42,7 +42,7 @@ public class HalResourceMessageBodyWriterTest {
   private final HalResourceMessageBodyWriter messageBodyWriter = new HalResourceMessageBodyWriter();
 
   @Test
-  public void isWriteable_should_return_true_for_HalResource() throws Exception {
+  void isWriteable_should_return_true_for_HalResource() throws Exception {
 
     boolean writeable = messageBodyWriter.isWriteable(HalResource.class, null, new Annotation[0], WILDCARD_TYPE);
 
@@ -50,7 +50,7 @@ public class HalResourceMessageBodyWriterTest {
   }
 
   @Test
-  public void isWriteable_should_return_fals_for_other_class() throws Exception {
+  void isWriteable_should_return_fals_for_other_class() throws Exception {
 
     boolean writeable = messageBodyWriter.isWriteable(JsonNode.class, null, new Annotation[0], WILDCARD_TYPE);
 
@@ -58,7 +58,7 @@ public class HalResourceMessageBodyWriterTest {
   }
 
   @Test
-  public void getSize_should_not_be_able_do_termine_size() throws Exception {
+  void getSize_should_not_be_able_do_termine_size() throws Exception {
 
     long size = messageBodyWriter.getSize(new HalResource(), HalResource.class, null, new Annotation[0], WILDCARD_TYPE);
 
@@ -66,7 +66,7 @@ public class HalResourceMessageBodyWriterTest {
   }
 
   @Test
-  public void writeTo_should_serialize_json() throws Exception {
+  void writeTo_should_serialize_json() throws Exception {
 
     ObjectNode json = JsonNodeFactory.instance.objectNode().put("föö", "bär");
     HalResource hal = new HalResource(json);

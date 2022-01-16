@@ -56,7 +56,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void single_resource_properties_should_be_emitted() throws Exception {
+  void single_resource_properties_should_be_emitted() throws Exception {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test").withNumber(1234));
 
@@ -70,7 +70,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void should_throw_developer_exception_for_unexpected_array() throws Exception {
+  void should_throw_developer_exception_for_unexpected_array() throws Exception {
 
     HalResource hal = new HalResource();
     hal.getModel().putArray("text").add("foo").add("bar");
@@ -97,7 +97,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void maybe_resource_state_should_be_emitted() throws Exception {
+  void maybe_resource_state_should_be_emitted() throws Exception {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test").withNumber(1234));
 
@@ -111,7 +111,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void maybe_resource_state_should_be_empty_if_no_properties_are_set() throws Exception {
+  void maybe_resource_state_should_be_empty_if_no_properties_are_set() throws Exception {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, JsonNodeFactory.instance.objectNode());
 
@@ -135,7 +135,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void should_use_names_from_annotation() throws Exception {
+  void should_use_names_from_annotation() throws Exception {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test").withNumber(1234));
 
@@ -149,7 +149,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void should_throw_developer_exception_for_null_values() throws Exception {
+  void should_throw_developer_exception_for_null_values() throws Exception {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState());
 
@@ -164,7 +164,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void should_throw_developer_exception_for_missing_values() throws Exception {
+  void should_throw_developer_exception_for_missing_values() throws Exception {
 
     client.mockHalResponse(ENTRY_POINT_URI, new HalResource());
 
@@ -185,7 +185,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void should_support_list_return_type() throws Exception {
+  void should_support_list_return_type() throws Exception {
 
     HalResource hal = new HalResource();
     hal.getModel().putArray("strings").add("foo").add("bar");
@@ -200,7 +200,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void should_throw_developer_exception_if_array_was_expected_but_primitive_or_object_found_in_JSON() throws Exception {
+  void should_throw_developer_exception_if_array_was_expected_but_primitive_or_object_found_in_JSON() throws Exception {
 
     HalResource hal = new HalResource();
     hal.getModel().put("strings", "foo");
@@ -224,7 +224,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void should_support_observable_return_type() throws Exception {
+  void should_support_observable_return_type() throws Exception {
 
     HalResource hal = new HalResource();
     hal.getModel().putArray("strings").add("foo").add("bar");
@@ -246,7 +246,7 @@ public class ResourcePropertyTest {
   }
 
   @Test
-  public void should_throw_developer_exception_if_return_type_is_not_supported() {
+  void should_throw_developer_exception_if_return_type_is_not_supported() {
 
     Throwable ex = catchThrowable(
         () -> client.createProxy(ResourceWithIllegalReturnType.class).notSupported());

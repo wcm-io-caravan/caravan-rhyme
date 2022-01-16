@@ -91,7 +91,7 @@ public class RenderEmbeddedResourceTest {
   }
 
   @Test
-  public void multiple_embedded_resources_should_be_rendered_in_original_order() {
+  void multiple_embedded_resources_should_be_rendered_in_original_order() {
 
     List<TestState> states = Observable.range(0, 10)
         .map(i -> new TestState(i))
@@ -128,7 +128,7 @@ public class RenderEmbeddedResourceTest {
   }
 
   @Test
-  public void streams_should_be_supported_for_related_embedded_resources() {
+  void streams_should_be_supported_for_related_embedded_resources() {
 
     Stream<TestState> states = Stream.of(1, 2, 3, 4)
         .map(i -> new TestState(i));
@@ -167,7 +167,7 @@ public class RenderEmbeddedResourceTest {
   }
 
   @Test
-  public void embeddable_resources_should_only_be_linked_if_isEmbedded_returns_false() {
+  void embeddable_resources_should_only_be_linked_if_isEmbedded_returns_false() {
 
     List<TestState> states = Observable.range(0, 10)
         .map(i -> new TestState(i))
@@ -197,7 +197,7 @@ public class RenderEmbeddedResourceTest {
   }
 
   @Test
-  public void single_embedded_resources_should_be_rendered_in_object() {
+  void single_embedded_resources_should_be_rendered_in_object() {
 
     TestState state = new TestState(0);
 

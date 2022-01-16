@@ -57,7 +57,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_empty_query_string() {
+  void should_handle_empty_query_string() {
 
     String queryString = "";
 
@@ -67,7 +67,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_valid_integer() {
+  void should_handle_valid_integer() {
 
     String queryString = "intParam=1";
 
@@ -77,7 +77,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_valid_String() {
+  void should_handle_valid_String() {
 
     String queryString = "stringParam=foo";
 
@@ -87,7 +87,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_valid_enum() {
+  void should_handle_valid_enum() {
 
     String queryString = "enumParam=FOO";
 
@@ -97,7 +97,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_missing_enum() {
+  void should_handle_missing_enum() {
 
     String queryString = "";
 
@@ -107,7 +107,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_invalid_enum() {
+  void should_handle_invalid_enum() {
 
     String queryString = "enumParam=WHATEVER";
 
@@ -119,7 +119,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_invalid_value() {
+  void should_handle_invalid_value() {
 
     String queryString = "intParam=bar";
 
@@ -131,7 +131,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_missing_integer_value() {
+  void should_handle_missing_integer_value() {
 
     String queryString = "intParam";
 
@@ -141,7 +141,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_missing_string_value() {
+  void should_handle_missing_string_value() {
 
     String queryString = "stringParam";
 
@@ -151,7 +151,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_empty_string_value() {
+  void should_handle_empty_string_value() {
 
     String queryString = "stringParam=";
 
@@ -161,7 +161,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_respect_name_attribute() {
+  void should_respect_name_attribute() {
 
     String queryString = "foo=123";
 
@@ -171,7 +171,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_use_first_of_multiple_values() {
+  void should_use_first_of_multiple_values() {
 
     String queryString = "intParam=1&intParam=2";
 
@@ -181,7 +181,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_lists_with_one_entry() {
+  void should_handle_lists_with_one_entry() {
 
     String queryString = "intList=1";
 
@@ -193,7 +193,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_lists_with_multiple_entries() {
+  void should_handle_lists_with_multiple_entries() {
 
     String queryString = "intList=1&intList=2&intList=3";
 
@@ -205,7 +205,7 @@ public class QueryParamInjectorTest {
   }
 
   @Test
-  public void should_handle_lists_with_no_values() {
+  void should_handle_lists_with_no_values() {
 
     String queryString = "";
 

@@ -52,7 +52,7 @@ public class RenderResourcePropertyTest {
   }
 
   @Test
-  public void single_resource_properties_should_be_rendered() {
+  void single_resource_properties_should_be_rendered() {
 
     TestState state = createTestState();
 
@@ -87,7 +87,7 @@ public class RenderResourcePropertyTest {
   }
 
   @Test
-  public void maybe_resource_properties_should_be_rendered_if_value_is_available() {
+  void maybe_resource_properties_should_be_rendered_if_value_is_available() {
 
     TestResourceWithMaybeProperties resourceImpl = new TestResourceWithMaybeProperties() {
 
@@ -126,7 +126,7 @@ public class RenderResourcePropertyTest {
   }
 
   @Test
-  public void property_names_should_be_taken_from_annotation_or_derived_from_method() {
+  void property_names_should_be_taken_from_annotation_or_derived_from_method() {
 
     TestResourceWithNamedProperties resourceImpl = new TestResourceWithNamedProperties() {
 
@@ -166,7 +166,7 @@ public class RenderResourcePropertyTest {
   }
 
   @Test
-  public void properties_should_be_merged_with_state() {
+  void properties_should_be_merged_with_state() {
 
     TestState state = createTestState();
 
@@ -211,7 +211,7 @@ public class RenderResourcePropertyTest {
 
 
   @Test
-  public void should_allow_observable_as_return_type() {
+  void should_allow_observable_as_return_type() {
 
     TestResourceWithObservableReturnType resourceImpl = new TestResourceWithObservableReturnType() {
 
@@ -239,7 +239,7 @@ public class RenderResourcePropertyTest {
   }
 
   @Test
-  public void should_allow_list_as_return_type() {
+  void should_allow_list_as_return_type() {
 
     TestResourceWithListReturnType resourceImpl = new TestResourceWithListReturnType() {
 

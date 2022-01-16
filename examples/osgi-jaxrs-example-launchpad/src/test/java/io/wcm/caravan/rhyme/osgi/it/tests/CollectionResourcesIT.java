@@ -47,7 +47,7 @@ public class CollectionResourcesIT {
   }
 
   @Test
-  public void linked_items_can_be_fetched() {
+  void linked_items_can_be_fetched() {
 
     Integer numItems = 5;
     Boolean embedItems = false;
@@ -59,7 +59,7 @@ public class CollectionResourcesIT {
   }
 
   @Test
-  public void linked_items_are_in_correct_order() {
+  void linked_items_are_in_correct_order() {
 
     Integer numItems = 50;
     Boolean embedItems = false;
@@ -73,7 +73,7 @@ public class CollectionResourcesIT {
   }
 
   @Test
-  public void linked_items_are_properly_delayed() {
+  void linked_items_are_properly_delayed() {
 
     Integer numItems = 1;
     Boolean embedItems = false;
@@ -88,7 +88,7 @@ public class CollectionResourcesIT {
   }
 
   @Test
-  public void embedded_items_can_be_fetched() {
+  void embedded_items_can_be_fetched() {
 
     Integer numItems = 20;
     Boolean embedItems = true;
@@ -100,7 +100,7 @@ public class CollectionResourcesIT {
   }
 
   @Test
-  public void embedded_items_are_in_correct_order() {
+  void embedded_items_are_in_correct_order() {
 
     Integer numItems = 50;
     Boolean embedItems = true;
@@ -114,7 +114,7 @@ public class CollectionResourcesIT {
   }
 
   @Test
-  public void embedded_items_are_properly_delayed() {
+  void embedded_items_are_properly_delayed() {
 
     Integer numItems = 50;
     Boolean embedItems = true;

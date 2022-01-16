@@ -99,7 +99,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void multiple_calls_to_entrypoint_should_return_the_same_proxy_instance_for_the_same_interface() {
+  void multiple_calls_to_entrypoint_should_return_the_same_proxy_instance_for_the_same_interface() {
 
     HalApiClient halApiClient = client.getHalApiClient();
 
@@ -119,7 +119,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void multiple_calls_to_entrypoint_should_not_return_the_same_proxy_instance_for_a_different_interface() {
+  void multiple_calls_to_entrypoint_should_not_return_the_same_proxy_instance_for_a_different_interface() {
 
     HalApiClient halApiClient = client.getHalApiClient();
 
@@ -132,7 +132,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void multiple_calls_to_state_method_should_return_the_same_observable() {
+  void multiple_calls_to_state_method_should_return_the_same_observable() {
 
     EntryPoint entryPoint = client.createProxy(EntryPoint.class);
 
@@ -145,7 +145,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void multiple_calls_to_related_resource_method_should_return_the_same_observable() {
+  void multiple_calls_to_related_resource_method_should_return_the_same_observable() {
 
     EntryPoint entryPoint = client.createProxy(EntryPoint.class);
 
@@ -158,7 +158,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void subscriber_counter_should_count_subscriptions_correctly() {
+  void subscriber_counter_should_count_subscriptions_correctly() {
     Single<HalResponse> item1 = item1Counter.getCountingSingle();
 
     item1.blockingGet();
@@ -168,7 +168,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void observables_from_multiple_calls_emit_the_same_caching_instances() {
+  void observables_from_multiple_calls_emit_the_same_caching_instances() {
 
     EntryPoint entryPoint = client.createProxy(EntryPoint.class);
 
@@ -192,7 +192,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void following_different_links_from_entry_point_will_load_entry_point_only_once() {
+  void following_different_links_from_entry_point_will_load_entry_point_only_once() {
 
     entryPointHal.addLinks(StandardRelations.ALTERNATE, new Link(ALT_1_URL));
 
@@ -209,7 +209,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void following_different_links_to_same_resource_will_load_that_resource_only_once() {
+  void following_different_links_to_same_resource_will_load_that_resource_only_once() {
 
     entryPointHal.addLinks(StandardRelations.ALTERNATE, new Link(ITEM_1_URL));
 
@@ -226,7 +226,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void following_differently_named_links_will_create_different_proxies_but_not_load_resources_twice() {
+  void following_differently_named_links_will_create_different_proxies_but_not_load_resources_twice() {
 
     entryPointHal.addLinks(StandardRelations.ALTERNATE, new Link(ITEM_1_URL).setName("foo"));
 
@@ -244,7 +244,7 @@ public class ProxyCachingTest {
   }
 
   @Test
-  public void caching_should_work_if_two_subscriptions_happen_before_emission() {
+  void caching_should_work_if_two_subscriptions_happen_before_emission() {
 
     entryPointHal.addLinks(StandardRelations.ALTERNATE, new Link(ALT_1_URL));
 

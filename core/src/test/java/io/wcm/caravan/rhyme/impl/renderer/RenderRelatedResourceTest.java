@@ -75,7 +75,7 @@ public class RenderRelatedResourceTest {
   }
 
   @Test
-  public void links_should_be_ordered_alphabetical_with_standard_before_custom_relations() {
+  void links_should_be_ordered_alphabetical_with_standard_before_custom_relations() {
 
     ResourceWithManyRelations resourceImpl = new ResourceWithManyRelations() {
 
@@ -128,7 +128,7 @@ public class RenderRelatedResourceTest {
   }
 
   @Test
-  public void should_throw_runtime_exception_if_RelatedResource_method_throws_exception() {
+  void should_throw_runtime_exception_if_RelatedResource_method_throws_exception() {
 
     TestResourceWithObservableLinks resourceImpl = new TestResourceWithObservableLinks() {
 
@@ -151,7 +151,7 @@ public class RenderRelatedResourceTest {
   }
 
   @Test
-  public void should_throw_exception_if_RelatedResource_return_type_does_not_emit_HalApiInterface() {
+  void should_throw_exception_if_RelatedResource_return_type_does_not_emit_HalApiInterface() {
 
     TestResourceWithInvalidEmissionType resourceImpl = new TestResourceWithInvalidEmissionType() {
 
@@ -181,7 +181,7 @@ public class RenderRelatedResourceTest {
   }
 
   @Test
-  public void should_allow_emission_types_that_extend_an_annotated_interface() {
+  void should_allow_emission_types_that_extend_an_annotated_interface() {
 
     TestResourceWithExtendedType resourceImpl = new TestResourceWithExtendedType() {
 
@@ -211,7 +211,7 @@ public class RenderRelatedResourceTest {
   }
 
   @Test
-  public void should_throw_exception_if_RelatedResource_return_type_does_not_emit_interface() {
+  void should_throw_exception_if_RelatedResource_return_type_does_not_emit_interface() {
 
     ResourceWithInvalidRelatedMethod resourceImpl = new ResourceWithInvalidRelatedMethod() {
 
@@ -229,7 +229,7 @@ public class RenderRelatedResourceTest {
   }
 
   @Test
-  public void should_throw_exception_if_server_impls_are_neither_linkable_or_embeddable() {
+  void should_throw_exception_if_server_impls_are_neither_linkable_or_embeddable() {
 
     TestResourceWithObservableLinks resourceImpl = new TestResourceWithObservableLinks() {
 
@@ -254,7 +254,7 @@ public class RenderRelatedResourceTest {
   }
 
   @Test
-  public void should_support_plain_external_links() {
+  void should_support_plain_external_links() {
 
     ResourceWithCustomLink resourceImpl = new ResourceWithCustomLink() {
 

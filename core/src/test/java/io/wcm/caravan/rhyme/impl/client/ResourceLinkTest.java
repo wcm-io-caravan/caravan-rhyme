@@ -61,7 +61,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void link_should_be_extracted_from_entry_point() {
+  void link_should_be_extracted_from_entry_point() {
 
     Link link = client.createProxy(LinkTargetResource.class)
         .createLink();
@@ -78,7 +78,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void link_should_be_extracted_from_single_linked_resource() {
+  void link_should_be_extracted_from_single_linked_resource() {
 
     TestResource itemResource = entryPoint.createLinked(ITEM);
 
@@ -91,7 +91,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void original_referencing_link_name_should_be_used() {
+  void original_referencing_link_name_should_be_used() {
 
     String linkName = "linkName";
 
@@ -114,7 +114,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void filtering_linked_resources_by_name_should_be_possible() {
+  void filtering_linked_resources_by_name_should_be_possible() {
 
     Observable.range(0, 10).forEach(i -> entryPoint.createLinked(ITEM, Integer.toString(i)).setNumber(i));
 
@@ -129,7 +129,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void filtering_linked_resources_by_name_should_still_use_embedded_resources() {
+  void filtering_linked_resources_by_name_should_still_use_embedded_resources() {
 
     Observable.range(0, 10).forEach(i -> entryPoint.createLinked(ITEM, Integer.toString(i)));
 
@@ -154,7 +154,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void links_with_different_names_to_same_resource_should_create_different_proxies() {
+  void links_with_different_names_to_same_resource_should_create_different_proxies() {
 
     TestResource foo = entryPoint.createLinked(ITEM, "foo");
 
@@ -183,7 +183,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void self_link_should_be_extracted_from_embedded_resource_if_its_not_explicitly_linked() {
+  void self_link_should_be_extracted_from_embedded_resource_if_its_not_explicitly_linked() {
 
     TestResource itemResource = entryPoint.createEmbedded(ITEM);
     itemResource.asHalResource().setLink(new Link("/embedded/self-link"));
@@ -197,7 +197,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void named_link_should_be_extracted_for_embedded_resource_if_it_is_explicitly_linked() {
+  void named_link_should_be_extracted_for_embedded_resource_if_it_is_explicitly_linked() {
 
     String linkName = "linkName";
     TestResource itemResource = entryPoint.createLinked(ITEM, linkName);
@@ -212,7 +212,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void should_use_the_first_link_name_if_multiple_links_are_pointing_to_the_same_embedded() {
+  void should_use_the_first_link_name_if_multiple_links_are_pointing_to_the_same_embedded() {
 
     TestResource embedded = entryPoint.createEmbedded(ITEM);
     embedded.asHalResource().setLink(new Link("/embedded"));
@@ -231,7 +231,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void link_with_empty_href_should_be_extracted_from_embedded_resource_without_self_link() {
+  void link_with_empty_href_should_be_extracted_from_embedded_resource_without_self_link() {
 
     entryPoint.createEmbedded(ITEM);
 
@@ -255,7 +255,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void link_template_should_be_fully_expanded_if_at_least_one_parameter_is_null() {
+  void link_template_should_be_fully_expanded_if_at_least_one_parameter_is_null() {
 
     String uriTemplate = "/test{?intParam,stringParam,listParam*}";
     entryPoint.asHalResource().addLinks(ITEM, new Link(uriTemplate));
@@ -269,7 +269,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void link_template_should_not_be_expanded_if_all_parameters_are_null() {
+  void link_template_should_not_be_expanded_if_all_parameters_are_null() {
 
     String uriTemplate = "/test{?intParam,stringParam,listParam*}";
     entryPoint.asHalResource().addLinks(ITEM, new Link(uriTemplate));
@@ -291,7 +291,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void link_uri_should_be_accessible_as_string() {
+  void link_uri_should_be_accessible_as_string() {
 
     String uri = client.createProxy(ResourceWithUri.class)
         .getUri();
@@ -307,7 +307,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void link_uri_should_be_empty_if_resource_is_embedded() {
+  void link_uri_should_be_empty_if_resource_is_embedded() {
 
     entryPoint.createEmbedded(ITEM);
 
@@ -327,7 +327,7 @@ public class ResourceLinkTest {
   }
 
   @Test
-  public void unsupported_return_types_should_throw_developer_exception() {
+  void unsupported_return_types_should_throw_developer_exception() {
 
     Throwable ex = catchThrowable(
         () -> client.createProxy(ResourceWithUnsupportedType.class).getLink());

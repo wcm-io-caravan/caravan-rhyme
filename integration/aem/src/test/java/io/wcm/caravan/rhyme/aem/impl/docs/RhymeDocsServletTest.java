@@ -73,7 +73,7 @@ public class RhymeDocsServletTest {
   }
 
   @Test
-  public void doGet_should_return_404_if_no_InputStream_available_for_given_filename() throws Exception {
+  void doGet_should_return_404_if_no_InputStream_available_for_given_filename() throws Exception {
 
     getHtmlDocumentation("/Foo.html");
 
@@ -82,7 +82,7 @@ public class RhymeDocsServletTest {
   }
 
   @Test
-  public void doGet_should_return_400_if_no_suffix_was_prent_in_request() throws Exception {
+  void doGet_should_return_400_if_no_suffix_was_prent_in_request() throws Exception {
 
     getHtmlDocumentation(null);
 
@@ -91,7 +91,7 @@ public class RhymeDocsServletTest {
   }
 
   @Test
-  public void doGet_should_return_400_if_relative_path_was_prerent_in_request() throws Exception {
+  void doGet_should_return_400_if_relative_path_was_prerent_in_request() throws Exception {
 
     getHtmlDocumentation("/../Foo.html");
 
@@ -100,7 +100,7 @@ public class RhymeDocsServletTest {
   }
 
   @Test
-  public void doGet_should_return_400_if_relative_suffix_was_prerent_in_request() throws Exception {
+  void doGet_should_return_400_if_relative_suffix_was_prerent_in_request() throws Exception {
 
     getHtmlDocumentation("Foo.html");
 
@@ -110,7 +110,7 @@ public class RhymeDocsServletTest {
 
 
   @Test
-  public void doGet_should_return_200_with_html_if_InputStream_available_for_given_filename() throws Exception {
+  void doGet_should_return_200_with_html_if_InputStream_available_for_given_filename() throws Exception {
 
     String expectedHtml = "<föö></föö>";
 

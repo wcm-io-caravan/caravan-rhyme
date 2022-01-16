@@ -54,7 +54,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void required_link_should_be_rendered() {
+  void required_link_should_be_rendered() {
 
     Link testLink = new Link("/test/url").setTitle("Test title").setName("Test name");
 
@@ -89,7 +89,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void optional_link_should_be_rendered() {
+  void optional_link_should_be_rendered() {
 
     Link testLink = new Link("/test/url").setTitle("Test title").setName("Test name");
 
@@ -117,7 +117,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void optional_link_should_be_ignored_if_absent() {
+  void optional_link_should_be_ignored_if_absent() {
 
     TestResourceWithOptionalLink resourceImpl = new TestResourceWithOptionalLink() {
 
@@ -143,7 +143,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void multiple_links_should_be_rendered_in_original_order() {
+  void multiple_links_should_be_rendered_in_original_order() {
 
     List<Link> links = Observable.range(0, 10)
         .map(i -> new Link("/test/" + i).setName(Integer.toString(i)))
@@ -185,7 +185,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void single_external_link_should_be_rendered() {
+  void single_external_link_should_be_rendered() {
 
     Link externalLink = new Link("http://external.url");
 
@@ -204,7 +204,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void returning_null_as_external_link_should_throw_exception() {
+  void returning_null_as_external_link_should_throw_exception() {
 
     TestResourceWithRequiredExternalLink resourceImpl = new TestResourceWithRequiredExternalLink() {
 
@@ -224,7 +224,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void returning_null_in_createLink_should_throw_exception() {
+  void returning_null_in_createLink_should_throw_exception() {
 
     TestResourceWithRequiredLink resourceImpl = new TestResourceWithRequiredLink() {
 
@@ -258,7 +258,7 @@ public class RenderLinkedResourceTest {
   }
 
   @Test
-  public void invalid_return_type_should_throw_exception() {
+  void invalid_return_type_should_throw_exception() {
 
     TestResourceWithInvalidReturnType resourceImpl = new TestResourceWithInvalidReturnType() {
 

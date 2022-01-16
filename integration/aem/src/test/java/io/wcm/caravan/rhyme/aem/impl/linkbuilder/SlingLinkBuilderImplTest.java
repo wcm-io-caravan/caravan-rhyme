@@ -45,7 +45,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void can_be_adapted_from_SlingRhyme() throws Exception {
+  void can_be_adapted_from_SlingRhyme() throws Exception {
 
     SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
 
@@ -53,7 +53,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_uses_registered_selector() throws Exception {
+  void createLinkToCurrentResource_uses_registered_selector() throws Exception {
 
     SlingRhyme slingRhyme = createRhymeInstance("/content");
 
@@ -67,7 +67,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_handles_unregistered_resources() throws Exception {
+  void createLinkToCurrentResource_handles_unregistered_resources() throws Exception {
 
     SlingRhyme slingRhyme = createRhymeInstance("/content");
 
@@ -91,7 +91,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_includes_query_parameters() throws Exception {
+  void createLinkToCurrentResource_includes_query_parameters() throws Exception {
 
     Link link = createLinkWithQueryParams(resource -> {
       resource.foo = 1;
@@ -102,7 +102,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_strips_parameters_with_null_value() throws Exception {
+  void createLinkToCurrentResource_strips_parameters_with_null_value() throws Exception {
 
 
     Link link = createLinkWithQueryParams(resource -> {
@@ -113,7 +113,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_encodes_characters() throws Exception {
+  void createLinkToCurrentResource_encodes_characters() throws Exception {
 
     Link link = createLinkWithQueryParams(resource -> {
       resource.string = "?/";
@@ -123,7 +123,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_strips_parameters_with_null_values() throws Exception {
+  void createLinkToCurrentResource_strips_parameters_with_null_values() throws Exception {
 
     Link link = createLinkWithQueryParams(queryParams -> {
     });
@@ -144,7 +144,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_includes_query_parameters_fully_resolves_template() throws Exception {
+  void createLinkToCurrentResource_includes_query_parameters_fully_resolves_template() throws Exception {
 
     Link link = createLinkTemplateWithQueryParams(resource -> {
       resource.foo = 1;
@@ -157,7 +157,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_keeps_template_variable_with_null_value() throws Exception {
+  void createLinkToCurrentResource_keeps_template_variable_with_null_value() throws Exception {
 
     Link link = createLinkTemplateWithQueryParams(resource -> {
       resource.bar = 1;
@@ -167,7 +167,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_keeps_template_variables_with_null_values() throws Exception {
+  void createLinkToCurrentResource_keeps_template_variables_with_null_values() throws Exception {
 
     Link link = createLinkTemplateWithQueryParams(resource -> {
 
@@ -177,7 +177,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_uses_link_title() throws Exception {
+  void createLinkToCurrentResource_uses_link_title() throws Exception {
 
     String linkTitle = "This is the link title of the resource";
 
@@ -192,7 +192,7 @@ public class SlingLinkBuilderImplTest {
   }
 
   @Test
-  public void createLinkToCurrentResource_uses_link_name() throws Exception {
+  void createLinkToCurrentResource_uses_link_name() throws Exception {
 
     String linkName = "foo";
 

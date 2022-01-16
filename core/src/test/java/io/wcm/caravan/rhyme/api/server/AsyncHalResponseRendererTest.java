@@ -52,7 +52,7 @@ class AsyncHalResponseRendererTest {
   // and verify basic interaction for a succesfull and one error response
 
   @Test
-  public void valid_resource_should_be_rendered() throws Exception {
+  void valid_resource_should_be_rendered() throws Exception {
 
     AsyncHalResponseRenderer renderer = createRenderer();
 
@@ -71,7 +71,7 @@ class AsyncHalResponseRendererTest {
   }
 
   @Test
-  public void error_resource_should_be_rendered_if_an_exception_is_thrown() throws Exception {
+  void error_resource_should_be_rendered_if_an_exception_is_thrown() throws Exception {
 
     AsyncHalResponseRenderer renderer = createRenderer();
 
@@ -91,7 +91,7 @@ class AsyncHalResponseRendererTest {
 
 
   @Test
-  public void deprecated_method_without_RhymeDocsSupport_should_not_throw_exception() throws Exception {
+  void deprecated_method_without_RhymeDocsSupport_should_not_throw_exception() throws Exception {
 
     RequestMetricsCollector metrics = RequestMetricsCollector.create();
     ExceptionStatusAndLoggingStrategy strategy = new ExceptionStatusAndLoggingStrategy() {

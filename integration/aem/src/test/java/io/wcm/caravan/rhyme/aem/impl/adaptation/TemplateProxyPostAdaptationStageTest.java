@@ -66,7 +66,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void getOptional_can_be_called_on_ResourceAdapter() {
+  void getOptional_can_be_called_on_ResourceAdapter() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -79,7 +79,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void getStream_can_be_called_on_ResourceAdapter() {
+  void getStream_can_be_called_on_ResourceAdapter() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -92,7 +92,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void selectResourceAt_generates_templates_for_null_path() {
+  void selectResourceAt_generates_templates_for_null_path() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -106,7 +106,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void withLinkTitle_works_if_null_path_is_given() {
+  void withLinkTitle_works_if_null_path_is_given() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -122,7 +122,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void withLinkName_works_if_null_path_is_given() {
+  void withLinkName_works_if_null_path_is_given() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -138,7 +138,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void withLinkName_and_withLinkTitle_can_be_combined() {
+  void withLinkName_and_withLinkTitle_can_be_combined() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/");
 
@@ -157,7 +157,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void withQueryParameterTemplate_appends_query_parameter_template_if_null_path_is_given() {
+  void withQueryParameterTemplate_appends_query_parameter_template_if_null_path_is_given() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -170,7 +170,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void withPartialLinkTemplate_fails_if_null_path_is_given() {
+  void withPartialLinkTemplate_fails_if_null_path_is_given() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -184,7 +184,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void withModifications_fails_if_null_path_is_given() {
+  void withModifications_fails_if_null_path_is_given() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -200,7 +200,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void selectResourceAt_can_be_used_to_build_templates_for_unregistered_resources() throws Exception {
+  void selectResourceAt_can_be_used_to_build_templates_for_unregistered_resources() throws Exception {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -218,7 +218,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void adaptTo_should_not_allow_to_specify_model_class_if_selectResourceAt_was_called_with_null_path() throws Exception {
+  void adaptTo_should_not_allow_to_specify_model_class_if_selectResourceAt_was_called_with_null_path() throws Exception {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -241,7 +241,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  public void should_not_allow_any_other_method_call_than_createLink_on_proxy() throws Exception {
+  void should_not_allow_any_other_method_call_than_createLink_on_proxy() throws Exception {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 

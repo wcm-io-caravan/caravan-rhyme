@@ -65,7 +65,7 @@ public class RhymeImplTest {
       .buildForRequestTo(INCOMING_REQUEST_URI);
 
   @Test
-  public void getEntryPoint_should_fetch_entry_point_from_upstream_resource_loader() throws Exception {
+  void getEntryPoint_should_fetch_entry_point_from_upstream_resource_loader() throws Exception {
 
     upstreamResourceTree.getEntryPoint().setNumber(123);
 
@@ -76,7 +76,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void getEntryPoint_should_fail_if_state_of_non_existing_resource_is_requested() throws Exception {
+  void getEntryPoint_should_fail_if_state_of_non_existing_resource_is_requested() throws Exception {
 
     TestResourceWithRequiredState entryPoint = rhyme.getRemoteResource(NON_EXISTING_PATH, TestResourceWithRequiredState.class);
 
@@ -97,7 +97,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void withoutResourceLoader_should_use_a_default_http_implementation() throws Exception {
+  void withoutResourceLoader_should_use_a_default_http_implementation() throws Exception {
 
     @SuppressWarnings("deprecation")
     Rhyme rhymeWithoutResourceLoader = RhymeBuilder
@@ -112,7 +112,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void create_should_use_a_default_http_implementation() throws Exception {
+  void create_should_use_a_default_http_implementation() throws Exception {
 
     Rhyme rhymeWithoutResourceLoader = RhymeBuilder
         .create()
@@ -126,7 +126,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void setResponseMaxAge_should_affect_maxAge_of_rendered_response() throws Exception {
+  void setResponseMaxAge_should_affect_maxAge_of_rendered_response() throws Exception {
 
     rhyme.setResponseMaxAge(Duration.ofMinutes(2));
 
@@ -147,7 +147,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void renderResponse_should_wait_for_delayed_state() throws Exception {
+  void renderResponse_should_wait_for_delayed_state() throws Exception {
 
     LinkableTestResourceImpl resourceImpl = new LinkableTestResourceWithDelayedState();
 
@@ -157,7 +157,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void renderResponse_should_not_wait_for_delayed_state_to_be_emitted() throws Exception {
+  void renderResponse_should_not_wait_for_delayed_state_to_be_emitted() throws Exception {
 
     LinkableTestResourceImpl resourceImpl = new LinkableTestResourceWithDelayedState();
 
@@ -170,7 +170,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void renderVndErrorResource_should_render_given_error() throws Exception {
+  void renderVndErrorResource_should_render_given_error() throws Exception {
 
     HalApiServerException ex = new HalApiServerException(403, "Permission denied");
 
@@ -199,7 +199,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void startStopwatch_should_start_a_measurement_that_shows_up_in_metadata() throws Exception {
+  void startStopwatch_should_start_a_measurement_that_shows_up_in_metadata() throws Exception {
 
     Rhyme rhymeWithMetadata = RhymeBuilder
         .create()
@@ -236,7 +236,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void startStopwatch_should_not_create_metadata_with_defaut_configuration() throws Exception {
+  void startStopwatch_should_not_create_metadata_with_defaut_configuration() throws Exception {
 
     MeasuringTestResource resourceImpl = new MeasuringTestResource(rhyme);
 

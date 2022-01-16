@@ -27,7 +27,7 @@ public class ApacheBlockingHttpTest extends AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void should_use_custom_HttpClient_instance() throws IOException {
+  void should_use_custom_HttpClient_instance() throws IOException {
 
     CloseableHttpClient client = Mockito.mock(CloseableHttpClient.class);
 
@@ -46,7 +46,7 @@ public class ApacheBlockingHttpTest extends AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void should_use_baseUri() {
+  void should_use_baseUri() {
 
     URI baseUri = URI.create("https://foo.bar");
 

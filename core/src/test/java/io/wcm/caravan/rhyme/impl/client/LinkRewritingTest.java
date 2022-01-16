@@ -62,7 +62,7 @@ public class LinkRewritingTest {
   private HalResourceLoader mockLoader = client.getMockJsonLoader();
 
   @Test
-  public void resolved_links_should_be_rewritten() {
+  void resolved_links_should_be_rewritten() {
 
     LinkRewriting rewriting = new LinkRewriting(BASE_URL);
 
@@ -73,7 +73,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void path_from_context_uri_should_be_ignored() {
+  void path_from_context_uri_should_be_ignored() {
 
     LinkRewriting rewriting = new LinkRewriting(BASE_URL + "/other/path");
 
@@ -84,7 +84,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void templates_with_path_variables_should_be_rewritten() {
+  void templates_with_path_variables_should_be_rewritten() {
 
     LinkRewriting rewriting = new LinkRewriting(BASE_URL);
 
@@ -95,7 +95,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void templates_beginning_with_path_variables_should_be_rewritten() {
+  void templates_beginning_with_path_variables_should_be_rewritten() {
 
     LinkRewriting rewriting = new LinkRewriting(BASE_URL);
 
@@ -106,7 +106,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void absolute_links_should_not_be_rewritten() {
+  void absolute_links_should_not_be_rewritten() {
 
     LinkRewriting rewriting = new LinkRewriting(BASE_URL);
 
@@ -119,7 +119,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void invalid_links_should_be_ignored() {
+  void invalid_links_should_be_ignored() {
 
     LinkRewriting rewriting = new LinkRewriting(BASE_URL);
 
@@ -212,7 +212,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void links_shouldnt_be_rewritten_if_entrypoint_was_fetched_with_path_url() {
+  void links_shouldnt_be_rewritten_if_entrypoint_was_fetched_with_path_url() {
 
     mockEntryPointResponse(ENTRY_POINT_PATH, createEntryPointResponse());
 
@@ -224,7 +224,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void links_shouldnt_be_rewritten_if_entrypoint_was_fetched_with_invalid_uri() {
+  void links_shouldnt_be_rewritten_if_entrypoint_was_fetched_with_invalid_uri() {
 
     mockEntryPointResponse(INVALID_URI, createEntryPointResponse());
 
@@ -236,7 +236,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void links_should_be_made_absolute_if_entrypoint_was_fetched_with_absolute_url() {
+  void links_should_be_made_absolute_if_entrypoint_was_fetched_with_absolute_url() {
 
     mockEntryPointResponse(ENTRY_POINT_URL, createEntryPointResponse());
 
@@ -248,7 +248,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void rewritten_absolute_links_should_be_followed_correctly() {
+  void rewritten_absolute_links_should_be_followed_correctly() {
 
     mockEntryPointResponse(ENTRY_POINT_URL, createEntryPointResponse());
     mockPageResponseWithAbsoluteUrl(0);
@@ -262,7 +262,7 @@ public class LinkRewritingTest {
   }
 
   @Test
-  public void links_should_be_made_absolute_in_embedded_resources() {
+  void links_should_be_made_absolute_in_embedded_resources() {
 
     mockEntryPointResponse(ENTRY_POINT_URL, createEntryPointResponseWithEmbeddedFirstPage());
 

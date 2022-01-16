@@ -54,7 +54,7 @@ public class HalApiReflectionUtilsTest {
   }
 
   @Test
-  public void getSimpleClassName_should_return_inner_class_name() throws Exception {
+  void getSimpleClassName_should_return_inner_class_name() throws Exception {
 
     InnerTestResourceImpl resourceImpl = new InnerTestResourceImpl();
 
@@ -65,7 +65,7 @@ public class HalApiReflectionUtilsTest {
 
 
   @Test
-  public void getSimpleClassName_should_return_a_readable_representation_for_anonymous_classes() throws Exception {
+  void getSimpleClassName_should_return_a_readable_representation_for_anonymous_classes() throws Exception {
 
     LinkableTestResource resourceImpl = new LinkableTestResource() {
 
@@ -81,7 +81,7 @@ public class HalApiReflectionUtilsTest {
   }
 
   @Test
-  public void EmbeddedResourceProxyInvocationHandler_should_catch_any_exception() throws Exception {
+  void EmbeddedResourceProxyInvocationHandler_should_catch_any_exception() throws Exception {
 
     LinkableTestResource resource = Mockito.mock(LinkableTestResource.class);
 

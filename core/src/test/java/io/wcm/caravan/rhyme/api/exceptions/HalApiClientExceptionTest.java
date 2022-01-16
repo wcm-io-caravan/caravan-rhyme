@@ -29,7 +29,7 @@ import io.wcm.caravan.rhyme.api.common.HalResponse;
 public class HalApiClientExceptionTest {
 
   @Test
-  public void deprecated_constructor_should_use_given_URI() throws Exception {
+  void deprecated_constructor_should_use_given_URI() throws Exception {
 
     String requestUrl = "/foo";
     HalResponse response = new HalResponse().withStatus(404);

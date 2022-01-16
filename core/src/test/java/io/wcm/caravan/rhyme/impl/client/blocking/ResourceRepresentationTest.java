@@ -73,7 +73,7 @@ public class ResourceRepresentationTest {
   }
 
   @Test
-  public void representation_should_be_available_as_hal_resource() {
+  void representation_should_be_available_as_hal_resource() {
 
     HalResource hal = createClientProxy(ResourceWithRepresentations.class)
         .asHalResource();

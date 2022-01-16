@@ -32,7 +32,7 @@ import io.reactivex.rxjava3.core.Observable;
 public class HalApiReturnTypeSupportTest {
 
   @Test
-  public void isProviderOfOptionalValue_should_have_default_implementation() throws Exception {
+  void isProviderOfOptionalValue_should_have_default_implementation() throws Exception {
 
     HalApiReturnTypeSupport returnTypeSupport = new HalApiReturnTypeSupport() {
 

@@ -62,14 +62,14 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  public void getRhymeDocsBaseUrl_should_return_base_url() throws Exception {
+  void getRhymeDocsBaseUrl_should_return_base_url() throws Exception {
 
     assertThat(docsSupport.getRhymeDocsBaseUrl())
         .isEqualTo(RhymeDocsJaxRsApplication.BASE_PATH + "/");
   }
 
   @Test
-  public void openResourceStream_should_return_null_if_no_bundles_were_registered() throws Exception {
+  void openResourceStream_should_return_null_if_no_bundles_were_registered() throws Exception {
 
     String resourcePath = constructResourcePath("Foo.html");
 
@@ -78,7 +78,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  public void openResourceStream_should_return_stream_if_bundle_with_matching_resource_is_registered() throws Exception {
+  void openResourceStream_should_return_stream_if_bundle_with_matching_resource_is_registered() throws Exception {
 
     String resourcePath = constructResourcePath("Foo.html");
 
@@ -91,7 +91,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  public void openResourceStream_should_return_null_if_bundle_with_different_file_was_registered() throws Exception {
+  void openResourceStream_should_return_null_if_bundle_with_different_file_was_registered() throws Exception {
 
     String fooResourcePath = constructResourcePath("Foo.html");
     String barResourcePath = constructResourcePath("Bar.html");
@@ -105,7 +105,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  public void openResourceStream_should_return_null_if_bundle_with_with_matching_resource_was_deregistered() throws Exception {
+  void openResourceStream_should_return_null_if_bundle_with_with_matching_resource_was_deregistered() throws Exception {
 
     String resourcePath = constructResourcePath("Foo.html");
 
