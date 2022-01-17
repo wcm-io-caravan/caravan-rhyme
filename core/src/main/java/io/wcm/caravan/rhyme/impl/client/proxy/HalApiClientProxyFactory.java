@@ -22,8 +22,6 @@ package io.wcm.caravan.rhyme.impl.client.proxy;
 import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.isHalApiInterface;
 
 import java.lang.reflect.Proxy;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,11 +44,11 @@ import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 
 /**
- * Contains static factory methods to create proxy implementations of a given interface annotated with
- * {@link HalApiInterface}
+ * Contains factory methods to create proxy implementations of a given interface annotated with
+ * {@link HalApiInterface}. It also holds a cache of proxy objects to avoid that multiple proxies that are
+ * representing exactly the same (linked) resource are being created.
  */
 public final class HalApiClientProxyFactory {
-
 
   private final Cache<String, Object> proxyCache = CacheBuilder.newBuilder().build();
 
@@ -71,7 +69,6 @@ public final class HalApiClientProxyFactory {
     this.resourceLoader = resourceLoader;
     this.typeSupport = typeSupport;
     this.objectMapper = objectMapper;
-
   }
 
   public <T> T createProxyFromUrl(Class<T> relatedResourceType, String url) {
@@ -99,12 +96,11 @@ public final class HalApiClientProxyFactory {
 
     // this additional single is only required because we want to validate the URL only on subscription
     // (e.g. right before it is actually retrieved).
-    // This is because i should still be possible to create a proxy just to get a URI template
+    // This is because it should still be possible to create a proxy just to get a URI template
     // by calling a method annotated with @ResourceLink.
     return Single.just(resourceUrl)
         .flatMap(this::validateUrlAndLoadResourceBody)
         .compose(EmissionStopwatch.collectMetrics(() -> "fetching " + relatedResourceType.getSimpleName() + " from upstream server (or cache)", metrics));
-
   }
 
   private Single<HalResource> validateUrlAndLoadResourceBody(String url) {
@@ -134,13 +130,16 @@ public final class HalApiClientProxyFactory {
       return createProxy(relatedResourceType, rxHal, null);
     }
 
+    // the same proxy instance can be re-used when the link is pointing to the resource, and the proxy type are the same.
+    // it's important to consider the full link for the cache key, because different links can point to the same URL,
+    // but callers of createLink should receive exactly the same link that were followed to create the proxy.
     String cacheKey = linkToResource.getModel().toString() + relatedResourceType.getName();
 
     try {
       return (T)proxyCache.get(cacheKey, () -> createProxy(relatedResourceType, rxHal, linkToResource));
     }
     catch (UncheckedExecutionException | ExecutionException ex) {
-      // we not that createProxy never throws any checked exception, so its safe to case to re-throw the original exception
+      // we know that createProxy never throws any checked exception, so it's safe in this case to re-throw the original exception
       throw (RuntimeException)ex.getCause();
     }
   }
@@ -156,21 +155,14 @@ public final class HalApiClientProxyFactory {
             "The given resource interface " + relatedResourceType.getName() + " does not have a @" + HalApiInterface.class.getSimpleName() + " annotation.");
       }
 
-      Class[] interfaces = getInterfacesToImplement(relatedResourceType);
-
       // the main logic of the proxy is implemented in this InvocationHandler
-      HalApiInvocationHandler invocationHandler = new HalApiInvocationHandler(rxHal, relatedResourceType, linkToResource, this, metrics, typeSupport, objectMapper);
+      HalApiInvocationHandler invocationHandler = new HalApiInvocationHandler(rxHal, relatedResourceType, linkToResource, this, metrics, typeSupport,
+          objectMapper);
 
       @SuppressWarnings("unchecked")
-      T proxy = (T)Proxy.newProxyInstance(relatedResourceType.getClassLoader(), interfaces, invocationHandler);
+      T proxy = (T)Proxy.newProxyInstance(relatedResourceType.getClassLoader(), new Class[] { relatedResourceType }, invocationHandler);
 
       return proxy;
     }
-  }
-
-  private <T> Class[] getInterfacesToImplement(Class<T> relatedResourceType) {
-    List<Class> interfaces = new LinkedList<>();
-    interfaces.add(relatedResourceType);
-    return interfaces.toArray(new Class[0]);
   }
 }
