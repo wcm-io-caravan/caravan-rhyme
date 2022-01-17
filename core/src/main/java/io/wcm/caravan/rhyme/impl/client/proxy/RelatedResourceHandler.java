@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -41,21 +42,22 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 
-class RelatedResourceHandler {
+class RelatedResourceHandler implements Function<HalResource, Observable<Object>> {
 
   private static final Logger log = LoggerFactory.getLogger(HalApiInvocationHandler.class);
 
-  private final HalResource contextResource;
+  private final HalApiMethodInvocation invocation;
   private final HalApiClientProxyFactory proxyFactory;
   private final HalApiAnnotationSupport annotationSupport;
 
-  RelatedResourceHandler(HalResource contextResource, HalApiClientProxyFactory proxyFactory, HalApiAnnotationSupport annotationSupport) {
-    this.contextResource = contextResource;
+  RelatedResourceHandler(HalApiMethodInvocation invocation, HalApiAnnotationSupport annotationSupport, HalApiClientProxyFactory proxyFactory) {
+    this.invocation = invocation;
     this.proxyFactory = proxyFactory;
     this.annotationSupport = annotationSupport;
   }
 
-  Observable<Object> handleMethodInvocation(HalApiMethodInvocation invocation) {
+  @Override
+  public Observable<Object> apply(HalResource contextResource) {
 
     // check which relation should be followed and what type of objects the Observable emits
     String relation = invocation.getRelation();

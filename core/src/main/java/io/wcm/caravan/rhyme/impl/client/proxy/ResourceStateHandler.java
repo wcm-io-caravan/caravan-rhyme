@@ -19,30 +19,33 @@
  */
 package io.wcm.caravan.rhyme.impl.client.proxy;
 
+import java.util.function.Function;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 
-class ResourceStateHandler {
+class ResourceStateHandler implements Function<HalResource, Observable<Object>> {
 
   private static final Logger log = LoggerFactory.getLogger(HalApiInvocationHandler.class);
 
-  private final HalResource contextResource;
+  private final HalApiMethodInvocation invocation;
   private final HalApiTypeSupport typeSupport;
   private final ObjectMapper objectMapper;
 
-  ResourceStateHandler(HalResource contextResource, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
-    this.contextResource = contextResource;
+  ResourceStateHandler(HalApiMethodInvocation invocation, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
+    this.invocation = invocation;
     this.typeSupport = typeSupport;
     this.objectMapper = objectMapper;
   }
 
-  Maybe<Object> handleMethodInvocation(HalApiMethodInvocation invocation) {
+  @Override
+  public Observable<Object> apply(HalResource contextResource) {
 
     Class<?> returnType = invocation.getReturnType();
 
@@ -52,18 +55,12 @@ class ResourceStateHandler {
     // state properties, then an empty maybe should be returned
     boolean isOptional = typeSupport.isProviderOfOptionalValue(returnType);
     if (isOptional && contextResource.getStateFieldNames().isEmpty()) {
-      return Maybe.empty();
+      return Observable.empty();
     }
 
     // if it is an observable then we have to use the emission type as target of the conversion
-    Object properties = convertResourceProperties(invocation.getEmissionType());
+    Object properties = objectMapper.convertValue(contextResource.getModel(), invocation.getEmissionType());
 
-    return Maybe.just(properties);
+    return Observable.just(properties);
   }
-
-  private Object convertResourceProperties(Class<?> resourcePropertiesType) {
-
-    return objectMapper.convertValue(contextResource.getModel(), resourcePropertiesType);
-  }
-
 }

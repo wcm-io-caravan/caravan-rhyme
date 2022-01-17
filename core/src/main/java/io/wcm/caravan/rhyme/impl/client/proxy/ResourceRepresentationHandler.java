@@ -19,36 +19,39 @@
  */
 package io.wcm.caravan.rhyme.impl.client.proxy;
 
+import java.util.function.Function;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.Observable;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.api.annotations.ResourceRepresentation;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
-class ResourceRepresentationHandler {
+class ResourceRepresentationHandler implements Function<HalResource, Observable<Object>> {
 
-  private final HalResource resource;
+  private final HalApiMethodInvocation invocation;
 
-  ResourceRepresentationHandler(HalResource resource) {
-    this.resource = resource;
+  ResourceRepresentationHandler(HalApiMethodInvocation invocation) {
+    this.invocation = invocation;
   }
 
-  Single<Object> handleMethodInvocation(HalApiMethodInvocation invocation) {
+  @Override
+  public Observable<Object> apply(HalResource resource) {
 
     Class<?> emissionType = invocation.getEmissionType();
 
     if (emissionType.isAssignableFrom(HalResource.class)) {
-      return Single.just(resource);
+      return Observable.just(resource);
     }
 
     if (emissionType.isAssignableFrom(ObjectNode.class)) {
-      return Single.just(resource.getModel());
+      return Observable.just(resource.getModel());
     }
 
     if (emissionType.isAssignableFrom(String.class)) {
-      return Single.just(resource.getModel().toString());
+      return Observable.just(resource.getModel().toString());
     }
 
     throw new HalApiDeveloperException(

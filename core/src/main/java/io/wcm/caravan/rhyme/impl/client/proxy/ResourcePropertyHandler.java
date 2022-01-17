@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.impl.client.proxy;
 
+import java.util.function.Function;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,19 +31,20 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 
-class ResourcePropertyHandler {
+class ResourcePropertyHandler implements Function<HalResource, Observable<Object>> {
 
-  private final HalResource contextResource;
+  private final HalApiMethodInvocation invocation;
   private final HalApiTypeSupport typeSupport;
   private final ObjectMapper objectMapper;
 
-  ResourcePropertyHandler(HalResource contextResource, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
-    this.contextResource = contextResource;
+  ResourcePropertyHandler(HalApiMethodInvocation invocation, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
+    this.invocation = invocation;
     this.typeSupport = typeSupport;
     this.objectMapper = objectMapper;
   }
 
-  Observable<Object> handleMethodInvocation(HalApiMethodInvocation invocation) {
+  @Override
+  public Observable<Object> apply(HalResource contextResource) {
 
     String propertyName = HalApiReflectionUtils.getPropertyName(invocation.getMethod(), typeSupport);
 
@@ -54,7 +57,7 @@ class ResourcePropertyHandler {
         String msg = "The JSON property '" + propertyName + "' is " + jsonNode.getNodeType()
             + ". You must use Maybe or Optional as return type to support this. ";
 
-        return errorObservable(msg);
+        return errorObservable(msg, contextResource);
       }
       return Observable.empty();
     }
@@ -62,7 +65,7 @@ class ResourcePropertyHandler {
     if (typeSupport.isProviderOfMultiplerValues(invocation.getReturnType())) {
       if (!jsonNode.isArray()) {
         return errorObservable("The JSON property '" + propertyName + "' is of type " + jsonNode.getNodeType()
-            + " but an array was expected. Please adjust " + invocation + " accordingly");
+            + " but an array was expected. Please adjust " + invocation + " accordingly", contextResource);
       }
 
       return Observable.fromIterable(jsonNode)
@@ -71,7 +74,7 @@ class ResourcePropertyHandler {
 
     if (jsonNode.isArray()) {
       return errorObservable("The JSON property '" + propertyName + "' is an array, but a primitive or object "
-          + "(" + invocation.getReturnType().getSimpleName() + ") was expected");
+          + "(" + invocation.getReturnType().getSimpleName() + ") was expected", contextResource);
     }
 
     return Observable.just(convertToJavaObject(invocation, jsonNode));
@@ -81,7 +84,7 @@ class ResourcePropertyHandler {
     return objectMapper.convertValue(jsonNode, invocation.getEmissionType());
   }
 
-  Observable<Object> errorObservable(String msg) {
+  Observable<Object> errorObservable(String msg, HalResource contextResource) {
 
     String fullMsg = msg;
 
