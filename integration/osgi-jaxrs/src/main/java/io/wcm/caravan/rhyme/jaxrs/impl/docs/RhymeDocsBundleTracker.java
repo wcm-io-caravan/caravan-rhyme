@@ -22,7 +22,6 @@ package io.wcm.caravan.rhyme.jaxrs.impl.docs;
 import java.net.URL;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -54,7 +53,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
   @Activate
   void activate(ComponentContext componentContext) {
 
-    bundleTracker = new BundleTracker<String>(componentContext.getBundleContext(), Bundle.ACTIVE, this);
+    bundleTracker = new BundleTracker<>(componentContext.getBundleContext(), Bundle.ACTIVE, this);
     bundleTracker.open();
   }
 
@@ -78,7 +77,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
     log.info("Rhyme docs were found in bundle {} at {}", bundle.getSymbolicName(), rhymeDocsUrl);
     return true;
   }
-  
+
   @Override
   public String addingBundle(Bundle bundle, BundleEvent event) {
 
@@ -89,8 +88,8 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
     }
 
     rhymeDocsSupport.registerBundle(bundle);
-  
-    return bundle.getSymbolicName();  
+
+    return bundle.getSymbolicName();
   }
 
   @Override
