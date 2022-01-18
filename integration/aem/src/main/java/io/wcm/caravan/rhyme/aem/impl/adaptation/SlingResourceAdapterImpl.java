@@ -1,7 +1,5 @@
 package io.wcm.caravan.rhyme.aem.impl.adaptation;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -12,7 +10,6 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import com.google.common.base.Preconditions;
 
@@ -26,8 +23,6 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 @Model(adaptables = SlingRhyme.class, adapters = SlingResourceAdapter.class)
 public class SlingResourceAdapterImpl implements SlingResourceAdapter {
-
-  private static final Logger log = getLogger(SlingResourceAdapterImpl.class);
 
   private final SlingRhyme slingRhyme;
   private final RhymeResourceRegistry registry;

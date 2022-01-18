@@ -38,9 +38,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -68,8 +65,6 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 public class FullMetadataGenerator extends MaxAgeOnlyCollector implements RequestMetricsCollector {
 
   private final Stopwatch overalResponseTimeStopwatch = Stopwatch.createStarted();
-
-  private static final Logger log = LoggerFactory.getLogger(FullMetadataGenerator.class);
 
   private static final Map<TimeUnit, String> TIME_UNIT_ABBRS = ImmutableMap.of(
       TimeUnit.MINUTES, "m",
