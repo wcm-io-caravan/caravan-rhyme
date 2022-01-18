@@ -100,8 +100,9 @@ public class RelatedResourceTest {
 
     entryPoint.createLinked(ALTERNATE).setText("item text");
 
-    Throwable ex = assertThrows(HalApiDeveloperException.class,
-        () -> createClientProxy(ResourceWithSingleRelated.class).getItem());
+    ResourceWithSingleRelated proxy = createClientProxy(ResourceWithSingleRelated.class);
+
+    Throwable ex = assertThrows(HalApiDeveloperException.class, proxy::getItem);
 
     assertThat(ex)
         .hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed")
@@ -139,8 +140,9 @@ public class RelatedResourceTest {
 
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
 
-    Throwable ex = assertThrows(HalApiDeveloperException.class,
-        () -> createClientProxy(ResourceWithSingleRelated.class).getItem().getProperties());
+    ResourceWithRequiredState embeddedResource = createClientProxy(ResourceWithSingleRelated.class).getItem();
+
+    Throwable ex = assertThrows(HalApiDeveloperException.class, embeddedResource::getProperties);
 
     assertThat(ex)
         .hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed")
@@ -181,8 +183,8 @@ public class RelatedResourceTest {
     Optional<ResourceWithRequiredState> maybeLinked = createClientProxy(ResourceWithOptionalRelated.class)
         .getOptionalItem();
 
-    assertThat(maybeLinked.isPresent())
-        .isFalse();
+    assertThat(maybeLinked)
+        .isPresent();
   }
 
   @Test
@@ -211,8 +213,8 @@ public class RelatedResourceTest {
     Optional<ResourceWithRequiredState> maybeEmbedded = createClientProxy(ResourceWithOptionalRelated.class)
         .getOptionalItem();
 
-    assertThat(maybeEmbedded.isPresent())
-        .isFalse();
+    assertThat(maybeEmbedded)
+        .isPresent();
   }
 
 

@@ -81,8 +81,9 @@ public class RelatedResourceTest {
 
     entryPoint.createLinked(ALTERNATE).setText("item text");
 
-    Throwable ex = assertThrows(NoSuchElementException.class,
-        () -> client.createProxy(ResourceWithSingleRelated.class).getItem().blockingGet());
+    Single<ResourceWithSingleState> linkedResource = client.createProxy(ResourceWithSingleRelated.class).getItem();
+
+    Throwable ex = assertThrows(NoSuchElementException.class, linkedResource::blockingGet);
 
     assertThat(ex)
         .hasMessage(null);
@@ -110,8 +111,9 @@ public class RelatedResourceTest {
 
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
 
-    Throwable ex = assertThrows(NoSuchElementException.class,
-        () -> client.createProxy(ResourceWithSingleRelated.class).getItem().blockingGet());
+    Single<ResourceWithSingleState> embeddedResource = client.createProxy(ResourceWithSingleRelated.class).getItem();
+
+    Throwable ex = assertThrows(NoSuchElementException.class, embeddedResource::blockingGet);
 
     assertThat(ex)
         .hasMessage(null);
@@ -386,8 +388,9 @@ public class RelatedResourceTest {
   @Test
   void should_throw_developer_exception_if_annotation_is_missing_on_proxy_method() {
 
-    Throwable ex = assertThrows(HalApiDeveloperException.class,
-        () -> client.createProxy(ResourceWithIllegalAnnotations.class).noAnnotation());
+    ResourceWithIllegalAnnotations proxy = client.createProxy(ResourceWithIllegalAnnotations.class);
+
+    Throwable ex = assertThrows(HalApiDeveloperException.class, proxy::noAnnotation);
 
     assertThat(ex)
         .hasMessageContaining("is not annotated with one of the supported HAL API annotations");
@@ -396,8 +399,11 @@ public class RelatedResourceTest {
   @Test
   void should_throw_developer_exception_if_annotation_is_missing_on_related_resource_type() {
 
-    Throwable ex = assertThrows(HalApiDeveloperException.class,
-        () -> client.createProxy(ResourceWithIllegalAnnotations.class).getInvalidLinked().blockingGet());
+    ResourceWithIllegalAnnotations proxy = client.createProxy(ResourceWithIllegalAnnotations.class);
+
+    Single<ResourceWithoutAnnotation> resource = proxy.getInvalidLinked();
+
+    Throwable ex = assertThrows(HalApiDeveloperException.class, resource::blockingGet);
 
     assertThat(ex)
         .hasMessageContaining("has an invalid emission type")
@@ -407,8 +413,11 @@ public class RelatedResourceTest {
   @Test
   void should_throw_developer_exception_if_return_type_does_not_emit_an_interface() {
 
-    Throwable ex = assertThrows(HalApiDeveloperException.class,
-        () -> client.createProxy(ResourceWithIllegalAnnotations.class).notAnInterface().blockingGet());
+    ResourceWithIllegalAnnotations proxy = client.createProxy(ResourceWithIllegalAnnotations.class);
+
+    Single<TestState> returnValue = proxy.notAnInterface();
+
+    Throwable ex = assertThrows(HalApiDeveloperException.class, returnValue::blockingGet);
 
     assertThat(ex)
         .hasMessageContaining("has an invalid emission type")
