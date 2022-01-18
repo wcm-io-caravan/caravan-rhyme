@@ -20,6 +20,8 @@
 
 package io.wcm.caravan.rhyme.impl.client.proxy;
 
+import static io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils.convertObservableTo;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.NoSuchElementException;
@@ -42,7 +44,6 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
-import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
 import io.wcm.caravan.rhyme.impl.util.RxJavaTransformers;
 
 /**
@@ -88,7 +89,7 @@ final class HalApiInvocationHandler implements InvocationHandler {
 
       Observable<Object> rxReturnValue = getCachingObservableReturnValue(invocation);
 
-      return RxJavaReflectionUtils.convertObservableTo(rxReturnValue, method.getReturnType(), typeSupport);
+      return convertObservableTo(method.getReturnType(), rxReturnValue, typeSupport);
     }
     // CHECKSTYLE:OFF
     catch (HalApiDeveloperException | HalApiClientException ex) {

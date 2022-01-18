@@ -118,12 +118,12 @@ public final class RxJavaReflectionUtils {
 
   /**
    * Converts the observable into any other type supported by the given {@link HalApiTypeSupport} instance
+   * @param targetType to which the observable should be converted
    * @param observable to convert
-   * @param targetType to which the observable should be convert
    * @param typeSupport provides the available conversion functions
    * @return an object of the given target type
    */
-  public static Object convertObservableTo(Observable<?> observable, Class<?> targetType, HalApiReturnTypeSupport typeSupport) {
+  public static Object convertObservableTo(Class<?> targetType, Observable<?> observable, HalApiReturnTypeSupport typeSupport) {
 
     Preconditions.checkNotNull(targetType, "A target type must be provided");
 
