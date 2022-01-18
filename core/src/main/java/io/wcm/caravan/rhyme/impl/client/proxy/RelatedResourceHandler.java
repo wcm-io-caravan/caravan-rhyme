@@ -97,12 +97,8 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
     Map<String, Object> variables = invocation.getTemplateVariables();
 
     if (!variables.isEmpty()) {
-      // if null values were specified for all method parameters, we assume that the caller is only interested in the link templates
-      if (invocation.isCalledWithOnlyNullParameters()) {
-        return createProxiesFromLinkTemplates(relatedResourceType, relevantLinks);
-      }
 
-      // otherwise we ignore any resolved links, and only consider link templates that contain all variables specified
+      // ignore any resolved links, and only consider link templates that contain all variables specified
       // in the method invocation
       relevantLinks = relevantLinks.stream()
           .filter(Link::isTemplated)
@@ -189,19 +185,14 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
 
   private static Link expandLinkTemplates(Link link, Map<String, Object> parameters) {
 
-    String uri = UriTemplate.expand(link.getHref(), parameters);
+    Map<String, Object> parametersWithNonNullValues = parameters.entrySet().stream()
+        .filter(entry -> entry.getValue() != null)
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+    String uri = UriTemplate.expandPartial(link.getHref(), parametersWithNonNullValues);
 
     Link clonedLink = new Link(link.getModel().deepCopy());
-    clonedLink.setTemplated(false);
     clonedLink.setHref(uri);
     return clonedLink;
   }
-
-  private Observable<Object> createProxiesFromLinkTemplates(Class<?> relatedResourceType, List<Link> links) {
-
-    // do not expand the link templates
-    return Observable.fromIterable(links)
-        .map(link -> proxyFactory.createProxyFromLink(relatedResourceType, link));
-  }
-
 }

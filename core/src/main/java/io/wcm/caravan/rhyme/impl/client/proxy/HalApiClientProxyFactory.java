@@ -22,8 +22,10 @@ package io.wcm.caravan.rhyme.impl.client.proxy;
 import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.isHalApiInterface;
 
 import java.lang.reflect.Proxy;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
+import com.damnhandy.uri.template.UriTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -33,7 +35,6 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
-import io.wcm.caravan.rhyme.api.annotations.ResourceLink;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
@@ -103,21 +104,19 @@ public final class HalApiClientProxyFactory {
         .compose(EmissionStopwatch.collectMetrics(() -> "fetching " + relatedResourceType.getSimpleName() + " from upstream server (or cache)", metrics));
   }
 
-  private Single<HalResource> validateUrlAndLoadResourceBody(String url) {
+  private Single<HalResource> validateUrlAndLoadResourceBody(String uriOrTemplate) {
 
-    Link link = new Link(url);
+    Link link = new Link(uriOrTemplate);
+
+    String resolvedUri = uriOrTemplate;
     if (link.isTemplated()) {
-      throw new HalApiDeveloperException("Cannot follow the link template to " + link.getHref()
-          + " because it has not been expanded."
-          + " If you are calling a proxy method with parameters then make sure to provide at least one parameter "
-          + "(unless you are only interested in obtaining the link template by calling the method annotated with @" + ResourceLink.class.getSimpleName()
-          + ")");
+      resolvedUri = UriTemplate.expand(uriOrTemplate, Collections.emptyMap());
     }
 
     try (RequestMetricsStopwatch sw = metrics.startStopwatch(HalApiClient.class,
         () -> "assembling a Single<HalResource> with the HalResourceLoader")) {
 
-      return resourceLoader.getHalResource(url)
+      return resourceLoader.getHalResource(resolvedUri)
           .map(HalResponse::getBody);
     }
   }
