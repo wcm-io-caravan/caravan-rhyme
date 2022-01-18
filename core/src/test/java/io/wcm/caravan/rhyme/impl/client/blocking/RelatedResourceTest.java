@@ -140,9 +140,9 @@ public class RelatedResourceTest {
 
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
 
-    ResourceWithRequiredState embeddedResource = createClientProxy(ResourceWithSingleRelated.class).getItem();
+    ResourceWithSingleRelated proxy = createClientProxy(ResourceWithSingleRelated.class);
 
-    Throwable ex = assertThrows(HalApiDeveloperException.class, embeddedResource::getProperties);
+    Throwable ex = assertThrows(HalApiDeveloperException.class, proxy::getItem);
 
     assertThat(ex)
         .hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed")
@@ -184,7 +184,7 @@ public class RelatedResourceTest {
         .getOptionalItem();
 
     assertThat(maybeLinked)
-        .isPresent();
+        .isEmpty();
   }
 
   @Test
@@ -214,7 +214,7 @@ public class RelatedResourceTest {
         .getOptionalItem();
 
     assertThat(maybeEmbedded)
-        .isPresent();
+        .isEmpty();
   }
 
 
