@@ -59,7 +59,7 @@ Another example for usage with Spring Boot can be found at https://github.com/fe
 
 ## Build from sources
 
-If you want to build wcm.io from sources make sure you have configured the `OSS Sonatype Snapshots` repository in your `~/.m2/settings.xml` file. See the CI build's [Maven Settings](.maven-settings.xml) for an example with a full configuration.
+If you want to build Rhyme from sources make sure you have configured the `OSS Sonatype Snapshots` repository in your `~/.m2/settings.xml` file. See the CI build's [Maven Settings](.maven-settings.xml) for an example with a full configuration.
 
 Using **JDK 8, 11 or 17** and **Apache Maven 3.6.3** (or higher) you should then be able to build all modules (and run the integration tests) from the root directory:
 
