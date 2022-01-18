@@ -111,7 +111,7 @@ public final class RhymeRelatedMethodDocs {
     List<TemplateVariableWithTypeInfo> variables = TemplateVariableDetection.findVariables(method, Optional.empty());
 
     return variables.stream()
-        .map(var -> new RhymeVariableDocs(builder, var, javaMethod))
+        .map(variable -> new RhymeVariableDocs(builder, variable, javaMethod))
         .collect(Collectors.toList());
   }
 
