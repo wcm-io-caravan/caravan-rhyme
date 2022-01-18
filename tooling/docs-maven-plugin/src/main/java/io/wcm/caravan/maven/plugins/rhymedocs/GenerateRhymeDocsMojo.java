@@ -43,6 +43,7 @@ import org.apache.maven.project.MavenProject;
 
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocs;
 import io.wcm.caravan.maven.plugins.rhymedocs.templating.RhymeDocsHtmlRenderer;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 
@@ -108,7 +109,7 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
       return file.toURI().toURL();
     }
     catch (MalformedURLException | RuntimeException ex) {
-      throw new RuntimeException("Failed to create URL from path " + path, ex);
+      throw new HalApiDeveloperException("Failed to create URL from path " + path, ex);
     }
   }
 

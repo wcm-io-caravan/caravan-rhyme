@@ -31,6 +31,7 @@ import com.google.common.base.Charsets;
 
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocs;
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeResourceDocs;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 public class RhymeDocsHtmlRenderer {
 
@@ -73,7 +74,7 @@ public class RhymeDocsHtmlRenderer {
       Files.write(htmlFile, htmlDocs.getBytes(Charsets.UTF_8));
     }
     catch (IOException | RuntimeException ex) {
-      throw new RuntimeException("Failed to generate documentation for interface " + className, ex);
+      throw new HalApiDeveloperException("Failed to generate documentation for interface " + className, ex);
     }
   }
 }

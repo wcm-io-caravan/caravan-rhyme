@@ -86,7 +86,7 @@ public class CaravanResilientHttpSupport implements HttpClientSupport {
     }
   }
 
-  void handleException(HttpClientCallback callback, Throwable ex) throws Throwable {
+  void handleException(HttpClientCallback callback, Throwable ex) {
 
     if (ex instanceof IllegalResponseRuntimeException) {
       IllegalResponseRuntimeException irre = (IllegalResponseRuntimeException)ex;
