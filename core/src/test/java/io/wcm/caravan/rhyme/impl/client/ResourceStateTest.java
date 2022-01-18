@@ -34,6 +34,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
@@ -43,7 +44,7 @@ public class ResourceStateTest {
   private final MockClientTestSupport client = ClientTestSupport.withMocking();
 
   @HalApiInterface
-  interface ResourceWithSingleState {
+  interface ResourceWithSingleState extends LinkableResource {
 
     @ResourceState
     Single<TestResourceState> getProperties();

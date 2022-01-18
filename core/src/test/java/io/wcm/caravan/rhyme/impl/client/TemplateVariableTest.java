@@ -76,7 +76,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  void link_template_should_be_expanded_if_only_parameter_is_given() {
+  void link_template_can_be_followed_if_only_parameter_is_given() {
 
     entryPoint.addLinks(ITEM, new Link("/item/{number}"));
 
@@ -97,19 +97,35 @@ public class TemplateVariableTest {
 
     mockHalResponseWithNumber("/item/", 0);
 
-    Throwable ex = catchThrowable(
-        () -> client.createProxy(ResourceWithSimpleLinkTemplate.class)
-            .getLinked(null)
-            .flatMap(ResourceWithSingleState::getProperties)
-            .blockingGet());
+    Link link = client.createProxy(ResourceWithSimpleLinkTemplate.class)
+        .getLinked(null)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("Cannot follow the link template to /item/{number} because it has not been expanded");
+    assertThat(link.getHref())
+        .isEqualTo("/item/{number}");
+  }
 
+  @Test
+  void link_template_should_be_followed_with_incomplete_url_if_only_parameter_is_missing() {
+
+    entryPoint.addLinks(ITEM, new Link("/item/{number}"));
+
+    mockHalResponseWithNumber("/item/", 0);
+
+    TestResourceState state = client.createProxy(ResourceWithSimpleLinkTemplate.class)
+        .getLinked(null)
+        .flatMap(ResourceWithSingleState::getProperties)
+        .blockingGet();
+
+    assertThat(state)
+        .isNotNull();
   }
 
   @HalApiInterface
   interface ResourceWithComplexLinkTemplate {
+
+    static final String TEMPLATE = "/item/{number}{?optionalFlag}";
 
     @Related(ITEM)
     Single<ResourceWithSingleState> getLinked(
@@ -118,9 +134,9 @@ public class TemplateVariableTest {
   }
 
   @Test
-  void link_template_should_be_expanded_if_one_of_multiple_parameters_is_missing() {
+  void link_template_should_be_expanded_and_followed_if_one_of_multiple_parameters_is_missing() {
 
-    entryPoint.addLinks(ITEM, new Link("/item/{number}{?optionalFlag}"));
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
 
     mockHalResponseWithNumber("/item/1", 1);
 
@@ -133,9 +149,9 @@ public class TemplateVariableTest {
   }
 
   @Test
-  void link_template_should_be_expanded_if_all_of_multiple_parameters_are_present() {
+  void link_template_should_be_expanded_and_followed_if_all_of_multiple_parameters_are_present() {
 
-    entryPoint.addLinks(ITEM, new Link("/item/{number}{?optionalFlag}"));
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
 
     mockHalResponseWithNumber("/item/1?optionalFlag=true", 1);
 
@@ -145,6 +161,48 @@ public class TemplateVariableTest {
         .blockingGet();
 
     assertThat(state.number).isEqualTo(1);
+  }
+
+  @Test
+  void link_template_should_be_preserved_if_all_parameters_are_null() {
+
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
+
+    Link link = client.createProxy(ResourceWithComplexLinkTemplate.class)
+        .getLinked(null, null)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo(ResourceWithComplexLinkTemplate.TEMPLATE);
+  }
+
+  @Test
+  void link_template_should_be_partially_expanded_if_some_parameters_are_null() {
+
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
+
+    Link link = client.createProxy(ResourceWithComplexLinkTemplate.class)
+        .getLinked(1, null)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/1{?optionalFlag}");
+  }
+
+  @Test
+  void link_template_should_be_expanded_if_no_parameters_are_null() {
+
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
+
+    Link link = client.createProxy(ResourceWithComplexLinkTemplate.class)
+        .getLinked(1, false)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/1?optionalFlag=false");
   }
 
   @HalApiInterface

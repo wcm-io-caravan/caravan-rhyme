@@ -24,7 +24,12 @@
   <body>
 
     <release version="1.1.2" date="not released">
-      <action type="update" dev="ssauder">
+      <action type="add" dev="ssauder">
+        Improved consistency for handling of null values for link template variables: when calling #createLink on a client proxy you'll always
+        get the link template (which may be partially expanded if some values were not null in the invocation).
+        When following such links, the template will be fully resolved before loading the target resource.
+      </action>
+      <action type="fix" dev="ssauder">
         Improved reliability when parsing max-age response header.
       </action>
      <action type="update" dev="ssauder">
