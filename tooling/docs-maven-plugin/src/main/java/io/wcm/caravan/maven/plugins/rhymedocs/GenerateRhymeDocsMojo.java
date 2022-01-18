@@ -85,7 +85,7 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
 
       addResourcesToClassPath(outputDirectory);
     }
-    catch (Throwable ex) {
+    catch (Exception ex) {
       throw new MojoExecutionException("Generating Rhyme documentation failed: " + ex.getMessage(), ex);
     }
   }
