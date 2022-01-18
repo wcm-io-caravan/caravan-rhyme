@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -50,7 +51,7 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 
 @ExtendWith(MockitoExtension.class)
-public class HttpHalResourceLoaderTest {
+class HttpHalResourceLoaderTest {
 
   private static final String VALID_URI = "/foo";
 
@@ -79,7 +80,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_parse_valid_URI() throws Exception {
+  void should_parse_valid_URI()  {
 
     String validUri = "http://foo.bar";
 
@@ -96,7 +97,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_fail_to_parse_invalid_URI() throws Exception {
+  void should_fail_to_parse_invalid_URI()  {
 
     String invalidUri = "ht%tp://fo.bar";
 
@@ -111,7 +112,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_use_modified_URI_in_response() throws Exception {
+  void should_use_modified_URI_in_response()  {
 
     URI baseUri = URI.create("http://foo.bar");
 
@@ -131,7 +132,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_extract_content_type_header() throws Exception {
+  void should_extract_content_type_header()  {
 
     Map<String, Collection<String>> headers = new HashMap<>();
     headers.put(HttpHeaders.CONTENT_TYPE, ImmutableList.of("foo/bar"));
@@ -143,7 +144,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_handle_null_header_with_status_line_from_HttpURLConnection_getHeaderFields() throws Exception {
+  void should_handle_null_header_with_status_line_from_HttpURLConnection_getHeaderFields()  {
 
     // HttpURLConnection has an odd behaviour of putting the status line in the header map (using null as key)
     Map<String, Collection<String>> headers = new HashMap<>();
@@ -167,7 +168,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_use_modified_URI_for_exceptions() throws Exception {
+  void should_use_modified_URI_for_exceptions()  {
 
     URI baseUri = URI.create("http://foo.bar");
 
@@ -187,7 +188,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_wrap_runtime_exceptions_thrown_by_executeGetRequest() throws Exception {
+  void should_wrap_runtime_exceptions_thrown_by_executeGetRequest()  {
 
     RuntimeException expectedCause = new RuntimeException("Something has gone wrong");
 
@@ -205,7 +206,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_ignore_additional_calls_to_onExceptionThrown() throws Exception {
+  void should_ignore_additional_calls_to_onExceptionThrown()  {
 
     RuntimeException firstException = new RuntimeException("Something has gone wrong");
     RuntimeException secondException = new RuntimeException("Even more has gone wrong");
@@ -225,7 +226,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_fail_if_onBodyAvailable_is_called_before_onHeaderAvailable() throws Exception {
+  void should_fail_if_onBodyAvailable_is_called_before_onHeaderAvailable()  {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
       callback.onBodyAvailable(new ByteArrayInputStream(new byte[0]));
@@ -241,7 +242,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_ignore_if_onBodyAvailable_is_called_multiple_times() throws Exception {
+  void should_ignore_if_onBodyAvailable_is_called_multiple_times()  {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
       callback.onHeadersAvailable(200, Collections.emptyMap());
@@ -256,7 +257,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_ignore_if_onBodyAvailable_is_called_after_onExceptionCaught() throws Exception {
+  void should_ignore_if_onBodyAvailable_is_called_after_onExceptionCaught()  {
 
     RuntimeException cause = new RuntimeException("Something has failed");
 
@@ -273,7 +274,7 @@ public class HttpHalResourceLoaderTest {
 
 
   @Test
-  void should_emit_HalResponse_for_ok_json_response() throws Exception {
+  void should_emit_HalResponse_for_ok_json_response() throws JSONException {
 
     String jsonString = "{\"foo\": 123}";
 
@@ -295,7 +296,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_fail_for_empty_json_response() throws Exception {
+  void should_fail_for_empty_json_response()  {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
 
@@ -314,7 +315,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_fail_for_invalid_json_response() throws Exception {
+  void should_fail_for_invalid_json_response()  {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
 
@@ -333,7 +334,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_fail_if_body_input_stream_fails() throws Exception {
+  void should_fail_if_body_input_stream_fails()  {
 
     InputStream is = Mockito.mock(InputStream.class);
 

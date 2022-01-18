@@ -44,7 +44,7 @@ import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
  * Variation of the tests in {@link io.wcm.caravan.rhyme.impl.client.ResourceStateTest}
  * for blocking HAL API interfaces (i.e. that are not using reactive return types for their methods)
  */
-public class ResourceStateTest {
+class ResourceStateTest {
 
   private static final String RESOURCE_URL = "/";
 
@@ -78,7 +78,7 @@ public class ResourceStateTest {
   }
 
   @Test
-  void required_resource_state_should_be_emitted() throws Exception {
+  void required_resource_state_should_be_emitted()  {
 
     mockHalResponseWithSingle(new TestResourceState().withText("test"));
 
@@ -98,7 +98,7 @@ public class ResourceStateTest {
   }
 
   @Test
-  void optional_resource_state_should_be_emitted() throws Exception {
+  void optional_resource_state_should_be_emitted()  {
 
     mockHalResponseWithSingle(new TestResourceState().withText("test"));
 
@@ -110,7 +110,7 @@ public class ResourceStateTest {
   }
 
   @Test
-  void optional_resource_state_should_be_empty_if_no_properties_are_set() throws Exception {
+  void optional_resource_state_should_be_empty_if_no_properties_are_set()  {
 
     mockHalResponseWithSingle(JsonNodeFactory.instance.objectNode());
 

@@ -50,7 +50,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class TemplateVariableTest {
+class TemplateVariableTest {
 
   private final MockClientTestSupport client = ClientTestSupport.withMocking();
   private final HalResource entryPoint = new HalResource();

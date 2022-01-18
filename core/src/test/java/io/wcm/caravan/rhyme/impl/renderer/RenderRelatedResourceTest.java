@@ -46,7 +46,7 @@ import io.wcm.caravan.rhyme.testing.TestState;
 /**
  * contains tests for @RelatedResource methods that are identical for linked and embedded resources
  */
-public class RenderRelatedResourceTest {
+class RenderRelatedResourceTest {
 
   @HalApiInterface
   public interface ResourceWithManyRelations extends LinkableResource {

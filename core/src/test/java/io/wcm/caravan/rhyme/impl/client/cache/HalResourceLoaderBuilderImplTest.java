@@ -42,7 +42,7 @@ import io.wcm.caravan.rhyme.impl.client.http.HttpHalResourceLoader;
 import io.wcm.caravan.rhyme.testing.TestClock;
 
 @ExtendWith(MockitoExtension.class)
-public class HalResourceLoaderBuilderImplTest {
+class HalResourceLoaderBuilderImplTest {
 
   @Mock
   private HalResourceLoader mockLoader;
@@ -60,7 +60,7 @@ public class HalResourceLoaderBuilderImplTest {
 
 
   @Test
-  void withExistingLoader_should_use_custom_loader() throws Exception {
+  void withExistingLoader_should_use_custom_loader()  {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
         .withExistingLoader(mockLoader)
@@ -71,7 +71,7 @@ public class HalResourceLoaderBuilderImplTest {
   }
 
   @Test
-  void withCustomHttpClient_should_build_HttpHalResourceLoader() throws Exception {
+  void withCustomHttpClient_should_build_HttpHalResourceLoader()  {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
         .withCustomHttpClient(httpClient)
@@ -86,7 +86,7 @@ public class HalResourceLoaderBuilderImplTest {
 
 
   @Test
-  void withMemoryCache_should_build_CachingHttpHalResourceLoader_with_default_settings() throws Exception {
+  void withMemoryCache_should_build_CachingHttpHalResourceLoader_with_default_settings()  {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
         .withMemoryCache()
@@ -114,7 +114,7 @@ public class HalResourceLoaderBuilderImplTest {
   }
 
   @Test
-  void withMemoryCache_should_build_CachingHttpHalResourceLoader_with_custom_settings() throws Exception {
+  void withMemoryCache_should_build_CachingHttpHalResourceLoader_with_custom_settings()  {
 
     int maxNumItems = 100;
     Duration timeToIdle = Duration.ofMinutes(5);
@@ -145,7 +145,7 @@ public class HalResourceLoaderBuilderImplTest {
   }
 
   @Test
-  void withCustomHttpClient_can_be_called_beforewithMemoryCache() throws Exception {
+  void withCustomHttpClient_can_be_called_beforewithMemoryCache()  {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
         .withCustomHttpClient(httpClient)
@@ -165,7 +165,7 @@ public class HalResourceLoaderBuilderImplTest {
   }
 
   @Test
-  void withCustomHttpClient_can_be_called_after_withMemoryCache() throws Exception {
+  void withCustomHttpClient_can_be_called_after_withMemoryCache()  {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
         .withMemoryCache()
@@ -185,7 +185,7 @@ public class HalResourceLoaderBuilderImplTest {
   }
 
   @Test
-  void withCustomCache_should_build_CachingHttpHalResourceLoader() throws Exception {
+  void withCustomCache_should_build_CachingHttpHalResourceLoader()  {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
         .withCustomCache(cache)
@@ -207,7 +207,7 @@ public class HalResourceLoaderBuilderImplTest {
   }
 
   @Test
-  void withCachingConfiguration_can_be_called_after_withMemoryCache() throws Exception {
+  void withCachingConfiguration_can_be_called_after_withMemoryCache()  {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
         .withMemoryCache()
@@ -224,7 +224,7 @@ public class HalResourceLoaderBuilderImplTest {
   }
 
   @Test
-  void withCachingConfiguration_can_be_called_before_withMemoryCache() throws Exception {
+  void withCachingConfiguration_can_be_called_before_withMemoryCache()  {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
         .withCachingConfiguration(config)
@@ -242,7 +242,7 @@ public class HalResourceLoaderBuilderImplTest {
 
 
   @Test
-  void withCachingConfiguration_should_fail_if_no_cache_implementation_was_specified() throws Exception {
+  void withCachingConfiguration_should_fail_if_no_cache_implementation_was_specified()  {
 
     Throwable ex = catchThrowable(() -> HalResourceLoaderBuilder.create()
         .withCachingConfiguration(config)
@@ -254,7 +254,7 @@ public class HalResourceLoaderBuilderImplTest {
   }
 
   @Test
-  void withClock_should_allow_to_specify_custom_clock() throws Exception {
+  void withClock_should_allow_to_specify_custom_clock()  {
 
     HalResourceLoader loader = HalResourceLoaderBuilder.create()
         .withMemoryCache()

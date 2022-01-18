@@ -42,7 +42,7 @@ public class QueryParamCollectorTest {
   private final QueryParamCollector collector = new QueryParamCollector();
 
   @Test
-  void should_find_all_fields_and_handle_null_values() throws Exception {
+  void should_find_all_fields_and_handle_null_values()  {
 
     ModelWithQueryParams model = new ModelWithQueryParams();
 
@@ -56,7 +56,7 @@ public class QueryParamCollectorTest {
   }
 
   @Test
-  void should_find_all_fields_and_return_values() throws Exception {
+  void should_find_all_fields_and_return_values()  {
 
     ModelWithQueryParams model = new ModelWithQueryParams();
     model.foo = "foo";
@@ -85,7 +85,7 @@ public class QueryParamCollectorTest {
   }
 
   @Test
-  void should_find_all_params_in_nested_models() throws Exception {
+  void should_find_all_params_in_nested_models()  {
 
     ModelWithNestedParamModel model = new ModelWithNestedParamModel();
     model.params = new ModelWithQueryParams();
@@ -113,7 +113,7 @@ public class QueryParamCollectorTest {
   }
 
   @Test
-  void readField_should_handle_exceptions() throws Exception {
+  void readField_should_handle_exceptions()  {
 
     Field field = FieldUtils.getDeclaredField(ModelWithQueryParams.class, "foo", true);
 

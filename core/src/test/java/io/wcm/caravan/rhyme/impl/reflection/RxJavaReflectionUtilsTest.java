@@ -42,7 +42,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
  * contains only some tests for edge case exception handling that is hard to reproduce with realistic client / renderer
  * tests
  */
-public class RxJavaReflectionUtilsTest {
+class RxJavaReflectionUtilsTest {
 
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
   private final HalApiTypeSupport typeSupport = new DefaultHalApiTypeSupport();

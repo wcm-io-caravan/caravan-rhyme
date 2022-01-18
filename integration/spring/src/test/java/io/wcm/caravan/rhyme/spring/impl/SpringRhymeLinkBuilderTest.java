@@ -76,7 +76,7 @@ public class SpringRhymeLinkBuilderTest {
 
 
   @Test
-  void build_can_be_called_immediately() throws Exception {
+  void build_can_be_called_immediately()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
 
@@ -88,7 +88,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void build_can_be_called_immediately_for_template() throws Exception {
+  void build_can_be_called_immediately_for_template()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildUriTemplate();
 
@@ -100,7 +100,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void build_adds_timestamp_parameters_by_default() throws Exception {
+  void build_adds_timestamp_parameters_by_default()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUriWithFingerprinting(ImmutableMap.of("foo", "bar"));
 
@@ -110,7 +110,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void build_adds_timestamp_parameters_to_template() throws Exception {
+  void build_adds_timestamp_parameters_to_template()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildUriTemplateWithFingerprinting(ImmutableMap.of("foo", "bar"));
 
@@ -121,7 +121,7 @@ public class SpringRhymeLinkBuilderTest {
 
 
   @Test
-  void withoutFingerprint_should_remove_timestamp_if_condition_is_false() throws Exception {
+  void withoutFingerprint_should_remove_timestamp_if_condition_is_false()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUriWithFingerprinting(ImmutableMap.of("foo", "bar"));
 
@@ -131,7 +131,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withName_should_add_name_attribute() throws Exception {
+  void withName_should_add_name_attribute()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
 
@@ -141,7 +141,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTitle_should_add_title_attribute() throws Exception {
+  void withTitle_should_add_title_attribute()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
 
@@ -151,7 +151,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTitle_should_add_title_attribute_also_if_link_is_templated() throws Exception {
+  void withTitle_should_add_title_attribute_also_if_link_is_templated()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildUriTemplate();
 
@@ -162,7 +162,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTemplateTitle_should_add_title_attribute_if_link_is_template() throws Exception {
+  void withTemplateTitle_should_add_title_attribute_if_link_is_template()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildUriTemplate();
 
@@ -173,7 +173,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTemplateTitle_should_not_add_title_attribute_if_link_is_resolved() throws Exception {
+  void withTemplateTitle_should_not_add_title_attribute_if_link_is_resolved()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
 
@@ -184,7 +184,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTemplateTitle_can_be_called_before_withTitle() throws Exception {
+  void withTemplateTitle_can_be_called_before_withTitle()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildUriTemplate();
 
@@ -198,7 +198,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTemplateTitle_can_be_called_after_withTitle() throws Exception {
+  void withTemplateTitle_can_be_called_after_withTitle()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildUriTemplate();
 
@@ -212,7 +212,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTemplateVariables_adds_single_variable() throws Exception {
+  void withTemplateVariables_adds_single_variable()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
 
@@ -228,7 +228,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTemplateVariables_adds_multiple_variables() throws Exception {
+  void withTemplateVariables_adds_multiple_variables()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
 
@@ -244,7 +244,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTemplateVariables_replaces_original_query_param() throws Exception {
+  void withTemplateVariables_replaces_original_query_param()  {
 
     SpringRhymeLinkBuilder linkBuilder = buildResolvedUri();
 
@@ -263,7 +263,7 @@ public class SpringRhymeLinkBuilderTest {
   }
 
   @Test
-  void withTemplateVariables_replaces_variable_from_template() throws Exception {
+  void withTemplateVariables_replaces_variable_from_template()  {
 
     SpringRhymeLinkBuilder linkBuilder = createLinkBuilderWithAdditionalParameters(ImmutableMap.of("foo", "bar"));
 

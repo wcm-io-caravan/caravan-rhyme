@@ -39,7 +39,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.testing.TestState;
 
-public class RenderResourcePropertyTest {
+class RenderResourcePropertyTest {
 
   @HalApiInterface
   public interface TestResourceWithSingleProperties {

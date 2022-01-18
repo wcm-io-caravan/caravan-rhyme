@@ -53,7 +53,7 @@ import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 @ExtendWith(MockitoExtension.class)
-public class AsyncHalResponseRendererImplTest {
+class AsyncHalResponseRendererImplTest {
 
   private static final String REQUEST_URI = "/requestUri";
 
@@ -88,7 +88,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_have_uri_set_if_resource_was_rendered_succesfully() throws Exception {
+  void response_should_have_uri_set_if_resource_was_rendered_succesfully()  {
 
     mockRenderedResource();
 
@@ -98,7 +98,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_have_status_200_if_resource_was_rendered_succesfully() throws Exception {
+  void response_should_have_status_200_if_resource_was_rendered_succesfully()  {
 
     mockRenderedResource();
 
@@ -108,7 +108,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_have_hal_content_type_if_resource_was_rendered_succesfully() throws Exception {
+  void response_should_have_hal_content_type_if_resource_was_rendered_succesfully()  {
 
     mockRenderedResource();
 
@@ -123,7 +123,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_use_custom_content_type_if_defined_in_annotation() throws Exception {
+  void response_should_use_custom_content_type_if_defined_in_annotation()  {
 
     resource = Mockito.mock(CustomContentTypeResource.class);
 
@@ -136,7 +136,7 @@ public class AsyncHalResponseRendererImplTest {
 
 
   @Test
-  void response_should_contain_hal_resource_from_renderer() throws Exception {
+  void response_should_contain_hal_resource_from_renderer()  {
 
     HalResource hal = mockRenderedResource();
 
@@ -146,7 +146,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_contain_embedded_metadata_from_metrics() throws Exception {
+  void response_should_contain_embedded_metadata_from_metrics()  {
 
     mockRenderedResource();
 
@@ -163,7 +163,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_allow_null_values_for_max_age_from_metrics() throws Exception {
+  void response_should_allow_null_values_for_max_age_from_metrics()  {
 
     mockRenderedResource();
     when(metrics.getResponseMaxAge()).thenReturn(null);
@@ -173,7 +173,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_contain_max_age_from_metrics() throws Exception {
+  void response_should_contain_max_age_from_metrics()  {
 
     mockRenderedResource();
     when(metrics.getResponseMaxAge()).thenReturn(99);

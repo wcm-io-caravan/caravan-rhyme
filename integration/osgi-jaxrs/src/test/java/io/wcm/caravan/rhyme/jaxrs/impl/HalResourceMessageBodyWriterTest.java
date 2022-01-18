@@ -23,8 +23,10 @@ import static javax.ws.rs.core.MediaType.WILDCARD_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedHashMap;
 
 import org.apache.commons.io.Charsets;
@@ -42,7 +44,7 @@ public class HalResourceMessageBodyWriterTest {
   private final HalResourceMessageBodyWriter messageBodyWriter = new HalResourceMessageBodyWriter();
 
   @Test
-  void isWriteable_should_return_true_for_HalResource() throws Exception {
+  void isWriteable_should_return_true_for_HalResource()  {
 
     boolean writeable = messageBodyWriter.isWriteable(HalResource.class, null, new Annotation[0], WILDCARD_TYPE);
 
@@ -50,7 +52,7 @@ public class HalResourceMessageBodyWriterTest {
   }
 
   @Test
-  void isWriteable_should_return_fals_for_other_class() throws Exception {
+  void isWriteable_should_return_fals_for_other_class()  {
 
     boolean writeable = messageBodyWriter.isWriteable(JsonNode.class, null, new Annotation[0], WILDCARD_TYPE);
 
@@ -58,7 +60,7 @@ public class HalResourceMessageBodyWriterTest {
   }
 
   @Test
-  void getSize_should_not_be_able_do_termine_size() throws Exception {
+  void getSize_should_not_be_able_do_termine_size()  {
 
     long size = messageBodyWriter.getSize(new HalResource(), HalResource.class, null, new Annotation[0], WILDCARD_TYPE);
 
@@ -66,7 +68,7 @@ public class HalResourceMessageBodyWriterTest {
   }
 
   @Test
-  void writeTo_should_serialize_json() throws Exception {
+  void writeTo_should_serialize_json() throws WebApplicationException, IOException {
 
     ObjectNode json = JsonNodeFactory.instance.objectNode().put("föö", "bär");
     HalResource hal = new HalResource(json);

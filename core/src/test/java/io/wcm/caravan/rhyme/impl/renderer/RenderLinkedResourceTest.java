@@ -43,7 +43,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 import io.wcm.caravan.rhyme.testing.TestResource;
 
-public class RenderLinkedResourceTest {
+class RenderLinkedResourceTest {
 
   @HalApiInterface
   public interface TestResourceWithSingleLink {

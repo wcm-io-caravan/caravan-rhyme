@@ -205,7 +205,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void response_code_should_be_set_for_200_hal_response() throws Exception {
+  public void response_code_should_be_set_for_200_hal_response() {
 
     stub200HalResponse();
 
@@ -216,7 +216,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void content_type_should_be_set_for_200_hal_response() throws Exception {
+  public void content_type_should_be_set_for_200_hal_response() {
 
     stub200HalResponse();
 
@@ -227,7 +227,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void body_should_be_set_for_200_hal_response() throws Exception {
+  public void body_should_be_set_for_200_hal_response() {
 
     stub200HalResponse();
 
@@ -241,7 +241,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void maxAge_should_be_null_for_200_hal_response_without_cache_control() throws Exception {
+  public void maxAge_should_be_null_for_200_hal_response_without_cache_control() {
 
     stub200HalResponseWithCacheControl();
 
@@ -252,7 +252,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void non_zero_maxAge_should_be_taken_from_200_hal_response() throws Exception {
+  public void non_zero_maxAge_should_be_taken_from_200_hal_response() {
 
     stub200HalResponseWithMaxAge(100);
 
@@ -263,7 +263,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void zero_maxAge_should_be_taken_from_200_hal_response() throws Exception {
+  public void zero_maxAge_should_be_taken_from_200_hal_response() {
 
     stub200HalResponseWithMaxAge(0);
 
@@ -274,7 +274,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void maxAge_should_be_found_if_seperated_in_multiple_cache_control_headers() throws Exception {
+  public void maxAge_should_be_found_if_seperated_in_multiple_cache_control_headers() {
 
     stub200HalResponseWithCacheControl("public", "no-transform", "max-age=86400");
 
@@ -285,7 +285,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void immutable_should_override_max_age() throws Exception {
+  public void immutable_should_override_max_age() {
 
     stub200HalResponseWithCacheControl("public", "max-age=86400", "immutable");
 
@@ -296,7 +296,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void maxAge_should_be_ignored_if_it_contains_invalid_value() throws Exception {
+  public void maxAge_should_be_ignored_if_it_contains_invalid_value() {
 
     stub200HalResponseWithCacheControl("max-age=foo");
 
@@ -307,7 +307,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void maxAge_should_be_properly_capped_to_max_int_value() throws Exception {
+  public void maxAge_should_be_properly_capped_to_max_int_value() {
 
     stub200HalResponseWithCacheControl("max-age=" + (1000l + Integer.MAX_VALUE));
 
@@ -318,7 +318,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void status_code_should_be_present_in_HalApiClientException_for_non_ok_response() throws Exception {
+  public void status_code_should_be_present_in_HalApiClientException_for_non_ok_response() {
 
     stubHtmlResponseWithStatusCode(503);
 
@@ -329,7 +329,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void content_type_should_be_set_for_500_vnd_error_response() throws Exception {
+  public void content_type_should_be_set_for_500_vnd_error_response() {
 
     stub500VndErrorResponse();
 
@@ -340,7 +340,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void content_type_should_be_null_if_not_present_in_error_response() throws Exception {
+  public void content_type_should_be_null_if_not_present_in_error_response() {
 
     stubErrorResponseWithoutContentType(501);
 
@@ -351,7 +351,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void request_url_should_be_present_in_HalApiClientException_for_non_ok_response() throws Exception {
+  public void request_url_should_be_present_in_HalApiClientException_for_non_ok_response() {
 
     stubHtmlResponseWithStatusCode(503);
 
@@ -362,7 +362,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void error_body_should_be_null_in_HalApiClientException_for_non_ok_html_response() throws Exception {
+  public void error_body_should_be_null_in_HalApiClientException_for_non_ok_html_response() {
 
     stubHtmlResponseWithStatusCode(503);
 
@@ -375,7 +375,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void error_body_should_be_null_in_HalApiClientException_for_non_ok_response_without_body() throws Exception {
+  public void error_body_should_be_null_in_HalApiClientException_for_non_ok_response_without_body() {
 
     stubEmptyResponseWithStatusCode(204);
 
@@ -388,7 +388,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void error_body_should_be_null_in_HalApiClientException_for_non_ok_text_response() throws Exception {
+  public void error_body_should_be_null_in_HalApiClientException_for_non_ok_text_response() {
 
     stubResponseWithContentTypeAndBody(500, "text/json", "500");
 
@@ -401,7 +401,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void error_body_should_be_present_in_HalApiClientException_for_non_ok_json_response() throws Exception {
+  public void error_body_should_be_present_in_HalApiClientException_for_non_ok_json_response() {
 
     stubJsonResponseWithStatusCode(503);
 
@@ -419,7 +419,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void status_code_should_be_200_in_HalApiClientException_for_failure_to_parse_json() throws Exception {
+  public void status_code_should_be_200_in_HalApiClientException_for_failure_to_parse_json() {
 
     stubHtmlResponseWithStatusCode(200);
 
@@ -430,7 +430,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void request_url_should_be_present_in_HalApiClientException_for_failure_to_parse_json() throws Exception {
+  public void request_url_should_be_present_in_HalApiClientException_for_failure_to_parse_json() {
 
     stubHtmlResponseWithStatusCode(200);
 
@@ -441,7 +441,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_failure_to_parse_json() throws Exception {
+  public void cause_should_be_present_in_HalApiClientException_for_failure_to_parse_json() {
 
     stubHtmlResponseWithStatusCode(200);
 
@@ -456,7 +456,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_failure_to_parse_empty_string() throws Exception {
+  public void cause_should_be_present_in_HalApiClientException_for_failure_to_parse_empty_string() {
 
     stubEmptyResponseWithStatusCode(200);
 
@@ -471,7 +471,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_malformed_200_response() throws Exception {
+  public void cause_should_be_present_in_HalApiClientException_for_malformed_200_response() {
 
     stubFaultyResponseWithStatusCode(200, Fault.MALFORMED_RESPONSE_CHUNK);
 
@@ -485,7 +485,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_connection_reset_on_200_response() throws Exception {
+  public void cause_should_be_present_in_HalApiClientException_for_connection_reset_on_200_response() {
 
     stubFaultyResponseWithStatusCode(200, Fault.CONNECTION_RESET_BY_PEER);
 
@@ -500,7 +500,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_random_data_on_200_response() throws Exception {
+  public void cause_should_be_present_in_HalApiClientException_for_random_data_on_200_response() {
 
     stubFaultyResponseWithStatusCode(200, Fault.RANDOM_DATA_THEN_CLOSE);
 
@@ -514,7 +514,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void status_code_should_be_null_in_HalApiClientException_for_network_errors() throws Exception {
+  public void status_code_should_be_null_in_HalApiClientException_for_network_errors() {
 
     HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
@@ -523,7 +523,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void request_url_should_be_present_in_HalApiClientException_for_network_errors() throws Exception {
+  public void request_url_should_be_present_in_HalApiClientException_for_network_errors() {
 
     HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
@@ -532,7 +532,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void error_body_should_be_null_in_HalApiClientException_for_network_errors() throws Exception {
+  public void error_body_should_be_null_in_HalApiClientException_for_network_errors() {
 
     HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
@@ -543,7 +543,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_for_network_errors() throws Exception {
+  public void cause_should_be_present_in_HalApiClientException_for_for_network_errors() {
 
     HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
@@ -552,7 +552,7 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_for_ssl_errors() throws Exception {
+  public void cause_should_be_present_in_HalApiClientException_for_for_ssl_errors() {
 
     HalApiClientException ex = loadResourceAndExpectClientException(sslTestUrl);
 

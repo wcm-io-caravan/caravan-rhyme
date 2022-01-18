@@ -24,6 +24,8 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.UriInfo;
 
@@ -70,7 +72,7 @@ public class RhymeDocsHtmlResourceTest {
 
 
   @Test
-  void getHtmlDocumentation_should_return_404_if_no_InputStream_available_for_given_filename() throws Exception {
+  void getHtmlDocumentation_should_return_404_if_no_InputStream_available_for_given_filename()  {
 
     Throwable ex = catchThrowable(() -> getHtmlDocumentation("Foo.html"));
 
@@ -81,7 +83,7 @@ public class RhymeDocsHtmlResourceTest {
   }
 
   @Test
-  void getHtmlDocumentation_should_return_html_if_InputStream_available_for_given_filename() throws Exception {
+  void getHtmlDocumentation_should_return_html_if_InputStream_available_for_given_filename() throws IOException {
 
     String expectedHtml = "<föö></föö>";
 

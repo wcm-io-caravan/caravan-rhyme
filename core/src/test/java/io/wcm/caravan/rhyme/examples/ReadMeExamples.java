@@ -48,7 +48,7 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
-public class ReadMeExamples {
+class ReadMeExamples {
 
   HalResourceLoader resourceLoader;
 

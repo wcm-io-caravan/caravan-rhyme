@@ -47,7 +47,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 
-public class LinkRewritingTest {
+class LinkRewritingTest {
 
   private static final String INVALID_URI = "/<>";
   private static final String ENTRY_POINT_PATH = "/";

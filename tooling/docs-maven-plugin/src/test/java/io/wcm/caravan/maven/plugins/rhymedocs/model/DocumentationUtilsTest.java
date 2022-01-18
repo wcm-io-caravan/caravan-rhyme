@@ -63,7 +63,7 @@ public class DocumentationUtilsTest {
   }
 
   @Test
-  void getMethod_should_handle_ClassNotFoundException() throws Exception {
+  void getMethod_should_handle_ClassNotFoundException() throws ClassNotFoundException {
 
     ClassLoader classLoader = Mockito.mock(ClassLoader.class);
     Mockito.when(classLoader.loadClass(ArgumentMatchers.anyString()))
@@ -77,7 +77,7 @@ public class DocumentationUtilsTest {
   }
 
   @Test
-  void findJavaDocForMethod_should_handle_classes_without_sources() throws Exception {
+  void findJavaDocForMethod_should_handle_classes_without_sources() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
 
     String fooDesc = DtoWithJacksonAnnotations.findMethodJavaDoc("getFoo");
 

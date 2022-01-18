@@ -37,7 +37,7 @@ import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsCurieGeneratorTest {
+class RhymeDocsCurieGeneratorTest {
 
   private static final String DOCS = "/docs/";
 
@@ -59,7 +59,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_not_add_curies_for_standard_relation() throws Exception {
+  void addCuriesTo_should_not_add_curies_for_standard_relation()  {
 
     testResource.createLinked(StandardRelations.ITEM);
 
@@ -69,7 +69,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_add_curies_for_custom_relations() throws Exception {
+  void addCuriesTo_should_add_curies_for_custom_relations()  {
 
     testResource.createLinked("test:foo");
 
@@ -80,7 +80,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_add_curies_for_embedded_relations() throws Exception {
+  void addCuriesTo_should_add_curies_for_embedded_relations()  {
 
     testResource.createEmbedded("test:foo");
 
@@ -91,7 +91,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_add_curies_for_nested_embedded_relations() throws Exception {
+  void addCuriesTo_should_add_curies_for_nested_embedded_relations()  {
 
     testResource.createEmbedded("foo:test")
         .createEmbedded("bar:test");
@@ -103,7 +103,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_not_repeat_curies_for_multiple_relations_with_same_prefix() throws Exception {
+  void addCuriesTo_should_not_repeat_curies_for_multiple_relations_with_same_prefix()  {
 
     testResource.createLinked("test:foo");
     testResource.createLinked("test:bar");
@@ -115,7 +115,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_prepend_file_name_to_base_url() throws Exception {
+  void addCuriesTo_should_prepend_file_name_to_base_url()  {
 
     testResource.createLinked("test:foo");
 
@@ -126,7 +126,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_append_slash_to_base_url_if_required() throws Exception {
+  void addCuriesTo_should_append_slash_to_base_url_if_required()  {
 
     testResource.createLinked("test:foo");
 
@@ -139,7 +139,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_add_relation_fragment_template_if_enabled() throws Exception {
+  void addCuriesTo_should_add_relation_fragment_template_if_enabled()  {
 
     testResource.createLinked("test:foo");
 
@@ -153,7 +153,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_not_add_relation_fragment_template_if_disabled() throws Exception {
+  void addCuriesTo_should_not_add_relation_fragment_template_if_disabled()  {
 
     testResource.createLinked("test:foo");
 
@@ -167,7 +167,7 @@ public class RhymeDocsCurieGeneratorTest {
   }
 
   @Test
-  void addCuriesTo_should_add_link_title() throws Exception {
+  void addCuriesTo_should_add_link_title()  {
 
     testResource.createLinked("test:foo");
 

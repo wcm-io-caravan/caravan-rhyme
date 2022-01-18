@@ -29,7 +29,7 @@ import com.google.common.collect.ImmutableList;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 
 
-public class CompositeExceptionStatusAndLoggingStrategyTest {
+class CompositeExceptionStatusAndLoggingStrategyTest {
 
   private static final ExceptionStatusAndLoggingStrategy EXTRACT_NOTHING = new ExtractNothing();
   private static final ExceptionStatusAndLoggingStrategy EXTRACT_500 = new Extract500();
@@ -54,25 +54,25 @@ public class CompositeExceptionStatusAndLoggingStrategyTest {
   }
 
   @Test
-  void extractStatusCode_first_matches() throws Exception {
+  void extractStatusCode_first_matches()  {
 
     assertThat(extractStatusCode(EXTRACT_404, EXTRACT_NOTHING)).isEqualTo(404);
   }
 
   @Test
-  void extractStatusCode_second_matches() throws Exception {
+  void extractStatusCode_second_matches()  {
 
     assertThat(extractStatusCode(EXTRACT_NOTHING, EXTRACT_404)).isEqualTo(404);
   }
 
   @Test
-  void extractStatusCode_both_match() throws Exception {
+  void extractStatusCode_both_match()  {
 
     assertThat(extractStatusCode(EXTRACT_500, EXTRACT_404)).isEqualTo(500);
   }
 
   @Test
-  void extractStatusCode_nothing_matches() throws Exception {
+  void extractStatusCode_nothing_matches()  {
 
     assertThat(extractStatusCode(EXTRACT_NOTHING, EXTRACT_NOTHING)).isNull();
   }
@@ -83,25 +83,25 @@ public class CompositeExceptionStatusAndLoggingStrategyTest {
   }
 
   @Test
-  void logAsCompactWarning_first_true() throws Exception {
+  void logAsCompactWarning_first_true()  {
 
     assertThat(logAsWarning(LOG_EVERYTHING_AS_WARNING, LOG_NOTHING_AS_WARNING)).isTrue();
   }
 
   @Test
-  void logAsCompactWarning_second_true() throws Exception {
+  void logAsCompactWarning_second_true()  {
 
     assertThat(logAsWarning(LOG_NOTHING_AS_WARNING, LOG_EVERYTHING_AS_WARNING)).isTrue();
   }
 
   @Test
-  void logAsCompactWarning_both_false() throws Exception {
+  void logAsCompactWarning_both_false()  {
 
     assertThat(logAsWarning(LOG_NOTHING_AS_WARNING, LOG_NOTHING_AS_WARNING)).isFalse();
   }
 
   @Test
-  void logAsCompactWarning_both_true() throws Exception {
+  void logAsCompactWarning_both_true()  {
 
     assertThat(logAsWarning(LOG_EVERYTHING_AS_WARNING, LOG_EVERYTHING_AS_WARNING)).isTrue();
   }
@@ -112,31 +112,31 @@ public class CompositeExceptionStatusAndLoggingStrategyTest {
   }
 
   @Test
-  void getErrorMessageWithoutRedundantInformation_only_first_matches() throws Exception {
+  void getErrorMessageWithoutRedundantInformation_only_first_matches()  {
 
     assertThat(removeInfo(REMOVE_FOO, REMOVE_NOTHING)).isEqualTo("=123");
   }
 
   @Test
-  void getErrorMessageWithoutRedundantInformation_only_second_matches() throws Exception {
+  void getErrorMessageWithoutRedundantInformation_only_second_matches()  {
 
     assertThat(removeInfo(REMOVE_NOTHING, REMOVE_FOO)).isEqualTo("=123");
   }
 
   @Test
-  void getErrorMessageWithoutRedundantInformation_first_removes_more() throws Exception {
+  void getErrorMessageWithoutRedundantInformation_first_removes_more()  {
 
     assertThat(removeInfo(REMOVE_VALUE, REMOVE_FOO)).isEqualTo("foo");
   }
 
   @Test
-  void getErrorMessageWithoutRedundantInformation_second_removes_more() throws Exception {
+  void getErrorMessageWithoutRedundantInformation_second_removes_more()  {
 
     assertThat(removeInfo(REMOVE_FOO, REMOVE_VALUE)).isEqualTo("foo");
   }
 
   @Test
-  void getErrorMessageWithoutRedundantInformation_handles_null() throws Exception {
+  void getErrorMessageWithoutRedundantInformation_handles_null()  {
 
     assertThat(removeInfo(RETURN_NULL, RETURN_NULL)).isEmpty();
   }

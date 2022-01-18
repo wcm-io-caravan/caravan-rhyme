@@ -50,7 +50,7 @@ import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport.
 import io.wcm.caravan.rhyme.testing.TestClock;
 
 @ExtendWith(MockitoExtension.class)
-public class CachingHalResourceLoaderTest {
+class CachingHalResourceLoaderTest {
 
   private static final String URI = "/";
 
@@ -75,14 +75,14 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_return_upstream_response_on_cache_miss() throws Exception {
+  void should_return_upstream_response_on_cache_miss()  {
 
     mockOkResponseWithTextAndMaxAge("foo", 60);
     loadResponseAndAssertTextIs("foo");
   }
 
   @Test
-  void should_return_fresh_cached_response() throws Exception {
+  void should_return_fresh_cached_response()  {
 
     int maxAge = 60;
 
@@ -94,7 +94,7 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_not_used_stale_cached_response() throws Exception {
+  void should_not_used_stale_cached_response()  {
 
     int maxAge = 60;
 
@@ -108,7 +108,7 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_not_used_cached_response_if_max_age_is_zero() throws Exception {
+  void should_not_used_cached_response_if_max_age_is_zero()  {
 
     int maxAge = 0;
 
@@ -120,7 +120,7 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_cache_and_use_default_max_age_if_null_in_response() throws Exception {
+  void should_cache_and_use_default_max_age_if_null_in_response()  {
 
     Integer responseMaxAge = null;
     int defaultMaxAge = 25;
@@ -142,7 +142,7 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_update_max_age_of_cached_response() throws Exception {
+  void should_update_max_age_of_cached_response()  {
 
     mockOkResponseWithTextAndMaxAge("original", 60);
     loadResourceWithCaching();
@@ -155,7 +155,7 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_not_cache_404_errors_by_default() throws Exception {
+  void should_not_cache_404_errors_by_default()  {
 
     int statusCode = 404;
 
@@ -176,7 +176,7 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_cache_404_errors_if_enabled_in_configuration_and_max_age_is_present() throws Exception {
+  void should_cache_404_errors_if_enabled_in_configuration_and_max_age_is_present()  {
 
     int statusCode = 404;
 
@@ -200,7 +200,7 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_cache_404_errors_if_enabled_in_configuration_and_default_max_age_is_present() throws Exception {
+  void should_cache_404_errors_if_enabled_in_configuration_and_default_max_age_is_present()  {
 
     int statusCode = 404;
     int defaultMaxAge = 30;
@@ -230,7 +230,7 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_cache_errors_without_status_code_if_default_max_age_is_present() throws Exception {
+  void should_cache_errors_without_status_code_if_default_max_age_is_present()  {
 
     Integer statusCode = null;
     int defaultMaxAge = 50;
@@ -260,7 +260,7 @@ public class CachingHalResourceLoaderTest {
   }
 
   @Test
-  void should_not_cache_other_errors() throws Exception {
+  void should_not_cache_other_errors()  {
 
     lenient().when(config.isCachingOfHalApiClientExceptionsEnabled())
         .thenReturn(true);

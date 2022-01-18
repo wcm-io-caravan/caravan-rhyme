@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.mock.http.MockHttpInputMessage;
 import org.springframework.mock.http.MockHttpOutputMessage;
 
@@ -84,21 +85,21 @@ public class LinkableResourceMessageConverterTest {
   }
 
   @Test
-  void supports_should_return_true_for_interface() throws Exception {
+  void supports_should_return_true_for_interface()  {
 
     assertThat(converter.supports(LinkableResource.class))
         .isTrue();
   }
 
   @Test
-  void supports_should_return_true_for_implementation() throws Exception {
+  void supports_should_return_true_for_implementation()  {
 
     assertThat(converter.supports(MinimalTestResourceImpl.class))
         .isTrue();
   }
 
   @Test
-  void read_should_always_throw_HttpMessageNotReadableException() throws Exception {
+  void read_should_always_throw_HttpMessageNotReadableException()  {
 
     MockHttpInputMessage mockInput = new MockHttpInputMessage(new byte[0]);
     Throwable ex = catchThrowable(() -> converter.read(MinimalTestResource.class, mockInput));
@@ -109,7 +110,7 @@ public class LinkableResourceMessageConverterTest {
   }
 
   @Test
-  void write_should_add_headers() throws Exception {
+  void write_should_add_headers() throws HttpMessageNotWritableException, IOException {
 
     MinimalTestResource resource = new MinimalTestResourceImpl();
 
@@ -122,7 +123,7 @@ public class LinkableResourceMessageConverterTest {
   }
 
   @Test
-  void write_should_serialize_body() throws Exception {
+  void write_should_serialize_body() throws JsonParseException, IOException {
 
     MinimalTestResource resource = new MinimalTestResourceImpl();
 

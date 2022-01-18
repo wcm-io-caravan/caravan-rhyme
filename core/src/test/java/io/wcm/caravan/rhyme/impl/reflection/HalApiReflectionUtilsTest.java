@@ -35,7 +35,7 @@ import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.EmbeddedResour
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
-public class HalApiReflectionUtilsTest {
+class HalApiReflectionUtilsTest {
 
   private static final HalApiAnnotationSupport ANNOTATION_SUPPORT = new DefaultHalApiTypeSupport();
 
@@ -54,7 +54,7 @@ public class HalApiReflectionUtilsTest {
   }
 
   @Test
-  void getSimpleClassName_should_return_inner_class_name() throws Exception {
+  void getSimpleClassName_should_return_inner_class_name()  {
 
     InnerTestResourceImpl resourceImpl = new InnerTestResourceImpl();
 
@@ -65,7 +65,7 @@ public class HalApiReflectionUtilsTest {
 
 
   @Test
-  void getSimpleClassName_should_return_a_readable_representation_for_anonymous_classes() throws Exception {
+  void getSimpleClassName_should_return_a_readable_representation_for_anonymous_classes()  {
 
     LinkableTestResource resourceImpl = new LinkableTestResource() {
 
@@ -81,7 +81,7 @@ public class HalApiReflectionUtilsTest {
   }
 
   @Test
-  void EmbeddedResourceProxyInvocationHandler_should_catch_any_exception() throws Exception {
+  void EmbeddedResourceProxyInvocationHandler_should_catch_any_exception() throws NoSuchMethodException, SecurityException {
 
     LinkableTestResource resource = Mockito.mock(LinkableTestResource.class);
 

@@ -94,7 +94,7 @@ public class HalApiServletTest {
 
 
   @Test
-  void doGet_for_content_root_without_selector_should_return_entry_point_resource() throws Exception {
+  void doGet_for_content_root_without_selector_should_return_entry_point_resource() throws ServletException, IOException {
 
     Resource resource = context.create().resource("/content");
 
@@ -113,7 +113,7 @@ public class HalApiServletTest {
   }
 
   @Test
-  void doGet_for_existing_resource_without_selector_should_return_404() throws Exception {
+  void doGet_for_existing_resource_without_selector_should_return_404() throws ServletException, IOException {
 
     Resource resource = context.create().resource("/content/foo");
 
@@ -127,7 +127,7 @@ public class HalApiServletTest {
   }
 
   @Test
-  void doGet_with_selector_should_return_test_resource_registered_to_selector() throws Exception {
+  void doGet_with_selector_should_return_test_resource_registered_to_selector() throws ServletException, IOException {
 
     Resource resource = context.create().resource(TEST_RESOURCE_PATH);
 
@@ -141,7 +141,7 @@ public class HalApiServletTest {
   }
 
   @Test
-  void doGet_with_path_to_non_existing_resource_should_return_404() throws Exception {
+  void doGet_with_path_to_non_existing_resource_should_return_404() throws ServletException, IOException {
 
     Resource resource = new NonExistingResource(context.resourceResolver(), "/does/not/exist");
 
@@ -155,7 +155,7 @@ public class HalApiServletTest {
   }
 
   @Test
-  void doGet_with_selector_should_fail_if_multiple_resources_are_registered_for_selector() throws Exception {
+  void doGet_with_selector_should_fail_if_multiple_resources_are_registered_for_selector() throws ServletException, IOException {
 
     context.registerService(RhymeResourceRegistration.class, new MultipleResourcesWithSameSelector());
 
@@ -189,7 +189,7 @@ public class HalApiServletTest {
   }
 
   @Test
-  void caravan_metadata_should_be_removed_by_default() throws Exception {
+  void caravan_metadata_should_be_removed_by_default() throws ServletException, IOException {
 
     Resource resource = context.create().resource(TEST_RESOURCE_PATH);
 
@@ -201,7 +201,7 @@ public class HalApiServletTest {
   }
 
   @Test
-  void caravan_metadata_should_be_maintained_if_query_parameter_is_present() throws Exception {
+  void caravan_metadata_should_be_maintained_if_query_parameter_is_present() throws ServletException, IOException {
 
     Resource resource = context.create().resource(TEST_RESOURCE_PATH);
 
@@ -215,7 +215,7 @@ public class HalApiServletTest {
   }
 
   @Test
-  void curies_to_custom_link_relations_should_be_present() throws Exception {
+  void curies_to_custom_link_relations_should_be_present() throws ServletException, IOException {
 
     Resource resource = context.create().resource(TEST_RESOURCE_PATH);
 

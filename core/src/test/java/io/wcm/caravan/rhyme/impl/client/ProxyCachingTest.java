@@ -54,7 +54,7 @@ import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 import io.wcm.caravan.rhyme.testing.TestState;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class ProxyCachingTest {
+class ProxyCachingTest {
 
   private static final String ITEM_1_URL = "/item/1";
   private static final String ITEM_2_URL = "/item/2";

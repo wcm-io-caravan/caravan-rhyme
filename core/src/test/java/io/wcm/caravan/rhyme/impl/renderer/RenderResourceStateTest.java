@@ -42,7 +42,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.testing.TestState;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
-public class RenderResourceStateTest {
+class RenderResourceStateTest {
 
   @HalApiInterface
   public interface TestResourceWithMaybeState {
