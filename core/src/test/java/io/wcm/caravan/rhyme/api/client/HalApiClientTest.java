@@ -44,7 +44,7 @@ import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 import io.wcm.caravan.rhyme.testing.TestState;
 
 
-public class HalApiClientTest {
+class HalApiClientTest {
 
   @Test
   void create_should_use_a_default_http_client_implementation() throws Exception {

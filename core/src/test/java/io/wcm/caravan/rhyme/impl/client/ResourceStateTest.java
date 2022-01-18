@@ -38,7 +38,7 @@ import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 
-public class ResourceStateTest {
+class ResourceStateTest {
 
   private final MockClientTestSupport client = ClientTestSupport.withMocking();
 

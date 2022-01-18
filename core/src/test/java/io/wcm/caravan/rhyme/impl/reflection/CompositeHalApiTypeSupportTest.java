@@ -53,7 +53,7 @@ import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
 import io.wcm.caravan.rhyme.testing.resources.TestResource;
 
 @ExtendWith(MockitoExtension.class)
-public class CompositeHalApiTypeSupportTest {
+class CompositeHalApiTypeSupportTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

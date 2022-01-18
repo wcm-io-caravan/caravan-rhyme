@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 
 
-public class HalApiClientExceptionTest {
+class HalApiClientExceptionTest {
 
   @Test
   void deprecated_constructor_should_use_given_URI() throws Exception {

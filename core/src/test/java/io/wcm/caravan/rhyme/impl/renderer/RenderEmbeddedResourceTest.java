@@ -39,8 +39,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.testing.TestResource;
 import io.wcm.caravan.rhyme.testing.TestState;
 
-public class RenderEmbeddedResourceTest {
-
+class RenderEmbeddedResourceTest {
 
   @HalApiInterface
   public interface TestResourceWithObservableEmbedded {

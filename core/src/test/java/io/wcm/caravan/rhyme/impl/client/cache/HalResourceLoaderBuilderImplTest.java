@@ -42,7 +42,7 @@ import io.wcm.caravan.rhyme.impl.client.http.HttpHalResourceLoader;
 import io.wcm.caravan.rhyme.testing.TestClock;
 
 @ExtendWith(MockitoExtension.class)
-public class HalResourceLoaderBuilderImplTest {
+class HalResourceLoaderBuilderImplTest {
 
   @Mock
   private HalResourceLoader mockLoader;

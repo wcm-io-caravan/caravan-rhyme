@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 
-public class HalResponseTest {
+class HalResponseTest {
 
   @Test
   void withBody_should_allow_null_json_nodes() throws Exception {

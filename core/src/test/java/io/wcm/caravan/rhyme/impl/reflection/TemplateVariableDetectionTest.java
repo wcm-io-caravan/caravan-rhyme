@@ -41,7 +41,7 @@ import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection.TemplateVa
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
-public class TemplateVariableDetectionTest {
+class TemplateVariableDetectionTest {
 
   @HalApiInterface
   public interface ResourceWithTemplate {

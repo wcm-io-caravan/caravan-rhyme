@@ -73,7 +73,7 @@ import io.wcm.caravan.rhyme.testing.resources.TestResource;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 @ExtendWith(MockitoExtension.class)
-public class RhymeBuilderImplTest {
+class RhymeBuilderImplTest {
 
   private static final String UPSTREAM_ENTRY_POINT_URI = "/";
   private static final String INCOMING_REQUEST_URI = "/incoming";

@@ -50,7 +50,7 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 
 @ExtendWith(MockitoExtension.class)
-public class HttpHalResourceLoaderTest {
+class HttpHalResourceLoaderTest {
 
   private static final String VALID_URI = "/foo";
 

@@ -35,7 +35,7 @@ import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.EmbeddedResour
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
-public class HalApiReflectionUtilsTest {
+class HalApiReflectionUtilsTest {
 
   private static final HalApiAnnotationSupport ANNOTATION_SUPPORT = new DefaultHalApiTypeSupport();
 

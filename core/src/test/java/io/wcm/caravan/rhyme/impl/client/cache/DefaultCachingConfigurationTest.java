@@ -26,7 +26,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 
-public class DefaultCachingConfigurationTest {
+class DefaultCachingConfigurationTest {
 
   private final DefaultCachingConfiguration config = new DefaultCachingConfiguration();
 

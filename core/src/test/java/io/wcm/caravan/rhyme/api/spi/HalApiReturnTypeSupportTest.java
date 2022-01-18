@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava3.core.Observable;
 
 
-public class HalApiReturnTypeSupportTest {
+class HalApiReturnTypeSupportTest {
 
   @Test
   void isProviderOfOptionalValue_should_have_default_implementation() throws Exception {

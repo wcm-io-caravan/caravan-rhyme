@@ -36,7 +36,7 @@ import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 import io.wcm.caravan.rhyme.testing.TestState;
 
 
-public class ResourceConversionsTest {
+class ResourceConversionsTest {
 
   class LinkableTestResourceImpl implements LinkableTestResource {
 

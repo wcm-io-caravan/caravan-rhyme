@@ -45,7 +45,7 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.impl.metadata.FullMetadataGenerator.TimeMeasurement;
 
 @ExtendWith(MockitoExtension.class)
-public class ResponseMetadataGeneratorTest {
+class ResponseMetadataGeneratorTest {
 
   private static final String METHOD2 = "method2()";
   private static final String METHOD1 = "method1()";

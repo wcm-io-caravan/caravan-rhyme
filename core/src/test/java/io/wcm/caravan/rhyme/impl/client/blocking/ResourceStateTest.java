@@ -44,7 +44,7 @@ import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
  * Variation of the tests in {@link io.wcm.caravan.rhyme.impl.client.ResourceStateTest}
  * for blocking HAL API interfaces (i.e. that are not using reactive return types for their methods)
  */
-public class ResourceStateTest {
+class ResourceStateTest {
 
   private static final String RESOURCE_URL = "/";
 

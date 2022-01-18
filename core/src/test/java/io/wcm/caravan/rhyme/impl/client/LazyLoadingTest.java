@@ -38,7 +38,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 
-public class LazyLoadingTest {
+class LazyLoadingTest {
 
   private static final String RESOURCE_URI = "/linked";
 

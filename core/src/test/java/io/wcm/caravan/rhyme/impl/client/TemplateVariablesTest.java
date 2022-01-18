@@ -47,7 +47,7 @@ import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 
-public class TemplateVariablesTest {
+class TemplateVariablesTest {
 
   private final MockClientTestSupport client = ClientTestSupport.withMocking();
   private final HalResource entryPoint = new HalResource();

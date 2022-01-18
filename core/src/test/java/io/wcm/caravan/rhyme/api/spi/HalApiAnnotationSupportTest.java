@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
-public class HalApiAnnotationSupportTest {
+class HalApiAnnotationSupportTest {
 
   private final HalApiAnnotationSupport annotationSupport = new HalApiAnnotationSupport() {
 

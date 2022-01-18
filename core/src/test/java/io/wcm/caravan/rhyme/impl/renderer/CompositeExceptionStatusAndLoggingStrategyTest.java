@@ -29,7 +29,7 @@ import com.google.common.collect.ImmutableList;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
 
 
-public class CompositeExceptionStatusAndLoggingStrategyTest {
+class CompositeExceptionStatusAndLoggingStrategyTest {
 
   private static final ExceptionStatusAndLoggingStrategy EXTRACT_NOTHING = new ExtractNothing();
   private static final ExceptionStatusAndLoggingStrategy EXTRACT_500 = new Extract500();

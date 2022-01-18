@@ -37,7 +37,7 @@ import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsCurieGeneratorTest {
+class RhymeDocsCurieGeneratorTest {
 
   private static final String DOCS = "/docs/";
 

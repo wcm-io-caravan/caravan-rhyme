@@ -45,7 +45,7 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 
 @ExtendWith(MockitoExtension.class)
-public class EmissionStopwatchTest {
+class EmissionStopwatchTest {
 
   private static final String METHOD_DESC = "test";
   @Mock

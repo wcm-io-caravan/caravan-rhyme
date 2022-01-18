@@ -51,7 +51,7 @@ import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 import io.wcm.caravan.rhyme.testing.TestState;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
-public class RhymeImplTest {
+class RhymeImplTest {
 
   private static final String UPSTREAM_ENTRY_POINT_URI = "/";
   private static final String NON_EXISTING_PATH = "/does/not/exist";

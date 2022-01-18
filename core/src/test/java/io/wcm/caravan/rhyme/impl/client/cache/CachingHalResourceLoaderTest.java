@@ -50,7 +50,7 @@ import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport.
 import io.wcm.caravan.rhyme.testing.TestClock;
 
 @ExtendWith(MockitoExtension.class)
-public class CachingHalResourceLoaderTest {
+class CachingHalResourceLoaderTest {
 
   private static final String URI = "/";
 

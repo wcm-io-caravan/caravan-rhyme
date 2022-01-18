@@ -47,7 +47,7 @@ import io.wcm.caravan.rhyme.testing.resources.TestResource;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class RelatedResourceTest {
+class RelatedResourceTest {
 
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();
   private final TestResource entryPoint = client.getEntryPoint();

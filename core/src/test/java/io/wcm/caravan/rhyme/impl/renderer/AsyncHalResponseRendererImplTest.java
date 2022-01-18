@@ -53,7 +53,7 @@ import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 @ExtendWith(MockitoExtension.class)
-public class AsyncHalResponseRendererImplTest {
+class AsyncHalResponseRendererImplTest {
 
   private static final String REQUEST_URI = "/requestUri";
 

@@ -44,7 +44,7 @@ import io.wcm.caravan.rhyme.testing.TestResource;
  * Variation of the tests in {@link io.wcm.caravan.rhyme.impl.renderer.RenderLinkedResourceTest}
  * for blocking HAL API interfaces (i.e. that are not using reactive return types for their methods)
  */
-public class RenderLinkedResourceTest {
+class RenderLinkedResourceTest {
 
   @HalApiInterface
   public interface TestResourceWithRequiredLink {

@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 
 
-public class DefaultHalApiTypeSupportTest {
+class DefaultHalApiTypeSupportTest {
 
   private DefaultHalApiTypeSupport typeSupport = new DefaultHalApiTypeSupport();
 

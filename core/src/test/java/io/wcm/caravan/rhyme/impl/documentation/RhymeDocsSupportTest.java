@@ -47,7 +47,7 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsSupportTest {
+class RhymeDocsSupportTest {
 
   @Mock
   private RhymeDocsSupport mock;
