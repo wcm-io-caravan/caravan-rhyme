@@ -80,7 +80,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void required_linked_resource_should_be_emitted() throws Exception {
+  void required_linked_resource_should_be_emitted()  {
 
     entryPoint.createLinked(ITEM).setText("item text");
 
@@ -96,7 +96,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void required_linked_resource_should_fail_if_link_is_not_present() throws Exception {
+  void required_linked_resource_should_fail_if_link_is_not_present()  {
 
     entryPoint.createLinked(ALTERNATE).setText("item text");
 
@@ -111,7 +111,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void required_linked_resource_should_cause_HalApiClientException_if_missing() throws Exception {
+  void required_linked_resource_should_cause_HalApiClientException_if_missing()  {
 
     entryPoint.createLinked(ITEM).withStatus(404);
 
@@ -120,7 +120,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void required_embedded_resource_should_be_emitted() throws Exception {
+  void required_embedded_resource_should_be_emitted()  {
 
     entryPoint.createEmbedded(ITEM).setText("item text");
 
@@ -136,7 +136,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void required_embedded_resource_should_fail_if_resource_is_not_present() throws Exception {
+  void required_embedded_resource_should_fail_if_resource_is_not_present()  {
 
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
 
@@ -158,7 +158,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void optional_linked_resource_should_be_emitted() throws Exception {
+  void optional_linked_resource_should_be_emitted()  {
 
     entryPoint.createLinked(ITEM).setText("item text");
 
@@ -175,7 +175,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void optional_linked_resource_should_be_empty_if_link_is_not_present() throws Exception {
+  void optional_linked_resource_should_be_empty_if_link_is_not_present()  {
 
     // create a link with a different relation then defined in the interface
     entryPoint.createLinked(ALTERNATE).setText("item text");
@@ -188,7 +188,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void optional_embedded_resource_should_be_emitted() throws Exception {
+  void optional_embedded_resource_should_be_emitted()  {
 
     entryPoint.createEmbedded(ITEM).setText("item text");
 
@@ -205,7 +205,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void optional_embedded_resource_should_be_empty_if_resource_is_not_present() throws Exception {
+  void optional_embedded_resource_should_be_empty_if_resource_is_not_present()  {
 
     // create a link with a different relation then defined in the interface
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
@@ -226,7 +226,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void list_linked_resource_should_emitted_single_item() throws Exception {
+  void list_linked_resource_should_emitted_single_item()  {
 
     entryPoint.createLinked(ITEM).setText("item text");
 
@@ -243,7 +243,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void list_linked_resource_should_be_empty_if_no_links_are_present() throws Exception {
+  void list_linked_resource_should_be_empty_if_no_links_are_present()  {
 
     // create a link with a different relation then defined in the interface
     entryPoint.createLinked(ALTERNATE).setText("item text");
@@ -256,7 +256,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void list_linked_resource_should_emitted_multiple_items() throws Exception {
+  void list_linked_resource_should_emitted_multiple_items()  {
 
     int numItems = 10;
     Observable.range(0, numItems).forEach(i -> entryPoint.createLinked(ITEM).setNumber(i));
@@ -276,7 +276,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void list_embedded_resource_should_emitted_single_item() throws Exception {
+  void list_embedded_resource_should_emitted_single_item()  {
 
     entryPoint.createEmbedded(ITEM).setText("item text");
 
@@ -293,7 +293,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void list_embedded_resource_should_be_empty_if_no_resources_are_present() throws Exception {
+  void list_embedded_resource_should_be_empty_if_no_resources_are_present()  {
 
     // create an embeded resource with a different relation then defined in the interface
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
@@ -306,7 +306,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void list_embedded_resource_should_emitted_multiple_items() throws Exception {
+  void list_embedded_resource_should_emitted_multiple_items()  {
 
     int numItems = 10;
     Observable.range(0, numItems).forEach(i -> entryPoint.createEmbedded(ITEM).setNumber(i));
@@ -326,7 +326,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void duplicates_should_be_filtered_if_they_are_linked_and_embedded() throws Exception {
+  void duplicates_should_be_filtered_if_they_are_linked_and_embedded()  {
 
     int numItems = 10;
     Observable.range(0, numItems).forEach(i -> {
@@ -356,7 +356,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void related_method_with_stream_return_type_should_be_supported() throws Exception {
+  void related_method_with_stream_return_type_should_be_supported()  {
 
     int numItems = 10;
     Observable.range(0, numItems).forEach(i -> entryPoint.createEmbedded(ITEM).setNumber(i));
@@ -370,7 +370,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void related_method_with_stream_return_type_can_be_called_multiple_times() throws Exception {
+  void related_method_with_stream_return_type_can_be_called_multiple_times()  {
 
     int numItems = 3;
     Observable.range(0, numItems).forEach(i -> entryPoint.createEmbedded(ITEM).setNumber(i));
@@ -388,7 +388,7 @@ class RelatedResourceTest {
   }
 
   @Test
-  void calling_hashCode_on_client_proxy_throws_exception() throws Exception {
+  void calling_hashCode_on_client_proxy_throws_exception()  {
 
     entryPoint.createLinked(ITEM).setText("item text");
 

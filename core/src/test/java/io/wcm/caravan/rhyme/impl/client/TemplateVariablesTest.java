@@ -111,7 +111,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_expand_template_with_variables_from_dto() throws Exception {
+  void should_expand_template_with_variables_from_dto()  {
 
     String template = "/item/{id}{?text*}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -131,7 +131,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_expand_template_with_null_field_in_dto() throws Exception {
+  void should_expand_template_with_null_field_in_dto()  {
 
     String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -151,7 +151,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_expand_template_with_only_null_fields_in_dto() throws Exception {
+  void should_expand_template_with_only_null_fields_in_dto()  {
 
     String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -171,7 +171,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_not_expand_template_if_null_dto_is_used() throws Exception {
+  void should_not_expand_template_if_null_dto_is_used()  {
 
     String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -200,7 +200,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_fail_if_dto_fields_are_private() throws Exception {
+  void should_fail_if_dto_fields_are_private()  {
 
     VariablesDtoWithPrivateFields dto = new VariablesDtoWithPrivateFields();
 
@@ -228,7 +228,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_expand_template_with_variables_interface() throws Exception {
+  void should_expand_template_with_variables_interface()  {
 
     String template = "/item/{id}{?text*}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -258,7 +258,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_not_expand_template_if_null_interface_is_used() throws Exception {
+  void should_not_expand_template_if_null_interface_is_used()  {
 
     String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -272,7 +272,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_fail_if_calling_interface_method_throws_exception() throws Exception {
+  void should_fail_if_calling_interface_method_throws_exception()  {
 
     VariablesInterface variables = Mockito.mock(VariablesInterface.class);
     Mockito.when(variables.getId()).thenThrow(new IllegalArgumentException());
@@ -287,7 +287,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_fail_if_non_null_variable_is_not_present_in_template() throws Exception {
+  void should_fail_if_non_null_variable_is_not_present_in_template()  {
 
     String template = "/item/{id}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -309,7 +309,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_not_fail_if_null_variable_is_not_present_in_template() throws Exception {
+  void should_not_fail_if_null_variable_is_not_present_in_template()  {
 
     String template = "/item/{id}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -329,7 +329,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_fail_if_no_bean_properties_defined_in_interface() throws Exception {
+  void should_fail_if_no_bean_properties_defined_in_interface()  {
 
     Throwable ex = catchThrowable(() -> client.createProxy(ResourceWithInvalidTemplateVariables.class).getItem(null));
 

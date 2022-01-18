@@ -87,7 +87,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_return_pipeline_output() throws Exception {
+  void getHalResource_should_return_pipeline_output()  {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode().put("foo", "bar");
 
@@ -101,7 +101,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_forward_max_age() throws Exception {
+  void getHalResource_should_forward_max_age()  {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode();
 
@@ -114,7 +114,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_throw_HalApiClientException_for_404_responses() throws Exception {
+  void getHalResource_should_throw_HalApiClientException_for_404_responses()  {
 
     ObjectNode body = JsonNodeFactory.instance.objectNode();
 
@@ -130,7 +130,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_throw_HalApiClientException_for_501_responses_without_body() throws Exception {
+  void getHalResource_should_throw_HalApiClientException_for_501_responses_without_body()  {
 
     mockIllegalResponseRuntimeException(502, null);
 
@@ -144,7 +144,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_throw_HalApiClientException_for_501_responses_with_json_body() throws Exception {
+  void getHalResource_should_throw_HalApiClientException_for_501_responses_with_json_body()  {
 
     mockIllegalResponseRuntimeException(501, "{\"foo\": \"bar\"}");
 
@@ -155,7 +155,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_throw_HalApiClientException_for_500_responses_with_non_json_body() throws Exception {
+  void getHalResource_should_throw_HalApiClientException_for_500_responses_with_non_json_body()  {
 
     mockIllegalResponseRuntimeException(500, "foo");
 
@@ -166,7 +166,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_throw_HalApiClientException_for_500_responses_with_status_code_in_body() throws Exception {
+  void getHalResource_should_throw_HalApiClientException_for_500_responses_with_status_code_in_body()  {
 
     mockIllegalResponseRuntimeException(500, "500 Internal Server Error");
 
@@ -180,7 +180,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_throw_HalApiClientException_for_unexpected_exceptions() throws Exception {
+  void getHalResource_should_throw_HalApiClientException_for_unexpected_exceptions()  {
 
     // trigger a runtime exception within JsonPipeline by having the http client return an unexpected empty observable
     when(httpClient.execute(ArgumentMatchers.any()))
@@ -196,7 +196,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_handle_fatal_errors() throws Exception {
+  void getHalResource_should_handle_fatal_errors()  {
 
     when(httpClient.execute(ArgumentMatchers.any()))
         .thenReturn(Observable.error(new Error("Something really went wrong")));
@@ -207,7 +207,7 @@ abstract class AbstractCaravanJsonResourceLoaderTest {
   }
 
   @Test
-  void getHalResource_should_handle_errors_reading_body() throws Exception {
+  void getHalResource_should_handle_errors_reading_body()  {
 
     mockExceptionReadingBody();
 

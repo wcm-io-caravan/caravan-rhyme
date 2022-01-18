@@ -52,7 +52,7 @@ class LazyLoadingTest {
   }
 
   @Test
-  void lazy_loading_should_not_be_triggered_by_calling_resource_state_proxy_method() throws Exception {
+  void lazy_loading_should_not_be_triggered_by_calling_resource_state_proxy_method()  {
 
     SingleSubject<HalResource> mockJsonResponse = client.mockHalResponseWithSubject(ENTRY_POINT_URI);
 
@@ -65,7 +65,7 @@ class LazyLoadingTest {
   }
 
   @Test
-  void lazy_loading_should_be_triggered_by_subscription_to_resource_state_single() throws Exception {
+  void lazy_loading_should_be_triggered_by_subscription_to_resource_state_single()  {
 
     SingleSubject<HalResource> mockJsonResponse = client.mockHalResponseWithSubject(ENTRY_POINT_URI);
 
@@ -89,7 +89,7 @@ class LazyLoadingTest {
   }
 
   @Test
-  void lazy_loading_should_not_be_triggered_by_calling_related_resource_proxy_method() throws Exception {
+  void lazy_loading_should_not_be_triggered_by_calling_related_resource_proxy_method()  {
 
     SingleSubject<HalResource> mockEntryPoint = client.mockHalResponseWithSubject(ENTRY_POINT_URI);
     SingleSubject<HalResource> mockLinkedResource = client.mockHalResponseWithSubject(RESOURCE_URI);
@@ -106,7 +106,7 @@ class LazyLoadingTest {
   }
 
   @Test
-  void lazy_loading_should_be_triggered_by_subscription_to_linked_resource_state_single() throws Exception {
+  void lazy_loading_should_be_triggered_by_subscription_to_linked_resource_state_single()  {
 
     SingleSubject<HalResource> mockEntryPoint = client.mockHalResponseWithSubject(ENTRY_POINT_URI);
     SingleSubject<HalResource> mockLinkedResource = client.mockHalResponseWithSubject(RESOURCE_URI);
@@ -131,7 +131,7 @@ class LazyLoadingTest {
   }
 
   @Test
-  void lazy_loading_should_not_be_triggered_by_calling_resource_link_proxy_method_on_entry_point() throws Exception {
+  void lazy_loading_should_not_be_triggered_by_calling_resource_link_proxy_method_on_entry_point()  {
 
     SingleSubject<HalResource> mockJsonResponse = client.mockHalResponseWithSubject(ENTRY_POINT_URI);
 
@@ -156,7 +156,7 @@ class LazyLoadingTest {
   }
 
   @Test
-  void only_entrypoint_should_be_lazily_loaded_when_calling_resource_link_proxy_method() throws Exception {
+  void only_entrypoint_should_be_lazily_loaded_when_calling_resource_link_proxy_method()  {
 
     SingleSubject<HalResource> mockEntryPoint = client.mockHalResponseWithSubject(ENTRY_POINT_URI);
     SingleSubject<HalResource> mockLinkedResource = client.mockHalResponseWithSubject(RESOURCE_URI);

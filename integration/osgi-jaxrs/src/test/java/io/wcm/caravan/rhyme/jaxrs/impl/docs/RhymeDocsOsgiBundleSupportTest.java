@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
+import java.io.IOException;
+
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.apache.sling.testing.mock.osgi.junit5.OsgiContextExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,14 +64,14 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  void getRhymeDocsBaseUrl_should_return_base_url() throws Exception {
+  void getRhymeDocsBaseUrl_should_return_base_url()  {
 
     assertThat(docsSupport.getRhymeDocsBaseUrl())
         .isEqualTo(RhymeDocsJaxRsApplication.BASE_PATH + "/");
   }
 
   @Test
-  void openResourceStream_should_return_null_if_no_bundles_were_registered() throws Exception {
+  void openResourceStream_should_return_null_if_no_bundles_were_registered() throws IOException {
 
     String resourcePath = constructResourcePath("Foo.html");
 
@@ -78,7 +80,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  void openResourceStream_should_return_stream_if_bundle_with_matching_resource_is_registered() throws Exception {
+  void openResourceStream_should_return_stream_if_bundle_with_matching_resource_is_registered() throws IOException {
 
     String resourcePath = constructResourcePath("Foo.html");
 
@@ -91,7 +93,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  void openResourceStream_should_return_null_if_bundle_with_different_file_was_registered() throws Exception {
+  void openResourceStream_should_return_null_if_bundle_with_different_file_was_registered() throws IOException {
 
     String fooResourcePath = constructResourcePath("Foo.html");
     String barResourcePath = constructResourcePath("Bar.html");
@@ -105,7 +107,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  void openResourceStream_should_return_null_if_bundle_with_with_matching_resource_was_deregistered() throws Exception {
+  void openResourceStream_should_return_null_if_bundle_with_with_matching_resource_was_deregistered() throws IOException {
 
     String resourcePath = constructResourcePath("Foo.html");
 

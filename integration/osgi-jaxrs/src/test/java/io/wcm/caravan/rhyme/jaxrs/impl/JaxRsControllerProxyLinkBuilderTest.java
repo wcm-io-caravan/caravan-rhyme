@@ -136,14 +136,14 @@ public class JaxRsControllerProxyLinkBuilderTest {
   }
 
   @Test
-  void path_from_annotation_should_be_used() throws Exception {
+  void path_from_annotation_should_be_used()  {
 
     assertLinkUrlFor(r -> r.foo())
         .isEqualTo("/foo");
   }
 
   @Test
-  void fail_if_no_path_annotation_is_present() throws Exception {
+  void fail_if_no_path_annotation_is_present()  {
 
     Throwable ex = catchThrowable(() -> buildLinkTo(resource -> resource.withoutAnnotation()));
 
@@ -155,63 +155,63 @@ public class JaxRsControllerProxyLinkBuilderTest {
   }
 
   @Test
-  void one_resolved_required_query_param() throws Exception {
+  void one_resolved_required_query_param()  {
 
     assertLinkUrlFor(r -> r.withStringQueryParam("123"))
         .isEqualTo("/test?foo=123");
   }
 
   @Test
-  void one_unresolved_required_query_param() throws Exception {
+  void one_unresolved_required_query_param()  {
 
     assertLinkUrlFor(r -> r.withStringQueryParam(null))
         .isEqualTo("/test{?foo}");
   }
 
   @Test
-  void two_required_query_params_both_resolved() throws Exception {
+  void two_required_query_params_both_resolved()  {
 
     assertLinkUrlFor(r -> r.withTwoStringQueryParams("123", "456"))
         .isEqualTo("/test?foo=123&bar=456");
   }
 
   @Test
-  void two_required_query_params_first_is_resolved() throws Exception {
+  void two_required_query_params_first_is_resolved()  {
 
     assertLinkUrlFor(r -> r.withTwoStringQueryParams("123", null))
         .isEqualTo("/test?foo=123{&bar}");
   }
 
   @Test
-  void two_required_query_params_second_is_resolved() throws Exception {
+  void two_required_query_params_second_is_resolved()  {
 
     assertLinkUrlFor(r -> r.withTwoStringQueryParams(null, "456"))
         .isEqualTo("/test?bar=456{&foo}");
   }
 
   @Test
-  void two_required_query_params_none_resolved() throws Exception {
+  void two_required_query_params_none_resolved()  {
 
     assertLinkUrlFor(r -> r.withTwoStringQueryParams(null, null))
         .isEqualTo("/test{?foo,bar}");
   }
 
   @Test
-  void template_does_not_expand_if_required_and_optional_param_is_unresolved() throws Exception {
+  void template_does_not_expand_if_required_and_optional_param_is_unresolved()  {
 
     assertLinkUrlFor(r -> r.withRequiredFooAndOptionalBarStringQueryParams(null, null))
         .isEqualTo("/test{?foo,bar}");
   }
 
   @Test
-  void template_does_not_expand_if_only_optional_param_is_resolved() throws Exception {
+  void template_does_not_expand_if_only_optional_param_is_resolved()  {
 
     assertLinkUrlFor(r -> r.withRequiredFooAndOptionalBarStringQueryParams(null, "456"))
         .isEqualTo("/test?bar=456{&foo}");
   }
 
   @Test
-  void template_does_not_expand_if_only_additional_param_is_resolved() throws Exception {
+  void template_does_not_expand_if_only_additional_param_is_resolved()  {
 
     JaxRsLinkBuilder<JaxRsComponent> linkBuilder = new JaxRsControllerProxyLinkBuilder<JaxRsComponent>("", JaxRsComponent.class)
         .withAdditionalQueryParameters(ImmutableMap.of("finger", "print"));
@@ -223,105 +223,105 @@ public class JaxRsControllerProxyLinkBuilderTest {
   }
 
   @Test
-  void template_expands_if_only_optional_param_is_unresolved() throws Exception {
+  void template_expands_if_only_optional_param_is_unresolved()  {
 
     assertLinkUrlFor(r -> r.withRequiredFooAndOptionalBarStringQueryParams("123", null))
         .isEqualTo("/test?foo=123");
   }
 
   @Test
-  void one_resolved_path_param() throws Exception {
+  void one_resolved_path_param()  {
 
     assertLinkUrlFor(r -> r.withStringPathParam("123"))
         .isEqualTo("/test/123");
   }
 
   @Test
-  void one_unresolved_path_param() throws Exception {
+  void one_unresolved_path_param()  {
 
     assertLinkUrlFor(r -> r.withStringPathParam(null))
         .isEqualTo("/test/{foo}");
   }
 
   @Test
-  void two_path_params_both_resolved() throws Exception {
+  void two_path_params_both_resolved()  {
 
     assertLinkUrlFor(r -> r.withTwoStringPathParams("123", "456"))
         .isEqualTo("/test/123/456");
   }
 
   @Test
-  void two_path_params_first_is_resolved() throws Exception {
+  void two_path_params_first_is_resolved()  {
 
     assertLinkUrlFor(r -> r.withTwoStringPathParams("123", null))
         .isEqualTo("/test/123/{bar}");
   }
 
   @Test
-  void two_path_params_second_is_resolved() throws Exception {
+  void two_path_params_second_is_resolved()  {
 
     assertLinkUrlFor(r -> r.withTwoStringPathParams(null, "456"))
         .isEqualTo("/test/{foo}/456");
   }
 
   @Test
-  void two_path_params_none_resolved() throws Exception {
+  void two_path_params_none_resolved()  {
 
     assertLinkUrlFor(r -> r.withTwoStringPathParams(null, null))
         .isEqualTo("/test/{foo}/{bar}");
   }
 
   @Test
-  void one_null_list_query_param() throws Exception {
+  void one_null_list_query_param()  {
 
     assertLinkUrlFor(r -> r.withListQueryParam(null))
         .isEqualTo("/test{?foo*}");
   }
 
   @Test
-  void one_empty_list_query_param() throws Exception {
+  void one_empty_list_query_param()  {
 
     assertLinkUrlFor(r -> r.withListQueryParam(Collections.emptyList()))
         .isEqualTo("/test");
   }
 
   @Test
-  void one_populated_list_query_param() throws Exception {
+  void one_populated_list_query_param()  {
 
     assertLinkUrlFor(r -> r.withListQueryParam(ImmutableList.of("123", "456")))
         .isEqualTo("/test?foo=123&foo=456");
   }
 
   @Test
-  void one_null_list_query_param_before_string_param() throws Exception {
+  void one_null_list_query_param_before_string_param()  {
 
     assertLinkUrlFor(r -> r.withListAndStringQueryParam(null, "123"))
         .isEqualTo("/test?bar=123{&foo*}");
   }
 
   @Test
-  void one_empty_list_query_param_before_string_param() throws Exception {
+  void one_empty_list_query_param_before_string_param()  {
 
     assertLinkUrlFor(r -> r.withListAndStringQueryParam(Collections.emptyList(), "123"))
         .isEqualTo("/test?bar=123");
   }
 
   @Test
-  void one_populated_list_query_param_before_string_param() throws Exception {
+  void one_populated_list_query_param_before_string_param()  {
 
     assertLinkUrlFor(r -> r.withListAndStringQueryParam(ImmutableList.of("123", "456"), "789"))
         .isEqualTo("/test?foo=123&foo=456&bar=789");
   }
 
   @Test
-  void null_bean_param_should_result_in_full_template_to_be_written() throws Exception {
+  void null_bean_param_should_result_in_full_template_to_be_written()  {
 
     assertLinkUrlFor(r -> r.withBeanParam(null))
         .isEqualTo("/test/{foo}{?bar,withDefault}");
   }
 
   @Test
-  void one_bean_param_should_result_in_full_template_to_be_written() throws Exception {
+  void one_bean_param_should_result_in_full_template_to_be_written()  {
 
     ParamBean params = new ParamBean();
 
@@ -330,7 +330,7 @@ public class JaxRsControllerProxyLinkBuilderTest {
   }
 
   @Test
-  void one_bean_param_with_path_and_query_field_set() throws Exception {
+  void one_bean_param_with_path_and_query_field_set()  {
 
     ParamBean params = new ParamBean();
     params.foo = "123";
@@ -341,7 +341,7 @@ public class JaxRsControllerProxyLinkBuilderTest {
   }
 
   @Test
-  void one_bean_param_with_replacement_for_default_value() throws Exception {
+  void one_bean_param_with_replacement_for_default_value()  {
 
     ParamBean params = new ParamBean();
     params.foo = "123";

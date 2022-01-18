@@ -36,6 +36,7 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,7 +116,8 @@ class GenerateRhymeDocsMojoTest {
 
 
   @Test
-  void execute_should_generate_documention_if_interfaces_are_found_in_classpath() throws Exception {
+  void execute_should_generate_documention_if_interfaces_are_found_in_classpath()
+      throws DependencyResolutionRequiredException, MojoExecutionException, MojoFailureException, IOException {
 
     setupMocksForSuccessfulGeneration();
 
@@ -135,7 +137,8 @@ class GenerateRhymeDocsMojoTest {
   }
 
   @Test
-  void execute_should_add_generated_documentation_to_project_resources() throws Exception {
+  void execute_should_add_generated_documentation_to_project_resources()
+      throws DependencyResolutionRequiredException, MojoExecutionException, MojoFailureException {
 
     setupMocksForSuccessfulGeneration();
 
@@ -155,7 +158,7 @@ class GenerateRhymeDocsMojoTest {
   }
 
   @Test
-  void execute_should_fail_if_there_are_no_classpath_elements() throws Exception {
+  void execute_should_fail_if_there_are_no_classpath_elements() throws DependencyResolutionRequiredException {
 
     when(projectMock.getCompileClasspathElements())
         .thenReturn(Collections.emptyList());
@@ -172,7 +175,7 @@ class GenerateRhymeDocsMojoTest {
   }
 
   @Test
-  void execute_should_fail_if_there_are_invalid_classpath_elements() throws Exception {
+  void execute_should_fail_if_there_are_invalid_classpath_elements() throws DependencyResolutionRequiredException {
 
     when(projectMock.getCompileClasspathElements())
         .thenReturn(Lists.newArrayList("foo"));

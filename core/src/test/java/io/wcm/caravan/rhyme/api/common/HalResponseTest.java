@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 class HalResponseTest {
 
   @Test
-  void withBody_should_allow_null_json_nodes() throws Exception {
+  void withBody_should_allow_null_json_nodes()  {
 
     JsonNode jsonNode = null;
 
@@ -39,7 +39,7 @@ class HalResponseTest {
   }
 
   @Test
-  void withBody_should_wrap_json_node() throws Exception {
+  void withBody_should_wrap_json_node()  {
 
     JsonNode jsonNode = JsonNodeFactory.instance.objectNode();
 

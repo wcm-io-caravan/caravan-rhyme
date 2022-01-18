@@ -47,7 +47,7 @@ import io.wcm.caravan.rhyme.testing.TestState;
 class HalApiClientTest {
 
   @Test
-  void create_should_use_a_default_http_client_implementation() throws Exception {
+  void create_should_use_a_default_http_client_implementation()  {
 
     HalApiClient client = HalApiClient.create();
 
@@ -70,7 +70,7 @@ class HalApiClientTest {
   }
 
   @Test
-  void metrics_from_deprecated_methods_should_be_used() throws Exception {
+  void metrics_from_deprecated_methods_should_be_used()  {
 
     int maxAge = 123;
 
@@ -98,7 +98,7 @@ class HalApiClientTest {
   }
 
   @Test
-  void type_support_from_deprecated_method_should_be_used() throws Exception {
+  void type_support_from_deprecated_method_should_be_used()  {
 
     HalResourceLoader loader = mock(HalResourceLoader.class);
     RequestMetricsCollector metrics = mock(RequestMetricsCollector.class);

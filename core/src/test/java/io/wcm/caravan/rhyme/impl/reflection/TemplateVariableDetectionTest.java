@@ -79,7 +79,7 @@ class TemplateVariableDetectionTest {
   }
 
   @Test
-  void testFindVariables_should_handle_var_with_annotation() throws Exception {
+  void testFindVariables_should_handle_var_with_annotation() throws NoSuchMethodException {
 
     TemplateVariableWithTypeInfo varInfo = getVarInfo("withAnnotation");
 
@@ -90,7 +90,7 @@ class TemplateVariableDetectionTest {
   }
 
   @Test
-  void testFindVariables_should_handle_class_variables() throws Exception {
+  void testFindVariables_should_handle_class_variables() throws NoSuchMethodException {
 
     TemplateVariableWithTypeInfo varInfo = getVarInfo("fromClass");
 
@@ -101,7 +101,7 @@ class TemplateVariableDetectionTest {
   }
 
   @Test
-  void testFindVariables_should_handle_interface_variables() throws Exception {
+  void testFindVariables_should_handle_interface_variables() throws NoSuchMethodException {
 
     TemplateVariableWithTypeInfo varInfo = getVarInfo("fromInterface");
 
@@ -112,7 +112,7 @@ class TemplateVariableDetectionTest {
   }
 
   @Test
-  void testFindVariables_should_ignore_static_fields() throws Exception {
+  void testFindVariables_should_ignore_static_fields() throws NoSuchMethodException {
 
     List<TemplateVariableWithTypeInfo> variables = findVariables(getMethod("linkTemplate"), Optional.empty());
 
@@ -122,7 +122,7 @@ class TemplateVariableDetectionTest {
   }
 
   @Test
-  void getVariablesNameValueMap_should_return_values_from_arguments() throws Exception {
+  void getVariablesNameValueMap_should_return_values_from_arguments() throws NoSuchMethodException {
 
     String value = "value";
 
@@ -149,7 +149,7 @@ class TemplateVariableDetectionTest {
   }
 
   @Test
-  void getVariablesNameValueMap_should_return_null_values_with_empty_arguments() throws Exception {
+  void getVariablesNameValueMap_should_return_null_values_with_empty_arguments() throws NoSuchMethodException {
 
     Map<String, Object> map = getVariablesNameValueMap(getMethod("linkTemplate"), Optional.empty());
 

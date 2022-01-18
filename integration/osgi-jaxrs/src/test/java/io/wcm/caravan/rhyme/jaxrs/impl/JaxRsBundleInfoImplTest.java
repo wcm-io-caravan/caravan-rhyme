@@ -96,7 +96,7 @@ public class JaxRsBundleInfoImplTest {
 
 
   @Test
-  void getApplicationPath_should_fail_if_no_application_is_registered() throws Exception {
+  void getApplicationPath_should_fail_if_no_application_is_registered()  {
 
     when(bundle.getSymbolicName()).thenReturn(BUNDLE_NAME);
 
@@ -108,7 +108,7 @@ public class JaxRsBundleInfoImplTest {
   }
 
   @Test
-  void getApplicationPath_should_fail_if_no_base_path_annotation_present() throws Exception {
+  void getApplicationPath_should_fail_if_no_base_path_annotation_present() throws InvalidSyntaxException {
 
     mockPresenceOfApplicationService(null);
 
@@ -120,7 +120,7 @@ public class JaxRsBundleInfoImplTest {
   }
 
   @Test
-  void getApplicationPath_should_return_path_from_service_ref() throws Exception {
+  void getApplicationPath_should_return_path_from_service_ref() throws InvalidSyntaxException {
 
     mockPresenceOfApplicationService(BASE_PATH);
     mockVersion(new Version(1, 2, 3));
@@ -131,7 +131,7 @@ public class JaxRsBundleInfoImplTest {
   }
 
   @Test
-  void getBundleVersion_should_return_release_version() throws Exception {
+  void getBundleVersion_should_return_release_version() throws InvalidSyntaxException {
 
     mockPresenceOfApplicationService(BASE_PATH);
     mockVersion(new Version(1, 2, 3));
@@ -142,7 +142,7 @@ public class JaxRsBundleInfoImplTest {
   }
 
   @Test
-  void getBundleVersion_should_return_snapshot_version() throws Exception {
+  void getBundleVersion_should_return_snapshot_version() throws InvalidSyntaxException {
 
     mockPresenceOfApplicationService(BASE_PATH);
     mockVersion(new Version(1, 2, 3, "SNAPSHOT"));
@@ -155,7 +155,7 @@ public class JaxRsBundleInfoImplTest {
 
 
   @Test
-  void findJaxRsApplicationServiceInBundle_should_handle_exceptions() throws Exception {
+  void findJaxRsApplicationServiceInBundle_should_handle_exceptions() throws InvalidSyntaxException {
 
     when(bundleCtx.getServiceReferences(any(Class.class), anyString()))
         .thenThrow(new RuntimeException());
