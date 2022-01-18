@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
 
@@ -40,8 +39,6 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
-import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
-import io.wcm.caravan.rhyme.impl.util.RxJavaTransformers;
 
 /**
  * Internal utility methods to invoke methods returning reactive streams, and converting between various
@@ -120,34 +117,13 @@ public final class RxJavaReflectionUtils {
   }
 
   /**
-   * @param reactiveInstance a {@link Single}, {@link Maybe}, {@link Observable} or {@link Publisher}
-   * @param targetType {@link Single}, {@link Maybe}, {@link Observable} or {@link Publisher} class
-   * @param metrics to collect emission times
-   * @param description for the metrics
-   * @param typeSupport the strategy to perform type conversions of return values
-   * @return an instance of the target type that will replay (and cache!) the items emitted by the given reactive
-   *         instance
-   */
-  public static Observable<Object> convertAndCacheReactiveType(Object reactiveInstance, Class<?> targetType, RequestMetricsCollector metrics,
-      Supplier<String> description, HalApiReturnTypeSupport typeSupport) {
-
-    Observable<Object> observable = convertToObservable(reactiveInstance, typeSupport)
-        .compose(EmissionStopwatch.collectMetrics(description, metrics));
-
-    // do not use Observable#cache() here, because we want consumers to be able to use Observable#retry()
-    Observable<Object> cached = observable.compose(RxJavaTransformers.cacheIfCompleted());
-
-    return cached;
-  }
-
-  /**
    * Converts the observable into any other type supported by the given {@link HalApiTypeSupport} instance
+   * @param targetType to which the observable should be converted
    * @param observable to convert
-   * @param targetType to which the observable should be convert
    * @param typeSupport provides the available conversion functions
    * @return an object of the given target type
    */
-  public static Object convertObservableTo(Observable<?> observable, Class<?> targetType, HalApiReturnTypeSupport typeSupport) {
+  public static Object convertObservableTo(Class<?> targetType, Observable<?> observable, HalApiReturnTypeSupport typeSupport) {
 
     Preconditions.checkNotNull(targetType, "A target type must be provided");
 

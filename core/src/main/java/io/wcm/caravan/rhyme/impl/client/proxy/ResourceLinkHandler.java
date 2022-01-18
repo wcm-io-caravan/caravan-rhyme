@@ -32,6 +32,7 @@ class ResourceLinkHandler {
   }
 
   Object handleMethodInvocation(HalApiMethodInvocation invocation) {
+
     Class<?> returnType = invocation.getReturnType();
 
     if (returnType.isAssignableFrom(Link.class)) {
@@ -49,6 +50,6 @@ class ResourceLinkHandler {
     }
 
     throw new HalApiDeveloperException(
-        "the method " + invocation + " annotated with @" + ResourceLink.class.getSimpleName() + " must return either a String or " + Link.class.getName());
+        "The method " + invocation + " annotated with @" + ResourceLink.class.getSimpleName() + " must return either a String or " + Link.class.getName());
   }
 }

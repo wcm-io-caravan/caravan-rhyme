@@ -87,7 +87,7 @@ class RxJavaReflectionUtilsTest {
     Observable<String> obs = Observable.just("foo");
 
     Throwable ex = catchThrowable(
-        () -> RxJavaReflectionUtils.convertObservableTo(obs, Iterator.class, typeSupport));
+        () -> RxJavaReflectionUtils.convertObservableTo(Iterator.class, obs, typeSupport));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessage("The given target type of java.util.Iterator is not a supported return type");

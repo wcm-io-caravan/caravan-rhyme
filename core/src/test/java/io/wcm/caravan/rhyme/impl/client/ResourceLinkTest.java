@@ -255,7 +255,7 @@ class ResourceLinkTest {
   }
 
   @Test
-  void link_template_should_be_fully_expanded_if_at_least_one_parameter_is_null() {
+  void link_template_should_be_partially_expanded_if_at_least_one_parameter_is_null() {
 
     String uriTemplate = "/test{?intParam,stringParam,listParam*}";
     entryPoint.asHalResource().addLinks(ITEM, new Link(uriTemplate));
@@ -265,7 +265,7 @@ class ResourceLinkTest {
         .map(LinkTargetResource::createLink)
         .blockingGet();
 
-    assertThat(link.getHref()).isEqualTo("/test?intParam=5");
+    assertThat(link.getHref()).isEqualTo("/test?intParam=5{&stringParam,listParam*}");
   }
 
   @Test

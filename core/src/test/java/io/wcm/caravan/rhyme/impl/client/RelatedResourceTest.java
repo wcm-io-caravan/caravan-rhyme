@@ -23,7 +23,7 @@ import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ALTERNATE;
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ITEM;
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.SECTION;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -69,8 +69,11 @@ class RelatedResourceTest {
         .flatMap(ResourceWithSingleState::getProperties)
         .blockingGet();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
@@ -78,10 +81,12 @@ class RelatedResourceTest {
 
     entryPoint.createLinked(ALTERNATE).setText("item text");
 
-    Throwable ex = catchThrowable(
-        () -> client.createProxy(ResourceWithSingleRelated.class).getItem().blockingGet());
+    Single<ResourceWithSingleState> linkedResource = client.createProxy(ResourceWithSingleRelated.class).getItem();
 
-    assertThat(ex).isInstanceOf(NoSuchElementException.class);
+    Throwable ex = assertThrows(NoSuchElementException.class, linkedResource::blockingGet);
+
+    assertThat(ex)
+        .hasMessage(null);
   }
 
   @Test
@@ -94,8 +99,11 @@ class RelatedResourceTest {
         .flatMap(ResourceWithSingleState::getProperties)
         .blockingGet();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
@@ -103,10 +111,12 @@ class RelatedResourceTest {
 
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
 
-    Throwable ex = catchThrowable(
-        () -> client.createProxy(ResourceWithSingleRelated.class).getItem().blockingGet());
+    Single<ResourceWithSingleState> embeddedResource = client.createProxy(ResourceWithSingleRelated.class).getItem();
 
-    assertThat(ex).isInstanceOf(NoSuchElementException.class);
+    Throwable ex = assertThrows(NoSuchElementException.class, embeddedResource::blockingGet);
+
+    assertThat(ex)
+        .hasMessage(null);
   }
 
 
@@ -127,8 +137,11 @@ class RelatedResourceTest {
         .flatMapSingle(ResourceWithSingleState::getProperties)
         .blockingGet();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
@@ -140,7 +153,8 @@ class RelatedResourceTest {
     Maybe<ResourceWithSingleState> maybeLinked = client.createProxy(ResourceWithOptionalRelated.class)
         .getOptionalItem();
 
-    assertThat(maybeLinked.isEmpty().blockingGet()).isTrue();
+    assertThat(maybeLinked.isEmpty().blockingGet())
+        .isTrue();
   }
 
   @Test
@@ -153,8 +167,11 @@ class RelatedResourceTest {
         .flatMapSingle(ResourceWithSingleState::getProperties)
         .blockingGet();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
@@ -166,7 +183,8 @@ class RelatedResourceTest {
     Maybe<ResourceWithSingleState> maybeEmbedded = client.createProxy(ResourceWithOptionalRelated.class)
         .getOptionalItem();
 
-    assertThat(maybeEmbedded.isEmpty().blockingGet()).isTrue();
+    assertThat(maybeEmbedded.isEmpty().blockingGet())
+        .isTrue();
   }
 
 
@@ -188,8 +206,11 @@ class RelatedResourceTest {
         .firstOrError()
         .blockingGet();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
@@ -201,7 +222,8 @@ class RelatedResourceTest {
     Observable<ResourceWithSingleState> rxLinkedResources = client.createProxy(ResourceWithMultipleRelated.class)
         .getItems();
 
-    assertThat(rxLinkedResources.isEmpty().blockingGet()).isTrue();
+    assertThat(rxLinkedResources.isEmpty().blockingGet())
+        .isTrue();
   }
 
   @Test
@@ -216,9 +238,12 @@ class RelatedResourceTest {
         .toList()
         .blockingGet();
 
-    assertThat(linkedStates).hasSize(10);
+    assertThat(linkedStates)
+        .hasSize(10);
+
     for (int i = 0; i < numItems; i++) {
-      assertThat(linkedStates.get(i).number).isEqualTo(i);
+      assertThat(linkedStates.get(i).number)
+          .isEqualTo(i);
     }
   }
 
@@ -233,8 +258,11 @@ class RelatedResourceTest {
         .firstOrError()
         .blockingGet();
 
-    assertThat(embeddedState).isNotNull();
-    assertThat(embeddedState.text).isEqualTo("item text");
+    assertThat(embeddedState)
+        .isNotNull();
+
+    assertThat(embeddedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
@@ -246,7 +274,8 @@ class RelatedResourceTest {
     Observable<ResourceWithSingleState> rxEmbeddedResources = client.createProxy(ResourceWithMultipleRelated.class)
         .getItems();
 
-    assertThat(rxEmbeddedResources.isEmpty().blockingGet()).isTrue();
+    assertThat(rxEmbeddedResources.isEmpty().blockingGet())
+        .isTrue();
   }
 
   @Test
@@ -261,9 +290,12 @@ class RelatedResourceTest {
         .toList()
         .blockingGet();
 
-    assertThat(embeddedStates).hasSize(10);
+    assertThat(embeddedStates)
+        .hasSize(10);
+
     for (int i = 0; i < numItems; i++) {
-      assertThat(embeddedStates.get(i).number).isEqualTo(i);
+      assertThat(embeddedStates.get(i).number)
+          .isEqualTo(i);
     }
   }
 
@@ -282,9 +314,12 @@ class RelatedResourceTest {
         .toList()
         .blockingGet();
 
-    assertThat(embeddedStates).hasSize(10);
+    assertThat(embeddedStates)
+        .hasSize(10);
+
     for (int i = 0; i < numItems; i++) {
-      assertThat(embeddedStates.get(i).number).isEqualTo(i);
+      assertThat(embeddedStates.get(i).number)
+          .isEqualTo(i);
     }
   }
 
@@ -307,8 +342,11 @@ class RelatedResourceTest {
         .firstOrError()
         .blockingGet();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   interface ResourceWithoutAnnotation {
@@ -350,29 +388,39 @@ class RelatedResourceTest {
   @Test
   void should_throw_developer_exception_if_annotation_is_missing_on_proxy_method() {
 
-    Throwable ex = catchThrowable(
-        () -> client.createProxy(ResourceWithIllegalAnnotations.class).noAnnotation());
+    ResourceWithIllegalAnnotations proxy = client.createProxy(ResourceWithIllegalAnnotations.class);
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class).hasMessageContaining("is not annotated with one of the supported HAL API annotations");
+    Throwable ex = assertThrows(HalApiDeveloperException.class, proxy::noAnnotation);
+
+    assertThat(ex)
+        .hasMessageContaining("is not annotated with one of the supported HAL API annotations");
   }
 
   @Test
   void should_throw_developer_exception_if_annotation_is_missing_on_related_resource_type() {
 
-    Throwable ex = catchThrowable(
-        () -> client.createProxy(ResourceWithIllegalAnnotations.class).getInvalidLinked().blockingGet());
+    ResourceWithIllegalAnnotations proxy = client.createProxy(ResourceWithIllegalAnnotations.class);
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageContaining("has an invalid emission type").hasMessageEndingWith("which does not have a @HalApiInterface annotation.");
+    Single<ResourceWithoutAnnotation> resource = proxy.getInvalidLinked();
+
+    Throwable ex = assertThrows(HalApiDeveloperException.class, resource::blockingGet);
+
+    assertThat(ex)
+        .hasMessageContaining("has an invalid emission type")
+        .hasMessageEndingWith("which does not have a @HalApiInterface annotation.");
   }
 
   @Test
   void should_throw_developer_exception_if_return_type_does_not_emit_an_interface() {
 
-    Throwable ex = catchThrowable(
-        () -> client.createProxy(ResourceWithIllegalAnnotations.class).notAnInterface().blockingGet());
+    ResourceWithIllegalAnnotations proxy = client.createProxy(ResourceWithIllegalAnnotations.class);
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageContaining("has an invalid emission type").hasMessageEndingWith("which does not have a @HalApiInterface annotation.");
+    Single<TestState> returnValue = proxy.notAnInterface();
+
+    Throwable ex = assertThrows(HalApiDeveloperException.class, returnValue::blockingGet);
+
+    assertThat(ex)
+        .hasMessageContaining("has an invalid emission type")
+        .hasMessageEndingWith("which does not have a @HalApiInterface annotation.");
   }
 }
