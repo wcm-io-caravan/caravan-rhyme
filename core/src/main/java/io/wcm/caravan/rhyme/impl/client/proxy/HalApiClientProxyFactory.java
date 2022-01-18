@@ -130,9 +130,9 @@ public final class HalApiClientProxyFactory {
       return createProxy(relatedResourceType, rxHal, null);
     }
 
-    // the same proxy instance can be re-used when the link is pointing to the resource, and the proxy type are the same.
-    // it's important to consider the full link for the cache key, because different links can point to the same URL,
-    // but callers of createLink should receive exactly the same link that were followed to create the proxy.
+    // the same proxy instance can be re-used when the link is pointing to the same resource, and the interface type to proxy are the same.
+    // it's important to consider the full link for the cache key, because differently named links can point to the same URL,
+    // but callers of createLink should receive exactly the same link instance that was followed to create the proxy.
     String cacheKey = linkToResource.getModel().toString() + relatedResourceType.getName();
 
     try {
