@@ -136,10 +136,8 @@ public class VndErrorResponseRendererImpl implements VndErrorResponseRenderer {
       // CHECKSTYLE:ON
     }
 
-    if (selfLink != null) {
-      if (!requestUri.endsWith(selfLink.getHref())) {
-        vndResource.addLinks(StandardRelations.CANONICAL, selfLink);
-      }
+    if (selfLink != null && !requestUri.endsWith(selfLink.getHref())) {
+      vndResource.addLinks(StandardRelations.CANONICAL, selfLink);
     }
   }
 

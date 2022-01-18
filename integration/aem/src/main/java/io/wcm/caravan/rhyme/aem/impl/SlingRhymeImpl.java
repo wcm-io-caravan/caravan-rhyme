@@ -110,10 +110,8 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
 
   private void verifyModelAnnotationIfPresent(Class<?> modelClass) {
 
-    if (modelClass.isAnnotationPresent(Model.class)) {
-      if (!isDirectlyAdaptableFromSlingRhyme(modelClass)) {
-        throw new HalApiDeveloperException(modelClass + " is not declared to be adaptable from " + SlingRhyme.class);
-      }
+    if (modelClass.isAnnotationPresent(Model.class) && !isDirectlyAdaptableFromSlingRhyme(modelClass)) {
+      throw new HalApiDeveloperException(modelClass + " is not declared to be adaptable from " + SlingRhyme.class);
     }
   }
 

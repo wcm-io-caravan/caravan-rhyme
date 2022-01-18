@@ -196,19 +196,17 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
     if (isSerialisedAsJsonArray(propertyType)) {
 
       Class<?> elementType = docs.getFirstTypeParameter();
-      if (elementType != null) {
 
-        if (isSerialisedAsJsonObject(elementType)) {
+      if (elementType != null && isSerialisedAsJsonObject(elementType)) {
 
-          if (processedClassNames.containsKey(elementType.getName())) {
-            String previous = processedClassNames.get(elementType.getName());
-            return Stream.of(docs,
-                new FixedPropertyModel(elementType.getSimpleName(), "(an object with same properties as " + previous + ")", docs.getJsonPointer() + "/0"));
-          }
-
-          return Stream.concat(stream,
-              createPropertyDocsRecursively(docs.builder, elementType, docs.getJsonPointer() + "/0", processedClassNames));
+        if (processedClassNames.containsKey(elementType.getName())) {
+          String previous = processedClassNames.get(elementType.getName());
+          return Stream.of(docs,
+              new FixedPropertyModel(elementType.getSimpleName(), "(an object with same properties as " + previous + ")", docs.getJsonPointer() + "/0"));
         }
+
+        return Stream.concat(stream,
+            createPropertyDocsRecursively(docs.builder, elementType, docs.getJsonPointer() + "/0", processedClassNames));
       }
     }
     else if (isSerialisedAsJsonObject(propertyType)) {
