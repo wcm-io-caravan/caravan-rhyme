@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
 
 class ResourceStateHandler implements Function<HalResource, Observable<Object>> {
 
-  private static final Logger log = LoggerFactory.getLogger(HalApiInvocationHandler.class);
+  private static final Logger log = LoggerFactory.getLogger(ResourceStateHandler.class);
 
   private final HalApiMethodInvocation invocation;
   private final HalApiTypeSupport typeSupport;

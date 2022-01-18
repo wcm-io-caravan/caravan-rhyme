@@ -23,6 +23,7 @@ import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.isHalAp
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -44,7 +45,7 @@ import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 
 class RelatedResourceHandler implements Function<HalResource, Observable<Object>> {
 
-  private static final Logger log = LoggerFactory.getLogger(HalApiInvocationHandler.class);
+  private static final Logger log = LoggerFactory.getLogger(RelatedResourceHandler.class);
 
   private final HalApiMethodInvocation invocation;
   private final HalApiClientProxyFactory proxyFactory;
@@ -90,7 +91,7 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
 
     log.trace("{} links with relation {} were found in the context resource", links.size(), relation);
 
-    List<Link> relevantLinks = filterLinksToResourcesThatAreAlreadyEmbedded(links, embeddedResources);
+    List<Link> relevantLinks = getOnlyLinksToResourcesThatArentAlreadyEmbedded(links, embeddedResources);
 
     long numTemplatedLinks = relevantLinks.stream().filter(Link::isTemplated).count();
     Map<String, Object> variables = invocation.getTemplateVariables();
@@ -130,7 +131,7 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
 
     List<String> variablesInInvocation = variables.entrySet().stream()
         .filter(e -> e.getValue() != null)
-        .map(e -> e.getKey())
+        .map(Entry::getKey)
         .collect(Collectors.toList());
 
     UriTemplate template = UriTemplate.fromTemplate(link.getHref());
@@ -138,7 +139,7 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
     return variablesInTemplate.containsAll(variablesInInvocation);
   }
 
-  private static List<Link> filterLinksToResourcesThatAreAlreadyEmbedded(List<Link> links, List<HalResource> embeddedResources) {
+  private static List<Link> getOnlyLinksToResourcesThatArentAlreadyEmbedded(List<Link> links, List<HalResource> embeddedResources) {
 
     Set<String> embeddedHrefs = embeddedResources.stream()
         .map(HalResource::getLink)
@@ -146,11 +147,9 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
         .map(Link::getHref)
         .collect(Collectors.toSet());
 
-    List<Link> relevantLinks = links.stream()
+    return links.stream()
         .filter(link -> !embeddedHrefs.contains(link.getHref()))
         .collect(Collectors.toList());
-
-    return relevantLinks;
   }
 
   private Observable<Object> createProxiesFromEmbeddedResources(Class<?> relatedResourceType, List<HalResource> embeddedResources, List<Link> links) {
