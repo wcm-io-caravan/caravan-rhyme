@@ -99,7 +99,7 @@ public class RhymeResourceRegistry {
         .flatMap(this::optionalAsStream);
   }
 
-  private <T> Stream<? extends LinkableResource> optionalAsStream(Optional<? extends LinkableResource> optional) {
+  private Stream<? extends LinkableResource> optionalAsStream(Optional<? extends LinkableResource> optional) {
 
     return optional.isPresent() ? Stream.of(optional.get()) : Stream.empty();
   }

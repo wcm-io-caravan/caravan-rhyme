@@ -195,7 +195,7 @@ public final class TemplateVariableDetection {
     return getVariablesInfosFromFields(instance, dtoClass);
   }
 
-  private static <T> List<TemplateVariableWithTypeInfo> getVariableInfosFromPublicGetter(Object instance, Class dtoClass) {
+  private static List<TemplateVariableWithTypeInfo> getVariableInfosFromPublicGetter(Object instance, Class dtoClass) {
     try {
 
       PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(dtoClass).getPropertyDescriptors();
@@ -234,7 +234,7 @@ public final class TemplateVariableDetection {
     }
   }
 
-  private static <T> List<TemplateVariableWithTypeInfo> getVariablesInfosFromFields(Object instance, Class dtoClass) {
+  private static List<TemplateVariableWithTypeInfo> getVariablesInfosFromFields(Object instance, Class dtoClass) {
 
     try {
       return Stream.of(FieldUtils.getAllFields(dtoClass))
