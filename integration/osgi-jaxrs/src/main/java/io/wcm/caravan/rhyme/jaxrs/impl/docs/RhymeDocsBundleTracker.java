@@ -70,7 +70,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
     URL rhymeDocsUrl = bundle.getResource(rhymeDocsPath);
 
     if (rhymeDocsUrl == null) {
-      log.debug("No rhyme docs were found in bundle at {}", bundle.getSymbolicName(), rhymeDocsPath);
+      log.debug("No rhyme docs were found in bundle {} at {}", bundle.getSymbolicName(), rhymeDocsPath);
       return false;
     }
 
