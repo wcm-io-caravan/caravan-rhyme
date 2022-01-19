@@ -47,7 +47,7 @@ public final class RxJavaTransformers {
    * @return an {@link ObservableTransformer} that can be passed to {@link Observable#compose(ObservableTransformer)}
    */
   public static <T> ObservableTransformer<T, T> filterWith(Function<T, Single<Boolean>> asyncFilterFunc) {
-    return new AsyncFilterTransformer<T>(asyncFilterFunc);
+    return new AsyncFilterTransformer<>(asyncFilterFunc);
   }
 
   /**
@@ -57,7 +57,7 @@ public final class RxJavaTransformers {
    * @return an {@link ObservableTransformer} that can be passed to {@link Observable#compose(ObservableTransformer)}
    */
   public static <T> ObservableTransformer<T, T> cacheIfCompleted() {
-    return new CacheOnlyCompletedTransformer<T>();
+    return new CacheOnlyCompletedTransformer<>();
   }
 
   /**
@@ -67,7 +67,7 @@ public final class RxJavaTransformers {
    * @return a {@link SingleTransformer} that can be passed to {@link Single#compose(SingleTransformer)}
    */
   public static <T> SingleTransformer<T, T> cacheSingleIfCompleted() {
-    return new CacheOnlyCompletedTransformer<T>();
+    return new CacheOnlyCompletedTransformer<>();
   }
 
   private static final class AsyncFilterTransformer<T> implements ObservableTransformer<T, T> {

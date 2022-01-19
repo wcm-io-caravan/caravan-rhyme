@@ -58,7 +58,7 @@ public interface JaxRsLinkBuilder<JaxRsResourceType> {
    */
   static <JaxRsResourceType> JaxRsLinkBuilder<JaxRsResourceType> create(String baseUrl, Class<JaxRsResourceType> resourceClass) {
 
-    return new JaxRsControllerProxyLinkBuilder<JaxRsResourceType>(baseUrl, resourceClass);
+    return new JaxRsControllerProxyLinkBuilder<>(baseUrl, resourceClass);
   }
 
 }

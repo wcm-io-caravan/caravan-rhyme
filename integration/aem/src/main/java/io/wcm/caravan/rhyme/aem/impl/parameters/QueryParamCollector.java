@@ -38,7 +38,7 @@ public class QueryParamCollector {
 
   public Map<String, Object> getQueryParameters(Object slingModel) {
 
-    Map<String, Object> map = new LinkedHashMap<String, Object>();
+    Map<String, Object> map = new LinkedHashMap<>();
 
     addQueryParamFieldsFromModel(slingModel, map);
 
