@@ -36,7 +36,7 @@ class DefaultCachingConfigurationTest {
     int maxAge = config.getDefaultMaxAge(Optional.empty());
 
     assertThat(maxAge)
-        .isEqualTo(0);
+        .isZero();
   }
 
   @Test

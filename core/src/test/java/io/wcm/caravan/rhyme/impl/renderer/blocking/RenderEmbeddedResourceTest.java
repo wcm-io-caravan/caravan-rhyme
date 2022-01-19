@@ -215,7 +215,7 @@ class RenderEmbeddedResourceTest {
     List<HalResource> actualEmbedded = hal.getEmbedded(ITEM);
 
     assertThat(actualEmbedded).hasSize(1);
-    assertThat(hal.getModel().path("_embedded").path(ITEM).isObject()).isEqualTo(true);
+    assertThat(hal.getModel().path("_embedded").path(ITEM).isObject()).isTrue();
   }
 
 }

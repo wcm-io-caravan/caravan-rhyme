@@ -67,8 +67,8 @@ class QueryParamCollectorTest {
     assertThat(params.keySet())
         .containsExactlyInAnyOrder("foo", "bar");
 
-    assertThat(params.get("foo"))
-        .isEqualTo("foo");
+    assertThat(params)
+        .containsEntry("foo", "foo");
 
     assertThat(params.get("bar"))
         .isInstanceOf(List.class).isEqualTo(model.bar);
@@ -96,8 +96,8 @@ class QueryParamCollectorTest {
 
     assertThat(params.keySet()).containsExactlyInAnyOrder("foo", "bar");
 
-    assertThat(params.get("foo"))
-        .isEqualTo("foo");
+    assertThat(params)
+        .containsEntry("foo", "foo");
 
     assertThat(params.get("bar"))
         .isInstanceOf(List.class)

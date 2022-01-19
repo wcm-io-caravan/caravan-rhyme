@@ -40,7 +40,7 @@ class ToStringTest {
 
     ResourceWithSingleRelated resource = client.createProxy(ResourceWithSingleRelated.class);
 
-    assertThat(resource.toString()).isEqualTo("dynamic client proxy for ResourceWithSingleRelated at /");
+    assertThat(resource).hasToString("dynamic client proxy for ResourceWithSingleRelated at /");
   }
 
   @Test
@@ -51,7 +51,7 @@ class ToStringTest {
     ResourceWithSingleRelated entryPoint = client.createProxy(ResourceWithSingleRelated.class);
     ResourceWithSingleState linkedResource = entryPoint.getItem().blockingGet();
 
-    assertThat(linkedResource.toString()).isEqualTo("dynamic client proxy for ResourceWithSingleState at " + linkedTest.getUrl());
+    assertThat(linkedResource).hasToString("dynamic client proxy for ResourceWithSingleState at " + linkedTest.getUrl());
   }
 
   @Test
@@ -62,6 +62,6 @@ class ToStringTest {
     ResourceWithSingleRelated entryPoint = client.createProxy(ResourceWithSingleRelated.class);
     ResourceWithSingleState embeddedResource = entryPoint.getItem().blockingGet();
 
-    assertThat(embeddedResource.toString()).isEqualTo("dynamic client proxy for ResourceWithSingleState (embedded without self link)");
+    assertThat(embeddedResource).hasToString("dynamic client proxy for ResourceWithSingleState (embedded without self link)");
   }
 }

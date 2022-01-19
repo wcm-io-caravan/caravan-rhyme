@@ -117,6 +117,6 @@ class ResourceStateTest {
     Optional<TestResourceState> optionalProperties = createClientProxy(ResourceWithOptionalState.class)
         .getProperties();
 
-    assertThat(optionalProperties.isPresent()).isFalse();
+    assertThat(optionalProperties).isNotPresent();
   }
 }

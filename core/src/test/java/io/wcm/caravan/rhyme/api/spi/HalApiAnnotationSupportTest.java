@@ -70,7 +70,7 @@ class HalApiAnnotationSupportTest {
   void should_have_default_implementation_for_isResourcePropertyMethod() {
 
     assertThat(annotationSupport.isResourcePropertyMethod(null))
-        .isEqualTo(false);
+        .isFalse();
   }
 
   @Test

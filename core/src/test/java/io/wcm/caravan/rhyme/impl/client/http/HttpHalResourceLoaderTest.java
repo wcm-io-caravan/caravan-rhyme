@@ -86,8 +86,8 @@ class HttpHalResourceLoaderTest {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
 
-      assertThat(uri.toString())
-          .isEqualTo(validUri);
+      assertThat(uri)
+          .hasToString(validUri);
 
       callback.onHeadersAvailable(200, Collections.emptyMap());
       callback.onBodyAvailable(createUtf8Stream("{}"));
