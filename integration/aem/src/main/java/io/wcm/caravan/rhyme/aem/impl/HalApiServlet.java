@@ -7,6 +7,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +26,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.aem.impl.resources.AemApiDiscoveryResourceImpl;
@@ -107,7 +107,7 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
       throws IOException {
 
     servletResponse.setContentType(halResponse.getContentType());
-    servletResponse.setCharacterEncoding(Charsets.UTF_8.name());
+    servletResponse.setCharacterEncoding(StandardCharsets.UTF_8.name());
     servletResponse.setStatus(halResponse.getStatus());
     if (halResponse.getMaxAge() != null) {
       servletResponse.setHeader("cache-control", "max-age=" + halResponse.getMaxAge());
