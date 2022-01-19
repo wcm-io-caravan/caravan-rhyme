@@ -24,8 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
@@ -67,13 +65,13 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
 
       HalResponse halResponse = rhyme.getCoreRhyme().renderResponse(requestedResource).blockingGet();
 
-      writeHalResponse(request, halResponse, response);
+      writeHalResponse(halResponse, response);
     }
     catch (RuntimeException ex) {
 
       HalResponse errorResponse = rhyme.getCoreRhyme().renderVndErrorResponse(ex);
 
-      writeHalResponse(request, errorResponse, response);
+      writeHalResponse(errorResponse, response);
     }
   }
 
@@ -105,8 +103,8 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
     return rhyme.adaptResource(request.getResource(), modelClass);
   }
 
-  private void writeHalResponse(SlingHttpServletRequest request, HalResponse halResponse, SlingHttpServletResponse servletResponse)
-      throws IOException, JsonGenerationException, JsonMappingException {
+  private void writeHalResponse(HalResponse halResponse, SlingHttpServletResponse servletResponse)
+      throws IOException {
 
     servletResponse.setContentType(halResponse.getContentType());
     servletResponse.setCharacterEncoding(Charsets.UTF_8.name());
