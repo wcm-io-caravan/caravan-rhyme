@@ -124,7 +124,7 @@ class EmissionStopwatchTest {
   }
 
   @Test
-  void should_not_fail_if_emissions_come_before_subscriptions()  {
+  void should_not_fail_if_emissions_come_before_subscriptions() {
 
     Subject<String> subject = PublishSubject.create();
 

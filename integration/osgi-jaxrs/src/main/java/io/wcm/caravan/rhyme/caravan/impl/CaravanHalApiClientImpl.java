@@ -121,7 +121,7 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
   private final class GuavaCacheLoader extends CacheLoader<String, HalResourceLoader> {
 
     @Override
-    public HalResourceLoader load(String serviceId)  {
+    public HalResourceLoader load(String serviceId) {
 
       return HalResourceLoaderBuilder.create()
           .withCustomHttpClient(new CaravanResilientHttpSupport(httpClient, serviceId))
@@ -147,7 +147,7 @@ public class CaravanHalApiClientImpl implements CaravanHalApiClient {
   private final class JsonPipelineCacheLoader extends CacheLoader<String, HalResourceLoader> {
 
     @Override
-    public HalResourceLoader load(String serviceId)  {
+    public HalResourceLoader load(String serviceId) {
       return new CaravanJsonPipelineResourceLoader(pipelineFactory, serviceId);
     }
   }

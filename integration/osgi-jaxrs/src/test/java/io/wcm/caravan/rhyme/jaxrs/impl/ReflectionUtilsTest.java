@@ -43,7 +43,7 @@ public class ReflectionUtilsTest {
   }
 
   @Test
-  void testGetFieldValue_with_null_field()  {
+  void testGetFieldValue_with_null_field() {
 
     ClassWithPrivateField instance = new ClassWithPrivateField();
 
@@ -54,7 +54,7 @@ public class ReflectionUtilsTest {
   }
 
   @Test
-  void testGetFieldValue_with_invalid_field()  {
+  void testGetFieldValue_with_invalid_field() {
 
     ClassWithPrivateField instance = new ClassWithPrivateField();
 

@@ -114,7 +114,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   }
 
   @Test
-  void respondWith_should_handle_successfull_rendering()  {
+  void respondWith_should_handle_successfull_rendering() {
 
     LinkableResource resourceImpl = new LinkableTestResource() {
 
@@ -134,7 +134,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   }
 
   @Test
-  void respondWith_should_sets_cache_control_header()  {
+  void respondWith_should_sets_cache_control_header() {
 
     LinkableResource resourceImpl = new LinkableTestResource() {
 
@@ -155,7 +155,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   }
 
   @Test
-  void respondWith_should_render_runtime_exceptions_with_vnderror_resource()  {
+  void respondWith_should_render_runtime_exceptions_with_vnderror_resource() {
 
     HalApiDeveloperException ex = new HalApiDeveloperException("Not implemented!");
 
@@ -173,7 +173,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   }
 
   @Test
-  void respondWith_should_extract_status_code_from_jaxrs_exceptions()  {
+  void respondWith_should_extract_status_code_from_jaxrs_exceptions() {
 
     WebApplicationException ex = new WebApplicationException("Not implemented!", SC_NOT_IMPLEMENTED);
 
@@ -191,7 +191,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   }
 
   @Test
-  void respondWith_should_resume_with_fatal_error_thrown_in_resource()  {
+  void respondWith_should_resume_with_fatal_error_thrown_in_resource() {
 
     Error error = new Error("Fatal Error!");
 
@@ -211,7 +211,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   }
 
   @Test
-  void respondWith_should_resume_with_fatal_error_thrown_in_handler()  {
+  void respondWith_should_resume_with_fatal_error_thrown_in_handler() {
 
     NotImplementedException expectedEx = new NotImplementedException("request URI not availbable");
     Mockito.when(uriInfo.getRequestUri()).thenThrow(expectedEx);
@@ -233,7 +233,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
 
 
   @Test
-  void respondWithError_should_extract_status_code_from_jaxrs_exceptions()  {
+  void respondWithError_should_extract_status_code_from_jaxrs_exceptions() {
 
     WebApplicationException ex = new WebApplicationException("Not implemented!", SC_NOT_IMPLEMENTED);
 
@@ -243,7 +243,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   }
 
   @Test
-  void respondWithError_should_resume_with_fatal_error_thrown_in_handler()  {
+  void respondWithError_should_resume_with_fatal_error_thrown_in_handler() {
 
     NotImplementedException expectedEx = new NotImplementedException("request URI not availbable");
     Mockito.when(uriInfo.getRequestUri()).thenThrow(expectedEx);
@@ -256,7 +256,7 @@ public class JaxRsAsyncHalResponseHandlerImplTest {
   }
 
   @Test
-  void respondWithError_should_handle_null_uris()  {
+  void respondWithError_should_handle_null_uris() {
 
     WebApplicationException ex = new WebApplicationException("Not implemented!", SC_NOT_IMPLEMENTED);
 

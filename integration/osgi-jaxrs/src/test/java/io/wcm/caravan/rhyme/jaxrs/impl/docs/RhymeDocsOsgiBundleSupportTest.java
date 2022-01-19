@@ -64,7 +64,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  void getRhymeDocsBaseUrl_should_return_base_url()  {
+  void getRhymeDocsBaseUrl_should_return_base_url() {
 
     assertThat(docsSupport.getRhymeDocsBaseUrl())
         .isEqualTo(RhymeDocsJaxRsApplication.BASE_PATH + "/");

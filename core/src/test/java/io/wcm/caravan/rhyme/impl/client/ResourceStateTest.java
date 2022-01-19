@@ -51,7 +51,7 @@ class ResourceStateTest {
   }
 
   @Test
-  void single_resource_state_should_be_emitted()  {
+  void single_resource_state_should_be_emitted() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test"));
 
@@ -72,7 +72,7 @@ class ResourceStateTest {
   }
 
   @Test
-  void maybe_resource_state_should_be_emitted()  {
+  void maybe_resource_state_should_be_emitted() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test"));
 
@@ -85,7 +85,7 @@ class ResourceStateTest {
   }
 
   @Test
-  void maybe_resource_state_should_be_empty_if_no_properties_are_set()  {
+  void maybe_resource_state_should_be_empty_if_no_properties_are_set() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, JsonNodeFactory.instance.objectNode());
 

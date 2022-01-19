@@ -46,7 +46,7 @@ public class MockMvcHalResourceLoaderConfigurationTest {
   private HalResourceLoader loader;
 
   @Test
-  void should_retrieve_status_and_body_for_200_response()  {
+  void should_retrieve_status_and_body_for_200_response() {
 
     HalResponse response = loader.getHalResource("/").blockingGet();
 
@@ -61,7 +61,7 @@ public class MockMvcHalResourceLoaderConfigurationTest {
   }
 
   @Test
-  void should_retrieve_status_and_body_for_404_response()  {
+  void should_retrieve_status_and_body_for_404_response() {
 
     Throwable ex = catchThrowable(() -> loader.getHalResource("/404").blockingGet());
 
@@ -78,7 +78,7 @@ public class MockMvcHalResourceLoaderConfigurationTest {
   }
 
   @Test
-  void should_handle_exception()  {
+  void should_handle_exception() {
 
     Throwable ex = catchThrowable(() -> loader.getHalResource("/500").blockingGet());
 

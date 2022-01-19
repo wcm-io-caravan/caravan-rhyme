@@ -200,7 +200,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  void selectResourceAt_can_be_used_to_build_templates_for_unregistered_resources()  {
+  void selectResourceAt_can_be_used_to_build_templates_for_unregistered_resources() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -218,7 +218,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  void adaptTo_should_not_allow_to_specify_model_class_if_selectResourceAt_was_called_with_null_path()  {
+  void adaptTo_should_not_allow_to_specify_model_class_if_selectResourceAt_was_called_with_null_path() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 
@@ -241,7 +241,7 @@ public class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
-  void should_not_allow_any_other_method_call_than_createLink_on_proxy()  {
+  void should_not_allow_any_other_method_call_than_createLink_on_proxy() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
 

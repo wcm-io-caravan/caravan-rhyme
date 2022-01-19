@@ -72,7 +72,7 @@ public class RhymeDocsHtmlResourceTest {
 
 
   @Test
-  void getHtmlDocumentation_should_return_404_if_no_InputStream_available_for_given_filename()  {
+  void getHtmlDocumentation_should_return_404_if_no_InputStream_available_for_given_filename() {
 
     Throwable ex = catchThrowable(() -> getHtmlDocumentation("Foo.html"));
 

@@ -96,7 +96,7 @@ public class JaxRsBundleInfoImplTest {
 
 
   @Test
-  void getApplicationPath_should_fail_if_no_application_is_registered()  {
+  void getApplicationPath_should_fail_if_no_application_is_registered() {
 
     when(bundle.getSymbolicName()).thenReturn(BUNDLE_NAME);
 

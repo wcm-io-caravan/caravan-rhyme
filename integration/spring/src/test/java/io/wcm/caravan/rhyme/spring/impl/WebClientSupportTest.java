@@ -44,7 +44,7 @@ public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_for_network_errors()  {
+  public void cause_should_be_present_in_HalApiClientException_for_for_network_errors() {
 
     HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
@@ -54,7 +54,7 @@ public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_for_ssl_errors()  {
+  public void cause_should_be_present_in_HalApiClientException_for_for_ssl_errors() {
 
     HalApiClientException ex = loadResourceAndExpectClientException(sslTestUrl);
 

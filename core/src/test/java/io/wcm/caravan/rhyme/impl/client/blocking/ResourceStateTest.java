@@ -78,7 +78,7 @@ class ResourceStateTest {
   }
 
   @Test
-  void required_resource_state_should_be_emitted()  {
+  void required_resource_state_should_be_emitted() {
 
     mockHalResponseWithSingle(new TestResourceState().withText("test"));
 
@@ -98,7 +98,7 @@ class ResourceStateTest {
   }
 
   @Test
-  void optional_resource_state_should_be_emitted()  {
+  void optional_resource_state_should_be_emitted() {
 
     mockHalResponseWithSingle(new TestResourceState().withText("test"));
 
@@ -110,7 +110,7 @@ class ResourceStateTest {
   }
 
   @Test
-  void optional_resource_state_should_be_empty_if_no_properties_are_set()  {
+  void optional_resource_state_should_be_empty_if_no_properties_are_set() {
 
     mockHalResponseWithSingle(JsonNodeFactory.instance.objectNode());
 

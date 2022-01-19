@@ -88,7 +88,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  void should_use_CachingHalResourceLoader_if_JsonPipeline_not_present_at_runtime()  {
+  void should_use_CachingHalResourceLoader_if_JsonPipeline_not_present_at_runtime() {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
@@ -99,7 +99,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  void should_use_JsonPipelineResourceLoader_if_JsonPipeline_is_present_at_runtime()  {
+  void should_use_JsonPipelineResourceLoader_if_JsonPipeline_is_present_at_runtime() {
 
     createAndActivateJsonPipelineFactory();
 
@@ -112,7 +112,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  void should_fail_if_null_service_id_is_used()  {
+  void should_fail_if_null_service_id_is_used() {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
@@ -128,7 +128,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  void getEntryPoint_reuses_resource_loader_for_multiple_Requests()  {
+  void getEntryPoint_reuses_resource_loader_for_multiple_Requests() {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
@@ -151,7 +151,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  void should_use_configuration_that_caches_exceptions()  {
+  void should_use_configuration_that_caches_exceptions() {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 

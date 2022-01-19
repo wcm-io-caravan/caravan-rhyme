@@ -73,7 +73,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void can_be_adapted_from_SlingRhyme()  {
+  void can_be_adapted_from_SlingRhyme() {
 
     SlingRhyme rhyme = createRhymeInstance("/content/foo");
 
@@ -83,7 +83,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void should_adapt_single_instance_that_exists()  {
+  void should_adapt_single_instance_that_exists() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -95,7 +95,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void should_allow_to_specify_implementation_sling_model_class()  {
+  void should_allow_to_specify_implementation_sling_model_class() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -121,7 +121,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void should_fail_to_adapt_single_instance_that_does_not_exist()  {
+  void should_fail_to_adapt_single_instance_that_does_not_exist() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -135,7 +135,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void should_adapt_optional_instance_that_exists()  {
+  void should_adapt_optional_instance_that_exists() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -148,7 +148,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void should_return_empty_optional_instance_for_resource_that_does_not_exist()  {
+  void should_return_empty_optional_instance_for_resource_that_does_not_exist() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -160,7 +160,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void should_fail_to_adapt_if_no_resources_were_selected()  {
+  void should_fail_to_adapt_if_no_resources_were_selected() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -216,7 +216,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromResourceAt_should_work_for_existing_resource()  {
+  void fromResourceAt_should_work_for_existing_resource() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -226,7 +226,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromResourceAt_should_fail_for_non_existing_resource()  {
+  void fromResourceAt_should_fail_for_non_existing_resource() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
 
@@ -237,7 +237,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromResourceAt_should_fail_on_multiple_calls()  {
+  void fromResourceAt_should_fail_on_multiple_calls() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
 
@@ -262,7 +262,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromCurrentPage_should_fail_if_there_is_no_page()  {
+  void fromCurrentPage_should_fail_if_there_is_no_page() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
 
@@ -273,7 +273,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromParentPage_should_work_from_page_resource()  {
+  void fromParentPage_should_work_from_page_resource() {
 
     setUpPages("/content/foo", "/content/foo/bar");
 
@@ -285,7 +285,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromParentPage_should_work_from_page_content_resource()  {
+  void fromParentPage_should_work_from_page_content_resource() {
 
     setUpPages("/content/foo", "/content/foo/bar");
 
@@ -297,7 +297,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromParentPage_should_fail_if_there_is_no_parent_page()  {
+  void fromParentPage_should_fail_if_there_is_no_parent_page() {
 
     setUpPages("/content/foo/bar");
 
@@ -311,7 +311,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromGrandParentPage_should_work_from_page_resource()  {
+  void fromGrandParentPage_should_work_from_page_resource() {
 
     setUpPages("/content/foo", "/content/foo/bar", "/content/foo/bar/foo");
 
@@ -323,7 +323,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromGrandParentPage_should_work_from_page_content_resource()  {
+  void fromGrandParentPage_should_work_from_page_content_resource() {
 
     setUpPages("/content/foo", "/content/foo/bar", "/content/foo/bar/foo");
 
@@ -335,7 +335,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromGrandParentPage_should_fail_if_there_is_no_parent_page()  {
+  void fromGrandParentPage_should_fail_if_there_is_no_parent_page() {
 
     setUpPages("/content/foo", "/content/foo/bar");
 
@@ -349,7 +349,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void fromParentPage_should_fail_if_called_after_select()  {
+  void fromParentPage_should_fail_if_called_after_select() {
 
     setUpPages("/content/foo", "/content/foo/bar");
 
@@ -363,7 +363,7 @@ public class SlingResourceAdapterImplTest {
 
 
   @Test
-  void should_allow_multiple_selections()  {
+  void should_allow_multiple_selections() {
 
     setUpPages("/content/foo", "/content/foo/1", "/content/foo/2");
 
@@ -441,7 +441,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectChildResources_should_find_children()  {
+  void selectChildResources_should_find_children() {
 
     setUpPages("/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
 
@@ -453,7 +453,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectChildResources_should_handle_missing_children()  {
+  void selectChildResources_should_handle_missing_children() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -463,7 +463,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectChildPages_should_find_child_pages_and_ignore_content()  {
+  void selectChildPages_should_find_child_pages_and_ignore_content() {
 
     setUpPages("/content/foo", "/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
 
@@ -475,7 +475,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectGrandChildResources_should_find_grand_children()  {
+  void selectGrandChildResources_should_find_grand_children() {
 
     setUpPages("/content",
         "/content/foo", "/content/foo/1", "/content/foo/2",
@@ -491,7 +491,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectGrandChildResources_should_handle_leaf_page()  {
+  void selectGrandChildResources_should_handle_leaf_page() {
 
     setUpPages("/content");
 
@@ -504,7 +504,7 @@ public class SlingResourceAdapterImplTest {
 
 
   @Test
-  void selectGrandChildPages_should_find_grand_children_and_ignore_content()  {
+  void selectGrandChildPages_should_find_grand_children_and_ignore_content() {
 
     setUpPages("/content",
         "/content/foo", "/content/foo/1", "/content/foo/2",
@@ -518,7 +518,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectGrandChildPages_should_handle_leaf_page()  {
+  void selectGrandChildPages_should_handle_leaf_page() {
 
     setUpPages("/content");
 
@@ -530,7 +530,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectGrandChildPages_should_handle_empty_grand_child_page()  {
+  void selectGrandChildPages_should_handle_empty_grand_child_page() {
 
     setUpPages("/content", "/content/foo", "/content/bar");
 
@@ -542,7 +542,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectChildPages_should_handle_empty_children()  {
+  void selectChildPages_should_handle_empty_children() {
 
     setUpPages("/content/foo");
 
@@ -556,7 +556,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectChildResource_should_find_child_by_name()  {
+  void selectChildResource_should_find_child_by_name() {
 
     setUpPages("/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
 
@@ -568,7 +568,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectChildResource_should_handle_non_existent_name()  {
+  void selectChildResource_should_handle_non_existent_name() {
 
     setUpPages("/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
 
@@ -580,7 +580,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectSiblingResource_should_find_child_by_name()  {
+  void selectSiblingResource_should_find_child_by_name() {
 
     setUpPages("/content/foo", "/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
 
@@ -592,7 +592,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectSiblingResource_should_handle_non_existent_name()  {
+  void selectSiblingResource_should_handle_non_existent_name() {
 
     setUpPages("/content/foo/1", "/content/foo/2", "/content/foo/3", "/content/foo/4");
 
@@ -604,17 +604,17 @@ public class SlingResourceAdapterImplTest {
   }
 
   /*
-
+  
   @Override
   public SlingResourceAdapter selectGrandChildResources() {
-
+  
     return resourceSelector.add(ResourceStreams::getGrandChildren, "grand children of {}");
   }
-
-
+  
+  
   @Override
   public SlingResourceAdapter selectGrandChildPages() {
-
+  
     return resourceSelector.add(ResourceStreams::getGrandChildPages, "grand child pages of {}");
   }
   */
@@ -647,7 +647,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfCurrentPage_should_fail_if_there_is_no_page()  {
+  void selectContentOfCurrentPage_should_fail_if_there_is_no_page() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/bar");
 
@@ -658,7 +658,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfChildPages_should_work_from_page_resource()  {
+  void selectContentOfChildPages_should_work_from_page_resource() {
 
     setUpPages("/content/foo", "/content/foo/1", "/content/foo/2");
 
@@ -670,7 +670,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfChildPages_should_work_from_page_content_resource()  {
+  void selectContentOfChildPages_should_work_from_page_content_resource() {
 
     setUpPages("/content/foo", "/content/foo/1", "/content/foo/2");
 
@@ -682,7 +682,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfChildPages_should_return_empty_stream_if_there_are_no_child_pages()  {
+  void selectContentOfChildPages_should_return_empty_stream_if_there_are_no_child_pages() {
 
     setUpPages("/content/foo");
 
@@ -694,7 +694,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfGrandChildPages_should_work_from_page_resource()  {
+  void selectContentOfGrandChildPages_should_work_from_page_resource() {
 
     setUpPages("/content", "/content/foo", "/content/foo/1", "/content/foo/2");
 
@@ -706,7 +706,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfGrandChildPages_should_work_from_page_content_resource()  {
+  void selectContentOfGrandChildPages_should_work_from_page_content_resource() {
 
     setUpPages("/content", "/content/foo", "/content/foo/1", "/content/foo/2");
 
@@ -718,7 +718,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfGrandChildPages_should_return_empty_stream_if_there_are_no_child_pages()  {
+  void selectContentOfGrandChildPages_should_return_empty_stream_if_there_are_no_child_pages() {
 
     setUpPages("/content", "/content/foo");
 
@@ -730,7 +730,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfChildPage_should_work_from_page_resource()  {
+  void selectContentOfChildPage_should_work_from_page_resource() {
 
     setUpPages("/content/foo", "/content/foo/1", "/content/foo/2");
 
@@ -742,7 +742,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfChildPage_should_work_from_page_content_resource()  {
+  void selectContentOfChildPage_should_work_from_page_content_resource() {
 
     setUpPages("/content/foo", "/content/foo/1", "/content/foo/2");
 
@@ -754,7 +754,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void selectContentOfChildPage_should_return_empty_stream_if_child_page_doesnt_exist()  {
+  void selectContentOfChildPage_should_return_empty_stream_if_child_page_doesnt_exist() {
 
     setUpPages("/content/foo", "/content/foo/1", "/content/foo/2");
 
@@ -766,7 +766,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void filter_should_remove_non_matches()  {
+  void filter_should_remove_non_matches() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -781,7 +781,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void filter_should_keep_matches()  {
+  void filter_should_keep_matches() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -796,7 +796,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void filter_should_allow_multiple_filters()  {
+  void filter_should_allow_multiple_filters() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -814,7 +814,7 @@ public class SlingResourceAdapterImplTest {
 
 
   @Test
-  void should_filter_by_name()  {
+  void should_filter_by_name() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -827,7 +827,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void should_filter_by_adaptability()  {
+  void should_filter_by_adaptability() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -846,7 +846,7 @@ public class SlingResourceAdapterImplTest {
   }
 
   @Test
-  void should_filter_by_adaptability_and_predicate()  {
+  void should_filter_by_adaptability_and_predicate() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 

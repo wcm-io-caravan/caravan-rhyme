@@ -56,7 +56,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void single_resource_properties_should_be_emitted()  {
+  void single_resource_properties_should_be_emitted() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test").withNumber(1234));
 
@@ -70,7 +70,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void should_throw_developer_exception_for_unexpected_array()  {
+  void should_throw_developer_exception_for_unexpected_array() {
 
     HalResource hal = new HalResource();
     hal.getModel().putArray("text").add("foo").add("bar");
@@ -97,7 +97,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void maybe_resource_state_should_be_emitted()  {
+  void maybe_resource_state_should_be_emitted() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test").withNumber(1234));
 
@@ -111,7 +111,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void maybe_resource_state_should_be_empty_if_no_properties_are_set()  {
+  void maybe_resource_state_should_be_empty_if_no_properties_are_set() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, JsonNodeFactory.instance.objectNode());
 
@@ -135,7 +135,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void should_use_names_from_annotation()  {
+  void should_use_names_from_annotation() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test").withNumber(1234));
 
@@ -149,7 +149,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void should_throw_developer_exception_for_null_values()  {
+  void should_throw_developer_exception_for_null_values() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState());
 
@@ -164,7 +164,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void should_throw_developer_exception_for_missing_values()  {
+  void should_throw_developer_exception_for_missing_values() {
 
     client.mockHalResponse(ENTRY_POINT_URI, new HalResource());
 
@@ -185,7 +185,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void should_support_list_return_type()  {
+  void should_support_list_return_type() {
 
     HalResource hal = new HalResource();
     hal.getModel().putArray("strings").add("foo").add("bar");
@@ -200,7 +200,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void should_throw_developer_exception_if_array_was_expected_but_primitive_or_object_found_in_JSON()  {
+  void should_throw_developer_exception_if_array_was_expected_but_primitive_or_object_found_in_JSON() {
 
     HalResource hal = new HalResource();
     hal.getModel().put("strings", "foo");
@@ -224,7 +224,7 @@ class ResourcePropertyTest {
   }
 
   @Test
-  void should_support_observable_return_type()  {
+  void should_support_observable_return_type() {
 
     HalResource hal = new HalResource();
     hal.getModel().putArray("strings").add("foo").add("bar");

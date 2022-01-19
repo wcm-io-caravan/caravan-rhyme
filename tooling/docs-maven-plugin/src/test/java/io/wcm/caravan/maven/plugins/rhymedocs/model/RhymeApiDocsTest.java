@@ -72,7 +72,7 @@ public class RhymeApiDocsTest {
   }
 
   @Test
-  void getResourceDocs_should_return_docs_for_all_HalApiInterfaces()  {
+  void getResourceDocs_should_return_docs_for_all_HalApiInterfaces() {
 
     List<RhymeResourceDocs> resourceDocs = getApiDocs().getResourceDocs();
 

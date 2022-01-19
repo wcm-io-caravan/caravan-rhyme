@@ -103,7 +103,7 @@ class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  void client_should_use_custom_return_types()  {
+  void client_should_use_custom_return_types() {
 
     HalApiClient client = HalApiClientBuilder.create().withReturnTypeSupport(mockReturnTypeSupport).build();
 
@@ -119,7 +119,7 @@ class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  void resource_renderer_should_use_custom_return_types()  {
+  void resource_renderer_should_use_custom_return_types() {
 
     HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(null, mockReturnTypeSupport);
 
@@ -193,69 +193,69 @@ class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  void isHalApiInterface_should_return_first_true_value()  {
+  void isHalApiInterface_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isHalApiInterface(TestResource.class));
   }
 
   @Test
-  void getContentType_should_return_first_non_null_value()  {
+  void getContentType_should_return_first_non_null_value() {
 
     assertThatCompositeReturnsFirstNonNullValueOfMock(a -> a.getContentType(TestResource.class), "text/json");
   }
 
   @Test
-  void isRelatedResourceMethod_should_return_first_true_value()  {
+  void isRelatedResourceMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isRelatedResourceMethod(firstMethod));
   }
 
   @Test
-  void getRelation_should_return_first_non_null_value()  {
+  void getRelation_should_return_first_non_null_value() {
 
     assertThatCompositeReturnsFirstNonNullValueOfMock(a -> a.getRelation(firstMethod), "rel");
   }
 
   @Test
-  void isResourceLinkMethod_should_return_first_true_value()  {
+  void isResourceLinkMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourceLinkMethod(firstMethod));
   }
 
   @Test
-  void isResourceReoresentationMethod_should_return_first_true_value()  {
+  void isResourceReoresentationMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourceRepresentationMethod(firstMethod));
   }
 
   @Test
-  void isResourceStateMethod_should_return_first_true_value()  {
+  void isResourceStateMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourceStateMethod(firstMethod));
   }
 
   @Test
-  void isResourcePropertyMethod_should_return_first_true_value()  {
+  void isResourcePropertyMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourcePropertyMethod(firstMethod));
   }
 
   @Test
-  void getPropertyName_should_return_first_non_null_value()  {
+  void getPropertyName_should_return_first_non_null_value() {
 
     assertThatCompositeReturnsFirstNonNullValueOfMock(a -> a.getPropertyName(firstMethod), "prop");
   }
 
 
   @Test
-  void convertFromObservable_should_return_first_non_null_value()  {
+  void convertFromObservable_should_return_first_non_null_value() {
 
     Function<Observable, Iterator> fun = o -> ((List)o.toList().blockingGet()).iterator();
     assertThatCompositeReturnsFirstNonNullValueOfReturnTypeMock(a -> a.convertFromObservable(Iterator.class), fun);
   }
 
   @Test
-  void convertToObservable_should_return_first_non_null_value()  {
+  void convertToObservable_should_return_first_non_null_value() {
 
     @SuppressWarnings("unchecked")
     Function<Object, Observable<Object>> fun = o -> Observable.fromIterable(() -> ((List)o).iterator());
@@ -263,13 +263,13 @@ class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  void isProviderOfMultiplerValues_should_return_first_true_value()  {
+  void isProviderOfMultiplerValues_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfMultiplerValues(Set.class));
   }
 
   @Test
-  void isProviderOptionalValues_should_return_first_true_value()  {
+  void isProviderOptionalValues_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfOptionalValue(Set.class));
   }

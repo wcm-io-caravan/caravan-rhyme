@@ -85,21 +85,21 @@ public class LinkableResourceMessageConverterTest {
   }
 
   @Test
-  void supports_should_return_true_for_interface()  {
+  void supports_should_return_true_for_interface() {
 
     assertThat(converter.supports(LinkableResource.class))
         .isTrue();
   }
 
   @Test
-  void supports_should_return_true_for_implementation()  {
+  void supports_should_return_true_for_implementation() {
 
     assertThat(converter.supports(MinimalTestResourceImpl.class))
         .isTrue();
   }
 
   @Test
-  void read_should_always_throw_HttpMessageNotReadableException()  {
+  void read_should_always_throw_HttpMessageNotReadableException() {
 
     MockHttpInputMessage mockInput = new MockHttpInputMessage(new byte[0]);
     Throwable ex = catchThrowable(() -> converter.read(MinimalTestResource.class, mockInput));

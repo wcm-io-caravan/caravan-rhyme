@@ -115,7 +115,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void getEntryPoint_should_fetch_entrypoint_through_http_client()  {
+  void getEntryPoint_should_fetch_entrypoint_through_http_client() {
 
     mockOkHalResponse();
 
@@ -130,7 +130,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void getUriInfo_should_return_uri_info()  {
+  void getUriInfo_should_return_uri_info() {
 
     CaravanRhyme rhyme = requestCycle.createRhymeInstance(uriInfo);
 
@@ -144,7 +144,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void processRequest_should_create_context_resource_and_call_resume()  {
+  void processRequest_should_create_context_resource_and_call_resume() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImpl::new);
 
@@ -155,7 +155,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void processRequest_should_handle_exception_when_creating_resource()  {
+  void processRequest_should_handle_exception_when_creating_resource() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, this::failWithNotImplemented);
 
@@ -165,7 +165,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void processRequest_should_handle_exception_when_creating_context()  {
+  void processRequest_should_handle_exception_when_creating_context() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, this::failWithNotImplemented, ResourceImpl::new);
 
@@ -175,7 +175,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void processRequest_should_not_include_metadata_in_response_by_default()  {
+  void processRequest_should_not_include_metadata_in_response_by_default() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImpl::new);
 
@@ -186,7 +186,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void processRequest_should_include_metadata_if_query_param_is_set()  {
+  void processRequest_should_include_metadata_if_query_param_is_set() {
 
     MultivaluedMap<String, String> queryParams = new MultivaluedHashMap<String, String>();
     queryParams.put(RequestMetricsCollector.EMBED_RHYME_METADATA, Collections.emptyList());
@@ -212,7 +212,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void processRequest_should_handle_exception_when_rendering_state()  {
+  void processRequest_should_handle_exception_when_rendering_state() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImplFailsToRender::new);
 
@@ -222,7 +222,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void processRequest_should_handle_exception_when_creatingLink()  {
+  void processRequest_should_handle_exception_when_creatingLink() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImplFailsToCreateLink::new);
 
@@ -244,7 +244,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  void setResponseMaxAge_should_limit_max_age()  {
+  void setResponseMaxAge_should_limit_max_age() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, rhyme -> {
       rhyme.setResponseMaxAge(Duration.ofSeconds(123));

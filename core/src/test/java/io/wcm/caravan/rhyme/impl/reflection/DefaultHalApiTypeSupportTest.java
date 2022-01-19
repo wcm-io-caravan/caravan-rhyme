@@ -34,21 +34,21 @@ class DefaultHalApiTypeSupportTest {
   private DefaultHalApiTypeSupport typeSupport = new DefaultHalApiTypeSupport();
 
   @Test
-  void isProviderOfOptionalValue_should_return_true_for_Optional()  {
+  void isProviderOfOptionalValue_should_return_true_for_Optional() {
 
     assertThat(typeSupport.isProviderOfOptionalValue(Optional.class))
         .isTrue();
   }
 
   @Test
-  void isProviderOfOptionalValue_should_return_true_for_Maybe()  {
+  void isProviderOfOptionalValue_should_return_true_for_Maybe() {
 
     assertThat(typeSupport.isProviderOfOptionalValue(Maybe.class))
         .isTrue();
   }
 
   @Test
-  void isProviderOfOptionalValue_should_return_false_for_Single()  {
+  void isProviderOfOptionalValue_should_return_false_for_Single() {
 
     assertThat(typeSupport.isProviderOfOptionalValue(Single.class))
         .isFalse();

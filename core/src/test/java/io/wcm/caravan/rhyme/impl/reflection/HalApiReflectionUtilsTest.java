@@ -54,7 +54,7 @@ class HalApiReflectionUtilsTest {
   }
 
   @Test
-  void getSimpleClassName_should_return_inner_class_name()  {
+  void getSimpleClassName_should_return_inner_class_name() {
 
     InnerTestResourceImpl resourceImpl = new InnerTestResourceImpl();
 
@@ -65,7 +65,7 @@ class HalApiReflectionUtilsTest {
 
 
   @Test
-  void getSimpleClassName_should_return_a_readable_representation_for_anonymous_classes()  {
+  void getSimpleClassName_should_return_a_readable_representation_for_anonymous_classes() {
 
     LinkableTestResource resourceImpl = new LinkableTestResource() {
 

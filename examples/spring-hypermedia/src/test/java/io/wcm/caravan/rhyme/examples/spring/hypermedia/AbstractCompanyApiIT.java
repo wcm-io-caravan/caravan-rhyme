@@ -84,7 +84,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getEmployees_should_list_employees_in_order_of_creation()  {
+  void getEmployees_should_list_employees_in_order_of_creation() {
 
     List<EmployeeResource> employees = api.getEmployees().getAll();
 
@@ -94,7 +94,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getManagers_should_list_managers_in_order_of_creation()  {
+  void getManagers_should_list_managers_in_order_of_creation() {
 
     List<ManagerResource> managers = api.getManagers().getAll();
 
@@ -104,7 +104,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getEmployeeById_should_find_existing_employee()  {
+  void getEmployeeById_should_find_existing_employee() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -116,14 +116,14 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getEmployeeById_should_respond_with_404_for_non_existing_id()  {
+  void getEmployeeById_should_respond_with_404_for_non_existing_id() {
 
     assertThat404isReturnedFor(
         () -> api.getEmployeeById(NON_EXISTANT_ID).getState());
   }
 
   @Test
-  void getManager_should_find_manager_for_employee()  {
+  void getManager_should_find_manager_for_employee() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -134,7 +134,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getCanonical_returns_same_instance_with_different_url()  {
+  void getCanonical_returns_same_instance_with_different_url() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -151,7 +151,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getManagerById_should_find_existing_manager()  {
+  void getManagerById_should_find_existing_manager() {
 
     Long firstId = getIdOfFirstManager();
 
@@ -162,14 +162,14 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getManagerById_should_respond_with_404_for_non_existing_id()  {
+  void getManagerById_should_respond_with_404_for_non_existing_id() {
 
     assertThat404isReturnedFor(
         () -> api.getManagerById(NON_EXISTANT_ID).getState());
   }
 
   @Test
-  void getCanonical_is_empty_if_manager_was_loaded_by_id()  {
+  void getCanonical_is_empty_if_manager_was_loaded_by_id() {
 
     Long firstId = getIdOfFirstManager();
 
@@ -179,7 +179,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getManagedEmployees_should_find_employees_of_manager()  {
+  void getManagedEmployees_should_find_employees_of_manager() {
 
     Long firstId = getIdOfFirstManager();
 
@@ -192,7 +192,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getDetailedEmployeeById_should_find_existing_employee()  {
+  void getDetailedEmployeeById_should_find_existing_employee() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -202,14 +202,14 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getDetailedEmployeeById_should_respond_with_404_for_non_existing_id()  {
+  void getDetailedEmployeeById_should_respond_with_404_for_non_existing_id() {
 
     assertThat404isReturnedFor(
         () -> api.getDetailedEmployeeById(NON_EXISTANT_ID).getState());
   }
 
   @Test
-  void getDetailedEmployeeById_should_include_manager_name()  {
+  void getDetailedEmployeeById_should_include_manager_name() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -219,7 +219,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getDetailedEmployeeById_should_list_colleages()  {
+  void getDetailedEmployeeById_should_list_colleages() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -231,7 +231,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getDetailedEmployeeById_should_provide_manager()  {
+  void getDetailedEmployeeById_should_provide_manager() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -241,7 +241,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getDetailedEmployeeById_should_provide_external_link()  {
+  void getDetailedEmployeeById_should_provide_external_link() {
 
     Long firstId = getIdOfFirstEmployee();
 

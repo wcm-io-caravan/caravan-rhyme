@@ -48,7 +48,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asEmbeddedResource_should_return_proxy_implementing_EmbeddableResource()  {
+  void asEmbeddedResource_should_return_proxy_implementing_EmbeddableResource() {
 
     LinkableTestResource impl = new LinkableTestResourceImpl();
 
@@ -64,7 +64,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asEmbeddedResource_isEmbedded_returns_true()  {
+  void asEmbeddedResource_isEmbedded_returns_true() {
 
     LinkableTestResource impl = new LinkableTestResourceImpl();
 
@@ -75,7 +75,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asEmbeddedResource_isLinkedWhenEmbedded_returns_true()  {
+  void asEmbeddedResource_isLinkedWhenEmbedded_returns_true() {
 
     LinkableTestResource impl = new LinkableTestResourceImpl();
 
@@ -86,7 +86,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asEmbeddedResource_should_forward_other_method_calls_to_impl()  {
+  void asEmbeddedResource_should_forward_other_method_calls_to_impl() {
 
     LinkableTestResource impl = new LinkableTestResourceImpl();
 
@@ -98,7 +98,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asEmbeddedResource_should_handle_exceptions()  {
+  void asEmbeddedResource_should_handle_exceptions() {
 
     LinkableTestResource impl = new LinkableTestResourceImpl() {
 
@@ -119,7 +119,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asEmbeddedResource_should_handle_errors()  {
+  void asEmbeddedResource_should_handle_errors() {
 
     LinkableTestResource impl = new LinkableTestResourceImpl() {
 
@@ -140,7 +140,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asEmbeddedResourceWithoutLink_isEmbedded_returns_true()  {
+  void asEmbeddedResourceWithoutLink_isEmbedded_returns_true() {
 
     LinkableTestResource impl = new LinkableTestResourceImpl();
 
@@ -151,7 +151,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asEmbeddedResourceWithoutLink_isLinkedWhenEmbedded_returns_false()  {
+  void asEmbeddedResourceWithoutLink_isLinkedWhenEmbedded_returns_false() {
 
     LinkableTestResource impl = new LinkableTestResourceImpl();
 
@@ -162,7 +162,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asLinkableResource_should_create_proxy_that_returns_given_link()  {
+  void asLinkableResource_should_create_proxy_that_returns_given_link() {
 
     Link link = new Link("/foo");
 
@@ -173,7 +173,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asLinkableResource_should_create_proxy_that_implements_toString()  {
+  void asLinkableResource_should_create_proxy_that_implements_toString() {
 
     Link link = new Link("/foo");
 
@@ -184,7 +184,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asLinkableResource_should_fail_if_any_other_method_is_called_on_proxy()  {
+  void asLinkableResource_should_fail_if_any_other_method_is_called_on_proxy() {
 
     Link link = new Link("/foo");
 
@@ -197,7 +197,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asLinkableResource_can_be_used_for_interfaces_not_extending_LinkableResource()  {
+  void asLinkableResource_can_be_used_for_interfaces_not_extending_LinkableResource() {
 
     Link link = new Link("/foo");
 
@@ -211,7 +211,7 @@ class ResourceConversionsTest {
   }
 
   @Test
-  void asLinkableResource_should_fail_if_a_createLink_overload_is_called_on_proxy()  {
+  void asLinkableResource_should_fail_if_a_createLink_overload_is_called_on_proxy() {
 
     Link link = new Link("/foo");
 

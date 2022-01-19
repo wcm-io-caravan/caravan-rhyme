@@ -44,7 +44,7 @@ public class HalResourceMessageBodyWriterTest {
   private final HalResourceMessageBodyWriter messageBodyWriter = new HalResourceMessageBodyWriter();
 
   @Test
-  void isWriteable_should_return_true_for_HalResource()  {
+  void isWriteable_should_return_true_for_HalResource() {
 
     boolean writeable = messageBodyWriter.isWriteable(HalResource.class, null, new Annotation[0], WILDCARD_TYPE);
 
@@ -52,7 +52,7 @@ public class HalResourceMessageBodyWriterTest {
   }
 
   @Test
-  void isWriteable_should_return_fals_for_other_class()  {
+  void isWriteable_should_return_fals_for_other_class() {
 
     boolean writeable = messageBodyWriter.isWriteable(JsonNode.class, null, new Annotation[0], WILDCARD_TYPE);
 
@@ -60,7 +60,7 @@ public class HalResourceMessageBodyWriterTest {
   }
 
   @Test
-  void getSize_should_not_be_able_do_termine_size()  {
+  void getSize_should_not_be_able_do_termine_size() {
 
     long size = messageBodyWriter.getSize(new HalResource(), HalResource.class, null, new Annotation[0], WILDCARD_TYPE);
 

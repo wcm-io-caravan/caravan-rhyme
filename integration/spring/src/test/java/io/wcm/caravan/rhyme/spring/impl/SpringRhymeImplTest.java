@@ -87,7 +87,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  void getRemoteResource_should_use_HalResourceLoader()  {
+  void getRemoteResource_should_use_HalResourceLoader() {
 
     String resourceUri = "/bar";
 
@@ -104,7 +104,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  void renderVndErrorResponse_should_use_request_url()  {
+  void renderVndErrorResponse_should_use_request_url() {
 
     ResponseEntity<JsonNode> errorEntity = rhyme.renderVndErrorResponse(new RuntimeException());
 
@@ -117,7 +117,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  void renderResponse_should_use_max_age()  {
+  void renderResponse_should_use_max_age() {
 
     rhyme.setResponseMaxAge(Duration.ofSeconds(10));
 
@@ -131,7 +131,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  void renderResponse_should_not_embed_metadata_by_default()  {
+  void renderResponse_should_not_embed_metadata_by_default() {
 
     MinimalTestResourceImpl resource = new MinimalTestResourceImpl();
 
@@ -144,7 +144,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  void renderResponse_should_embed_metadata_if_toggled_by_query()  {
+  void renderResponse_should_embed_metadata_if_toggled_by_query() {
 
     MinimalTestResourceImpl resource = new MinimalTestResourceImpl();
 
@@ -162,7 +162,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  void getCoreRhyme_should_return_the_same_core_Rhyme_instance_for_multiple_calls()  {
+  void getCoreRhyme_should_return_the_same_core_Rhyme_instance_for_multiple_calls() {
 
     Rhyme coreRhyme = rhyme.getCoreRhyme();
 

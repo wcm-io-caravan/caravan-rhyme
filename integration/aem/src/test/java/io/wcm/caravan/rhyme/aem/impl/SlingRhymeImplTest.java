@@ -31,7 +31,7 @@ public class SlingRhymeImplTest {
   private AemContext context = AppAemContext.newAemContext();
 
   @Test
-  void can_be_adapted_from_SlingHttpServletRequest_to_impl_class()  {
+  void can_be_adapted_from_SlingHttpServletRequest_to_impl_class() {
 
     SlingRhymeImpl slingRhyme = context.request().adaptTo(SlingRhymeImpl.class);
 
@@ -39,7 +39,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void can_be_adapted_from_SlingHttpServletRequest_to_interface()  {
+  void can_be_adapted_from_SlingHttpServletRequest_to_interface() {
 
     SlingRhyme slingRhyme = context.request().adaptTo(SlingRhyme.class);
 
@@ -57,7 +57,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void getCurrentResource_should_initially_return_the_requested_resource()  {
+  void getCurrentResource_should_initially_return_the_requested_resource() {
 
     SlingRhyme slingRhyme = createRhymeInstance();
 
@@ -65,7 +65,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void getRequestedResource_should_return_the_requested_resource()  {
+  void getRequestedResource_should_return_the_requested_resource() {
 
     SlingRhyme slingRhyme = createRhymeInstance();
 
@@ -73,7 +73,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_SlingRhyme_instance()  {
+  void adaptResource_should_inject_SlingRhyme_instance() {
 
     SlingRhymeImpl slingRhyme = createRhymeInstance();
 
@@ -101,7 +101,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_SlingLinkBuilder_instance()  {
+  void adaptResource_should_inject_SlingLinkBuilder_instance() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -118,7 +118,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_SlingHttpServletRequest_instance()  {
+  void adaptResource_should_inject_SlingHttpServletRequest_instance() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -135,7 +135,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_instance_adaptable_from_SlingHttpServletRequest()  {
+  void adaptResource_should_inject_instance_adaptable_from_SlingHttpServletRequest() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -160,7 +160,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_Resource_instance()  {
+  void adaptResource_should_inject_Resource_instance() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -177,7 +177,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_instance_adaptable_from_Resource()  {
+  void adaptResource_should_inject_instance_adaptable_from_Resource() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -212,7 +212,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_interface_instance_adaptable_from_Resource()  {
+  void adaptResource_should_inject_interface_instance_adaptable_from_Resource() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -231,7 +231,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_ValueMapValue_instance()  {
+  void adaptResource_should_inject_ValueMapValue_instance() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -250,7 +250,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_Page_instance_if_page_path_was_requested()  {
+  void adaptResource_should_inject_Page_instance_if_page_path_was_requested() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -262,7 +262,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_Page_instance_if_content_path_was_requested()  {
+  void adaptResource_should_inject_Page_instance_if_content_path_was_requested() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -275,7 +275,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_inject_Page_instance_if_resource_below_content_path_was_requested()  {
+  void adaptResource_should_inject_Page_instance_if_resource_below_content_path_was_requested() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -296,7 +296,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_fail_to_inject_field_that_isnt_adaptable()  {
+  void adaptResource_should_fail_to_inject_field_that_isnt_adaptable() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -317,7 +317,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_fail_for_null_resource()  {
+  void adaptResource_should_fail_for_null_resource() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -329,7 +329,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_fail_if_class_is_not_an_adaptable_class()  {
+  void adaptResource_should_fail_if_class_is_not_an_adaptable_class() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -346,7 +346,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  void adaptResource_should_fail_if_model_is_not_adaptable_from_request()  {
+  void adaptResource_should_fail_if_model_is_not_adaptable_from_request() {
 
     SlingRhyme rhyme = createRhymeInstance();
 

@@ -70,7 +70,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  void should_build_links_if_no_other_methods_are_called()  {
+  void should_build_links_if_no_other_methods_are_called() {
 
     UrlFingerprinting fingerprinting = createFingerprinting();
 
@@ -82,7 +82,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  void should_expand_value_of_required_annotated_parameter()  {
+  void should_expand_value_of_required_annotated_parameter() {
 
     UrlFingerprinting fingerprinting = createFingerprinting();
 
@@ -95,7 +95,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  void should_create_template_for_required_annotated_parameter()  {
+  void should_create_template_for_required_annotated_parameter() {
 
     UrlFingerprinting fingerprinting = createFingerprinting();
 
@@ -110,7 +110,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  void should_use_timestamp_from_request_if_present()  {
+  void should_use_timestamp_from_request_if_present() {
 
     String valueFromRequest = "123";
 
@@ -124,7 +124,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  void should_use_timestamp_from_supplier_if_not_present_in_request()  {
+  void should_use_timestamp_from_supplier_if_not_present_in_request() {
 
     UrlFingerprinting fingerprinting = createFingerprinting()
         .withTimestampParameter(PARAM, () -> NOW);
@@ -134,7 +134,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  void should_handle_multiple_params_present_in_request()  {
+  void should_handle_multiple_params_present_in_request() {
 
     String valueFromRequest = "123";
     String valueFromRequest2 = "123";
@@ -151,7 +151,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  void should_handle_multiple_params_not_all_of_which_are_present_in_request()  {
+  void should_handle_multiple_params_not_all_of_which_are_present_in_request() {
 
     String valueFromRequest = "123";
 
@@ -207,7 +207,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  void should_add_additional_query_parameters()  {
+  void should_add_additional_query_parameters() {
 
     UrlFingerprinting fingerprinting = createFingerprinting()
         .withQueryParameter("foo", "123")
@@ -220,7 +220,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  void additional_query_parameters_should_not_replace_existing()  {
+  void additional_query_parameters_should_not_replace_existing() {
 
     UrlFingerprinting fingerprinting = createFingerprinting()
         .withQueryParameter("foo", "123")
