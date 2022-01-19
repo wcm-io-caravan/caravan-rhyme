@@ -28,6 +28,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
@@ -56,12 +57,12 @@ public class HttpErrorResourcesIT {
   }
 
   HalApiClientException catchExceptionForRequestWith(ErrorParameters parameters) {
-    return assertThrows(HalApiClientException.class, () -> {
-      entryPoint.getErrorExamples()
-          .flatMap(errors -> errors.testClientErrorHandling(parameters))
-          .flatMapMaybe(ErrorResource::getTitle)
-          .blockingGet();
-    });
+
+    Maybe<String> propertyThatShouldFailToLoad = entryPoint.getErrorExamples()
+        .flatMap(errors -> errors.testClientErrorHandling(parameters))
+        .flatMapMaybe(ErrorResource::getTitle);
+
+    return assertThrows(HalApiClientException.class, propertyThatShouldFailToLoad::blockingGet);
   }
 
   @Test
