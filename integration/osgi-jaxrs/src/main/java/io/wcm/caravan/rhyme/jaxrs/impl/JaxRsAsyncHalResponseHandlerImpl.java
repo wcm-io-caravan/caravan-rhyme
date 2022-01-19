@@ -152,7 +152,7 @@ public class JaxRsAsyncHalResponseHandlerImpl implements JaxRsAsyncHalResponseRe
       uri = "(unknown url)";
     }
 
-    log.error("An exception occured when handling request for " + uri, fatalError);
+    log.error("An exception occured when handling request for {}", uri, fatalError);
 
     suspended.resume(fatalError);
   }

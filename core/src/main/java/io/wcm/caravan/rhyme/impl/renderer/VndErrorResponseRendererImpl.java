@@ -110,7 +110,7 @@ public class VndErrorResponseRendererImpl implements VndErrorResponseRenderer {
       log.warn("Responding with {} for {}:\n{}", status, uri, messages);
     }
     else {
-      log.error("Responding with " + status + " for " + uri, error);
+      log.error("Responding with {} for {}", status, uri, error);
     }
   }
 
