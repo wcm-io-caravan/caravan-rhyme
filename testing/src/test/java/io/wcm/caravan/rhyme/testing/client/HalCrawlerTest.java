@@ -37,7 +37,7 @@ import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import wiremock.com.github.jknack.handlebars.internal.lang3.math.NumberUtils;
 
-public class HalCrawlerTest {
+class HalCrawlerTest {
 
   @Test
   void should_crawl_from_root_resource() {

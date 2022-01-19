@@ -60,7 +60,7 @@ import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 @ExtendWith(AemContextExtension.class)
-public class HalApiServletTest {
+class HalApiServletTest {
 
   private static final String TEST_RESOURCE_PATH = "/content/test";
 

@@ -51,7 +51,7 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.spring.impl.SpringRhymeImplTest.MinimalTestResource;
 
 @ExtendWith(MockitoExtension.class)
-public class LinkableResourceMessageConverterTest {
+class LinkableResourceMessageConverterTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

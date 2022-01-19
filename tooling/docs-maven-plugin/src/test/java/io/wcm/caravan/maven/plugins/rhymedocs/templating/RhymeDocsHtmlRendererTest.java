@@ -43,7 +43,7 @@ import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocs;
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocsTest;
 
 
-public class RhymeDocsHtmlRendererTest {
+class RhymeDocsHtmlRendererTest {
 
   private static final int NUM_TEST_INTERFACES = RhymeApiDocsTest.TEST_INTERFACES.length;
 

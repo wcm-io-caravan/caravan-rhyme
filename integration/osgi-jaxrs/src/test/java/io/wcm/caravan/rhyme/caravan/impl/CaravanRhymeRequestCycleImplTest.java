@@ -68,7 +68,7 @@ import io.wcm.caravan.rhyme.jaxrs.impl.docs.RhymeDocsOsgiBundleSupport;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class CaravanRhymeRequestCycleImplTest {
+class CaravanRhymeRequestCycleImplTest {
 
   private static final String REQUEST_URI = "/";
 

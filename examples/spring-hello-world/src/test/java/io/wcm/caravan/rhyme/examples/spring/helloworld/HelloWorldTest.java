@@ -16,7 +16,7 @@ import io.wcm.caravan.rhyme.api.client.HalApiClient;
 
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class HelloWorldTest {
+class HelloWorldTest {
 
   private final HelloWorldResource helloWorld;
 

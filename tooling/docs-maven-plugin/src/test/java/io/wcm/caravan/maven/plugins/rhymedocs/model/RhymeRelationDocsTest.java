@@ -30,7 +30,7 @@ import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestEntryPoint;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestResource;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.TestRelations;
 
-public class RhymeRelationDocsTest {
+class RhymeRelationDocsTest {
 
   @Test
   void RhymeResourceDocs_getRelations_should_contain_all_relations_used_in_interface() {

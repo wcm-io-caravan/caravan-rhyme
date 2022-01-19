@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.wcm.caravan.hal.resource.HalResource;
 
 
-public class HalResourceMessageBodyWriterTest {
+class HalResourceMessageBodyWriterTest {
 
   private final HalResourceMessageBodyWriter messageBodyWriter = new HalResourceMessageBodyWriter();
 

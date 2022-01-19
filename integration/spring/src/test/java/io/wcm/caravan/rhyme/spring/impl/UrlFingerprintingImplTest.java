@@ -46,7 +46,7 @@ import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
 
 
 @ExtendWith(MockitoExtension.class)
-public class UrlFingerprintingImplTest {
+class UrlFingerprintingImplTest {
 
   private static final String PARAM = "time";
   private static final String PARAM2 = "time2";

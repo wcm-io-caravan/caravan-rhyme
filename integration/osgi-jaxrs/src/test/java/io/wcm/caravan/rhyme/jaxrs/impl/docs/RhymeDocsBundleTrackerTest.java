@@ -41,7 +41,7 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsBundleTrackerTest {
+class RhymeDocsBundleTrackerTest {
 
   private final OsgiContext context = new OsgiContext();
 

@@ -31,7 +31,7 @@ import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 /**
  * Runs a set of tests for the {@link WebClientHalResourceLoader} against a Wiremock server
  */
-public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
+class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
   protected HalResourceLoader createLoaderUnderTest() {

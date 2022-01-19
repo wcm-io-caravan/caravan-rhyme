@@ -35,7 +35,7 @@ import io.wcm.caravan.hal.resource.Link;
 import wiremock.com.google.common.collect.ImmutableMap;
 
 
-public class SpringRhymeLinkBuilderTest {
+class SpringRhymeLinkBuilderTest {
 
   private static final String EXPECTED_URL = "/testing/spring/linkbuilder/status?statusCode=200";
   private static final String EXPECTED_TEMPLATE = "/testing/spring/linkbuilder/status?statusCode={statusCode}";

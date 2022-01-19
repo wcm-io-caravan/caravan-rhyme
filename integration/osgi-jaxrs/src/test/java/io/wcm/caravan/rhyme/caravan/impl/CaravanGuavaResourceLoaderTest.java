@@ -46,7 +46,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 @ExtendWith(MockitoExtension.class)
-public class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
+class CaravanGuavaResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
 
   private HalResourceLoader resourceLoader;
 

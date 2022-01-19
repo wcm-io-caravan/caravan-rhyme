@@ -53,7 +53,7 @@ import io.wcm.caravan.rhyme.spring.impl.LinkableResourceMessageConverterTest.Min
 
 
 @ExtendWith(MockitoExtension.class)
-public class SpringRhymeImplTest {
+class SpringRhymeImplTest {
 
   private static final String REQUEST_PATH = "/foo";
   private static final String REQUEST_QUERY = "bar=123";

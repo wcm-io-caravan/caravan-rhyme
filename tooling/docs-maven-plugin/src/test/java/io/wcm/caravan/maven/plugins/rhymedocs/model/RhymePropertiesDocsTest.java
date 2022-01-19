@@ -44,7 +44,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 
-public class RhymePropertiesDocsTest {
+class RhymePropertiesDocsTest {
 
   private RhymePropertyDocs findDocsForProperty(String jsonPointer, RhymeResourceDocs resourceDocs) {
 

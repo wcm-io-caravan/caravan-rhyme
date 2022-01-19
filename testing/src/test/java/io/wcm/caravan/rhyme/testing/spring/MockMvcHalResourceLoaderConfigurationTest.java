@@ -40,7 +40,7 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
-public class MockMvcHalResourceLoaderConfigurationTest {
+class MockMvcHalResourceLoaderConfigurationTest {
 
   @Autowired
   private HalResourceLoader loader;

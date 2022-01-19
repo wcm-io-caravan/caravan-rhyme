@@ -43,7 +43,7 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 @ExtendWith(AemContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsServletTest {
+class RhymeDocsServletTest {
 
   private AemContext context = new AemContextBuilder().build();
 

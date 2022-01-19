@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithLinksInJavadoc;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestEntryPoint;
 
-public class RhymeResourceDocsTest {
+class RhymeResourceDocsTest {
 
   @Test
   void getTitle_should_return_short_name() {

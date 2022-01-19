@@ -23,7 +23,7 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 
 
-public class HttpUrlConnectionSupportTest extends AbstractHalResourceLoaderTest {
+class HttpUrlConnectionSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
   protected HalResourceLoader createLoaderUnderTest() {

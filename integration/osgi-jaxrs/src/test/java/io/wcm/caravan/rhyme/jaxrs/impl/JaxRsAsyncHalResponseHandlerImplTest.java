@@ -59,7 +59,7 @@ import io.wcm.caravan.rhyme.jaxrs.impl.docs.RhymeDocsOsgiBundleSupport;
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
 @SuppressFBWarnings("UWF_NULL_FIELD")
-public class JaxRsAsyncHalResponseHandlerImplTest {
+class JaxRsAsyncHalResponseHandlerImplTest {
 
   private static final String REQUEST_URL = "/request/url";
 

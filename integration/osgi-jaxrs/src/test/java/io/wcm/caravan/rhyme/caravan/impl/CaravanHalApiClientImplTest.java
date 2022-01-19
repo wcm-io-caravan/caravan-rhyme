@@ -54,7 +54,7 @@ import io.wcm.caravan.rhyme.impl.client.cache.CachingHalResourceLoader;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class CaravanHalApiClientImplTest {
+class CaravanHalApiClientImplTest {
 
   private static final String SERVICE_ID = "/serviceId";
 

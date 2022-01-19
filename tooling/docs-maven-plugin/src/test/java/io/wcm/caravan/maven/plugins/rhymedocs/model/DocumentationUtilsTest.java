@@ -40,7 +40,7 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 
 
-public class DocumentationUtilsTest {
+class DocumentationUtilsTest {
 
   private JavaClass firstClassWithMethod;
   private JavaMethod javaMethod;

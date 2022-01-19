@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 
-public class ReflectionUtilsTest {
+class ReflectionUtilsTest {
 
   @Test
   void testGetFieldValue_with_existing_field() throws NoSuchFieldException {

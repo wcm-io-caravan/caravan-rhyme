@@ -46,7 +46,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.jaxrs.api.JaxRsLinkBuilder;
 
 @SuppressFBWarnings("URF_UNREAD_FIELD")
-public class JaxRsControllerProxyLinkBuilderTest {
+class JaxRsControllerProxyLinkBuilderTest {
 
   public static class ParamBean {
 

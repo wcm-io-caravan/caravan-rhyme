@@ -42,7 +42,7 @@ import com.google.common.base.Charsets;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsHtmlResourceTest {
+class RhymeDocsHtmlResourceTest {
 
   private final OsgiContext context = new OsgiContext();
 

@@ -20,7 +20,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 
-public class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
+class ApacheAsyncHttpTest extends AbstractHalResourceLoaderTest {
 
   @Override
   protected HalResourceLoader createLoaderUnderTest() {

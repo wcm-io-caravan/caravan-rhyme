@@ -51,7 +51,7 @@ import com.google.common.collect.ImmutableList;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 @ExtendWith(MockitoExtension.class)
-public class JaxRsBundleInfoImplTest {
+class JaxRsBundleInfoImplTest {
 
   private static final String BUNDLE_NAME = "mocked-bundle";
   private static final String BASE_PATH = "/base/path";

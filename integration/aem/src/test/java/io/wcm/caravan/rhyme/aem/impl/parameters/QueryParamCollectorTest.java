@@ -37,7 +37,7 @@ import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.parameters.QueryParam;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
-public class QueryParamCollectorTest {
+class QueryParamCollectorTest {
 
   private final QueryParamCollector collector = new QueryParamCollector();
 
