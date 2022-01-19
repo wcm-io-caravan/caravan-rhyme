@@ -32,6 +32,8 @@ import org.apache.sling.api.resource.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.day.cq.wcm.api.Page;
 
@@ -245,36 +247,14 @@ public class SlingResourceAdapterImplTest {
         .hasMessageStartingWith("You cannot call the from* methods multiple times");
   }
 
-  @Test
-  void fromCurrentPage_should_work_from_page_resource()  {
+
+  @ParameterizedTest
+  @ValueSource(strings = { "/content/foo", "/content/foo/jcr:content", "/content/foo/jcr:content/foo/bar" })
+  void fromCurrentPage_should_work_from_page_resource_and_below(String resourcePath) {
 
     setUpPages("/content/foo");
 
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
-
-    List<SlingTestResource> resources = applySelection(adapter.fromCurrentPage().selectCurrentResource());
-
-    assertThatResourcesMatch(resources, "/content/foo");
-  }
-
-  @Test
-  void fromCurrentPage_should_work_from_page_content_resource()  {
-
-    setUpPages("/content/foo");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content");
-
-    List<SlingTestResource> resources = applySelection(adapter.fromCurrentPage().selectCurrentResource());
-
-    assertThatResourcesMatch(resources, "/content/foo");
-  }
-
-  @Test
-  void fromCurrentPage_should_work_from_below_page_content_resource()  {
-
-    setUpPages("/content/foo");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content/bar");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource(resourcePath);
 
     List<SlingTestResource> resources = applySelection(adapter.fromCurrentPage().selectCurrentResource());
 
@@ -639,72 +619,27 @@ public class SlingResourceAdapterImplTest {
   }
   */
 
-  @Test
-  void selectContainingPage_should_select_current_resource_from_page_resource()  {
+  @ParameterizedTest
+  @ValueSource(strings = { "/content/foo", "/content/foo/jcr:content", "/content/foo/jcr:content/foo/bar" })
+  void selectContainingPage_should_find_page_from_page_resource_and_below(String resourcePath) {
 
     setUpPages("/content/foo");
 
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource(resourcePath);
 
     List<SlingTestResource> resources = applySelection(adapter.selectContainingPage());
 
     assertThatResourcesMatch(resources, "/content/foo");
   }
 
-  @Test
-  void selectContainingPage_should_select_parent_resource_page_content_resource()  {
+
+  @ParameterizedTest
+  @ValueSource(strings = { "/content/foo", "/content/foo/jcr:content", "/content/foo/jcr:content/foo/bar" })
+  void selectContentOfCurrentPage_should_work_from_page_resource_and_below(String resourcePath) {
 
     setUpPages("/content/foo");
 
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContainingPage());
-
-    assertThatResourcesMatch(resources, "/content/foo");
-  }
-
-  @Test
-  void selectContainingPage_should_work_below_content_resource()  {
-
-    setUpPages("/content/foo");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content/foo/bar");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContainingPage());
-
-    assertThatResourcesMatch(resources, "/content/foo");
-  }
-
-  @Test
-  void selectContentOfCurrentPage_should_work_from_page_resource()  {
-
-    setUpPages("/content/foo");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfCurrentPage());
-
-    assertThatResourcesMatch(resources, "/content/foo/jcr:content");
-  }
-
-  @Test
-  void selectContentOfCurrentPage_should_work_from_page_content_resource()  {
-
-    setUpPages("/content/foo");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content");
-
-    List<SlingTestResource> resources = applySelection(adapter.selectContentOfCurrentPage());
-
-    assertThatResourcesMatch(resources, "/content/foo/jcr:content");
-  }
-
-  @Test
-  void selectContentOfCurrentPage_should_work_from_below_content_resource()  {
-
-    setUpPages("/content/foo");
-
-    SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo/jcr:content/foo/bar");
+    SlingResourceAdapter adapter = createAdapterInstanceForResource(resourcePath);
 
     List<SlingTestResource> resources = applySelection(adapter.selectContentOfCurrentPage());
 
