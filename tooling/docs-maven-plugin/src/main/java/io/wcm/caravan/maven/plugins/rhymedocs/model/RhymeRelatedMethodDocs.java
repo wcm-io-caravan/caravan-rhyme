@@ -36,7 +36,6 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
 import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection;
-import io.wcm.caravan.rhyme.impl.reflection.TemplateVariableDetection.TemplateVariableWithTypeInfo;
 
 /**
  * provides documentation a method annotated with {@link Related} that corresponds to a ling relation
