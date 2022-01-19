@@ -108,9 +108,7 @@ public final class RhymeRelatedMethodDocs {
 
   private List<RhymeVariableDocs> findVariables(JavaMethod javaMethod, Method method) {
 
-    List<TemplateVariableWithTypeInfo> variables = TemplateVariableDetection.findVariables(method, Optional.empty());
-
-    return variables.stream()
+    return TemplateVariableDetection.findVariables(method, Optional.empty()).stream()
         .map(variable -> new RhymeVariableDocs(builder, variable, javaMethod))
         .collect(Collectors.toList());
   }
