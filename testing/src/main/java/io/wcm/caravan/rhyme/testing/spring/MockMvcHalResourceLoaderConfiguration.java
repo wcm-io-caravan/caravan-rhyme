@@ -36,7 +36,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.common.collect.LinkedHashMultimap;
 
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
