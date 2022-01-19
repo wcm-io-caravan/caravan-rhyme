@@ -113,21 +113,25 @@ class TemplateVariablesTest {
   @Test
   void should_expand_template_with_variables_from_dto()  {
 
-    String template = "/item/{id}{?text*}";
+    String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     VariablesDto dto = new VariablesDto();
     dto.id = 123;
-    dto.text = "text";
+    dto.text = "foo";
+
+    Single<LinkedResourceWithSingleState> linkedItem = client.createProxy(ResourceWithTemplateVariablesDto.class).getItem(dto);
+
+    Link link = linkedItem.map(LinkedResourceWithSingleState::createLink).blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/123?text=foo");
 
     mockHalResponseForTemplateExpandedWithDto(template, dto);
 
-    TestResourceState linkedState = client.createProxy(ResourceWithTemplateVariablesDto.class)
-        .getItem(dto)
-        .flatMap(LinkedResourceWithSingleState::getProperties)
-        .blockingGet();
-
-    assertThat(linkedState).isNotNull();
+    TestResourceState state = linkedItem.flatMap(LinkedResourceWithSingleState::getProperties).blockingGet();
+    assertThat(state.text)
+        .isEqualTo("foo");
   }
 
   @Test
@@ -140,14 +144,20 @@ class TemplateVariablesTest {
     dto.id = 123;
     dto.text = null;
 
+    Single<LinkedResourceWithSingleState> linkedItem = client.createProxy(ResourceWithTemplateVariablesDto.class).getItem(dto);
+
+    // calling createLink should return a partially expanded template
+    Link link = linkedItem.map(LinkedResourceWithSingleState::createLink).blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/123{?text}");
+
+    // but actually following the link should be a fully expanded template even if text is null
     mockHalResponseForTemplateExpandedWithDto(template, dto);
 
-    TestResourceState linkedState = client.createProxy(ResourceWithTemplateVariablesDto.class)
-        .getItem(dto)
-        .flatMap(LinkedResourceWithSingleState::getProperties)
-        .blockingGet();
-
-    assertThat(linkedState).isNotNull();
+    TestResourceState state = linkedItem.flatMap(LinkedResourceWithSingleState::getProperties).blockingGet();
+    assertThat(state.text)
+        .isNull();
   }
 
   @Test
@@ -160,14 +170,20 @@ class TemplateVariablesTest {
     dto.id = null;
     dto.text = null;
 
+    Single<LinkedResourceWithSingleState> linkedItem = client.createProxy(ResourceWithTemplateVariablesDto.class).getItem(dto);
+
+    // calling createLink should return a partially expanded template
+    Link link = linkedItem.map(LinkedResourceWithSingleState::createLink).blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/{id}{?text}");
+
+    // but actually following the link should be a fully expanded template even if text is null
     mockHalResponseForTemplateExpandedWithDto(template, dto);
 
-    TestResourceState linkedState = client.createProxy(ResourceWithTemplateVariablesDto.class)
-        .getItem(dto)
-        .flatMap(LinkedResourceWithSingleState::getProperties)
-        .blockingGet();
-
-    assertThat(linkedState).isNotNull();
+    TestResourceState state = linkedItem.flatMap(LinkedResourceWithSingleState::getProperties).blockingGet();
+    assertThat(state.text)
+        .isNull();
   }
 
   @Test
