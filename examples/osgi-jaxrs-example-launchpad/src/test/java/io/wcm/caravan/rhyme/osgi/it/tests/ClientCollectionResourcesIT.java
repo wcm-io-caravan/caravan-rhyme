@@ -55,7 +55,8 @@ public class ClientCollectionResourcesIT {
 
     List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
 
-    assertThat(items).hasSize(numItems);
+    assertThat(items)
+        .hasSize(numItems);
   }
 
   @Test
@@ -68,7 +69,8 @@ public class ClientCollectionResourcesIT {
     List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
 
     for (int i = 0; i < numItems; i++) {
-      assertThat(items.get(i).index).isEqualTo(i);
+      assertThat(items.get(i).index)
+          .isEqualTo(i);
     }
   }
 
@@ -83,8 +85,9 @@ public class ClientCollectionResourcesIT {
     getCollectionItemsThroughClient(numItems, embedItems, delayMs);
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
-    assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(5 * delayMs);
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(5 * delayMs);
   }
 
   @Test
@@ -98,8 +101,9 @@ public class ClientCollectionResourcesIT {
     getCollectionItemsThroughClient(numItems, embedItems, delayMs);
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
-    assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(numItems * (long)delayMs);
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(numItems * (long)delayMs);
   }
 
   @Test
@@ -111,7 +115,8 @@ public class ClientCollectionResourcesIT {
 
     List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
 
-    assertThat(items).hasSize(numItems);
+    assertThat(items)
+        .hasSize(numItems);
   }
 
   @Test
@@ -124,7 +129,8 @@ public class ClientCollectionResourcesIT {
     List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
 
     for (int i = 0; i < numItems; i++) {
-      assertThat(items.get(i).index).isEqualTo(i);
+      assertThat(items.get(i).index)
+          .isEqualTo(i);
     }
   }
 
@@ -139,7 +145,8 @@ public class ClientCollectionResourcesIT {
     getCollectionItemsThroughClient(numItems, embedItems, delayMs);
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
-    assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(5 * delayMs);
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(5 * delayMs);
   }
 }

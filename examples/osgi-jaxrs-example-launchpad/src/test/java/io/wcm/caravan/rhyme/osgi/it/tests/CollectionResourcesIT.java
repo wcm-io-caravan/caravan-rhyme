@@ -55,7 +55,8 @@ public class CollectionResourcesIT {
 
     List<ItemState> items = getCollectionItems(numItems, embedItems, delayMs);
 
-    assertThat(items).hasSize(numItems);
+    assertThat(items)
+        .hasSize(numItems);
   }
 
   @Test
@@ -68,7 +69,8 @@ public class CollectionResourcesIT {
     List<ItemState> items = getCollectionItems(numItems, embedItems, delayMs);
 
     for (int i = 0; i < numItems; i++) {
-      assertThat(items.get(i).index).isEqualTo(i);
+      assertThat(items.get(i).index)
+          .isEqualTo(i);
     }
   }
 
@@ -83,8 +85,9 @@ public class CollectionResourcesIT {
     getCollectionItems(numItems, embedItems, delayMs);
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
-    assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(2 * delayMs);
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(2 * delayMs);
   }
 
   @Test
@@ -96,7 +99,8 @@ public class CollectionResourcesIT {
 
     List<ItemState> items = getCollectionItems(numItems, embedItems, delayMs);
 
-    assertThat(items).hasSize(numItems);
+    assertThat(items)
+        .hasSize(numItems);
   }
 
   @Test
@@ -109,7 +113,8 @@ public class CollectionResourcesIT {
     List<ItemState> items = getCollectionItems(numItems, embedItems, delayMs);
 
     for (int i = 0; i < numItems; i++) {
-      assertThat(items.get(i).index).isEqualTo(i);
+      assertThat(items.get(i).index)
+          .isEqualTo(i);
     }
   }
 
@@ -124,7 +129,8 @@ public class CollectionResourcesIT {
     getCollectionItems(numItems, embedItems, delayMs);
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
-    assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(5 * delayMs);
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(5 * delayMs);
   }
 }

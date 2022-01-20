@@ -83,11 +83,15 @@ class RhymeImplTest {
 
     HalApiClientException ex = catchThrowableOfType(entryPoint::getState, HalApiClientException.class);
 
-    assertThat(ex.getStatusCode()).isEqualTo(404);
-    assertThat(ex).hasMessageStartingWith("Failed to load an upstream resource");
+    assertThat(ex.getStatusCode())
+        .isEqualTo(404);
 
-    assertThat(ex).hasCauseInstanceOf(HalApiClientException.class);
-    assertThat(ex.getCause()).hasMessageContaining(NON_EXISTING_PATH);
+    assertThat(ex)
+        .hasMessageStartingWith("Failed to load an upstream resource")
+        .hasCauseInstanceOf(HalApiClientException.class);
+
+    assertThat(ex.getCause())
+        .hasMessageContaining(NON_EXISTING_PATH);
   }
 
   private TestState getResourceFromUnknownHost(Rhyme rhymeWithoutResourceLoader) {

@@ -80,17 +80,21 @@ class SlingRhymeImplTest {
     Resource resourceToAdapt = context.create().resource("/foo/bar");
     ModelWithSlingRhymeField model = slingRhyme.adaptResource(resourceToAdapt, ModelWithSlingRhymeField.class);
 
-    assertThat(model.slingRhyme).isInstanceOf(SlingRhymeImpl.class);
+    assertThat(model.slingRhyme)
+        .isInstanceOf(SlingRhymeImpl.class)
+        // the injected SlingRhyme instance must is a different instance (because the current resource might be different)
+        .isNotSameAs(slingRhyme);
 
-    // the injected SlingRhyme instance is a different instance (because the current resource might be different)
-    assertThat(model.slingRhyme).isNotSameAs(slingRhyme);
     // but they both should share the same caravan Rhyme instance
-    assertThat(model.slingRhyme.getCoreRhyme()).isSameAs(slingRhyme.getCoreRhyme());
+    assertThat(model.slingRhyme.getCoreRhyme())
+        .isSameAs(slingRhyme.getCoreRhyme());
 
     // the current resource is set to the resource from which the new model was adapted
-    assertThat(model.slingRhyme.getCurrentResource()).isSameAs(resourceToAdapt);
+    assertThat(model.slingRhyme.getCurrentResource())
+        .isSameAs(resourceToAdapt);
     // but the requested resource is still set to the original resource from the request
-    assertThat(model.slingRhyme.getRequestedResource()).isSameAs(context.request().getResource());
+    assertThat(model.slingRhyme.getRequestedResource())
+        .isSameAs(context.request().getResource());
   }
 
   @Model(adaptables = SlingRhyme.class)
