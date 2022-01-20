@@ -301,7 +301,7 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
 
       boolean allRequiredParametersResolved = parameters.stream()
           .filter(tp -> tp.required)
-          .allMatch(tp -> valueAvailableCheck.test(tp));
+          .allMatch(valueAvailableCheck::test);
 
       return parameters.stream()
           .filter(tp -> isQueryParamToKeep(tp, valueAvailableCheck, allRequiredParametersResolved))
