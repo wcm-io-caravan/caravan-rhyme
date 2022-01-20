@@ -180,11 +180,9 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
     Stream<RhymePropertyDocsImpl> fieldProperties = DocumentationUtils.getPublicFields(stateType)
         .map(field -> new FieldPropertyModel(builder, stateType, field, basePointer));
 
-    Stream<RhymePropertyDocs> recursiveStream = Stream.concat(beanProperties, fieldProperties)
+    return Stream.concat(beanProperties, fieldProperties)
         .sorted(Ordering.natural().onResultOf(RhymePropertyDocs::getJsonPointer))
         .flatMap(docs -> handleObjectsAndArrays(docs, processedClassNames));
-
-    return recursiveStream;
   }
 
   private static Stream<RhymePropertyDocs> handleObjectsAndArrays(RhymePropertyDocsImpl docs, Map<String, String> processedClassNames) {

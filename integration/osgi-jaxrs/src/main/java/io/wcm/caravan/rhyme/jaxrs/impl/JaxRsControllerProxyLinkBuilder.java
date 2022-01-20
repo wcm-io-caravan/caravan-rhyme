@@ -303,19 +303,21 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
           .filter(tp -> tp.required)
           .allMatch(tp -> valueAvailableCheck.test(tp));
 
-      String[] varSpecs = parameters.stream()
-          .filter(tp -> tp.query)
-          .filter(tp -> {
-            // a query template variable should be kept if....
-            return !allRequiredParametersResolved // not all required parameters have been set, so a full URI template is rendered
-                || tp.required // this specific template variable is required
-                || valueAvailableCheck.test(tp); // tis (optional) template variable does have a value
-          })
+      return parameters.stream()
+          .filter(tp -> isQueryParamToKeep(tp, valueAvailableCheck, allRequiredParametersResolved))
           .sorted(comparator)
           .map(TemplateParameter::getVarName)
           .toArray(String[]::new);
+    }
 
-      return varSpecs;
+    private boolean isQueryParamToKeep(TemplateParameter parameter, Predicate<TemplateParameter> valueAvailableCheck,
+        boolean allRequiredParametersResolved) {
+
+      // a query template variable should be kept if....
+      return parameter.query &&
+          (!allRequiredParametersResolved // not all required parameters have been set, so a full URI template is rendered
+              || parameter.required // this specific template variable is required
+              || valueAvailableCheck.test(parameter)); // its (optional) template variable does have a value
     }
 
     abstract class AnnotatedParamFinder<AnnotationType extends Annotation> {

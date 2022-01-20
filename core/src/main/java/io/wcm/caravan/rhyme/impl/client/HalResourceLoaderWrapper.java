@@ -61,22 +61,24 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
   @SuppressWarnings("PMD.PreserveStackTrace")
   public Single<HalResponse> getHalResource(String uri) {
     try {
+      // repeated calls for same URI should return the same instance
       return cache.get(uri, () -> {
 
         Stopwatch stopwatch = Stopwatch.createUnstarted();
 
-        Single<HalResponse> loadedResource = delegate.getHalResource(uri)
+        // load the resource
+        return delegate.getHalResource(uri)
+            // capture response performance and metadata
             .doOnSubscribe(d -> startStopwatch(stopwatch))
             .doOnError(ex -> registerErrorMetrics(uri, ex, stopwatch))
-            .doOnSuccess(jsonResponse -> registerResponseMetrics(uri, jsonResponse, stopwatch))
-            .onErrorResumeNext(ex -> rethrowUnexpectedExceptions(uri, ex));
-
-        LinkRewriting rewriting = new LinkRewriting(uri);
-        Single<HalResponse> processedResource = loadedResource.map(rewriting::resolveRelativeLinks);
-
-        Single<HalResponse> cachedResource = processedResource.compose(RxJavaTransformers.cacheSingleIfCompleted());
-
-        return cachedResource;
+            .doOnSuccess(response -> registerResponseMetrics(uri, response, stopwatch))
+            // ensure that only HalApiClientExeptions are emitted
+            .onErrorResumeNext(ex -> rethrowUnexpectedExceptions(uri, ex))
+            // rewrite any links that are not fully qualified
+            .map(response -> new LinkRewriting(uri).resolveRelativeLinks(response))
+            // just returning the same Single instance isn't enough, we also have to transform the Single into one
+            // that will actually replay the result for each subscriber, but only if it succeeded (as the retry operator should still be usable)
+            .compose(RxJavaTransformers.cacheSingleIfCompleted());
       });
     }
     catch (UncheckedExecutionException | ExecutionException ex) {

@@ -308,9 +308,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
         newFilter = new ResourceFilter(newDescription, newPredicate);
       }
 
-      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, resourceSelector, newFilter);
-
-      return newInstance;
+      return new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, resourceSelector, newFilter);
     }
 
   }
@@ -354,9 +352,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       }
 
 
-      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, newSelector, resourceFilter);
-
-      return newInstance;
+      return new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, newSelector, resourceFilter);
     }
   }
 
