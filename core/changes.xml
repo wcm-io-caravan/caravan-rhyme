@@ -25,9 +25,10 @@
 
     <release version="1.1.2" date="not released">
       <action type="add" dev="ssauder">
-        Improved consistency for handling of null values for link template variables: when calling #createLink on a client proxy you'll always
+        Improved consistency for handling of null values for link template variables. When calling #createLink on a client proxy, you'll now always
         get the link template (which may be partially expanded if some values were not null in the invocation).
-        When following such links, the template will be fully resolved before loading the target resource.
+        When following such links, any non-resolved variables will be removed before loading the target resource (rather than throwing an exception).
+        This adds support for following link templates were all variables are optional.
       </action>
       <action type="add" dev="ssauder">
         Ensure that the max-age value of failed upstream requests is also captured and taken into account for calculating the max-age
