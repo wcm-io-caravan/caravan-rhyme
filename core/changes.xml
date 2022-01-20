@@ -29,6 +29,10 @@
         get the link template (which may be partially expanded if some values were not null in the invocation).
         When following such links, the template will be fully resolved before loading the target resource.
       </action>
+      <action type="add" dev="ssauder">
+        Ensure that the max-age value of failed upstream requests is also captured and taken into account for calculating the max-age
+        of the resource being rendered.
+      </action>
       <action type="fix" dev="ssauder">
         Improved reliability when parsing max-age response header.
       </action>

@@ -102,9 +102,20 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
 
   private void registerErrorMetrics(String uri, Throwable ex, Stopwatch stopwatch) {
 
+    Integer maxAge = null;
+    Integer status = null;
+    if (ex instanceof HalApiClientException) {
+      HalResponse response = ((HalApiClientException)ex).getErrorResponse();
+      maxAge = response.getMaxAge();
+      status = response.getStatus();
+    }
+
+    log.debug("Failed to receive JSON response from {} with status code {} and max-age {} in {}ms",
+        uri, status, maxAge, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
     String title = "Upstream resource that failed to load: " + ex.getMessage();
 
-    metrics.onResponseRetrieved(uri, title, null, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+    metrics.onResponseRetrieved(uri, title, maxAge, stopwatch.elapsed(TimeUnit.MICROSECONDS));
   }
 
   private void registerResponseMetrics(String uri, HalResponse response, Stopwatch stopwatch) {
