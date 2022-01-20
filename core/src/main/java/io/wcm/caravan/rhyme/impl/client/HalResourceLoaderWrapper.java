@@ -64,6 +64,8 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
       // repeated calls for same URI should return the same instance
       return cache.get(uri, () -> {
 
+        // don't start the timer right now, as it can still take some time before the request is actually
+        // started (by a subscription to the Single that is being returned)
         Stopwatch stopwatch = Stopwatch.createUnstarted();
 
         // load the resource
@@ -89,6 +91,8 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
   }
 
   private void startStopwatch(Stopwatch stopwatch) {
+    // even we are trying to avoid multiple requests being executed for the same URL, there can still
+    // be multiple subscriptions to the Single in case that an error is thrown and the retry operator is used
     if (stopwatch.isRunning()) {
       stopwatch.stop();
       stopwatch.reset();
@@ -103,14 +107,14 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
     metrics.onResponseRetrieved(uri, title, null, stopwatch.elapsed(TimeUnit.MICROSECONDS));
   }
 
-  private void registerResponseMetrics(String uri, HalResponse jsonResponse, Stopwatch stopwatch) {
+  private void registerResponseMetrics(String uri, HalResponse response, Stopwatch stopwatch) {
 
     log.debug("Received JSON response from {} with status code {} and max-age {} in {}ms",
-        uri, jsonResponse.getStatus(), jsonResponse.getMaxAge(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        uri, response.getStatus(), response.getMaxAge(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
-    String title = getResourceTitle(jsonResponse.getBody(), uri);
+    String title = getResourceTitle(response.getBody(), uri);
 
-    metrics.onResponseRetrieved(uri, title, jsonResponse.getMaxAge(), stopwatch.elapsed(TimeUnit.MICROSECONDS));
+    metrics.onResponseRetrieved(uri, title, response.getMaxAge(), stopwatch.elapsed(TimeUnit.MICROSECONDS));
   }
 
   private Single<HalResponse> rethrowUnexpectedExceptions(String uri, Throwable ex) {
@@ -140,6 +144,4 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
 
     return title;
   }
-
-
 }
