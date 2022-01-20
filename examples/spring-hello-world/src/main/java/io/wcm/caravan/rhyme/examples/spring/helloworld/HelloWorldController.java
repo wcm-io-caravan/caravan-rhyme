@@ -141,7 +141,7 @@ class HelloWorldController {
     public Stream<HelloWorldResource> getTranslations() {
 
       return TRANSLATIONS.keySet().stream()
-          .map(language -> getTranslatedResource(language));
+          .map(HelloWorldController.this::getTranslatedResource);
     }
 
     @Override

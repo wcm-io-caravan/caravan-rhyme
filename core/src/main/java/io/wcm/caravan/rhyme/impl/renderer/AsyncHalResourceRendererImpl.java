@@ -123,7 +123,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
 
   Single<ObjectNode> renderResourceState(Class<?> apiInterface, Object resourceImplInstance) {
 
-    Single<ObjectNode> emptyObject = Single.fromCallable(() -> JsonNodeFactory.instance.objectNode());
+    Single<ObjectNode> emptyObject = Single.fromCallable(JsonNodeFactory.instance::objectNode);
 
     // find the first method annotated with @ResourceState (and return an empty object if there is none)
     Optional<Method> method = HalApiReflectionUtils.findResourceStateMethod(apiInterface, typeSupport);

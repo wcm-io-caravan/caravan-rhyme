@@ -21,6 +21,7 @@ package io.wcm.caravan.rhyme.aem.impl;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class RhymeResourceRegistry {
     List<Class<? extends LinkableResource>> customModelClasses = registrations.stream()
         .flatMap(provider -> provider.getModelClassesWithSelectors().entrySet().stream())
         .filter(entry -> selectors.contains(entry.getValue()))
-        .map(entry -> entry.getKey())
+        .map(Entry::getKey)
         .distinct()
         .collect(Collectors.toList());
 

@@ -76,7 +76,7 @@ public class AemLinkedContentImpl implements AemLinkedContent {
         .filter(entry -> entry.getValue() instanceof String)
         .map(entry -> (String)entry.getValue())
         .filter(value -> value.startsWith("/"))
-        .map(contentRef -> resolver.getResource(contentRef))
+        .map(resolver::getResource)
         .filter(Objects::nonNull);
 
     Stream<Resource> linkedInChildResources = StreamSupport.stream(contentResource.getChildren().spliterator(), false)

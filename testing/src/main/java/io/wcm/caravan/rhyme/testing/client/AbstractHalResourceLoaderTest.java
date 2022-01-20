@@ -192,9 +192,9 @@ public abstract class AbstractHalResourceLoaderTest {
   }
 
   protected HalApiClientException loadResourceAndExpectClientException(String url) {
-    Single<HalResponse> rxResponse = createLoaderUnderTest().getHalResource(url);
+    Single<HalResponse> response = createLoaderUnderTest().getHalResource(url);
 
-    Throwable ex = catchThrowable(() -> rxResponse.blockingGet());
+    Throwable ex = catchThrowable(response::blockingGet);
 
     assertThat(ex)
         .isInstanceOf(HalApiClientException.class)

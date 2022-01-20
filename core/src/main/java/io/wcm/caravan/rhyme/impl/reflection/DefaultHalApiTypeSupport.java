@@ -145,7 +145,7 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
   public Function<Object, Observable<Object>> convertToObservable(Class<?> sourceType) {
 
     if (Observable.class.isAssignableFrom(sourceType)) {
-      return o -> (Observable)o;
+      return Observable.class::cast;
     }
     if (Single.class.isAssignableFrom(sourceType)) {
       return o -> ((Single)o).toObservable();
@@ -174,7 +174,7 @@ public class DefaultHalApiTypeSupport implements HalApiTypeSupport {
       };
     }
     if (sourceType.getTypeParameters().length == 0) {
-      return o -> Observable.just(o);
+      return Observable::just;
     }
 
     return null;
