@@ -116,7 +116,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   }
 
   @Override
-  public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
+  public <T> T adaptTo(Class<T> type) {
 
     // there was some confusing branch coverage issue when using this try-with-resource-statement
     // with multiple return statements, that's why the content was moved into a doAdaptTo method
@@ -125,14 +125,14 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     }
   }
 
-  private <AdapterType> AdapterType doAdaptTo(Class<AdapterType> type) {
+  private <T> T doAdaptTo(Class<T> type) {
 
     // immediately return the current resource or request if they are the target of the adaption
     if (Resource.class.isAssignableFrom(type)) {
-      return (AdapterType)currentResource;
+      return (T)currentResource;
     }
     if (HttpServletRequest.class.isAssignableFrom(type)) {
-      return (AdapterType)request;
+      return (T)request;
     }
 
     // use the model factory if the target type is a sling model, so that if anything goes wrong,
@@ -163,7 +163,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     return builder.build();
   }
 
-  private <AdapterType> Optional<AdapterType> tryAdapting(Class<AdapterType> type, Collection<Adaptable> adaptables) {
+  private <T> Optional<T> tryAdapting(Class<T> type, Collection<Adaptable> adaptables) {
 
     return adaptables.stream()
         .filter(Objects::nonNull)

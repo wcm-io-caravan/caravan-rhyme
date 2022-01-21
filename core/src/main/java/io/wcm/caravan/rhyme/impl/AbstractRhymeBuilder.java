@@ -58,9 +58,9 @@ import io.wcm.caravan.rhyme.impl.renderer.CompositeExceptionStatusAndLoggingStra
 /**
  * An abstract base class for the common customization and dependency injection required by the {@link RhymeBuilder},
  * {@link HalApiClientBuilder} and {@link HalResponseRendererBuilder} implementations.
- * @param <BuilderInterface> the interface that the subclass is implementing
+ * @param <I> the interface that the subclass is implementing
  */
-abstract class AbstractRhymeBuilder<BuilderInterface> {
+abstract class AbstractRhymeBuilder<I> {
 
   private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
       .disable(FAIL_ON_UNKNOWN_PROPERTIES);
@@ -84,63 +84,63 @@ abstract class AbstractRhymeBuilder<BuilderInterface> {
   protected boolean wasUsedToBuild;
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withResourceLoader(HalResourceLoader resourceLoader) {
+  public I withResourceLoader(HalResourceLoader resourceLoader) {
 
     this.resourceLoader = resourceLoader;
-    return (BuilderInterface)this;
+    return (I)this;
   }
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withMetrics(RequestMetricsCollector sharedMetrics) {
+  public I withMetrics(RequestMetricsCollector sharedMetrics) {
 
     this.metrics = sharedMetrics;
-    return (BuilderInterface)this;
+    return (I)this;
   }
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport) {
+  public I withRhymeDocsSupport(RhymeDocsSupport rhymeDocsSupport) {
 
     this.rhymeDocsSupport = rhymeDocsSupport;
-    return (BuilderInterface)this;
+    return (I)this;
   }
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport) {
+  public I withReturnTypeSupport(HalApiReturnTypeSupport additionalTypeSupport) {
 
     if (additionalTypeSupport != null) {
       typeSupports.add(new HalApiTypeSupportAdapter(additionalTypeSupport));
     }
-    return (BuilderInterface)this;
+    return (I)this;
   }
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport) {
+  public I withAnnotationTypeSupport(HalApiAnnotationSupport additionalTypeSupport) {
 
     if (additionalTypeSupport != null) {
       typeSupports.add(new HalApiTypeSupportAdapter(additionalTypeSupport));
     }
-    return (BuilderInterface)this;
+    return (I)this;
   }
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy) {
+  public I withExceptionStrategy(ExceptionStatusAndLoggingStrategy customStrategy) {
 
     exceptionStrategies.add(customStrategy);
-    return (BuilderInterface)this;
+    return (I)this;
   }
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withMetadataConfiguration(RhymeMetadataConfiguration configuration) {
+  public I withMetadataConfiguration(RhymeMetadataConfiguration configuration) {
 
     metadataConfiguration = configuration;
-    return (BuilderInterface)this;
+    return (I)this;
   }
 
   @SuppressWarnings("unchecked")
-  public BuilderInterface withObjectMapper(ObjectMapper customMapper) {
+  public I withObjectMapper(ObjectMapper customMapper) {
 
     objectMapper = customMapper;
-    return (BuilderInterface)this;
+    return (I)this;
   }
 
   private ExceptionStatusAndLoggingStrategy getEffectiveExceptionStrategy() {

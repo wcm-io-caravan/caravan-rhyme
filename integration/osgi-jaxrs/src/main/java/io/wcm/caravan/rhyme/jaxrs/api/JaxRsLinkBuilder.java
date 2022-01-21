@@ -32,22 +32,22 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.jaxrs.impl.JaxRsControllerProxyLinkBuilder;
 
 /**
- * @param <JaxRsResourceType> the class of the {@link Component} annotated with {@link JaxrsResource}
+ * @param <T> the class of the {@link Component} annotated with {@link JaxrsResource}
  */
 @ProviderType
-public interface JaxRsLinkBuilder<JaxRsResourceType> {
+public interface JaxRsLinkBuilder<T> {
 
   /**
    * @param parameters to append to the parameters
    * @return this
    */
-  JaxRsLinkBuilder<JaxRsResourceType> withAdditionalQueryParameters(Map<String, Object> parameters);
+  JaxRsLinkBuilder<T> withAdditionalQueryParameters(Map<String, Object> parameters);
 
   /**
    * @param consumer a function to be called on the proxy that fills in the parameters for the resource
    * @return a {@link Link} instance with the href already set
    */
-  Link buildLinkTo(Consumer<JaxRsResourceType> consumer);
+  Link buildLinkTo(Consumer<T> consumer);
 
   /**
    * Factory method to create {@link JaxRsLinkBuilder} instances
