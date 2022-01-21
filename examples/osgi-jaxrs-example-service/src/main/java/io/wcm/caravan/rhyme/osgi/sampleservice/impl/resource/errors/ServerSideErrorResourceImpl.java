@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors;
 
+import static java.lang.Boolean.TRUE;
+
 import javax.ws.rs.WebApplicationException;
 
 import io.reactivex.rxjava3.core.Maybe;
@@ -43,7 +45,7 @@ public class ServerSideErrorResourceImpl implements ErrorResource, LinkableResou
   public Maybe<String> getTitle() {
 
     Exception exception;
-    if (parameters.getWrapException()) {
+    if (TRUE.equals(parameters.getWrapException()) {
       exception = new WebApplicationException(new RuntimeException(parameters.getMessage()), parameters.getStatusCode());
     }
     else {
