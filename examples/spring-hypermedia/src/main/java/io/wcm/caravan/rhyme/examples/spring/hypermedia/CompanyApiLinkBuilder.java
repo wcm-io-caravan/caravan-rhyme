@@ -70,8 +70,8 @@ class CompanyApiLinkBuilder {
 
   private final UrlFingerprinting fingerprinting;
 
-  private final Boolean useEmbeddedResources;
-  private final Boolean useFingerprinting;
+  private final boolean useEmbeddedResources;
+  private final boolean useFingerprinting;
 
   private boolean hasClientPreferences;
 
@@ -96,7 +96,7 @@ class CompanyApiLinkBuilder {
    * @param name of the query parameter
    * @return the value of the parameter (or true if it was not present)
    */
-  private Boolean keepIncomingRequestParameter(HttpServletRequest request, String name) {
+  private boolean keepIncomingRequestParameter(HttpServletRequest request, String name) {
 
     // if the query parameter was not present in the incoming request, then don't add it to any other links
     String fromRequest = request.getParameter(name);
@@ -108,7 +108,7 @@ class CompanyApiLinkBuilder {
     hasClientPreferences = true;
 
     // if the parameter *was* present, then make sure it's also added to every other link
-    Boolean boolValue = BooleanUtils.toBoolean(fromRequest);
+    boolean boolValue = BooleanUtils.toBoolean(fromRequest);
     fingerprinting.withQueryParameter(name, boolValue);
     return boolValue;
   }
