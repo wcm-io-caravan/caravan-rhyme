@@ -54,7 +54,7 @@ One key thing to note here is that all test cases defined in `AbstractCompanyApi
 to navigate to the resources under test. This allows the same set of tests to be run multiple times (by the subclasses):
 - directly using the server-side implementations (like a consumer of the API running in the same application context would)
 - using Spring's `MockMvc` to create mock requests to the contollers (to also test the path mappings, link generation and JSON (de)serialization)
-- actually starting up the server on a random port and using a regular HTTP client to retrieve via HTTP, exactly as an external consumer would do
+- actually starting up the server on a random port and using a regular HTTP client to retrieve the resources, exactly as an external consumer would do
 
 # Examples for Key Concepts
 
