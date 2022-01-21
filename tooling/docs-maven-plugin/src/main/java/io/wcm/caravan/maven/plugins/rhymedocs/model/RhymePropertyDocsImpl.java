@@ -93,12 +93,6 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
         .orElse(null);
   }
 
-  /* (non-Javadoc)
-   * @see io.wcm.caravan.maven.plugins.rhymedocs.model.RhymePropertyDocs#getDescription()
-   */
-  @Override
-  public abstract String getDescription();
-
   protected abstract Type getPropertyGenericType();
 
   protected abstract Class<?> getPropertyClass();
@@ -196,7 +190,7 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
 
       Class<?> elementType = docs.getFirstTypeParameter();
 
-      if (elementType != null && isSerialisedAsJsonObject(elementType)) {
+      if (elementType != null && hasNestedProperties(elementType)) {
 
         if (processedClassNames.containsKey(elementType.getName())) {
           String previous = processedClassNames.get(elementType.getName());
@@ -208,7 +202,7 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
             createPropertyDocsRecursively(docs.builder, elementType, docs.getJsonPointer() + "/0", processedClassNames));
       }
     }
-    else if (isSerialisedAsJsonObject(propertyType)) {
+    else if (hasNestedProperties(propertyType)) {
 
       if (processedClassNames.containsKey(propertyType.getName())) {
         String previous = processedClassNames.get(propertyType.getName());
@@ -337,11 +331,15 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
     return Collection.class.isAssignableFrom(propertyType) || propertyType.isArray();
   }
 
-  private static boolean isSerialisedAsJsonObject(Class<?> propertyType) {
+  private static boolean hasNestedProperties(Class<?> propertyType) {
 
-    return !(isPrimitiveOrWrapper(propertyType)
-        || isSerialisedAsJsonArray(propertyType)
+    boolean isObjectWithoutProperties = isPrimitiveOrWrapper(propertyType)
         || String.class.isAssignableFrom(propertyType)
-        || Map.class.isAssignableFrom(propertyType));
+        // map entries will be serialized as JSON properties, but there is no way we can document them
+        || Map.class.isAssignableFrom(propertyType)
+        // arrays are handled separately in handleObjectsAndArrays
+        || isSerialisedAsJsonArray(propertyType);
+
+    return !isObjectWithoutProperties;
   }
 }
