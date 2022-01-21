@@ -90,9 +90,7 @@ public class ExampleServiceRequestContext {
 
   public Link buildLinkTo(ControllerCall callToResource) {
 
-    return linkBuilder.buildLinkTo(resource -> {
-      callToResource.call(resource, null, null);
-    });
+    return linkBuilder.buildLinkTo(resource -> callToResource.call(resource, null, null));
   }
 
   public ExamplesEntryPointResource getUpstreamEntryPoint() {

@@ -227,7 +227,7 @@ public final class TemplateVariableDetection {
     }
 
     try {
-      return readMethod.invoke(instance, new Object[0]);
+      return readMethod.invoke(instance);
     }
     catch (InvocationTargetException | IllegalAccessException | RuntimeException ex) {
       throw new HalApiDeveloperException("Failed to invoke getter " + readMethod.getName() + " from class " + instance.getClass().getSimpleName(), ex);

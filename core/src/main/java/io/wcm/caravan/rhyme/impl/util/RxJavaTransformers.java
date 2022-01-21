@@ -109,9 +109,7 @@ public final class RxJavaTransformers {
 
     @Override
     public SingleSource<T> apply(Single<T> upstream) {
-      return Single.defer(() -> {
-        return handleSubscription(upstream.toObservable()).firstOrError();
-      });
+      return Single.defer(() -> handleSubscription(upstream.toObservable()).firstOrError());
     }
 
     private synchronized Observable<T> handleSubscription(Observable<T> upstream) {

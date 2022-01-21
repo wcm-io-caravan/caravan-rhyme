@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.model;
 
+import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
+
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -33,7 +35,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.TreeNode;
@@ -338,14 +339,9 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
 
   private static boolean isSerialisedAsJsonObject(Class<?> propertyType) {
 
-    if (ClassUtils.isPrimitiveOrWrapper(propertyType)
+    return !(isPrimitiveOrWrapper(propertyType)
         || isSerialisedAsJsonArray(propertyType)
         || String.class.isAssignableFrom(propertyType)
-        || Map.class.isAssignableFrom(propertyType)) {
-
-      return false;
-    }
-
-    return true;
+        || Map.class.isAssignableFrom(propertyType));
   }
 }

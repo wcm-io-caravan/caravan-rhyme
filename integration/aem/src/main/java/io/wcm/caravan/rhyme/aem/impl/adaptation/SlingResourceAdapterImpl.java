@@ -150,7 +150,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter selectContainingPage() {
 
-    return resourceSelector.add((res) -> Stream.of(PageUtils.getPageResource(res)), "page containing {}");
+    return resourceSelector.add(res -> Stream.of(PageUtils.getPageResource(res)), "page containing {}");
   }
 
   @Override
@@ -221,14 +221,14 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter filterAdaptableTo(Class<?> adapterClazz) {
 
-    return resourceFilter.add((res) -> res.adaptTo(adapterClazz) != null,
+    return resourceFilter.add(res -> res.adaptTo(adapterClazz) != null,
         "if resource can be adapted to " + adapterClazz.getSimpleName());
   }
 
   @Override
   public <T> SlingResourceAdapter filterAdaptableTo(Class<T> adapterClazz, Predicate<T> predicate) {
 
-    Predicate<Resource> isAdaptableAndAcceptedByPredicated = (res) -> {
+    Predicate<Resource> isAdaptableAndAcceptedByPredicated = res -> {
       T adapted = res.adaptTo(adapterClazz);
       if (adapted == null) {
         return false;
@@ -243,7 +243,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter filterWithName(String resourceName) {
 
-    return resourceFilter.add((res) -> res.getName().equals(resourceName),
+    return resourceFilter.add(res -> res.getName().equals(resourceName),
         "if resource name is " + resourceName);
   }
 
