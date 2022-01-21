@@ -55,7 +55,7 @@ import io.wcm.caravan.rhyme.spring.impl.SpringErrorHandlingController.ErrorThrow
  * as if the application is serving requests on an actual network socket.
  */
 @SpringBootTest(classes = SpringRhymeHypermediaApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SpringErrorHandlingIT {
+class SpringErrorHandlingIT {
 
   private final String baseUri;
 

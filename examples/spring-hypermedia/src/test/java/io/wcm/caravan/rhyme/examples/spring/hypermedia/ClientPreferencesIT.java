@@ -25,7 +25,7 @@ import io.wcm.caravan.rhyme.testing.client.HalCrawler;
  * if the {@link CompanyApi} functionality remains the same when no embedded resources are used.
  * Additional tests check that other client preferences are applied as well.
  */
-public class ClientPreferencesIT extends MockMvcClientIT {
+class ClientPreferencesIT extends MockMvcClientIT {
 
   private Boolean useEmbeddedResources = false;
   private Boolean useFingerprinting = true;

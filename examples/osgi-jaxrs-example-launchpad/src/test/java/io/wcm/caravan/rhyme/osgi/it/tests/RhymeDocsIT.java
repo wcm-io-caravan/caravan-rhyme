@@ -40,7 +40,7 @@ import io.wcm.caravan.rhyme.osgi.it.extensions.WaitForServerStartupExtension;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 
 @ExtendWith({ WaitForServerStartupExtension.class })
-public class RhymeDocsIT {
+class RhymeDocsIT {
 
   private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 

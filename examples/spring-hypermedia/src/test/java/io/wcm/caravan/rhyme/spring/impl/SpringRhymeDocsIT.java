@@ -44,7 +44,7 @@ import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration
 
 @SpringBootTest(classes = SpringRhymeHypermediaApplication.class)
 @Import(MockMvcHalResourceLoaderConfiguration.class)
-public class SpringRhymeDocsIT {
+class SpringRhymeDocsIT {
 
   @Autowired
   private HalResourceLoader mockMvcResourceLoader;

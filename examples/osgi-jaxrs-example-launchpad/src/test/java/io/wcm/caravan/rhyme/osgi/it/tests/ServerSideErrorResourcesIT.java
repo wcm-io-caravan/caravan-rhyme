@@ -39,7 +39,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ErrorParamet
 
 
 @ExtendWith({ WaitForServerStartupExtension.class })
-public class ServerSideErrorResourcesIT {
+class ServerSideErrorResourcesIT {
 
   private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 

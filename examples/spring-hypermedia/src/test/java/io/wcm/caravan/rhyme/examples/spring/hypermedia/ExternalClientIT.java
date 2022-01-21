@@ -43,7 +43,7 @@ import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration
  * </ul>
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ExternalClientIT extends AbstractCompanyApiIT {
+class ExternalClientIT extends AbstractCompanyApiIT {
 
   private final String entryPointUrl;
 

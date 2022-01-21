@@ -46,7 +46,7 @@ import wiremock.com.google.common.collect.ImmutableMap;
 
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
-public class UrlFingerprintingIT {
+class UrlFingerprintingIT {
 
   private static final int SHORT_MAX_AGE_SECONDS = 10;
   private static final int LONG_MAX_AGE_SECONDS = (int)Duration.ofDays(100).getSeconds();

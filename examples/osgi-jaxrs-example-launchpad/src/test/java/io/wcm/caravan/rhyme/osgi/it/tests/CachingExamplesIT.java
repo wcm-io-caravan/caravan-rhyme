@@ -41,7 +41,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 
 @ExtendWith({ WaitForServerStartupExtension.class })
-public class CachingExamplesIT {
+class CachingExamplesIT {
 
   private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
