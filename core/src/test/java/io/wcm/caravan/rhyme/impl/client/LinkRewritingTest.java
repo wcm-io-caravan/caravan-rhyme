@@ -29,7 +29,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import com.damnhandy.uri.template.UriTemplate;
 
@@ -192,7 +191,7 @@ class LinkRewritingTest {
 
   private void mockEntryPointResponse(String url, HalResponse response) {
 
-    when(mockLoader.getHalResource(ArgumentMatchers.eq(url)))
+    when(mockLoader.getHalResource(url))
         .thenReturn(Single.just(response));
   }
 
@@ -201,7 +200,7 @@ class LinkRewritingTest {
     String url = BASE_URL + createPagePath(index);
     HalResponse response = createPageResource(index);
 
-    when(mockLoader.getHalResource(ArgumentMatchers.eq(url)))
+    when(mockLoader.getHalResource(url))
         .thenReturn(Single.just(response));
   }
 

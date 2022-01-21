@@ -20,7 +20,6 @@
 package io.wcm.caravan.rhyme.impl.client.blocking;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -66,7 +65,7 @@ class ResourceStateTest {
 
     HalResource hal = new HalResource(state, RESOURCE_URL);
 
-    when(resourceLoader.getHalResource(eq(RESOURCE_URL)))
+    when(resourceLoader.getHalResource(RESOURCE_URL))
         .thenReturn(Single.just(ConversionFunctions.toJsonResponse(hal)));
   }
 

@@ -25,7 +25,6 @@ import static io.wcm.caravan.rhyme.api.relations.VndErrorRelations.ABOUT;
 import static io.wcm.caravan.rhyme.api.relations.VndErrorRelations.ERRORS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -76,14 +75,19 @@ class AsyncHalResponseRendererImplTest {
   }
 
   private HalResource mockRenderedResource() {
+
     HalResource hal = new HalResource();
-    when(renderer.renderResource(eq(resource))).thenReturn(Single.just(hal));
+    when(renderer.renderResource(resource))
+        .thenReturn(Single.just(hal));
+
     return hal;
   }
 
   private <T extends Exception> T mockExceptionDuringRendering(T exception) {
 
-    when(renderer.renderResource(eq(resource))).thenReturn(Single.error(exception));
+    when(renderer.renderResource(resource))
+        .thenReturn(Single.error(exception));
+
     return exception;
   }
 
@@ -217,7 +221,8 @@ class AsyncHalResponseRendererImplTest {
   @Test
   void error_response_should_be_generated_if_synchronous_calls_fail() {
 
-    when(renderer.renderResource(eq(resource))).thenThrow(new NotImplementedException("Foo"));
+    when(renderer.renderResource(resource))
+        .thenThrow(new NotImplementedException("Foo"));
 
     HalResponse response = renderResponse();
 
