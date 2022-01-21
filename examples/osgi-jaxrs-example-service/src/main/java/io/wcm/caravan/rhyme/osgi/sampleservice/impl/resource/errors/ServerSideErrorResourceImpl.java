@@ -45,7 +45,7 @@ public class ServerSideErrorResourceImpl implements ErrorResource, LinkableResou
   public Maybe<String> getTitle() {
 
     Exception exception;
-    if (TRUE.equals(parameters.getWrapException()) {
+    if (TRUE.equals(parameters.getWrapException())) {
       exception = new WebApplicationException(new RuntimeException(parameters.getMessage()), parameters.getStatusCode());
     }
     else {
