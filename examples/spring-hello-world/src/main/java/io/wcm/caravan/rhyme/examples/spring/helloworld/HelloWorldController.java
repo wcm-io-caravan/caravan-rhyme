@@ -95,7 +95,7 @@ class HelloWorldController {
 
       @Override
       public Stream<HelloWorldResource> getTranslations() {
-        // overriden so that we can filter out to the link to the language that is currently rendered
+        // overriden so that we can filter out the link to the language that is currently rendered
         return super.getTranslations()
             .filter(translation -> !translation.createLink().getName().equals(languageCode));
       }
