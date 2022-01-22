@@ -43,6 +43,10 @@
     <tag>HEAD</tag>
   </scm>
 
+  <properties>
+    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/tooling/coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
