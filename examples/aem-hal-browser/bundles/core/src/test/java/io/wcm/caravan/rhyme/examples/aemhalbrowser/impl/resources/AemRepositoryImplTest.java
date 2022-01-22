@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
+import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.AemRepository;
@@ -38,13 +40,33 @@ class AemRepositoryImplTest {
         .isNotNull();
   }
 
-  private void assertLinkHasHref(String url, Optional<? extends LinkableResource> linkableResource) {
+  static void assertLinkHasHref(String url, Optional<? extends LinkableResource> linkableResource) {
 
     assertThat(linkableResource)
         .isPresent()
         .get()
         .extracting(resource -> resource.createLink().getHref())
         .isEqualTo(url);
+  }
+
+  static void assertResourceCanBeRendered(Object resource) {
+
+    assertThat(resource)
+        .isInstanceOf(LinkableResource.class);
+
+    HalResponse response = RhymeBuilder.create()
+        .buildForRequestTo("/")
+        .renderResponse((LinkableResource)resource)
+        .blockingGet();
+
+    assertThat(response.getStatus())
+        .isEqualTo(200);
+  }
+
+  @Test
+  void can_be_rendererd() {
+
+    assertResourceCanBeRendered(repository);
   }
 
   @Test
