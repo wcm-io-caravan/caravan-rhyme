@@ -20,7 +20,7 @@
 package io.wcm.caravan.rhyme.impl.client.http;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -36,6 +36,8 @@ import org.assertj.core.api.Assertions;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -69,14 +71,13 @@ class HttpHalResourceLoaderTest {
 
   private HalApiClientException loadResourceAndExpectClientException(HttpHalResourceLoader loader, String uri) {
 
-    Throwable ex = catchThrowable(() -> executeGetRequestWith(uri, loader));
+    HalApiClientException ex = assertThrows(HalApiClientException.class, () -> executeGetRequestWith(uri, loader));
 
     assertThat(ex)
-        .isInstanceOf(HalApiClientException.class)
         .hasMessageStartingWith("HAL client request to ")
         .hasMessageContaining("has failed");
 
-    return (HalApiClientException)ex;
+    return ex;
   }
 
   @Test
@@ -132,6 +133,26 @@ class HttpHalResourceLoaderTest {
   }
 
   @Test
+  void should_use_modified_URI_for_exceptions() {
+
+    URI baseUri = URI.create("http://foo.bar");
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+
+      URI modifiedUri = baseUri.resolve(uri);
+
+      callback.onUrlModified(modifiedUri);
+
+      callback.onExceptionCaught(new RuntimeException("Something has gone wrong"));
+    });
+
+    HalApiClientException ex = loadResourceAndExpectClientException(loader, VALID_URI);
+
+    assertThat(ex.getRequestUrl())
+        .isEqualTo(baseUri.toString() + VALID_URI);
+  }
+
+  @Test
   void should_extract_content_type_header() {
 
     Map<String, Collection<String>> headers = new HashMap<>();
@@ -156,6 +177,18 @@ class HttpHalResourceLoaderTest {
         .isEqualTo(200);
   }
 
+  @Test
+  void should_extract_max_age_from_headers() {
+
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put("cache-control", ImmutableList.of("max-age=123"));
+
+    HalResponse response = executeSuccessfullRequestWithReponseHeaders(headers);
+
+    assertThat(response.getMaxAge())
+        .isEqualTo(123);
+  }
+
   private HalResponse executeSuccessfullRequestWithReponseHeaders(Map<String, Collection<String>> headers) {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
@@ -168,23 +201,43 @@ class HttpHalResourceLoaderTest {
   }
 
   @Test
-  void should_use_modified_URI_for_exceptions() {
+  void should_use_status_code_from_ok_response() {
 
-    URI baseUri = URI.create("http://foo.bar");
+    HalResponse response = executeSuccessfullRequestWithReponseHeaders(new HashMap<>());
+
+    assertThat(response.getStatus())
+        .isEqualTo(200);
+  }
+
+  @Test
+  void should_use_status_code_from_non_ok_response() {
+
+    int statusCode = 444;
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
-
-      URI modifiedUri = baseUri.resolve(uri);
-
-      callback.onUrlModified(modifiedUri);
-
-      callback.onExceptionCaught(new RuntimeException("Something has gone wrong"));
+      callback.onHeadersAvailable(statusCode, new HashMap<>());
+      callback.onBodyAvailable(createUtf8Stream("{}"));
     });
 
     HalApiClientException ex = loadResourceAndExpectClientException(loader, VALID_URI);
 
-    assertThat(ex.getRequestUrl())
-        .isEqualTo(baseUri.toString() + VALID_URI);
+    assertThat(ex.getErrorResponse().getStatus())
+        .isEqualTo(statusCode);
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = { -1, 0 })
+  void should_ignore_negative_or_zero_status_code(int statusCode) {
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+      callback.onHeadersAvailable(statusCode, new HashMap<>());
+      callback.onBodyAvailable(createUtf8Stream("{}"));
+    });
+
+    HalApiClientException ex = loadResourceAndExpectClientException(loader, VALID_URI);
+
+    assertThat(ex.getErrorResponse().getStatus())
+        .isNull();
   }
 
   @Test
