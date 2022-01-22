@@ -21,11 +21,11 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 
 @ExtendWith({ WaitForServerStartupExtension.class })
-public class CollectionResourcesIT {
+class CollectionResourcesIT {
 
   private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
-  private Single<ItemCollectionResource> getCollection(Integer numItems, Boolean embedItems, Integer delayMs) {
+  private Single<ItemCollectionResource> getCollection(int numItems, boolean embedItems, int delayMs) {
 
     CollectionParameters params = new CollectionParametersBean()
         .withNumItems(numItems)
@@ -36,7 +36,7 @@ public class CollectionResourcesIT {
         .flatMap(collections -> collections.getDelayedCollection(params));
   }
 
-  private List<ItemState> getCollectionItems(Integer numItems, Boolean embedItems, Integer delayMs) {
+  private List<ItemState> getCollectionItems(int numItems, boolean embedItems, int delayMs) {
 
     List<ItemState> items = getCollection(numItems, embedItems, delayMs)
         .flatMapObservable(ItemCollectionResource::getItems)
@@ -49,9 +49,9 @@ public class CollectionResourcesIT {
   @Test
   void linked_items_can_be_fetched() {
 
-    Integer numItems = 5;
-    Boolean embedItems = false;
-    Integer delayMs = null;
+    int numItems = 5;
+    boolean embedItems = false;
+    int delayMs = 0;
 
     List<ItemState> items = getCollectionItems(numItems, embedItems, delayMs);
 
@@ -62,9 +62,9 @@ public class CollectionResourcesIT {
   @Test
   void linked_items_are_in_correct_order() {
 
-    Integer numItems = 50;
-    Boolean embedItems = false;
-    Integer delayMs = null;
+    int numItems = 50;
+    boolean embedItems = false;
+    int delayMs = 0;
 
     List<ItemState> items = getCollectionItems(numItems, embedItems, delayMs);
 
@@ -77,9 +77,9 @@ public class CollectionResourcesIT {
   @Test
   void linked_items_are_properly_delayed() {
 
-    Integer numItems = 1;
-    Boolean embedItems = false;
-    Integer delayMs = 1000;
+    int numItems = 1;
+    boolean embedItems = false;
+    int delayMs = 1000;
 
     Stopwatch stopwatch = Stopwatch.createStarted();
     getCollectionItems(numItems, embedItems, delayMs);
@@ -93,9 +93,9 @@ public class CollectionResourcesIT {
   @Test
   void embedded_items_can_be_fetched() {
 
-    Integer numItems = 20;
-    Boolean embedItems = true;
-    Integer delayMs = null;
+    int numItems = 20;
+    boolean embedItems = true;
+    int delayMs = 0;
 
     List<ItemState> items = getCollectionItems(numItems, embedItems, delayMs);
 
@@ -106,9 +106,9 @@ public class CollectionResourcesIT {
   @Test
   void embedded_items_are_in_correct_order() {
 
-    Integer numItems = 50;
-    Boolean embedItems = true;
-    Integer delayMs = null;
+    int numItems = 50;
+    boolean embedItems = true;
+    int delayMs = 0;
 
     List<ItemState> items = getCollectionItems(numItems, embedItems, delayMs);
 
@@ -121,9 +121,9 @@ public class CollectionResourcesIT {
   @Test
   void embedded_items_are_properly_delayed() {
 
-    Integer numItems = 50;
-    Boolean embedItems = true;
-    Integer delayMs = 1000;
+    int numItems = 50;
+    boolean embedItems = true;
+    int delayMs = 1000;
 
     Stopwatch stopwatch = Stopwatch.createStarted();
     getCollectionItems(numItems, embedItems, delayMs);
@@ -132,5 +132,44 @@ public class CollectionResourcesIT {
     assertThat(responseTime)
         .isGreaterThanOrEqualTo(delayMs)
         .isLessThan(5 * delayMs);
+  }
+
+  @Test
+  void individial_item_can_be_fetched_with_null_delayMs_and_has_correct_properties() {
+
+    int index = 3;
+    Integer delayMs = null;
+
+    ItemState item = entryPoint.getCollectionExamples()
+        .flatMap(examples -> examples.getDelayedItem(index, delayMs))
+        .flatMap(ItemResource::getProperties)
+        .blockingGet();
+
+    assertThat(item.index)
+        .isEqualTo(index);
+
+    assertThat(item.title)
+        .isEqualTo("The item with index " + index);
+  }
+
+  @Test
+  void individial_item_is_properly_delayed() {
+
+    int index = 3;
+    int delayMs = 1000;
+
+    Stopwatch stopwatch = Stopwatch.createStarted();
+    ItemState item = entryPoint.getCollectionExamples()
+        .flatMap(examples -> examples.getDelayedItem(index, delayMs))
+        .flatMap(ItemResource::getProperties)
+        .blockingGet();
+
+    long responseTime = stopwatch.elapsed(MILLISECONDS);
+
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs);
+
+    assertThat(item.title)
+        .isEqualTo("The item with index " + index + " delayed by " + delayMs + "ms");
   }
 }

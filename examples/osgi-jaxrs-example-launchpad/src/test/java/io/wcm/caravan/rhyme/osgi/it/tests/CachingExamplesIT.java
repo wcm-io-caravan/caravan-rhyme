@@ -89,7 +89,7 @@ class CachingExamplesIT {
   @Test
   void second_call_should_use_cached_items() {
 
-    // measure the time it takes to load a collection of even resources, where each item takes 200ms to generate
+    // measure the time it takes to load a collection of even resources, where each item takes 1000ms to generate
     int delayMs = 1000;
     Stopwatch uncachedStopwatch = Stopwatch.createStarted();
     getItemsWithDelay(10, delayMs, EvenOddItemsResource::getEvenItems);
