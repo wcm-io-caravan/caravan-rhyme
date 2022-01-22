@@ -51,6 +51,7 @@
 
   <properties>
     <site.url.module.prefix>rhyme</site.url.module.prefix>
+    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/tooling/coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
 
   <dependencyManagement>
