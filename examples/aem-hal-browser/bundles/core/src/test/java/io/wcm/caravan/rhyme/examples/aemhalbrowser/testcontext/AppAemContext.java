@@ -12,7 +12,13 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.jetbrains.annotations.NotNull;
 
+import io.wcm.caravan.commons.httpclient.impl.HttpClientFactoryImpl;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
+import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
+import io.wcm.caravan.rhyme.aem.impl.client.ResourceLoaderManager;
+import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
+import io.wcm.caravan.rhyme.aem.impl.parameters.QueryParamInjector;
+import io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.AemHalBrowserResourceRegistration;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextCallback;
@@ -30,6 +36,7 @@ public final class AppAemContext {
    * @return {@link AemContext}
    */
   public static AemContext newAemContext() {
+
     AemContext context = new AemContextBuilder()
         .plugin(CACONFIG)
         .plugin(WCMIO_SLING, WCMIO_WCM, WCMIO_CACONFIG, WCMIO_HANDLER)
@@ -38,6 +45,14 @@ public final class AppAemContext {
         .build();
 
     context.addModelsForPackage("io.wcm.caravan.rhyme.aem");
+
+    context.registerInjectActivateService(new HttpClientFactoryImpl());
+    context.registerInjectActivateService(new ResourceLoaderManager());
+    context.registerInjectActivateService(new RhymeDocsOsgiBundleSupport());
+    context.registerInjectActivateService(new RhymeResourceRegistry());
+    context.registerInjectActivateService(new QueryParamInjector());
+
+    context.registerInjectActivateService(new AemHalBrowserResourceRegistration());
 
     return context;
   }
@@ -60,7 +75,9 @@ public final class AppAemContext {
 
   public static SlingRhyme createRhymeInstance(AemContext context, String resourcePath) {
 
-    Resource content = context.create().resource(resourcePath);
+    Resource content = "/".equals(resourcePath)
+        ? context.resourceResolver().getResource("/")
+        : context.create().resource(resourcePath);
 
     context.currentResource(content);
     context.request().setResource(content);
