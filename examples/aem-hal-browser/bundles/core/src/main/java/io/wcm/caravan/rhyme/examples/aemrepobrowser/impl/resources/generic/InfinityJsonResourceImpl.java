@@ -35,8 +35,6 @@ public class InfinityJsonResourceImpl implements InfinityJsonResource {
         .buildExternalResourceUrl();
 
     return new Link(url)
-        .setTitle("The native infinity.json representation of the jcr:content node of this resource");
+        .setTitle("AEM's built-in infinity.json representation of the jcr:content node of this resource");
   }
-
-
 }

@@ -46,7 +46,7 @@ public class SlingResourceImpl extends AbstractLinkableResource implements Sling
         .selectCurrentResource()
         .filterAdaptableTo(Page.class)
         .adaptTo(AemPage.class)
-        .withLinkTitle("Show the specific HAL representation for this AEM page")
+        .withLinkTitle("Load a HAL representation that is more specific to this AEM page")
         .getOptional();
   }
 
@@ -57,6 +57,7 @@ public class SlingResourceImpl extends AbstractLinkableResource implements Sling
         .selectCurrentResource()
         .filterAdaptableTo(Asset.class)
         .adaptTo(AemAsset.class)
+        .withLinkTitle("Load a HAL representation that is more specific to this AEM asset")
         .getOptional();
   }
 
