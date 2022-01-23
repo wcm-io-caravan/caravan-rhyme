@@ -56,6 +56,7 @@ class SlingResourceImplTest {
     assertResourceCanBeRendered(slingModel);
   }
 
+
   @Test
   void getProperties_returns_properties_from_sling_resource() {
 
@@ -201,5 +202,49 @@ class SlingResourceImplTest {
 
     assertThat(parent)
         .isEmpty();
+  }
+
+  private void assertThatLinkHasTitle(String title) {
+
+    SlingResource slingModel = createSlingModel(PATH);
+
+    assertThat(slingModel.createLink().getTitle())
+        .isEqualTo(title);
+  }
+
+  @Test
+  void createLink_adds_title_for_empty_unstructured_node() {
+
+    context.create().resource(PATH);
+
+    assertThatLinkHasTitle("nt:unstructured resource without a title");
+  }
+
+  @Test
+  void createLink_adds_title_for_node_with_resource_type() {
+
+    String resourceType = "foo/components/bar";
+
+    context.build().resource(PATH, "sling:resourceType", resourceType);
+
+    assertThatLinkHasTitle(resourceType + " resource without a title");
+  }
+
+  @Test
+  void createLink_adds_title_from_jcr_content_title() {
+
+    String pageTitle = "Foo Bar";
+
+    context.create().page(PATH, "apps/templates/page", pageTitle);
+
+    assertThatLinkHasTitle("cq:Page resource with title '" + pageTitle + "'");
+  }
+
+  @Test
+  void createLink_adds_title_for_resource_with_jcr_content_but_no_title() {
+
+    context.create().asset(PATH, 400, 100, "image/jpeg");
+
+    assertThatLinkHasTitle("dam:Asset resource without a title");
   }
 }
