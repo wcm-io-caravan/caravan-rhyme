@@ -2,6 +2,7 @@ package io.wcm.caravan.rhyme.examples.aemhalbrowser.impl.resources;
 
 import static io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.SlingRhymeTestUtils.assertLinkHasHref;
 import static io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.SlingRhymeTestUtils.assertResourceCanBeRendered;
+import static io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.SlingRhymeTestUtils.createRhymeInstance;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
-import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.SlingRhymeTestUtils;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.AemRepository;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemRendition;
@@ -32,7 +32,7 @@ class AemRepositoryImplTest {
 
   @BeforeEach
   void setUp() {
-    SlingRhyme slingRhyme = SlingRhymeTestUtils.createRhymeInstance(context, "/");
+    SlingRhyme slingRhyme = createRhymeInstance(context, "/");
 
     repository = slingRhyme.adaptTo(AemRepository.class);
 

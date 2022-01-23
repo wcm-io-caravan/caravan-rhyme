@@ -6,9 +6,11 @@ import java.util.Optional;
 
 import org.apache.sling.api.resource.Resource;
 
+import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 
@@ -18,12 +20,12 @@ public final class SlingRhymeTestUtils {
     // static methods only
   }
 
-  public static SlingRhyme createRhymeInstance(AemContext context, String resourcePathFromRequest) {
+  public static SlingRhyme createRhymeInstance(AemContext context, String requestedResourcePath) {
 
-    Resource resource = context.resourceResolver().getResource(resourcePathFromRequest);
+    Resource resource = context.resourceResolver().getResource(requestedResourcePath);
 
     if (resource == null) {
-      resource = context.create().resource(resourcePathFromRequest);
+      throw new HalApiDeveloperException("You must create a resource at " + requestedResourcePath + " before you can call createRhymeInstance");
     }
 
     context.currentResource(resource);
@@ -33,7 +35,7 @@ public final class SlingRhymeTestUtils {
   }
 
   public static void assertLinkHasHref(String url, Optional<? extends LinkableResource> linkableResource) {
-  
+
     assertThat(linkableResource)
         .isPresent()
         .get()
@@ -41,18 +43,23 @@ public final class SlingRhymeTestUtils {
         .isEqualTo(url);
   }
 
-  public static void assertResourceCanBeRendered(Object resource) {
-  
+  public static HalResource assertResourceCanBeRendered(Object resource) {
+
     assertThat(resource)
         .isInstanceOf(LinkableResource.class);
-  
+
     HalResponse response = RhymeBuilder.create()
         .buildForRequestTo("/")
         .renderResponse((LinkableResource)resource)
         .blockingGet();
-  
+
     assertThat(response.getStatus())
         .isEqualTo(200);
+
+    assertThat(response.getBody())
+        .isNotNull();
+
+    return response.getBody();
   }
 
 }
