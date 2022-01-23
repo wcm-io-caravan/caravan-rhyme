@@ -1,7 +1,5 @@
 package io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.generic;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -91,9 +89,7 @@ public class SlingResourceImpl extends AbstractLinkableResource implements Sling
   @Override
   protected String getDefaultLinkTitle() {
 
-    String resourceType = defaultIfEmpty(resource.getResourceType(), "unknown");
-
-    return resourceType + " resource " + getResourceTitleSuffix();
+    return resource.getResourceType() + " resource " + getResourceTitleSuffix();
   }
 
   private String getResourceTitleSuffix() {
