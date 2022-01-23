@@ -34,7 +34,7 @@ class SlingResourceImplTest {
 
   private AemContext context = AppAemContext.newAemContext();
 
-  SlingResource createSlingModel(String path) {
+  private SlingResource createSlingModel(String path) {
 
     SlingRhyme slingRhyme = createRhymeInstance(context, path);
 

@@ -70,6 +70,4 @@ public class AemPageImpl extends AbstractLinkableResource implements AemPage {
 
     return resourcePage.getTitle();
   }
-
-
 }
