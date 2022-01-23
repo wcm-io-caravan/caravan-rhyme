@@ -1,6 +1,6 @@
 package io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.generic;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -91,23 +91,17 @@ public class SlingResourceImpl extends AbstractLinkableResource implements Sling
   @Override
   protected String getDefaultLinkTitle() {
 
-    String resourceType = defaultIfNull(resource.getResourceType(), "unknown");
+    String resourceType = defaultIfEmpty(resource.getResourceType(), "unknown");
 
-    String titleSuffix = getResourceTitleSuffix();
-
-    return resourceType + " resource " + titleSuffix;
+    return resourceType + " resource " + getResourceTitleSuffix();
   }
 
   private String getResourceTitleSuffix() {
 
-    Resource contentResource = resource.getChild(JcrConstants.JCR_CONTENT);
-    if (contentResource != null) {
-      String jcrTitle = contentResource.getValueMap().get(JcrConstants.JCR_TITLE, String.class);
-      if (StringUtils.isNotBlank(jcrTitle)) {
-        return "with title '" + jcrTitle + "'";
-      }
-    }
-    return "without a title";
+    return Optional.ofNullable(resource.getChild(JcrConstants.JCR_CONTENT))
+        .map(jcrContent -> jcrContent.getValueMap().get(JcrConstants.JCR_TITLE, String.class))
+        .filter(StringUtils::isNotBlank)
+        .map(jcrTitle -> "with title '" + jcrTitle + "'")
+        .orElse("without a title");
   }
-
 }
