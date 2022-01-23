@@ -35,24 +35,12 @@ public final class AppAemContext {
    */
   public static AemContext newAemContext() {
 
-    AemContext context = new AemContextBuilder()
+    return new AemContextBuilder()
         .plugin(CACONFIG)
         .plugin(WCMIO_SLING, WCMIO_WCM, WCMIO_CACONFIG, WCMIO_HANDLER)
         .afterSetUp(SETUP_CALLBACK)
         .registerSlingModelsFromClassPath(true)
         .build();
-
-    context.addModelsForPackage("io.wcm.caravan.rhyme.aem");
-
-    context.registerInjectActivateService(new HttpClientFactoryImpl());
-    context.registerInjectActivateService(new ResourceLoaderManager());
-    context.registerInjectActivateService(new RhymeDocsOsgiBundleSupport());
-    context.registerInjectActivateService(new RhymeResourceRegistry());
-    context.registerInjectActivateService(new QueryParamInjector());
-
-    context.registerInjectActivateService(new AemHalBrowserResourceRegistration());
-
-    return context;
   }
 
   /**
@@ -63,11 +51,14 @@ public final class AppAemContext {
     @Override
     public void execute(@NotNull AemContext context) throws PersistenceException, IOException {
 
-      // setup handler
-      //      context.registerInjectActivateService(new LinkHandlerConfigImpl());
-      //      context.registerInjectActivateService(new MediaHandlerConfigImpl());
+      context.registerInjectActivateService(new HttpClientFactoryImpl());
+      context.registerInjectActivateService(new ResourceLoaderManager());
+      context.registerInjectActivateService(new RhymeDocsOsgiBundleSupport());
+      context.registerInjectActivateService(new RhymeResourceRegistry());
+      context.registerInjectActivateService(new QueryParamInjector());
+
+      context.registerInjectActivateService(new AemHalBrowserResourceRegistration());
 
     }
   };
-
 }
