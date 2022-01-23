@@ -9,11 +9,9 @@ import static org.apache.sling.testing.mock.caconfig.ContextPlugins.CACONFIG;
 import java.io.IOException;
 
 import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
 import org.jetbrains.annotations.NotNull;
 
 import io.wcm.caravan.commons.httpclient.impl.HttpClientFactoryImpl;
-import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.aem.impl.client.ResourceLoaderManager;
 import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
@@ -71,18 +69,5 @@ public final class AppAemContext {
 
     }
   };
-
-
-  public static SlingRhyme createRhymeInstance(AemContext context, String resourcePath) {
-
-    Resource content = "/".equals(resourcePath)
-        ? context.resourceResolver().getResource("/")
-        : context.create().resource(resourcePath);
-
-    context.currentResource(content);
-    context.request().setResource(content);
-
-    return context.request().adaptTo(SlingRhyme.class);
-  }
 
 }

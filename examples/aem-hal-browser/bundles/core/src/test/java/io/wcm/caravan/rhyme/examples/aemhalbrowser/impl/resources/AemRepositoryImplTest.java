@@ -1,5 +1,7 @@
 package io.wcm.caravan.rhyme.examples.aemhalbrowser.impl.resources;
 
+import static io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.SlingRhymeTestUtils.assertLinkHasHref;
+import static io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.SlingRhymeTestUtils.assertResourceCanBeRendered;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
@@ -9,10 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
-import io.wcm.caravan.rhyme.api.RhymeBuilder;
-import io.wcm.caravan.rhyme.api.common.HalResponse;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
+import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.SlingRhymeTestUtils;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.AemRepository;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemRendition;
@@ -32,35 +32,12 @@ class AemRepositoryImplTest {
 
   @BeforeEach
   void setUp() {
-    SlingRhyme slingRhyme = AppAemContext.createRhymeInstance(context, "/");
+    SlingRhyme slingRhyme = SlingRhymeTestUtils.createRhymeInstance(context, "/");
 
     repository = slingRhyme.adaptTo(AemRepository.class);
 
     assertThat(repository)
         .isNotNull();
-  }
-
-  static void assertLinkHasHref(String url, Optional<? extends LinkableResource> linkableResource) {
-
-    assertThat(linkableResource)
-        .isPresent()
-        .get()
-        .extracting(resource -> resource.createLink().getHref())
-        .isEqualTo(url);
-  }
-
-  static void assertResourceCanBeRendered(Object resource) {
-
-    assertThat(resource)
-        .isInstanceOf(LinkableResource.class);
-
-    HalResponse response = RhymeBuilder.create()
-        .buildForRequestTo("/")
-        .renderResponse((LinkableResource)resource)
-        .blockingGet();
-
-    assertThat(response.getStatus())
-        .isEqualTo(200);
   }
 
   @Test
