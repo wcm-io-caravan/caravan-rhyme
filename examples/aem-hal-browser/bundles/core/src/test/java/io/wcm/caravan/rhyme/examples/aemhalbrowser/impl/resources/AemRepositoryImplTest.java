@@ -77,7 +77,7 @@ class AemRepositoryImplTest {
   }
 
   @Test
-  void getResource_with_non_existant_path() {
+  void getResource_with_non_existent_path() {
 
     Optional<SlingResource> resource = repository.getResource(CONTENT_PATH);
 
@@ -115,7 +115,7 @@ class AemRepositoryImplTest {
   }
 
   @Test
-  void getPage_with_non_existant_path() {
+  void getPage_with_non_existent_path() {
 
     Optional<AemPage> page = repository.getPage(CONTENT_PATH);
 
@@ -153,7 +153,7 @@ class AemRepositoryImplTest {
   }
 
   @Test
-  void getAsset_with_non_existant_path() {
+  void getAsset_with_non_existent_path() {
 
     Optional<AemAsset> asset = repository.getAsset(CONTENT_PATH);
 
@@ -191,7 +191,7 @@ class AemRepositoryImplTest {
   }
 
   @Test
-  void getRendition_with_non_existant_path() {
+  void getRendition_with_non_existent_path() {
 
     Optional<AemRendition> rendition = repository.getRendition(CONTENT_PATH, 123, 456);
 
