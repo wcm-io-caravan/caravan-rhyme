@@ -55,11 +55,7 @@ public class CollectionParametersBean implements CollectionParameters {
     return this.delayMs;
   }
 
-  static CollectionParametersBean clone(CollectionParameters other) {
-
-    if (other == null) {
-      return null;
-    }
+  private static CollectionParametersBean clone(CollectionParameters other) {
 
     CollectionParametersBean cloned = new CollectionParametersBean();
 
