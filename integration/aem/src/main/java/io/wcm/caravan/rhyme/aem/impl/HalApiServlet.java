@@ -34,7 +34,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 
-@Component(service = Servlet.class, property = {
+@Component(service = { Servlet.class, HalApiServlet.class }, property = {
     SERVICE_DESCRIPTION + "=Servlet to render HAL responses using the Rhyme framework",
     SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
     SLING_SERVLET_RESOURCE_TYPES + "=" + DEFAULT_RESOURCE_TYPE,
