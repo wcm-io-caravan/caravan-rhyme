@@ -10,13 +10,12 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import com.day.cq.dam.api.Asset;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.parameters.QueryParam;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemRendition;
-import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemRenditionProperties;
 import io.wcm.handler.media.Media;
 import io.wcm.handler.media.MediaArgs;
 import io.wcm.handler.media.MediaBuilder;
@@ -45,11 +44,13 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
 
   private MediaBuilder mediaBuilder;
   private Media media;
+  private Rendition rendition;
 
   @PostConstruct
   void activate() {
     this.mediaBuilder = createMediaBuilder();
     this.media = mediaBuilder.build();
+    this.rendition = media.getRendition();
   }
 
   public void setWidthAndHeight(Integer width, Integer height) {
@@ -73,63 +74,47 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
         .args(new MediaArgs(format).autoCrop(true));
   }
 
-
   @Override
-  public AemRenditionProperties getProperties() {
-
-    Rendition rendition = media.getRendition();
-
-    return new AemRenditionProperties() {
-
-      @Override
-      public Integer getWidth() {
-        if (rendition == null) {
-          return null;
-        }
-        return (int)rendition.getWidth();
-      }
-
-      @Override
-      public Integer getHeight() {
-        if (rendition == null) {
-          return null;
-        }
-        return (int)rendition.getHeight();
-      }
-
-      @Override
-      public String getMimeType() {
-        if (rendition == null) {
-          return null;
-        }
-        return rendition.getMimeType();
-      }
-
-      @Override
-      public boolean isValid() {
-        return media.isValid();
-      }
-
-      @Override
-      public String getInvalidReason() {
-        if (media.isValid()) {
-          return null;
-        }
-        return media.getMediaInvalidReason().toString();
-      }
-
-    };
+  public Integer getWidth() {
+    return width;
   }
 
   @Override
-  public Optional<LinkableResource> getBinaryResource() {
+  public Integer getHeight() {
+    return height;
+  }
+
+  @Override
+  public Optional<String> getMimeType() {
+    if (rendition == null) {
+      return Optional.empty();
+    }
+    return Optional.of(rendition.getMimeType());
+  }
+
+  @Override
+  public boolean isValid() {
+    return media.isValid();
+  }
+
+  @Override
+  public Optional<String> getInvalidReason() {
+    if (media.isValid()) {
+      return Optional.empty();
+    }
+    return Optional.of(media.getMediaInvalidReason().toString());
+  }
+
+  @Override
+  public Optional<Link> getBinaryResource() {
 
     if (!media.isValid() || media.getRendition() == null) {
       return Optional.empty();
     }
 
     return Optional.of(new BinaryAssetResource(mediaBuilder)
-        .withTitle("Download the dynamic rendition " + media.getRendition()));
+        .withTitle("Download the dynamic rendition " + media.getRendition())
+        .createLink());
   }
 
   @Override
