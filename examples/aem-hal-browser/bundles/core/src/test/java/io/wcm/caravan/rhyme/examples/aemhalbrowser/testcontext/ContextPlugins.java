@@ -5,7 +5,6 @@ import org.apache.sling.testing.mock.osgi.context.ContextPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import io.wcm.caravan.commons.httpclient.impl.HttpClientFactoryImpl;
-import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.aem.impl.client.ResourceLoaderManager;
 import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.aem.impl.parameters.QueryParamInjector;
@@ -36,7 +35,6 @@ public final class ContextPlugins {
       context.registerInjectActivateService(new RhymeDocsOsgiBundleSupport());
       context.registerInjectActivateService(new QueryParamInjector());
 
-      context.registerInjectActivateService(new RhymeResourceRegistry());
     }
   };
 }

@@ -9,6 +9,8 @@ import static org.apache.sling.testing.mock.caconfig.ContextPlugins.CACONFIG;
 
 import org.jetbrains.annotations.NotNull;
 
+import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
+import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.AemHalBrowserResourceRegistration;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
@@ -41,5 +43,9 @@ public class AppAemContext extends AemContext {
   static void registerOsgiServices(@NotNull AemContext context) {
 
     context.registerInjectActivateService(new AemHalBrowserResourceRegistration());
+
+    // this should be moved to ContextPlugins but if we do, our registration doesn't become effective
+    context.registerInjectActivateService(new RhymeResourceRegistry());
+    context.registerInjectActivateService(new HalApiServlet());
   }
 }
