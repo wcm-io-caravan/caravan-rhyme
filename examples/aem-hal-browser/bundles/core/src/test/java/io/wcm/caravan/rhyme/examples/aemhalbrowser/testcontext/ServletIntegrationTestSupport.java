@@ -32,6 +32,20 @@ import io.wcm.testing.mock.aem.junit5.AemContext;
 
 public class ServletIntegrationTestSupport {
 
+  private ServletIntegrationTestSupport() {
+    // static methods only
+  }
+
+  public static <T> T createEntryPointProxy(Class<T> halApiInterface, AemContext context) {
+
+    String entryPointUrl = ServletIntegrationTestSupport.getFirstRegisteredEntryPointUrl(context);
+
+    HalApiServlet servlet = context.getService(HalApiServlet.class);
+
+    HalApiClient halApiClient = ServletIntegrationTestSupport.createHalApiClient(servlet, context.resourceResolver());
+
+    return halApiClient.getRemoteResource(entryPointUrl, halApiInterface);
+  }
 
   public static String getFirstRegisteredEntryPointUrl(AemContext context) {
 

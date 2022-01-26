@@ -12,8 +12,6 @@ import com.day.cq.dam.api.Asset;
 import com.google.common.collect.ImmutableMap;
 
 import io.wcm.caravan.hal.resource.Link;
-import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.AppAemContext;
 import io.wcm.caravan.rhyme.examples.aemhalbrowser.testcontext.ServletIntegrationTestSupport;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.AemRepository;
@@ -27,20 +25,16 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 @ExtendWith(AemContextExtension.class)
 class HalBrowserIT {
 
+  private static final String ENTRY_POINT_URL = "/.aemrepository.rhyme";
   private AemContext context = AppAemContext.newAemContext();
 
-  private AemRepository getRepositoryClientProxy() {
+  @Test
+  void entry_point_should_be_registered() {
 
     String entryPointUrl = ServletIntegrationTestSupport.getFirstRegisteredEntryPointUrl(context);
 
     assertThat(entryPointUrl)
-        .isEqualTo("/.aemrepository.rhyme");
-
-    HalApiServlet servlet = context.getService(HalApiServlet.class);
-
-    HalApiClient halApiClient = ServletIntegrationTestSupport.createHalApiClient(servlet, context.resourceResolver());
-
-    return halApiClient.getRemoteResource(entryPointUrl, AemRepository.class);
+        .isEqualTo(ENTRY_POINT_URL);
   }
 
   @Test
@@ -58,7 +52,7 @@ class HalBrowserIT {
 
     // now use only client proxies to navigate through the resources
 
-    AemRepository repository = getRepositoryClientProxy();
+    AemRepository repository = ServletIntegrationTestSupport.createEntryPointProxy(AemRepository.class, context);
 
     SlingResource resource = repository.getResource(pagePath).get();
 
