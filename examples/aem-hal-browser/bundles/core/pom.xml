@@ -212,9 +212,9 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <configuration>
-        <!-- only instrument rhyme classes -->
+         <!-- only instrument wcm.io Caravan classes -->
           <includes>
-            <include>io/wcm/caravan/rhyme/**/*.class</include>
+            <include>io/wcm/caravan/**/*</include>
           </includes>
         </configuration>
       </plugin>
