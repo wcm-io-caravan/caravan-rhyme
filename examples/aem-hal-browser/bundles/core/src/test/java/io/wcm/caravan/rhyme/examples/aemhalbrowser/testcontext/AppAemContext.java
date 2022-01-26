@@ -7,20 +7,18 @@ import static io.wcm.testing.mock.wcmio.sling.ContextPlugins.WCMIO_SLING;
 import static io.wcm.testing.mock.wcmio.wcm.ContextPlugins.WCMIO_WCM;
 import static org.apache.sling.testing.mock.caconfig.ContextPlugins.CACONFIG;
 
-import java.io.IOException;
-
-import org.apache.sling.api.resource.PersistenceException;
 import org.jetbrains.annotations.NotNull;
 
+import io.wcm.caravan.rhyme.aem.impl.HalApiServlet;
+import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.impl.resources.AemHalBrowserResourceRegistration;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
-import io.wcm.testing.mock.aem.junit5.AemContextCallback;
 
 /**
  * Sets up {@link AemContext} for unit tests in this application.
  */
-public final class AppAemContext {
+public class AppAemContext extends AemContext {
 
   private AppAemContext() {
     // static methods only
@@ -35,19 +33,19 @@ public final class AppAemContext {
         .plugin(CACONFIG)
         .plugin(WCMIO_SLING, WCMIO_WCM, WCMIO_CACONFIG, WCMIO_HANDLER)
         .plugin(CARAVAN_RHYME)
-        .afterSetUp(SETUP_CALLBACK)
+        .afterSetUp(AppAemContext::registerOsgiServices)
         .build();
   }
 
   /**
    * Custom set up rules required in all unit tests.
    */
-  private static final AemContextCallback SETUP_CALLBACK = new AemContextCallback() {
+  static void registerOsgiServices(@NotNull AemContext context) {
 
-    @Override
-    public void execute(@NotNull AemContext context) throws PersistenceException, IOException {
+    context.registerInjectActivateService(new AemHalBrowserResourceRegistration());
 
-      context.registerInjectActivateService(new AemHalBrowserResourceRegistration());
-    }
-  };
+    // this should be moved to ContextPlugins but if we do, our registration doesn't become effective
+    context.registerInjectActivateService(new RhymeResourceRegistry());
+    context.registerInjectActivateService(new HalApiServlet());
+  }
 }
