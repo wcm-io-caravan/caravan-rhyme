@@ -112,7 +112,7 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
       return Optional.empty();
     }
 
-    return Optional.of(new BinaryAssetResource(mediaBuilder)
+    return Optional.of(new BinaryAssetResource(mediaBuilder, media.getRendition())
         .withTitle("Download the dynamic rendition " + media.getRendition())
         .createLink());
   }
