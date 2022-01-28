@@ -107,12 +107,6 @@ class AemAssetImplTest {
 
     AemRendition rendition = createSlingModel(PATH).getRendition(null, null).get();
 
-    assertThat(rendition.getWidth())
-        .isNull();
-
-    assertThat(rendition.getHeight())
-        .isNull();
-
     assertThat(rendition.createLink().getHref())
         .isEqualTo("/content/foo.aemrendition.rhyme{?width,height}");
   }

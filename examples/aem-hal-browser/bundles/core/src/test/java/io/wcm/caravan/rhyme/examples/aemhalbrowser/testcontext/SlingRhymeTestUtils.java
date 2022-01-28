@@ -62,5 +62,18 @@ public final class SlingRhymeTestUtils {
     return response.getBody();
   }
 
+  public static void assertRenderingFailsWithStatus(int statusCode, Object resource) {
 
+    assertThat(resource)
+        .isInstanceOf(LinkableResource.class);
+
+    HalResponse response = RhymeBuilder.create()
+        .buildForRequestTo("/")
+        .renderResponse((LinkableResource)resource)
+        .blockingGet();
+
+    assertThat(response.getStatus())
+        .as("status code of response")
+        .isEqualTo(statusCode);
+  }
 }

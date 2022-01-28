@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
@@ -14,6 +15,7 @@ import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.parameters.QueryParam;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemRendition;
 import io.wcm.handler.media.Media;
@@ -76,18 +78,24 @@ public class AemRenditionImpl extends AbstractLinkableResource implements AemRen
 
   @Override
   public Integer getWidth() {
+    if (width == null) {
+      throw new HalApiServerException(HttpStatus.SC_BAD_REQUEST, "the width parameter is required");
+    }
     return width;
   }
 
   @Override
   public Integer getHeight() {
+    if (height == null) {
+      throw new HalApiServerException(HttpStatus.SC_BAD_REQUEST, "the width parameter is required");
+    }
     return height;
   }
 
   @Override
   public Optional<String> getMimeType() {
     if (rendition == null) {
-      return Optional.empty();
+      return Optional.ofNullable(asset.getMimeType());
     }
     return Optional.of(rendition.getMimeType());
   }
