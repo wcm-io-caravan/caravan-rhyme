@@ -67,7 +67,7 @@ public class HalApiClientImpl implements HalApiClient {
 
     // first consider any overrides for this interface and URI that may be defined
     return remoteResourceOverrides.get(halApiInterface, uri, metrics)
-        // ptherwise create a proxy instance that loads the entry point lazily when required by any method call on the proxy
+        // otherwise create a proxy instance that loads the entry point lazily (when required by any method call on the proxy)
         .orElseGet(() -> factory.createProxyFromUrl(halApiInterface, uri));
   }
 
