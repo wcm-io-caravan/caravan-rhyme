@@ -31,7 +31,7 @@ public interface TestResource {
   @ResourceState
   default Maybe<TestState> getState() {
     return Maybe.empty();
-  };
+  }
 
   @Related(TestRelations.LINKED)
   default Observable<TestResource> getLinked() {

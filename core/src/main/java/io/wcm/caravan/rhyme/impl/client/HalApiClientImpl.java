@@ -37,7 +37,9 @@ public class HalApiClientImpl implements HalApiClient {
 
   private final HalApiClientProxyFactory factory;
 
+  private final RequestMetricsCollector metrics;
   private final HalApiTypeSupport typeSupport;
+  private final RemoteResourceOverrides remoteResourceOverrides;
 
   /**
    * @param resourceLoader implements the actual loading (and caching) of JSON/HAL resources via any HTTP client library
@@ -45,22 +47,28 @@ public class HalApiClientImpl implements HalApiClient {
    *          incoming request
    * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
    * @param objectMapper the Jackson {@link ObjectMapper} to use for all JSON deserialisation
+   * @param overrides provides alternative implementations to be returned by {@link #getRemoteResource(String, Class)}
    */
-  public HalApiClientImpl(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport, ObjectMapper objectMapper) {
+  public HalApiClientImpl(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport, ObjectMapper objectMapper,
+      RemoteResourceOverrides overrides) {
 
     Preconditions.checkNotNull(resourceLoader, "A " + HalResourceLoader.class.getName() + " instance must be provided");
     HalResourceLoaderWrapper wrapper = new HalResourceLoaderWrapper(resourceLoader, metrics);
 
     factory = new HalApiClientProxyFactory(wrapper, metrics, typeSupport, objectMapper);
 
+    this.metrics = metrics;
     this.typeSupport = typeSupport;
+    this.remoteResourceOverrides = overrides;
   }
 
   @Override
   public <T> T getRemoteResource(String uri, Class<T> halApiInterface) {
 
-    // create a proxy instance that loads the entry point lazily when required by any method call on the proxy
-    return factory.createProxyFromUrl(halApiInterface, uri);
+    // first consider any overrides for this interface and URI that may be defined
+    return remoteResourceOverrides.get(halApiInterface, uri, metrics)
+        // ptherwise create a proxy instance that loads the entry point lazily when required by any method call on the proxy
+        .orElseGet(() -> factory.createProxyFromUrl(halApiInterface, uri));
   }
 
   public HalApiTypeSupport getTypeSupport() {

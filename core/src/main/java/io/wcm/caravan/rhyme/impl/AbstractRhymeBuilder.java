@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +47,7 @@ import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 import io.wcm.caravan.rhyme.impl.client.HalApiClientImpl;
+import io.wcm.caravan.rhyme.impl.client.RemoteResourceOverrides;
 import io.wcm.caravan.rhyme.impl.reflection.CompositeHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
@@ -80,6 +82,8 @@ abstract class AbstractRhymeBuilder<I> {
   private RhymeMetadataConfiguration metadataConfiguration;
 
   private ObjectMapper objectMapper;
+
+  private final RemoteResourceOverrides resourceOverrides = new RemoteResourceOverrides();
 
   protected boolean wasUsedToBuild;
 
@@ -140,6 +144,13 @@ abstract class AbstractRhymeBuilder<I> {
   public I withObjectMapper(ObjectMapper customMapper) {
 
     objectMapper = customMapper;
+    return (I)this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> I withRemoteResourceOverride(String entryPointUri, Class<T> halApiInterface, Function<RequestMetricsCollector, T> factoryFunc) {
+
+    resourceOverrides.add(entryPointUri, halApiInterface, factoryFunc);
     return (I)this;
   }
 
@@ -222,7 +233,7 @@ abstract class AbstractRhymeBuilder<I> {
 
     HalApiTypeSupport effectiveTypeSupport = getEffectiveTypeSupport();
 
-    return new HalApiClientImpl(resourceLoader, metrics, effectiveTypeSupport, objectMapper);
+    return new HalApiClientImpl(resourceLoader, metrics, effectiveTypeSupport, objectMapper, resourceOverrides);
   }
 
   @SuppressWarnings("deprecation")

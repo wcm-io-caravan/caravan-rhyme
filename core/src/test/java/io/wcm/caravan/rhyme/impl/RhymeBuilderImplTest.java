@@ -565,4 +565,45 @@ class RhymeBuilderImplTest {
       return new Link("/foo");
     }
   }
+
+  @Test
+  void should_use_remote_resource_override() {
+
+    String remotePath = "https://foo.bar";
+
+    LinkableTestResource overrideImpl = new LinkableTestResource() {
+
+      @Override
+      public Maybe<TestState> getState() {
+        return Maybe.just(new TestState("foo"));
+      }
+
+      @Override
+      public Link createLink() {
+        return new Link(remotePath);
+      }
+    };
+
+    Rhyme rhyme = RhymeBuilder.create()
+        .withRemoteResourceOverride(remotePath, LinkableTestResource.class, metrics -> overrideImpl)
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    LinkableTestResource resourceImpl = new LinkableTestResource() {
+
+      @Override
+      public Maybe<TestState> getState() {
+        return rhyme.getRemoteResource(remotePath, LinkableTestResource.class).getState();
+      }
+
+      @Override
+      public Link createLink() {
+        return new Link(INCOMING_REQUEST_URI);
+      }
+    };
+
+    HalResource hal = rhyme.renderResponse(resourceImpl).blockingGet().getBody();
+
+    assertThat(hal.adaptTo(TestState.class).string)
+        .isEqualTo("foo");
+  }
 }
