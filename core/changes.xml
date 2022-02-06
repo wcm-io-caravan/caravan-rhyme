@@ -23,7 +23,10 @@
     xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/plugins/maven-changes-plugin/xsd/changes-1.0.0.xsd">
   <body>
 
-    <release version="1.1.2" date="not released">
+    <release version="1.2.0" date="not released">
+      <action type="add" dev="ssauder">
+        Allow to provide custom mock/stub implementations for remote HAL API interfaces (via #withRemoteResourceOverride in RhymeBuilder and HalApiClientBuilder)
+      </action>
       <action type="add" dev="ssauder">
         Improved consistency for handling of null values for link template variables. When calling #createLink on a client proxy, you'll now always
         get the link template (which may be partially expanded if some values were not null in the invocation).
