@@ -30,7 +30,7 @@ The JVM will also further optimize the compiled code after repeated requests, so
 * the [API package](src/main/java/io/wcm/caravan/rhyme/examples/movies/api) defines a `@HalApiInterface` for each type of resource from the original Hypermedia Movie Demo API, and the new resources added by this example
 * the [impl package](src/main/java/io/wcm/caravan/rhyme/examples/movies/impl) contains
   * a simple class that contains the search logic and all interaction with the upstream service (using streams of the annotated API interfaces)
-  * two server-side resource implementation classes that render the links and embedded resources
+  * two server-side resource implementation classes to generate the links and embedded resources
   * an AWS Lambda `RequestHandler` that wires everything together, and configures the caching for upstream resources
 * [integration tests](src/test/java/io/wcm/caravan/rhyme/examples/movies/impl) show how the implementation is tested using either static responses from the file system, or with a dynamic stub implementation of the HAL API interfaces.
 * the [awslambda folder](src/main/java/io/wcm/caravan/rhyme/awslambda) contains additional integration code that is not specific to this example (and will be moved to its own integration bundle in the future)
