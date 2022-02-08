@@ -134,7 +134,7 @@ class MovieSearchLambdaTest {
   }
 
   @Test
-  void second_result_page_contains_remaining_results_on_second_page() {
+  void second_result_page_contains_remaining_results() {
 
     moviesStub.addMovies(10);
 
