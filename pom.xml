@@ -41,6 +41,7 @@
     <module>api-interfaces</module>
     <module>core</module>
     <module>examples/aem-hal-browser</module>
+    <module>examples/aws-movie-search</module>
     <module>examples/osgi-jaxrs-example-launchpad</module>
     <module>examples/osgi-jaxrs-example-service</module>
     <module>examples/spring-hello-world</module>
