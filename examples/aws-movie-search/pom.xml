@@ -120,7 +120,7 @@
         <version>${maven.shade.plugin.version}</version>
         <configuration>
           <createDependencyReducedPom>false</createDependencyReducedPom>
-          <finalName>io.wcm.caravan.rhyme.examples.aws-lambda</finalName>
+          <finalName>io.wcm.caravan.rhyme.examples.aws-movie-search</finalName>
           <filters>
             <filter>
               <artifact>*:*</artifact>
