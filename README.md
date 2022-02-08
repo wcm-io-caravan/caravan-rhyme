@@ -49,7 +49,7 @@ If you do think a more sophisticated support for other HTTP methods should be ad
 - **Examples** that show how to use Rhyme in these frameworks:
   - [spring-hypermedia](examples/spring-hypermedia) - a well documented Spring Boot application with examples for most of the key concepts of the core framework
   - [spring-hello-world](examples/spring-hello-world) - a very simple Spring Boot application with minimal dependencies 
-  - [aws-lambda](examples/aws-lambda) - an AWS lambda example that consumes another HAL+JSON API and builds a simple search on top of it
+  - [aws-movie-search](examples/aws-movie-search) - an AWS lambda example that consumes another HAL+JSON API and builds a simple search on top of it
   - [osgi-jaxrs-example-service](examples/osgi-jaxrs-example-service) - an example service using reactive types in its API
   - [osgi-jaxrs-example-launchpad](examples/osgi-jaxrs-example-launchpad) - a [Sling launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) to start the OSGi/JAX-RS example service (and run some integration tests)
   - [aem-hal-browser](examples/aem-hal-browser) - an example project for AEM that shows how HAL resources can be implemented as Sling models (work in progress)
@@ -242,7 +242,7 @@ The Rhyme client proxy instances will take care of
  
 A local in-memory caching will ensure that each resource is not fetched more than once, and repeated calls to the same method (with the same parameters) return a cached value immediately (as long as you are using the same `Rhyme` or `HalApiClient` instance).
 
-Check out the [AWS Lambda Example](examples/aws-lambda) to see this in action.
+Check out the [AWS Lambda Example](examples/aws-movie-search) to see this in action.
 
 ### Using a custom HTTP client implementation
 
@@ -526,7 +526,7 @@ This will make the **Rhyme** instance count the number of calls to your method, 
 
 The advantage to using an external profiler is that execution times for the same section of code with different parameters can be distinguished, and only execution times from the current request are taken into account.
 
-Check out the [AWS Lambda Example](examples/aws-lambda) to see this in action.
+Check out the [AWS Lambda Example](examples/aws-movie-search) as an example where this metadata showing details about the upstream requests is included by default.
 
 ## Forwarding error information over service boundaries
 

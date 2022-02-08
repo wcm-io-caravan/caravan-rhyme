@@ -62,7 +62,7 @@
     </dependency>   
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>io.wcm.caravan.rhyme.examples.aws-lambda</artifactId>
+      <artifactId>io.wcm.caravan.rhyme.examples.aws-movie-search</artifactId>
       <version>1-SNAPSHOT</version>
     </dependency>
     <dependency>

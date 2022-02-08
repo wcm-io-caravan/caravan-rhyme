@@ -10,9 +10,12 @@
   </parent>
 
   <groupId>io.wcm.caravan</groupId>
-  <artifactId>io.wcm.caravan.rhyme.examples.aws-lambda</artifactId>
+  <artifactId>io.wcm.caravan.rhyme.examples.aws-movie-search</artifactId>
   <version>1-SNAPSHOT</version>
   <packaging>jar</packaging>
+
+  <name>Rhyme - AWS Movie Search Example</name>
+  <description>An example for implementing a HAL+JSON API as an AWS Lambda function</description>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
