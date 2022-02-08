@@ -24,7 +24,7 @@ import io.wcm.caravan.rhyme.examples.movies.api.SearchResultPage;
 import software.amazon.awssdk.http.HttpStatusCode;
 
 /**
- * An integration tests for {@link MovieSearchRequestHandler} that is using the {@link MoviesDemoStub} implementation
+ * An integration test for {@link MovieSearchRequestHandler} that is using the {@link MoviesDemoStub} implementation
  * to have full control over simulated responses from the upstream service.
  */
 class MovieSearchLambdaTest {
@@ -134,7 +134,7 @@ class MovieSearchLambdaTest {
   }
 
   @Test
-  void first_result_page_contains_remaining_results_on_second_page() {
+  void second_result_page_contains_remaining_results_on_second_page() {
 
     moviesStub.addMovies(10);
 
