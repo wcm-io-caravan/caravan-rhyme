@@ -526,7 +526,7 @@ This will make the **Rhyme** instance count the number of calls to your method, 
 
 The advantage to using an external profiler is that execution times for the same section of code with different parameters can be distinguished, and only execution times from the current request are taken into account.
 
-Check out the [AWS Lambda Example](examples/aws-movie-search) as an example where this metadata showing details about the upstream requests is included by default.
+Check out the [AWS Lambda Example](examples/aws-movie-search) where this metadata showing details about the upstream requests is included by default.
 
 ## Forwarding error information over service boundaries
 
