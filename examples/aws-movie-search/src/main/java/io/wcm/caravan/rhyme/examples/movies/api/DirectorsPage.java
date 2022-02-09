@@ -27,7 +27,7 @@ public interface DirectorsPage extends LinkableResource {
   PagingInfo getPagingInfo();
 
   /**
-   * @return 1..n embedded resources for the directors from the current page
+   * @return embedded resources for the directors from the current page
    */
   @Related("directors")
   Stream<Director> getPageContent();

@@ -15,7 +15,7 @@ import io.wcm.caravan.rhyme.api.annotations.TemplateVariable;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * A page of up to five search results for a given search term, with links to navigate to further pages
+ * A page of search results for a given search term, with links to navigate to further pages.
  */
 @HalApiInterface
 public interface SearchResultPage extends LinkableResource {
@@ -27,7 +27,8 @@ public interface SearchResultPage extends LinkableResource {
   String getSearchTerm();
 
   /**
-   * @return 0..5 results from the current page as embedded resources
+   * @return the embedded resources representing the results from the search (up to 5 per page), with links to
+   *         fetch details of the movie and its director(s)
    */
   @Related("movies:result")
   Stream<SearchResult> getPageContent();

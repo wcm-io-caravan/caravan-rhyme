@@ -27,7 +27,7 @@ public interface MoviesPage extends LinkableResource {
   PagingInfo getPagingInfo();
 
   /**
-   * @return 1..n embedded resources for the movies from the current page
+   * @return embedded resources for the movies from the current page
    */
   @Related("movies")
   Stream<Movie> getPageContent();

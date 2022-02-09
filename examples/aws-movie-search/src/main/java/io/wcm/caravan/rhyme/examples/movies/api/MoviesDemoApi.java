@@ -7,7 +7,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
  * The API of the <a href="https://hypermedia-movies-demo.herokuapp.com/">Hypermedia Movies Demo</a> application from
- * Kai Toedter represented as a Rhyme HAL API interface.
+ * Kai Toedter.
  * @see <a href="https://github.com/toedter/movies-demo">Github project</a>
  */
 @HalApiInterface
