@@ -29,7 +29,7 @@ For search terms where there is no hit at all, you can see that all pages of mov
 ## Performance
 Note that the first load of these resources can take up to 30 seconds, as this may trigger a cold start of the lambda function and the Heroku upstream server. Subsequent searches will be much faster, as they will be using responses that are cached in memory for up to one hour. 
 
-The JVM will also further optimize the compiled code after repeated requests, so it's worth to reload the search results multiple times if you are interested in the performance details.
+The JVM will also further optimize the compiled code after repeated requests, so it's worth to reload the search results multiple times (with caching disabled in your browser) if you are interested in the performance details.
 
 # Source Code
 
