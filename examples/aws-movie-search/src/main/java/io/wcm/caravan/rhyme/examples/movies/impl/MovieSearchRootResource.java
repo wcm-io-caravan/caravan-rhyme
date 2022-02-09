@@ -19,27 +19,25 @@ class MovieSearchRootResource implements ApiEntryPoint {
 
   MovieSearchRootResource(LambdaRhyme rhyme) {
     this.rhyme = rhyme;
-
     // allow the entry point to be cached, but only for a short amount of time
     rhyme.setResponseMaxAge(Duration.ofMinutes(1));
   }
 
   @Override
   public SearchResultPage getSearchResults(String searchTerm) {
-
+    // this creates a link template, because searchTerm will be null when this resource is being rendered
     return new MovieSearchResultResource(rhyme, searchTerm, 0);
   }
 
   @Override
   public MoviesDemoApi getUpstreamEntryPoint() {
-
-    // to create the link, we can simply return the dynamic client proxy that is also used to fetch data from there
+    // to generate the link to a remote resource, we can simply returns its dynamic client proxy
     return new MovieSearch(rhyme).getUpstreamEntryPoint();
   }
 
   @Override
   public Link createLink() {
-
+    // the RymeLinkBuilder will take care of converting this to an absolute URL
     return rhyme.buildLinkTo(PATH)
         .build();
   }
