@@ -67,25 +67,30 @@ class MovieSearch {
     // provide a search result if the search term can be found in the movie's title
     String title = movie.getTitle();
     if (StringUtils.containsIgnoreCase(title, searchTerm)) {
-      return Stream.of(createResult(movie, title + " (a movie ranked " + movie.getRank() + " on IMDB)"));
+      return Stream.of(createResult(movie, "a movie ranked " + movie.getRank() + " on IMDB"));
     }
 
     // otherwise provide a search result only if a director's name contains the search term
     return movie.getDirectors()
         // we can avoid actually loading the director's resource by reading the director's name from the link to the resource
         .filter(director -> StringUtils.containsIgnoreCase(director.createLink().getName(), searchTerm))
-        .map(director -> createResult(movie, title + " (a movie directed by " + director.createLink().getName() + ")"))
+        .map(director -> createResult(movie, "a movie directed by " + director.createLink().getName()))
         // even if multiple directors of this movie match the search term, we want the movie to only show up once
         .limit(1);
   }
 
-  private SearchResult createResult(Movie movie, String title) {
+  private SearchResult createResult(Movie movie, String description) {
     // create the embedded resource, with links to the upstream service being provided by the client proxies
     return new SearchResult() {
 
       @Override
       public String getTitle() {
-        return title;
+        return movie.getTitle();
+      }
+
+      @Override
+      public String getDescription() {
+        return description;
       }
 
       @Override

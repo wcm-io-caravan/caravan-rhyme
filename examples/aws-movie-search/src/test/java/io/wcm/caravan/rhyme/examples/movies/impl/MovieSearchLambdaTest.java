@@ -107,7 +107,7 @@ class MovieSearchLambdaTest {
 
   @Test
   void resolved_result_page_is_empty_if_search_term_doesnt_match() {
-    
+
     moviesStub.addMovies(10);
 
     SearchResultPage firstPage = api.getSearchResults("Not present in any title");
@@ -160,21 +160,21 @@ class MovieSearchLambdaTest {
 
     assertThat(firstPage.getPageContent())
         .hasSize(5)
-        .extracting(SearchResult::getTitle)
-        .containsExactlyElementsOf(createExpectedDirectorMatchTitles(0, 1, 2, 3, 4));
+        .extracting(SearchResult::getDescription)
+        .containsExactlyElementsOf(createExpectedDirectorMatchDescriptions(0, 1, 2, 3, 4));
   }
 
   private List<String> createExpectedMovieMatchTitles(Integer... indices) {
 
     return Stream.of(indices)
-        .map(i -> "Movie #" + i + " (a movie ranked " + (i + 1) + " on IMDB)")
+        .map(i -> "Movie #" + i)
         .collect(Collectors.toList());
   }
 
-  private List<String> createExpectedDirectorMatchTitles(Integer... indices) {
+  private List<String> createExpectedDirectorMatchDescriptions(Integer... indices) {
 
     return Stream.of(indices)
-        .map(i -> "Movie #" + i + " (a movie directed by " + MoviesDemoStub.DEFAULT_DIRECTOR_NAME + ")")
+        .map(i -> "a movie directed by " + MoviesDemoStub.DEFAULT_DIRECTOR_NAME)
         .collect(Collectors.toList());
   }
 
