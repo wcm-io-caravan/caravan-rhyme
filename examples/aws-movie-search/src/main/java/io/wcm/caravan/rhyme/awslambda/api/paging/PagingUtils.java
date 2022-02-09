@@ -43,12 +43,10 @@ public final class PagingUtils {
 
   static class AutoPagingIterator<P, R> implements Iterator<R> {
 
-    private final Queue<R> itemsOnCurrentPage = new LinkedList<>();
-
     private final Function<P, Stream<R>> pageContentFunc;
-
     private final Function<P, Optional<P>> nextPageFunc;
 
+    private final Queue<R> itemsOnCurrentPage = new LinkedList<>();
     private P currentPage;
 
     AutoPagingIterator(P firstPage, Function<P, Stream<R>> pageContentFunc, Function<P, Optional<P>> nextPageFunc) {
