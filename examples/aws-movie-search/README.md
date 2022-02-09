@@ -9,18 +9,24 @@ It implements a simple movie search functionality that is built on top of [Kai T
 * https://hypermedia-movies-demo.herokuapp.com
 * https://github.com/toedter/movies-demo
 
+The project contains `@HalApiInterface` definitions for this external API, and uses them to load the available movies via HTTP using proxies created by Rhyme's `HalApiClient`.
+
+A simple search logic is then applied, and responses are rendered by the Rhyme framework based on additional API interfaces defined for the search functionality.
+
 #  Explore
 
-The example movie search API can be accessed directly at https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default or through the [HAL Explorer](https://toedter.github.io/hal-explorer/release/hal-explorer/#theme=Cosmo&uri=https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default)
+The example movie search API can be accessed directly at https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default or through the [HAL Explorer](https://toedter.github.io/hal-explorer/release/hal-explorer/#theme=Cosmo&uri=https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default).
 
-The **Doc** icons in the HAL Explorer will link to an HTML documentation (which is automatically generated from the annotated API interfaces).
+The **Doc** icons in the HAL Explorer will link to an HTML documentation of the API (which is generated from the annotated interfaces and embedded in the Lambda's JAR file).
 
+## Embedded Metadata
 You can have a look at the embedded `rhyme:metadata` to get an idea of what's happening in the background. For example you can see that for search terms which have many hits from the top ranked movies, only the first page of movies from the upstream API has to be loaded:
 * https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default/results?page=0&searchTerm=the
 
-For search terms where there is no hit at all, you can see that all pages of movies had to be loaded before the (empty) result could be rendered:
+For search terms where there is no hit at all, you can see that all pages of movies had to be loaded before the (empty) result can be rendered:
 * https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default/results?page=0&searchTerm=foo
 
+## Performance
 Note that the first load of these resources can take up to 30 seconds, as this may trigger a cold start of the lambda function and the Heroku upstream server. Subsequent searches will be much faster, as they will be using responses that are cached in memory for up to one hour. 
 
 The JVM will also further optimize the compiled code after repeated requests, so it's worth to reload the search results multiple times if you are interested in the performance details.
@@ -33,5 +39,5 @@ The JVM will also further optimize the compiled code after repeated requests, so
   * two server-side resource implementation classes to generate the links and embedded resources
   * an AWS Lambda `RequestHandler` that wires everything together, and configures the caching for upstream resources
 * [integration tests](src/test/java/io/wcm/caravan/rhyme/examples/movies/impl) show how the implementation is tested using either static responses from the file system, or with a dynamic stub implementation of the HAL API interfaces.
-* the [awslambda folder](src/main/java/io/wcm/caravan/rhyme/awslambda) contains additional integration code that is not specific to this example (and will be moved to its own integration bundle in the future)
+* the [awslambda folder](src/main/java/io/wcm/caravan/rhyme/awslambda) contains additional integration code that is not specific to this example (and may be moved to its own integration module in the future)
 
