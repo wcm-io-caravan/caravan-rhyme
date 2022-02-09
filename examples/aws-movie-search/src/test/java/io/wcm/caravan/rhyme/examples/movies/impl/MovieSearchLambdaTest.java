@@ -107,8 +107,10 @@ class MovieSearchLambdaTest {
 
   @Test
   void resolved_result_page_is_empty_if_search_term_doesnt_match() {
+    
+    moviesStub.addMovies(10);
 
-    SearchResultPage firstPage = api.getSearchResults("Not present in title");
+    SearchResultPage firstPage = api.getSearchResults("Not present in any title");
 
     assertThat(firstPage.getPageContent())
         .isEmpty();
