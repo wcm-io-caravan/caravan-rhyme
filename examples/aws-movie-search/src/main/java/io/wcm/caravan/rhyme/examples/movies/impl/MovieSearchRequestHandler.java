@@ -27,10 +27,10 @@ public class MovieSearchRequestHandler implements LambdaResourceRouting, Request
   private final RhymeRequestHandler requestHandler;
 
   /**
-   * Default constructor that is called for each cold start of your lambda
+   * Default constructor that is called for each cold start of the lambda
    */
   public MovieSearchRequestHandler() {
-
+    // the project-specific configuration of this generic request handler happens in the other methods of this class
     requestHandler = new RhymeRequestHandler(this)
         .withResourceLoader(configureResourceLoader().build())
         .withCustomizedRhymeBuilder(this::configureRhymeBuilder);
@@ -38,7 +38,7 @@ public class MovieSearchRequestHandler implements LambdaResourceRouting, Request
 
   @Override
   public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-
+    // render the resource returned by #createRequestedResource and convert it to an AWS Lambda response
     APIGatewayProxyResponseEvent response = requestHandler.handleRequest(input, context);
 
     // additional CORS headers required to load resources from an externally hosted HAL Explorer frontend
@@ -50,17 +50,16 @@ public class MovieSearchRequestHandler implements LambdaResourceRouting, Request
 
   @Override
   public LinkableResource createRequestedResource(LambdaRhyme rhyme) {
-
+    // pick the resource to be rendered based on the path of the incoming request
     String path = rhyme.getRequest().getPath();
-
+    
     if (MovieSearchRootResource.PATH.equals(path)) {
       return new MovieSearchRootResource(rhyme);
     }
-
     if (MovieSearchResultResource.PATH.equals(path)) {
       return MovieSearchResultResource.createWithRequestParametersFrom(rhyme);
     }
-
+    // a 404 response will be rendered if no resource was found for the given path
     return null;
   }
 
@@ -71,10 +70,10 @@ public class MovieSearchRequestHandler implements LambdaResourceRouting, Request
   protected HalResourceLoaderBuilder configureResourceLoader() {
 
     return HalResourceLoaderBuilder.create()
-        // we want to cache all responses from the upstream API
+        // we want to cache all responses from the upstream API...
         .withMemoryCache()
-        // because the responses from the Hypermedia Movie Demo do not set any "max-age" cache control directives,
-        // we are using a custom configuration to ensure that those responses are cached for one hour
+        // ...but because the responses from the Hypermedia Movie Demo do not set any "max-age" cache control directives,
+        // we need to use a custom configuration that ensures those responses are cached for one hour
         .withCachingConfiguration(new CachingConfiguration() {
 
           @Override
