@@ -81,7 +81,7 @@ class MovieSearch {
   }
 
   private SearchResult createResult(Movie movie, String title) {
-
+    // create the embedded resource, with links to the upstream service being provided by the client proxies
     return new SearchResult() {
 
       @Override
