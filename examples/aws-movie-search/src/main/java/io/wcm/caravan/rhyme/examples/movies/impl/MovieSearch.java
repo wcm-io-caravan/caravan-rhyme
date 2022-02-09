@@ -30,7 +30,7 @@ class MovieSearch {
   }
 
   /**
-   * @return a dynamic client proxy for the entry point of the Hypermedia Movies Demo API
+   * @return a dynamic client proxy to load the entry point of the Hypermedia Movies Demo API
    */
   MoviesDemoApi getUpstreamEntryPoint() {
 
@@ -64,16 +64,15 @@ class MovieSearch {
 
   private Stream<SearchResult> createResultIfMovieMatchesSearchTerm(Movie movie, String searchTerm) {
 
+    // provide a search result if the search term can be found in the movie's title
     String title = movie.getTitle();
-
-    // provide a search result if the search term can be found in the movie title
     if (StringUtils.containsIgnoreCase(title, searchTerm)) {
       return Stream.of(createResult(movie, title + " (a movie ranked " + movie.getRank() + " on IMDB)"));
     }
 
     // otherwise provide a search result only if a director's name contains the search term
     return movie.getDirectors()
-        // we can avoid actually loading the director's resource by reading the director's name from the link
+        // we can avoid actually loading the director's resource by reading the director's name from the link to the resource
         .filter(director -> StringUtils.containsIgnoreCase(director.createLink().getName(), searchTerm))
         .map(director -> createResult(movie, title + " (a movie directed by " + director.createLink().getName() + ")"))
         // even if multiple directors of this movie match the search term, we want the movie to only show up once
