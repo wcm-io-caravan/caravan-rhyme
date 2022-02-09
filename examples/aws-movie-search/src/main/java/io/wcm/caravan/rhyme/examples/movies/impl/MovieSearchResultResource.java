@@ -56,19 +56,19 @@ class MovieSearchResultResource extends AbstractPagingResource<SearchResultPage,
 
   @Override
   protected Stream<SearchResult> getStreamOfAllItems() {
-
+    // the super class will extract the items to be shown on the current page (plus one more to check if a 'next' link should be present)
     return new MovieSearch(rhyme).findMovies(searchTerm);
   }
 
   @Override
   protected SearchResultPage createLinkedPage(int linkedPage) {
-
+    // this is called by the super class to create the optional next/prev/first links
     return new MovieSearchResultResource(rhyme, searchTerm, linkedPage);
   }
 
   @Override
   public SearchResultPage withNewSearchTerm(String newSearchTerm) {
-
+    // create a link template to the first page for a different search term (which is null when this resource is rendered)
     return new MovieSearchResultResource(rhyme, newSearchTerm, 0);
   }
 
@@ -79,7 +79,7 @@ class MovieSearchResultResource extends AbstractPagingResource<SearchResultPage,
 
   @Override
   public Link createLink() {
-
+    // this will create either a resolved link, or a template (if null was passed for one of the parameters in the constructor)
     return rhyme.buildLinkTo(PATH)
         .addQueryVariable(PARAM_SEARCH_TERM, searchTerm)
         .addQueryVariable(PARAM_PAGE, getCurrentPageNumber())
