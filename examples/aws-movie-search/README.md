@@ -15,7 +15,7 @@ A simple search logic is then applied, and responses are rendered by the Rhyme f
 
 #  Explore
 
-The example movie search API can be accessed directly at https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default or through the [HAL Explorer](https://toedter.github.io/hal-explorer/release/hal-explorer/#theme=Cosmo&uri=https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default).
+The example movie search API can be accessed directly at https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default or through the [HAL Explorer](https://toedter.github.io/hal-explorer/release/hal-explorer/#uri=https://088zuopqd6.execute-api.eu-central-1.amazonaws.com/default).
 
 The **Doc** icons in the HAL Explorer will link to an HTML documentation of the API (which is generated from the annotated interfaces and embedded in the Lambda's JAR file).
 
@@ -41,3 +41,7 @@ The JVM will also further optimize the compiled code after repeated requests, so
 * [integration tests](src/test/java/io/wcm/caravan/rhyme/examples/movies/impl) show how the implementation is tested using either static responses from the file system, or with a dynamic stub implementation of the HAL API interfaces.
 * the [awslambda folder](src/main/java/io/wcm/caravan/rhyme/awslambda) contains additional integration code that is not specific to this example (and may be moved to its own integration module in the future)
 
+# Documentation
+* See the main [README](/README.md) for a general introduction to the usage of the Rhyme framework
+* Javadocs for the annotations and interfaces used in the `@HalApiInterface` definitions: https://caravan.wcm.io/rhyme/api-interfaces/apidocs/
+* Javadocs of Rhyme's core module: https://caravan.wcm.io/rhyme/core/apidocs/ 
