@@ -48,7 +48,7 @@ public class LambdaRhymeDocsSupport implements RhymeDocsSupport {
 
   @Override
   public boolean isFragmentAppendedToCuriesLink() {
-    return false;
+    return true;
   }
 
   boolean isRhymeDocsRequest() {

@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.damnhandy.uri.template.UriTemplate;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.net.HttpHeaders;
 
 import io.wcm.caravan.ClasspathResourceSupport;
@@ -128,7 +130,9 @@ class MovieSearchLambdaIT {
     assertThat(curiesLink)
         .isNotNull();
 
-    APIGatewayProxyResponseEvent response = testClient.getGatewayProxyResponse(curiesLink.getHref());
+    String curiesHref = UriTemplate.expand(curiesLink.getHref(), ImmutableMap.of("rel", "search"));
+
+    APIGatewayProxyResponseEvent response = testClient.getGatewayProxyResponse(curiesHref);
 
     assertThat(response.getStatusCode())
         .isEqualTo(200);
