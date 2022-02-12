@@ -8,7 +8,7 @@ import io.wcm.caravan.hal.resource.Link;
 
 public class StaticResourceImpl implements Resource {
 
-	private static final Single<ObjectNode> STATE_SINGLE = Single.just(ResourceState.createTestJson());
+	private static final Single<ObjectNode> STATE_SINGLE = Single.just(TestState.createTestJson());
 
 	private static final Link LINK = new Link("/foo");
 

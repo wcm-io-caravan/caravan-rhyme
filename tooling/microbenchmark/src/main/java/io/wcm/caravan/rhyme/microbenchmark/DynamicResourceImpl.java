@@ -14,7 +14,7 @@ public class DynamicResourceImpl implements Resource {
 
 	@Override
 	public Single<ObjectNode> getState() {
-		return Single.just(ResourceState.createTestJson());
+		return Single.just(TestState.createTestJson());
 	}
 
 	private static Observable<Resource> createLinked() {

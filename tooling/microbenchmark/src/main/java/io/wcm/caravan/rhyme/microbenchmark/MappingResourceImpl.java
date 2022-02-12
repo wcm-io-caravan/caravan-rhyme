@@ -8,7 +8,7 @@ public class MappingResourceImpl extends DynamicResourceImpl {
 
 	@Override
 	public Single<ObjectNode> getState() {
-		return Single.just(ResourceState.createMappedJson());
+		return Single.just(TestState.createMappedJson());
 	}
 
 }

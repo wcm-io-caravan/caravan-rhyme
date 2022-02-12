@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 
-public class ResourceState {
+public class TestState {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -20,7 +20,7 @@ public class ResourceState {
     return foo;
   }
 
-  public ResourceState setFoo(String foo) {
+  public TestState setFoo(String foo) {
     this.foo = foo;
     return this;
   }
@@ -29,7 +29,7 @@ public class ResourceState {
     return bar;
   }
 
-  public ResourceState setBar(Integer bar) {
+  public TestState setBar(Integer bar) {
     this.bar = bar;
     return this;
   }
@@ -38,13 +38,13 @@ public class ResourceState {
     return list;
   }
 
-  public ResourceState setList(List<Integer> list) {
+  public TestState setList(List<Integer> list) {
     this.list = list;
     return this;
   }
 
-  static ResourceState createTestState() {
-    return new ResourceState()
+  static TestState createTestState() {
+    return new TestState()
         .setFoo("123")
         .setBar(456)
         .setList(ImmutableList.of(7, 8, 9));
