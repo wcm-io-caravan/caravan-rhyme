@@ -35,6 +35,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
+import java.io.IOException;
 import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -49,6 +50,12 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.ImmutableList;
 
 import io.wcm.caravan.hal.resource.HalResource;
@@ -88,9 +95,30 @@ public class Benchmarks {
       RequestMetricsCollector metrics = ((RhymeImpl)lastRhymeInstance).getMetrics();
       HalResource metadata = metrics.createMetadataResource(null);
       if (metadata != null) {
-        System.err.println("Rhyme metadata of last response that was rendered:");
-        System.err.println(metadata.getModel().toPrettyString());
+
+        writeMetadataToConsole(metadata);
       }
+    }
+  }
+
+  protected void writeMetadataToConsole(HalResource metadata) {
+
+    DefaultIndenter indenter = new DefaultIndenter("  ", "\n");
+
+    ObjectMapper mapper = new ObjectMapper()
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .setDefaultPrettyPrinter(new DefaultPrettyPrinter()
+            .withArrayIndenter(indenter));
+
+    JsonFactory factory = new JsonFactory(mapper);
+
+    System.err.println("Rhyme performance metadata of last measurement:");
+
+    try (JsonGenerator generator = factory.createGenerator(System.err)) {
+      generator.writeTree(metadata.getModel());
+    }
+    catch (IOException ex) {
+      throw new RuntimeException("Failed to write metadata to console", ex);
     }
   }
 
