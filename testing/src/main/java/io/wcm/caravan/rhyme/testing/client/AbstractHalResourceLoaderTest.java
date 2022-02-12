@@ -13,6 +13,7 @@ import java.time.Duration;
 
 import javax.net.ssl.SSLHandshakeException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,6 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
-import wiremock.org.apache.http.client.utils.URIBuilder;
 
 /**
  * A base class that you can extend if you are implementing your own {@link HalResourceLoader}
