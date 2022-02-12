@@ -48,13 +48,13 @@ public class CaravanRhymeRequestCycleImpl implements CaravanRhymeRequestCycle {
   private CaravanHalApiClient halApiClient;
 
   @Override
-  public <RequestContextType> void processRequest(UriInfo requestUri, AsyncResponse response,
-      Function<CaravanRhyme, RequestContextType> requestContextConstructor, Function<RequestContextType, ? extends LinkableResource> resourceImplConstructor) {
+  public <T> void processRequest(UriInfo requestUri, AsyncResponse response,
+      Function<CaravanRhyme, T> requestContextConstructor, Function<T, ? extends LinkableResource> resourceImplConstructor) {
 
     CaravanRhymeImpl rhyme = createRhymeInstance(requestUri);
 
     try {
-      RequestContextType requestContext = requestContextConstructor.apply(rhyme);
+      T requestContext = requestContextConstructor.apply(rhyme);
 
       LinkableResource resource = resourceImplConstructor.apply(requestContext);
 

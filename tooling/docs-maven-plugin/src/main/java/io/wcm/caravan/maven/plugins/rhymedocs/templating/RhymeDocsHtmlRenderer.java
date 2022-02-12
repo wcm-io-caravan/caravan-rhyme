@@ -20,6 +20,7 @@
 package io.wcm.caravan.maven.plugins.rhymedocs.templating;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -27,10 +28,10 @@ import org.apache.maven.plugin.logging.Log;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
-import com.google.common.base.Charsets;
 
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocs;
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeResourceDocs;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 public class RhymeDocsHtmlRenderer {
 
@@ -70,10 +71,10 @@ public class RhymeDocsHtmlRenderer {
       Path htmlFile = outputDirectory.resolve(fileName);
 
       log.debug("Writing " + htmlFile);
-      Files.write(htmlFile, htmlDocs.getBytes(Charsets.UTF_8));
+      Files.write(htmlFile, htmlDocs.getBytes(StandardCharsets.UTF_8));
     }
     catch (IOException | RuntimeException ex) {
-      throw new RuntimeException("Failed to generate documentation for interface " + className, ex);
+      throw new HalApiDeveloperException("Failed to generate documentation for interface " + className, ex);
     }
   }
 }

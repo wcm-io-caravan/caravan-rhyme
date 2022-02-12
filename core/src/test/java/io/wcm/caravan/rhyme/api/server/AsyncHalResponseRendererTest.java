@@ -35,7 +35,7 @@ import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 
 @ExtendWith(MockitoExtension.class)
-public class AsyncHalResponseRendererTest {
+class AsyncHalResponseRendererTest {
 
   private static final String REQUEST_URI = "/";
 
@@ -52,7 +52,7 @@ public class AsyncHalResponseRendererTest {
   // and verify basic interaction for a succesfull and one error response
 
   @Test
-  public void valid_resource_should_be_rendered() throws Exception {
+  void valid_resource_should_be_rendered() {
 
     AsyncHalResponseRenderer renderer = createRenderer();
 
@@ -67,11 +67,11 @@ public class AsyncHalResponseRendererTest {
     assertThat(response).isNotNull();
     assertThat(response.getContentType()).isEqualTo(HalResource.CONTENT_TYPE);
     assertThat(response.getBody().getLink()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION)).isTrue();
   }
 
   @Test
-  public void error_resource_should_be_rendered_if_an_exception_is_thrown() throws Exception {
+  void error_resource_should_be_rendered_if_an_exception_is_thrown() {
 
     AsyncHalResponseRenderer renderer = createRenderer();
 
@@ -86,18 +86,20 @@ public class AsyncHalResponseRendererTest {
     assertThat(response).isNotNull();
     assertThat(response.getContentType()).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
+    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION)).isTrue();
   }
 
 
   @Test
-  public void deprecated_method_without_RhymeDocsSupport_should_not_throw_exception() throws Exception {
+  void deprecated_method_without_RhymeDocsSupport_should_not_throw_exception() {
 
     RequestMetricsCollector metrics = RequestMetricsCollector.create();
     ExceptionStatusAndLoggingStrategy strategy = new ExceptionStatusAndLoggingStrategy() {
       // we want to cover the default implementation here, so we don't override anything
     };
 
-    AsyncHalResponseRenderer.create(metrics, strategy, null, null);
+    AsyncHalResponseRenderer renderer = AsyncHalResponseRenderer.create(metrics, strategy, null, null);
+    assertThat(renderer)
+        .isNotNull();
   }
 }

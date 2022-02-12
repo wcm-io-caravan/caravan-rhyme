@@ -96,14 +96,12 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
 
       String simpleClassName = getSimpleClassName(resourceImplInstance, typeSupport);
 
-      // wait until all this is available...
-      Single<HalResource> rxHalResource = Single.zip(rxState, rxRelated,
-          // ...and then create the HalResource instance
+      // wait until all state and related resources are available...
+      return Single.zip(rxState, rxRelated,
+          // ...then create the HalResource instance
           (stateNode, listOfRelated) -> createHalResource(resourceImplInstance, stateNode, listOfRelated))
-          // and measure the time of the emissions
+          // and measure the time of thsee emissions
           .compose(EmissionStopwatch.collectMetrics(() -> "rendering " + simpleClassName + " instances", metrics));
-
-      return rxHalResource;
     }
   }
 
@@ -125,7 +123,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
 
   Single<ObjectNode> renderResourceState(Class<?> apiInterface, Object resourceImplInstance) {
 
-    Single<ObjectNode> emptyObject = Single.fromCallable(() -> JsonNodeFactory.instance.objectNode());
+    Single<ObjectNode> emptyObject = Single.fromCallable(JsonNodeFactory.instance::objectNode);
 
     // find the first method annotated with @ResourceState (and return an empty object if there is none)
     Optional<Method> method = HalApiReflectionUtils.findResourceStateMethod(apiInterface, typeSupport);

@@ -19,12 +19,15 @@
  */
 package io.wcm.caravan.rhyme.api.client;
 
+import java.util.function.Function;
+
 import org.osgi.annotation.versioning.ProviderType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
+import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.spi.HalApiAnnotationSupport;
 import io.wcm.caravan.rhyme.api.spi.HalApiReturnTypeSupport;
@@ -99,6 +102,20 @@ public interface HalApiClientBuilder {
    * @return this
    */
   HalApiClientBuilder withObjectMapper(ObjectMapper objectMapper);
+
+  /**
+   * Defines an override that will make {@link HalApiClient#getRemoteResource(String, Class)} return a custom
+   * implementation for a specific combination of entry point URI and interface class (rather then the default
+   * dynamic proxy). This can be used to mock/stub remote resources in unit and integration tests, or to delegate
+   * remote resource proxy creation for a specific service to a completely different {@link Rhyme} or
+   * {@link HalApiClient} instance.
+   * @param <T> the {@link HalApiInterface} type
+   * @param entryPointUri the URI for which the override will be used
+   * @param halApiInterface an interface defining the HAL API for that URI
+   * @param factoryFunc a function that will create a proxy, stub or server-side implementation of the given interface
+   * @return this
+   */
+  <T> HalApiClientBuilder withRemoteResourceOverride(String entryPointUri, Class<T> halApiInterface, Function<RequestMetricsCollector, T> factoryFunc);
 
   /**
    * @return the new {@link HalApiClient} instance

@@ -42,7 +42,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
  * contains only some tests for edge case exception handling that is hard to reproduce with realistic client / renderer
  * tests
  */
-public class RxJavaReflectionUtilsTest {
+class RxJavaReflectionUtilsTest {
 
   private final RequestMetricsCollector metrics = RequestMetricsCollector.create();
   private final HalApiTypeSupport typeSupport = new DefaultHalApiTypeSupport();
@@ -55,7 +55,7 @@ public class RxJavaReflectionUtilsTest {
   }
 
   @Test
-  public void throwing_checked_exceptions_should_be_handled() {
+  void throwing_checked_exceptions_should_be_handled() {
 
     TestResourceWithCheckedExceptionImpl resourceImpl = new TestResourceWithCheckedExceptionImpl();
 
@@ -68,7 +68,7 @@ public class RxJavaReflectionUtilsTest {
   }
 
   @Test
-  public void calling_private_methods_should_throw_exception() {
+  void calling_private_methods_should_throw_exception() {
 
     TestResourceWithCheckedExceptionImpl resourceImpl = new TestResourceWithCheckedExceptionImpl();
     assertThat(resourceImpl.test()).isEqualTo("foo");
@@ -82,12 +82,12 @@ public class RxJavaReflectionUtilsTest {
   }
 
   @Test
-  public void convertObservableTo_should_fail_for_unsupported_types() {
+  void convertObservableTo_should_fail_for_unsupported_types() {
 
     Observable<String> obs = Observable.just("foo");
 
     Throwable ex = catchThrowable(
-        () -> RxJavaReflectionUtils.convertObservableTo(obs, Iterator.class, typeSupport));
+        () -> RxJavaReflectionUtils.convertObservableTo(Iterator.class, obs, typeSupport));
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessage("The given target type of java.util.Iterator is not a supported return type");

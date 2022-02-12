@@ -20,6 +20,7 @@
 package io.wcm.caravan.rhyme.spring.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -85,9 +86,7 @@ class SpringRhymeLinkBuilder implements RhymeLinkBuilder {
   @Override
   public RhymeLinkBuilder withTemplateVariables(String... queryParameterNames) {
 
-    for (String name : queryParameterNames) {
-      additionalQueryVariableNames.add(name);
-    }
+    additionalQueryVariableNames.addAll(Arrays.asList(queryParameterNames));
     return this;
   }
 

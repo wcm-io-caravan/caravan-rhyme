@@ -22,7 +22,7 @@ package io.wcm.caravan.rhyme.aem.impl.docs;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.apache.sling.testing.mock.osgi.MockOsgi;
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
@@ -37,14 +37,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 
-import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsBundleTracker;
-import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsBundleTrackerTest {
+class RhymeDocsBundleTrackerTest {
 
   private final OsgiContext context = new OsgiContext();
 
@@ -93,17 +91,17 @@ public class RhymeDocsBundleTrackerTest {
   }
 
   @Test
-  public void addingBundle_shouldnt_register_bundle_without_docs() throws Exception {
+  void addingBundle_shouldnt_register_bundle_without_docs() {
 
     Bundle bundleWithoutDocs = Mockito.mock(Bundle.class);
 
     startBundle(bundleWithoutDocs);
 
-    verifyZeroInteractions(docsSupport);
+    verifyNoInteractions(docsSupport);
   }
 
   @Test
-  public void addingBundle_should_register_bundle_with_docs() throws Exception {
+  void addingBundle_should_register_bundle_with_docs() {
 
     Bundle bundleWithDocs = mockBundleWithRhymeDocs();
 
@@ -113,15 +111,17 @@ public class RhymeDocsBundleTrackerTest {
   }
 
   @Test
-  public void modifiedBundle_should_do_nothing() throws Exception {
+  void modifiedBundle_should_do_nothing() {
 
     Bundle bundleWithDocs = mockBundleWithRhymeDocs();
 
     tracker.modifiedBundle(bundleWithDocs, new BundleEvent(BundleEvent.UPDATED, bundleWithDocs), bundleWithDocs.getSymbolicName());
+
+    verifyNoInteractions(docsSupport);
   }
 
   @Test
-  public void removedBundle_should_unregister_bundle_with_docs() throws Exception {
+  void removedBundle_should_unregister_bundle_with_docs() {
 
     Bundle bundleWithDocs = mockBundleWithRhymeDocs();
 
@@ -131,13 +131,13 @@ public class RhymeDocsBundleTrackerTest {
   }
 
   @Test
-  public void removedBundle_shouldnt_unregister_bundle_without_docs() throws Exception {
+  void removedBundle_shouldnt_unregister_bundle_without_docs() {
 
     Bundle bundleWithoutDocs = Mockito.mock(Bundle.class);
 
     stopBundle(bundleWithoutDocs);
 
-    verifyZeroInteractions(docsSupport);
+    verifyNoInteractions(docsSupport);
   }
 
 }

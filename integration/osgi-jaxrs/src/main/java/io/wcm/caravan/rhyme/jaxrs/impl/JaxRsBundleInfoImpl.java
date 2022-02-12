@@ -90,7 +90,7 @@ public class JaxRsBundleInfoImpl implements JaxRsBundleInfo {
       throw ex;
     }
     catch (InvalidSyntaxException | RuntimeException ex) {
-      throw new RuntimeException("Failed to find JAX-RS Application service for bundle " + bundle.getSymbolicName(), ex);
+      throw new HalApiDeveloperException("Failed to find JAX-RS Application service for bundle " + bundle.getSymbolicName(), ex);
     }
   }
 

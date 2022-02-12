@@ -24,8 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
-import com.github.tomakehurst.wiremock.http.Fault;
-
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
@@ -33,7 +31,7 @@ import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 /**
  * Runs a set of tests for the {@link WebClientHalResourceLoader} against a Wiremock server
  */
-public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
+class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
@@ -46,25 +44,7 @@ public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_malformed_200_response() throws Exception {
-
-    stubFaultyResponseWithStatusCode(200, Fault.MALFORMED_RESPONSE_CHUNK);
-
-    HalApiClientException ex = loadResourceAndExpectClientException();
-
-    assertThat(ex.getStatusCode())
-        .isEqualTo(200);
-
-    assertThat(ex.getErrorResponse().getBody())
-        .isNull();
-
-    assertThat(ex)
-        .hasRootCauseMessage("The response body was completely empty (or consisted only of whitespace)");
-  }
-
-  @Override
-  @Test
-  public void cause_should_be_present_in_HalApiClientException_for_for_network_errors() throws Exception {
+  public void cause_should_be_present_in_HalApiClientException_for_for_network_errors() {
 
     HalApiClientException ex = loadResourceAndExpectClientException(UNKNOWN_HOST_URL);
 
@@ -74,7 +54,7 @@ public class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
   @Test
-  public void cause_should_be_present_in_HalApiClientException_for_for_ssl_errors() throws Exception {
+  public void cause_should_be_present_in_HalApiClientException_for_for_ssl_errors() {
 
     HalApiClientException ex = loadResourceAndExpectClientException(sslTestUrl);
 

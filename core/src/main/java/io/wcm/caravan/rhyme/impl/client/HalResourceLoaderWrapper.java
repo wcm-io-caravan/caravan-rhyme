@@ -61,22 +61,26 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
   @SuppressWarnings("PMD.PreserveStackTrace")
   public Single<HalResponse> getHalResource(String uri) {
     try {
+      // repeated calls for same URI should return the same instance
       return cache.get(uri, () -> {
 
+        // don't start the timer right now, as it can still take some time before the request is actually
+        // started (by a subscription to the Single that is being returned)
         Stopwatch stopwatch = Stopwatch.createUnstarted();
 
-        Single<HalResponse> loadedResource = delegate.getHalResource(uri)
+        // load the resource
+        return delegate.getHalResource(uri)
+            // capture response performance and metadata
             .doOnSubscribe(d -> startStopwatch(stopwatch))
             .doOnError(ex -> registerErrorMetrics(uri, ex, stopwatch))
-            .doOnSuccess(jsonResponse -> registerResponseMetrics(uri, jsonResponse, stopwatch))
-            .onErrorResumeNext(ex -> rethrowUnexpectedExceptions(uri, ex));
-
-        LinkRewriting rewriting = new LinkRewriting(uri);
-        Single<HalResponse> processedResource = loadedResource.map(rewriting::resolveRelativeLinks);
-
-        Single<HalResponse> cachedResource = processedResource.compose(RxJavaTransformers.cacheSingleIfCompleted());
-
-        return cachedResource;
+            .doOnSuccess(response -> registerResponseMetrics(uri, response, stopwatch))
+            // ensure that only HalApiClientExeptions are emitted
+            .onErrorResumeNext(ex -> rethrowUnexpectedExceptions(uri, ex))
+            // rewrite any links that are not fully qualified
+            .map(response -> new LinkRewriting(uri).resolveRelativeLinks(response))
+            // just returning the same Single instance isn't enough, we also have to transform the Single into one
+            // that will actually replay the result for each subscriber, but only if it succeeded (as the retry operator should still be usable)
+            .compose(RxJavaTransformers.cacheSingleIfCompleted());
       });
     }
     catch (UncheckedExecutionException | ExecutionException ex) {
@@ -87,6 +91,8 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
   }
 
   private void startStopwatch(Stopwatch stopwatch) {
+    // even we are trying to avoid multiple requests being executed for the same URL, there can still
+    // be multiple subscriptions to the Single in case that an error is thrown and the retry operator is used
     if (stopwatch.isRunning()) {
       stopwatch.stop();
       stopwatch.reset();
@@ -96,19 +102,30 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
 
   private void registerErrorMetrics(String uri, Throwable ex, Stopwatch stopwatch) {
 
+    Integer maxAge = null;
+    Integer status = null;
+    if (ex instanceof HalApiClientException) {
+      HalResponse response = ((HalApiClientException)ex).getErrorResponse();
+      maxAge = response.getMaxAge();
+      status = response.getStatus();
+    }
+
+    log.debug("Failed to receive JSON response from {} with status code {} and max-age {} in {}ms",
+        uri, status, maxAge, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
     String title = "Upstream resource that failed to load: " + ex.getMessage();
 
-    metrics.onResponseRetrieved(uri, title, null, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+    metrics.onResponseRetrieved(uri, title, maxAge, stopwatch.elapsed(TimeUnit.MICROSECONDS));
   }
 
-  private void registerResponseMetrics(String uri, HalResponse jsonResponse, Stopwatch stopwatch) {
+  private void registerResponseMetrics(String uri, HalResponse response, Stopwatch stopwatch) {
 
     log.debug("Received JSON response from {} with status code {} and max-age {} in {}ms",
-        uri, jsonResponse.getStatus(), jsonResponse.getMaxAge(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        uri, response.getStatus(), response.getMaxAge(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
-    String title = getResourceTitle(jsonResponse.getBody(), uri);
+    String title = getResourceTitle(response.getBody(), uri);
 
-    metrics.onResponseRetrieved(uri, title, jsonResponse.getMaxAge(), stopwatch.elapsed(TimeUnit.MICROSECONDS));
+    metrics.onResponseRetrieved(uri, title, response.getMaxAge(), stopwatch.elapsed(TimeUnit.MICROSECONDS));
   }
 
   private Single<HalResponse> rethrowUnexpectedExceptions(String uri, Throwable ex) {
@@ -138,6 +155,4 @@ class HalResourceLoaderWrapper implements HalResourceLoader {
 
     return title;
   }
-
-
 }

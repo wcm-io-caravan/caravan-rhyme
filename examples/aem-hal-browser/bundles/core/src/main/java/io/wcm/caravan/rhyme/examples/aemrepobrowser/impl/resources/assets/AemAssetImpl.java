@@ -7,11 +7,10 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import com.day.cq.dam.api.Asset;
 
+import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
-import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAsset;
-import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemAssetProperties;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.assets.AemRendition;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.SlingResource;
 import io.wcm.handler.media.MediaHandler;
@@ -26,21 +25,13 @@ public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
   private MediaHandler mediaHandler;
 
   @Override
-  public AemAssetProperties getProperties() {
+  public String getName() {
+    return asset.getName();
+  }
 
-    return new AemAssetProperties() {
-
-      @Override
-      public String getName() {
-        return asset.getName();
-      }
-
-      @Override
-      public String getMimeType() {
-        return asset.getMimeType();
-      }
-
-    };
+  @Override
+  public String getMimeType() {
+    return asset.getMimeType();
   }
 
   @Override
@@ -53,10 +44,16 @@ public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
   }
 
   @Override
-  public Optional<LinkableResource> getOriginalRendition() {
+  public Optional<Link> getOriginalRendition() {
+
+    // this asset may not have a binary rendition (if it's incomplete, or a content fragment)
+    if (asset.getOriginal() == null) {
+      return Optional.empty();
+    }
 
     return Optional.of(new BinaryAssetResource(mediaHandler, asset)
-        .withTitle("The binary data of this asset's original rendition"));
+        .withTitle("The binary data of this asset's original rendition")
+        .createLink());
   }
 
   @Override
@@ -64,6 +61,7 @@ public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
 
     return resourceAdapter
         .selectCurrentResource()
+        // we need to specify the implementation class here to be able to call #setWidthAndHeight later
         .adaptTo(AemRendition.class, AemRenditionImpl.class)
         .withLinkTitle("Get a dynamic rendition for this asset with the specified width and/or height")
         .withModifications(impl -> impl.setWidthAndHeight(width, height))
@@ -75,6 +73,4 @@ public class AemAssetImpl extends AbstractLinkableResource implements AemAsset {
   protected String getDefaultLinkTitle() {
     return "AEM asset with MIME-type " + asset.getMimeType() + " and " + asset.getRenditions().size() + " renditions";
   }
-
-
 }

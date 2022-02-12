@@ -22,9 +22,10 @@ package io.wcm.caravan.rhyme.impl.client.blocking;
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ALTERNATE;
 import static io.wcm.caravan.rhyme.api.relations.StandardRelations.ITEM;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,7 +51,7 @@ import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
  * for blocking HAL API interfaces (i.e. that are not using reactive return types for their methods)
  */
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class RelatedResourceTest {
+class RelatedResourceTest {
 
   private HalResourceLoader resourceLoader;
   private TestResource entryPoint;
@@ -79,7 +80,7 @@ public class RelatedResourceTest {
   }
 
   @Test
-  public void required_linked_resource_should_be_emitted() throws Exception {
+  void required_linked_resource_should_be_emitted() {
 
     entryPoint.createLinked(ITEM).setText("item text");
 
@@ -87,24 +88,30 @@ public class RelatedResourceTest {
         .getItem()
         .getProperties();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
-  public void required_linked_resource_should_fail_if_link_is_not_present() throws Exception {
+  void required_linked_resource_should_fail_if_link_is_not_present() {
 
     entryPoint.createLinked(ALTERNATE).setText("item text");
 
-    Throwable ex = catchThrowable(
-        () -> createClientProxy(ResourceWithSingleRelated.class).getItem());
+    ResourceWithSingleRelated proxy = createClientProxy(ResourceWithSingleRelated.class);
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class).hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed");
+    Throwable ex = assertThrows(HalApiDeveloperException.class, proxy::getItem);
 
+    assertThat(ex)
+        .hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed")
+        .hasMessageContaining("no link or embedded resource with the appropriate relation")
+        .hasRootCauseInstanceOf(NoSuchElementException.class);
   }
 
   @Test
-  public void required_linked_resource_should_cause_HalApiClientException_if_missing() throws Exception {
+  void required_linked_resource_should_cause_HalApiClientException_if_missing() {
 
     entryPoint.createLinked(ITEM).withStatus(404);
 
@@ -113,7 +120,7 @@ public class RelatedResourceTest {
   }
 
   @Test
-  public void required_embedded_resource_should_be_emitted() throws Exception {
+  void required_embedded_resource_should_be_emitted() {
 
     entryPoint.createEmbedded(ITEM).setText("item text");
 
@@ -121,21 +128,27 @@ public class RelatedResourceTest {
         .getItem()
         .getProperties();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
-  public void required_embedded_resource_should_fail_if_resource_is_not_present() throws Exception {
+  void required_embedded_resource_should_fail_if_resource_is_not_present() {
 
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
 
-    Throwable ex = catchThrowable(
-        () -> createClientProxy(ResourceWithSingleRelated.class).getItem().getProperties());
+    ResourceWithSingleRelated proxy = createClientProxy(ResourceWithSingleRelated.class);
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class).hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed");
+    Throwable ex = assertThrows(HalApiDeveloperException.class, proxy::getItem);
+
+    assertThat(ex)
+        .hasMessageStartingWith("The invocation of ResourceWithSingleRelated#getItem() has failed")
+        .hasMessageContaining("no link or embedded resource with the appropriate relation")
+        .hasRootCauseInstanceOf(NoSuchElementException.class);
   }
-
 
   @HalApiInterface
   interface ResourceWithOptionalRelated {
@@ -145,7 +158,7 @@ public class RelatedResourceTest {
   }
 
   @Test
-  public void optional_linked_resource_should_be_emitted() throws Exception {
+  void optional_linked_resource_should_be_emitted() {
 
     entryPoint.createLinked(ITEM).setText("item text");
 
@@ -154,12 +167,15 @@ public class RelatedResourceTest {
         .map(ResourceWithRequiredState::getProperties)
         .get();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
-  public void optional_linked_resource_should_be_empty_if_link_is_not_present() throws Exception {
+  void optional_linked_resource_should_be_empty_if_link_is_not_present() {
 
     // create a link with a different relation then defined in the interface
     entryPoint.createLinked(ALTERNATE).setText("item text");
@@ -167,11 +183,12 @@ public class RelatedResourceTest {
     Optional<ResourceWithRequiredState> maybeLinked = createClientProxy(ResourceWithOptionalRelated.class)
         .getOptionalItem();
 
-    assertThat(maybeLinked.isPresent()).isFalse();
+    assertThat(maybeLinked)
+        .isEmpty();
   }
 
   @Test
-  public void optional_embedded_resource_should_be_emitted() throws Exception {
+  void optional_embedded_resource_should_be_emitted() {
 
     entryPoint.createEmbedded(ITEM).setText("item text");
 
@@ -180,12 +197,15 @@ public class RelatedResourceTest {
         .map(ResourceWithRequiredState::getProperties)
         .get();
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
-  public void optional_embedded_resource_should_be_empty_if_resource_is_not_present() throws Exception {
+  void optional_embedded_resource_should_be_empty_if_resource_is_not_present() {
 
     // create a link with a different relation then defined in the interface
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
@@ -193,7 +213,8 @@ public class RelatedResourceTest {
     Optional<ResourceWithRequiredState> maybeEmbedded = createClientProxy(ResourceWithOptionalRelated.class)
         .getOptionalItem();
 
-    assertThat(maybeEmbedded.isPresent()).isFalse();
+    assertThat(maybeEmbedded)
+        .isEmpty();
   }
 
 
@@ -205,7 +226,7 @@ public class RelatedResourceTest {
   }
 
   @Test
-  public void list_linked_resource_should_emitted_single_item() throws Exception {
+  void list_linked_resource_should_emitted_single_item() {
 
     entryPoint.createLinked(ITEM).setText("item text");
 
@@ -214,24 +235,28 @@ public class RelatedResourceTest {
         .map(ResourceWithRequiredState::getProperties)
         .findFirst().orElseThrow(() -> new RuntimeException());
 
-    assertThat(linkedState).isNotNull();
-    assertThat(linkedState.text).isEqualTo("item text");
+    assertThat(linkedState)
+        .isNotNull();
+
+    assertThat(linkedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
-  public void list_linked_resource_should_be_empty_if_no_links_are_present() throws Exception {
+  void list_linked_resource_should_be_empty_if_no_links_are_present() {
 
     // create a link with a different relation then defined in the interface
     entryPoint.createLinked(ALTERNATE).setText("item text");
 
-    List<ResourceWithRequiredState> rxLinkedResources = createClientProxy(ResourceWithMultipleRelated.class)
+    List<ResourceWithRequiredState> linkedResources = createClientProxy(ResourceWithMultipleRelated.class)
         .getItems();
 
-    assertThat(rxLinkedResources).isEmpty();
+    assertThat(linkedResources)
+        .isEmpty();
   }
 
   @Test
-  public void list_linked_resource_should_emitted_multiple_items() throws Exception {
+  void list_linked_resource_should_emitted_multiple_items() {
 
     int numItems = 10;
     Observable.range(0, numItems).forEach(i -> entryPoint.createLinked(ITEM).setNumber(i));
@@ -241,14 +266,17 @@ public class RelatedResourceTest {
         .map(ResourceWithRequiredState::getProperties)
         .collect(Collectors.toList());
 
-    assertThat(linkedStates).hasSize(10);
+    assertThat(linkedStates)
+        .hasSize(10);
+
     for (int i = 0; i < numItems; i++) {
-      assertThat(linkedStates.get(i).number).isEqualTo(i);
+      assertThat(linkedStates.get(i).number)
+          .isEqualTo(i);
     }
   }
 
   @Test
-  public void list_embedded_resource_should_emitted_single_item() throws Exception {
+  void list_embedded_resource_should_emitted_single_item() {
 
     entryPoint.createEmbedded(ITEM).setText("item text");
 
@@ -257,24 +285,28 @@ public class RelatedResourceTest {
         .map(ResourceWithRequiredState::getProperties)
         .findFirst().orElseThrow(() -> new RuntimeException());
 
-    assertThat(embeddedState).isNotNull();
-    assertThat(embeddedState.text).isEqualTo("item text");
+    assertThat(embeddedState)
+        .isNotNull();
+
+    assertThat(embeddedState.text)
+        .isEqualTo("item text");
   }
 
   @Test
-  public void list_embedded_resource_should_be_empty_if_no_resources_are_present() throws Exception {
+  void list_embedded_resource_should_be_empty_if_no_resources_are_present() {
 
     // create an embeded resource with a different relation then defined in the interface
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
 
-    List<ResourceWithRequiredState> rxEmbeddedResources = createClientProxy(ResourceWithMultipleRelated.class)
+    List<ResourceWithRequiredState> embeddedResources = createClientProxy(ResourceWithMultipleRelated.class)
         .getItems();
 
-    assertThat(rxEmbeddedResources).isEmpty();
+    assertThat(embeddedResources)
+        .isEmpty();
   }
 
   @Test
-  public void list_embedded_resource_should_emitted_multiple_items() throws Exception {
+  void list_embedded_resource_should_emitted_multiple_items() {
 
     int numItems = 10;
     Observable.range(0, numItems).forEach(i -> entryPoint.createEmbedded(ITEM).setNumber(i));
@@ -284,14 +316,17 @@ public class RelatedResourceTest {
         .map(ResourceWithRequiredState::getProperties)
         .collect(Collectors.toList());
 
-    assertThat(embeddedStates).hasSize(10);
+    assertThat(embeddedStates)
+        .hasSize(10);
+
     for (int i = 0; i < numItems; i++) {
-      assertThat(embeddedStates.get(i).number).isEqualTo(i);
+      assertThat(embeddedStates.get(i).number)
+          .isEqualTo(i);
     }
   }
 
   @Test
-  public void duplicates_should_be_filtered_if_they_are_linked_and_embedded() throws Exception {
+  void duplicates_should_be_filtered_if_they_are_linked_and_embedded() {
 
     int numItems = 10;
     Observable.range(0, numItems).forEach(i -> {
@@ -304,9 +339,12 @@ public class RelatedResourceTest {
         .map(ResourceWithRequiredState::getProperties)
         .collect(Collectors.toList());
 
-    assertThat(embeddedStates).hasSize(10);
+    assertThat(embeddedStates)
+        .hasSize(10);
+
     for (int i = 0; i < numItems; i++) {
-      assertThat(embeddedStates.get(i).number).isEqualTo(i);
+      assertThat(embeddedStates.get(i).number)
+          .isEqualTo(i);
     }
   }
 
@@ -318,7 +356,7 @@ public class RelatedResourceTest {
   }
 
   @Test
-  public void related_method_with_stream_return_type_should_be_supported() throws Exception {
+  void related_method_with_stream_return_type_should_be_supported() {
 
     int numItems = 10;
     Observable.range(0, numItems).forEach(i -> entryPoint.createEmbedded(ITEM).setNumber(i));
@@ -327,11 +365,12 @@ public class RelatedResourceTest {
         .getItems()
         .collect(Collectors.toList());
 
-    assertThat(embedded).hasSize(numItems);
+    assertThat(embedded)
+        .hasSize(numItems);
   }
 
   @Test
-  public void related_method_with_stream_return_type_can_be_called_multiple_times() throws Exception {
+  void related_method_with_stream_return_type_can_be_called_multiple_times() {
 
     int numItems = 3;
     Observable.range(0, numItems).forEach(i -> entryPoint.createEmbedded(ITEM).setNumber(i));
@@ -344,21 +383,21 @@ public class RelatedResourceTest {
     List<ResourceWithRequiredState> embedded2 = resource.getItems()
         .collect(Collectors.toList());
 
-    assertThat(embedded1).containsExactlyElementsOf(embedded2);
+    assertThat(embedded1)
+        .containsExactlyElementsOf(embedded2);
   }
 
   @Test
-  public void calling_hashCode_on_client_proxy_throws_exception() throws Exception {
+  void calling_hashCode_on_client_proxy_throws_exception() {
 
     entryPoint.createLinked(ITEM).setText("item text");
 
     ResourceWithRequiredState linkedResource = createClientProxy(ResourceWithSingleRelated.class)
         .getItem();
 
-    Throwable ex = catchThrowable(() -> linkedResource.hashCode());
+    Throwable ex = assertThrows(HalApiDeveloperException.class, () -> linkedResource.hashCode());
 
     assertThat(ex)
-        .isInstanceOf(HalApiDeveloperException.class)
         .hasMessageStartingWith("You cannot call hashCode() on dynamic client proxies.");
   }
 }

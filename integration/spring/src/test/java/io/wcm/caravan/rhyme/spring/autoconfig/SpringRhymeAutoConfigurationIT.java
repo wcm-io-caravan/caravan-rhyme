@@ -34,7 +34,7 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 @SpringBootTest
 @ContextConfiguration
 @EnableAutoConfiguration
-public class SpringRhymeAutoConfigurationIT {
+class SpringRhymeAutoConfigurationIT {
 
   @Autowired
   private HalResourceLoader resourceLoader;

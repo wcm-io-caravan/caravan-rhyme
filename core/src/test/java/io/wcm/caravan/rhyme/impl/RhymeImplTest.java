@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 import io.wcm.caravan.rhyme.testing.TestState;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
-public class RhymeImplTest {
+class RhymeImplTest {
 
   private static final String UPSTREAM_ENTRY_POINT_URI = "/";
   private static final String NON_EXISTING_PATH = "/does/not/exist";
@@ -65,7 +66,7 @@ public class RhymeImplTest {
       .buildForRequestTo(INCOMING_REQUEST_URI);
 
   @Test
-  public void getEntryPoint_should_fetch_entry_point_from_upstream_resource_loader() throws Exception {
+  void getEntryPoint_should_fetch_entry_point_from_upstream_resource_loader() {
 
     upstreamResourceTree.getEntryPoint().setNumber(123);
 
@@ -76,17 +77,21 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void getEntryPoint_should_fail_if_state_of_non_existing_resource_is_requested() throws Exception {
+  void getEntryPoint_should_fail_if_state_of_non_existing_resource_is_requested() {
 
     TestResourceWithRequiredState entryPoint = rhyme.getRemoteResource(NON_EXISTING_PATH, TestResourceWithRequiredState.class);
 
     HalApiClientException ex = catchThrowableOfType(entryPoint::getState, HalApiClientException.class);
 
-    assertThat(ex.getStatusCode()).isEqualTo(404);
-    assertThat(ex).hasMessageStartingWith("Failed to load an upstream resource");
+    assertThat(ex.getStatusCode())
+        .isEqualTo(404);
 
-    assertThat(ex).hasCauseInstanceOf(HalApiClientException.class);
-    assertThat(ex.getCause()).hasMessageContaining(NON_EXISTING_PATH);
+    assertThat(ex)
+        .hasMessageStartingWith("Failed to load an upstream resource")
+        .hasCauseInstanceOf(HalApiClientException.class);
+
+    assertThat(ex.getCause())
+        .hasMessageContaining(NON_EXISTING_PATH);
   }
 
   private TestState getResourceFromUnknownHost(Rhyme rhymeWithoutResourceLoader) {
@@ -97,7 +102,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void withoutResourceLoader_should_use_a_default_http_implementation() throws Exception {
+  void withoutResourceLoader_should_use_a_default_http_implementation() {
 
     @SuppressWarnings("deprecation")
     Rhyme rhymeWithoutResourceLoader = RhymeBuilder
@@ -112,7 +117,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void create_should_use_a_default_http_implementation() throws Exception {
+  void create_should_use_a_default_http_implementation() {
 
     Rhyme rhymeWithoutResourceLoader = RhymeBuilder
         .create()
@@ -126,7 +131,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void setResponseMaxAge_should_affect_maxAge_of_rendered_response() throws Exception {
+  void setResponseMaxAge_should_affect_maxAge_of_rendered_response() {
 
     rhyme.setResponseMaxAge(Duration.ofMinutes(2));
 
@@ -141,14 +146,13 @@ public class RhymeImplTest {
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().getLink()).isNotNull();
     assertThat(response.getBody().getLink().getHref()).isEqualTo(INCOMING_REQUEST_URI);
-    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
 
     TestState properties = response.getBody().adaptTo(TestState.class);
     assertThat(properties.string).isEqualTo("foo");
   }
 
   @Test
-  public void renderResponse_should_wait_for_delayed_state() throws Exception {
+  void renderResponse_should_wait_for_delayed_state() {
 
     LinkableTestResourceImpl resourceImpl = new LinkableTestResourceWithDelayedState();
 
@@ -158,7 +162,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void renderResponse_should_not_wait_for_delayed_state_to_be_emitted() throws Exception {
+  void renderResponse_should_not_wait_for_delayed_state_to_be_emitted() throws InterruptedException, ExecutionException {
 
     LinkableTestResourceImpl resourceImpl = new LinkableTestResourceWithDelayedState();
 
@@ -171,7 +175,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void renderVndErrorResource_should_render_given_error() throws Exception {
+  void renderVndErrorResource_should_render_given_error() {
 
     HalApiServerException ex = new HalApiServerException(403, "Permission denied");
 
@@ -181,7 +185,6 @@ public class RhymeImplTest {
     assertThat(response.getContentType()).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
     assertThat(response.getMaxAge()).isNull();
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().hasEmbedded(RHYME_METADATA_RELATION));
   }
 
   private class LinkableTestResourceImpl implements LinkableTestResource {
@@ -201,7 +204,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void startStopwatch_should_start_a_measurement_that_shows_up_in_metadata() throws Exception {
+  void startStopwatch_should_start_a_measurement_that_shows_up_in_metadata() {
 
     Rhyme rhymeWithMetadata = RhymeBuilder
         .create()
@@ -238,7 +241,7 @@ public class RhymeImplTest {
   }
 
   @Test
-  public void startStopwatch_should_not_create_metadata_with_defaut_configuration() throws Exception {
+  void startStopwatch_should_not_create_metadata_with_defaut_configuration() {
 
     MeasuringTestResource resourceImpl = new MeasuringTestResource(rhyme);
 

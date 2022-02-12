@@ -20,7 +20,6 @@
 package io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection;
 
 import javax.ws.rs.BeanParam;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParameters;
@@ -33,36 +32,30 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParamete
 public class CollectionParametersBean implements CollectionParameters {
 
   @QueryParam("numItems")
-  private Integer numItems;
+  private int numItems;
 
   @QueryParam("embedItems")
-  @DefaultValue(value = "false")
-  private Boolean embedItems;
+  private boolean embedItems;
 
   @QueryParam("delayMs")
-  @DefaultValue(value = "0")
-  private Integer delayMs;
+  private int delayMs;
 
   @Override
-  public Integer getNumItems() {
+  public int getNumItems() {
     return this.numItems;
   }
 
   @Override
-  public Boolean getEmbedItems() {
+  public boolean getEmbedItems() {
     return this.embedItems;
   }
 
   @Override
-  public Integer getDelayMs() {
+  public int getDelayMs() {
     return this.delayMs;
   }
 
-  static CollectionParametersBean clone(CollectionParameters other) {
-
-    if (other == null) {
-      return null;
-    }
+  private static CollectionParametersBean clone(CollectionParameters other) {
 
     CollectionParametersBean cloned = new CollectionParametersBean();
 
@@ -73,19 +66,19 @@ public class CollectionParametersBean implements CollectionParameters {
     return cloned;
   }
 
-  public CollectionParametersBean withNumItems(Integer value) {
+  public CollectionParametersBean withNumItems(int value) {
     CollectionParametersBean cloned = clone(this);
     cloned.numItems = value;
     return cloned;
   }
 
-  public CollectionParametersBean withEmbedItems(Boolean value) {
+  public CollectionParametersBean withEmbedItems(boolean value) {
     CollectionParametersBean cloned = clone(this);
     cloned.embedItems = value;
     return cloned;
   }
 
-  public CollectionParametersBean withDelayMs(Integer value) {
+  public CollectionParametersBean withDelayMs(int value) {
     CollectionParametersBean cloned = clone(this);
     cloned.delayMs = value;
     return cloned;

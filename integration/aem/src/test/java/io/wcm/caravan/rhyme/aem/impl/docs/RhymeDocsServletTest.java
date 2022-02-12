@@ -36,8 +36,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.google.common.base.Charsets;
 
-import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
-import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsServlet;
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
@@ -45,7 +43,7 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 @ExtendWith(AemContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsServletTest {
+class RhymeDocsServletTest {
 
   private AemContext context = new AemContextBuilder().build();
 
@@ -73,7 +71,7 @@ public class RhymeDocsServletTest {
   }
 
   @Test
-  public void doGet_should_return_404_if_no_InputStream_available_for_given_filename() throws Exception {
+  void doGet_should_return_404_if_no_InputStream_available_for_given_filename() throws ServletException, IOException {
 
     getHtmlDocumentation("/Foo.html");
 
@@ -82,7 +80,7 @@ public class RhymeDocsServletTest {
   }
 
   @Test
-  public void doGet_should_return_400_if_no_suffix_was_prent_in_request() throws Exception {
+  void doGet_should_return_400_if_no_suffix_was_prent_in_request() throws ServletException, IOException {
 
     getHtmlDocumentation(null);
 
@@ -91,7 +89,7 @@ public class RhymeDocsServletTest {
   }
 
   @Test
-  public void doGet_should_return_400_if_relative_path_was_prerent_in_request() throws Exception {
+  void doGet_should_return_400_if_relative_path_was_prerent_in_request() throws ServletException, IOException {
 
     getHtmlDocumentation("/../Foo.html");
 
@@ -100,7 +98,7 @@ public class RhymeDocsServletTest {
   }
 
   @Test
-  public void doGet_should_return_400_if_relative_suffix_was_prerent_in_request() throws Exception {
+  void doGet_should_return_400_if_relative_suffix_was_prerent_in_request() throws ServletException, IOException {
 
     getHtmlDocumentation("Foo.html");
 
@@ -110,7 +108,7 @@ public class RhymeDocsServletTest {
 
 
   @Test
-  public void doGet_should_return_200_with_html_if_InputStream_available_for_given_filename() throws Exception {
+  void doGet_should_return_200_with_html_if_InputStream_available_for_given_filename() throws IOException, ServletException {
 
     String expectedHtml = "<föö></föö>";
 

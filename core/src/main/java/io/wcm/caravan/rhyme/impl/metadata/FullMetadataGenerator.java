@@ -38,9 +38,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -68,8 +65,6 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 public class FullMetadataGenerator extends MaxAgeOnlyCollector implements RequestMetricsCollector {
 
   private final Stopwatch overalResponseTimeStopwatch = Stopwatch.createStarted();
-
-  private static final Logger log = LoggerFactory.getLogger(FullMetadataGenerator.class);
 
   private static final Map<TimeUnit, String> TIME_UNIT_ABBRS = ImmutableMap.of(
       TimeUnit.MINUTES, "m",
@@ -162,13 +157,13 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
 
   float getSumOfResponseTimeMillis() {
     return (float)inputResponseTimes.stream()
-        .mapToDouble(m -> m.getTime())
+        .mapToDouble(TimeMeasurement::getTime)
         .sum();
   }
 
   float getSumOfInvocationMillis(Class category) {
     return (float)methodInvocationTimes.get(category.getSimpleName()).stream()
-        .mapToDouble(m -> m.getTime())
+        .mapToDouble(TimeMeasurement::getTime)
         .sum();
   }
 
@@ -318,7 +313,7 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
 
     list.stream()
         .map(measurement -> measurement.getTime() + " " + TIME_UNIT_ABBRS.get(measurement.getUnit()) + " - " + measurement.getText())
-        .forEach(title -> individualMetrics.add(title));
+        .forEach(individualMetrics::add);
 
     return new HalResource(model);
   }

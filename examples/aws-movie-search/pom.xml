@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.wcm.maven</groupId>
+    <artifactId>io.wcm.maven.global-parent</artifactId>
+    <version>39</version>
+    <relativePath />
+  </parent>
+
+  <groupId>io.wcm.caravan</groupId>
+  <artifactId>io.wcm.caravan.rhyme.examples.aws-movie-search</artifactId>
+  <version>1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Rhyme - AWS Movie Search Example</name>
+  <description>An example for implementing a HAL+JSON API as an AWS Lambda function</description>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <java.version>1.8</java.version>
+    <build.compiler.release>8</build.compiler.release>
+    <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
+    <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
+    <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+    <aws.java.sdk.version>2.15.79</aws.java.sdk.version>
+    <aws.lambda.java.version>1.2.1</aws.lambda.java.version>
+    <aws.lambda.events.version>3.11.0</aws.lambda.events.version>
+    <junit5.version>5.4.2</junit5.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws.java.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+  
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>url-connection-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-core</artifactId>
+      <version>${aws.lambda.java.version}</version>
+    </dependency>
+ 
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-events</artifactId>
+      <version>${aws.lambda.events.version}</version>
+    </dependency>
+
+    <!-- Caravan Rhyme dependencies -->
+    <dependency>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>io.wcm.caravan.rhyme.core</artifactId>
+      <version>1.2.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.damnhandy</groupId>
+      <artifactId>handy-uri-templates</artifactId>
+      <version>2.1.8</version>
+    </dependency>
+
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit5.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>4.3.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.22.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.35</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven.compiler.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
+        <configuration>
+          <createDependencyReducedPom>false</createDependencyReducedPom>
+          <finalName>io.wcm.caravan.rhyme.examples.aws-movie-search</finalName>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <!-- Suppress module-info.class warning-->
+                <exclude>module-info.class</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- do not deploy into maven repository -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <!-- do not generate site for this project -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+      </plugin>
+
+      <!-- Generate HTML documentation into classpath resources-->
+      <plugin>
+        <groupId>io.wcm.caravan.maven.plugins</groupId>
+        <artifactId>rhyme-docs-maven-plugin</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-rhyme-docs</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Copy the HTML documentation into the classes folder so they are included in the JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>custom-resources</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes/RHYME-DOCS-INF</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>target/generated-rhyme-docs</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+              <encoding>UTF-8</encoding>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      io.wcm.caravan.maven.plugins
+                    </groupId>
+                    <artifactId>
+                      rhyme-docs-maven-plugin
+                    </artifactId>
+                    <versionRange>
+                      [1.0.1-SNAPSHOT,)
+                    </versionRange>
+                    <goals>
+                      <goal>
+                        generate-rhyme-docs
+                      </goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

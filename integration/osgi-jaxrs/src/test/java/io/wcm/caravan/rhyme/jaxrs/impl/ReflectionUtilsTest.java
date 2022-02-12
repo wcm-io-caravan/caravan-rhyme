@@ -29,10 +29,10 @@ import org.junit.jupiter.api.Test;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 
-public class ReflectionUtilsTest {
+class ReflectionUtilsTest {
 
   @Test
-  public void testGetFieldValue_with_existing_field() throws Exception {
+  void testGetFieldValue_with_existing_field() throws NoSuchFieldException {
 
     ClassWithPrivateField instance = new ClassWithPrivateField();
     instance.intField = 123;
@@ -43,7 +43,7 @@ public class ReflectionUtilsTest {
   }
 
   @Test
-  public void testGetFieldValue_with_null_field() throws Exception {
+  void testGetFieldValue_with_null_field() {
 
     ClassWithPrivateField instance = new ClassWithPrivateField();
 
@@ -54,7 +54,7 @@ public class ReflectionUtilsTest {
   }
 
   @Test
-  public void testGetFieldValue_with_invalid_field() throws Exception {
+  void testGetFieldValue_with_invalid_field() {
 
     ClassWithPrivateField instance = new ClassWithPrivateField();
 

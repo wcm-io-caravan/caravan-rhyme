@@ -209,6 +209,16 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+         <!-- only instrument wcm.io Caravan classes -->
+          <includes>
+            <include>io/wcm/caravan/**/*</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
@@ -222,7 +232,7 @@
       <plugin>
         <groupId>io.wcm.caravan.maven.plugins</groupId>
         <artifactId>rhyme-docs-maven-plugin</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>

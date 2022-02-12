@@ -20,23 +20,31 @@
 package io.wcm.caravan.rhyme.impl.client.http;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
+import com.google.common.net.HttpHeaders;
 
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
@@ -45,7 +53,7 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
 
 @ExtendWith(MockitoExtension.class)
-public class HttpHalResourceLoaderTest {
+class HttpHalResourceLoaderTest {
 
   private static final String VALID_URI = "/foo";
 
@@ -63,25 +71,24 @@ public class HttpHalResourceLoaderTest {
 
   private HalApiClientException loadResourceAndExpectClientException(HttpHalResourceLoader loader, String uri) {
 
-    Throwable ex = catchThrowable(() -> executeGetRequestWith(uri, loader));
+    HalApiClientException ex = assertThrows(HalApiClientException.class, () -> executeGetRequestWith(uri, loader));
 
     assertThat(ex)
-        .isInstanceOf(HalApiClientException.class)
         .hasMessageStartingWith("HAL client request to ")
         .hasMessageContaining("has failed");
 
-    return (HalApiClientException)ex;
+    return ex;
   }
 
   @Test
-  public void should_parse_valid_URI() throws Exception {
+  void should_parse_valid_URI() {
 
     String validUri = "http://foo.bar";
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
 
-      assertThat(uri.toString())
-          .isEqualTo(validUri);
+      assertThat(uri)
+          .hasToString(validUri);
 
       callback.onHeadersAvailable(200, Collections.emptyMap());
       callback.onBodyAvailable(createUtf8Stream("{}"));
@@ -91,7 +98,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_fail_to_parse_invalid_URI() throws Exception {
+  void should_fail_to_parse_invalid_URI() {
 
     String invalidUri = "ht%tp://fo.bar";
 
@@ -106,7 +113,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_use_modified_URI_in_response() throws Exception {
+  void should_use_modified_URI_in_response() {
 
     URI baseUri = URI.create("http://foo.bar");
 
@@ -126,7 +133,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_use_modified_URI_for_exceptions() throws Exception {
+  void should_use_modified_URI_for_exceptions() {
 
     URI baseUri = URI.create("http://foo.bar");
 
@@ -146,7 +153,95 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_wrap_runtime_exceptions_thrown_by_executeGetRequest() throws Exception {
+  void should_extract_content_type_header() {
+
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put(HttpHeaders.CONTENT_TYPE, ImmutableList.of("foo/bar"));
+
+    HalResponse response = executeSuccessfullRequestWithReponseHeaders(headers);
+
+    assertThat(response.getContentType())
+        .isEqualTo("foo/bar");
+  }
+
+  @Test
+  void should_handle_null_header_with_status_line_from_HttpURLConnection_getHeaderFields() {
+
+    // HttpURLConnection has an odd behaviour of putting the status line in the header map (using null as key)
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put(null, ImmutableList.of("HTTP/1.1 200 OK"));
+
+    HalResponse response = executeSuccessfullRequestWithReponseHeaders(headers);
+
+    assertThat(response.getStatus())
+        .isEqualTo(200);
+  }
+
+  @Test
+  void should_extract_max_age_from_headers() {
+
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put("cache-control", ImmutableList.of("max-age=123"));
+
+    HalResponse response = executeSuccessfullRequestWithReponseHeaders(headers);
+
+    assertThat(response.getMaxAge())
+        .isEqualTo(123);
+  }
+
+  private HalResponse executeSuccessfullRequestWithReponseHeaders(Map<String, Collection<String>> headers) {
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+
+      callback.onHeadersAvailable(200, headers);
+      callback.onBodyAvailable(createUtf8Stream("{}"));
+    });
+
+    return executeGetRequestWith(VALID_URI, loader);
+  }
+
+  @Test
+  void should_use_status_code_from_ok_response() {
+
+    HalResponse response = executeSuccessfullRequestWithReponseHeaders(new HashMap<>());
+
+    assertThat(response.getStatus())
+        .isEqualTo(200);
+  }
+
+  @Test
+  void should_use_status_code_from_non_ok_response() {
+
+    int statusCode = 444;
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+      callback.onHeadersAvailable(statusCode, new HashMap<>());
+      callback.onBodyAvailable(createUtf8Stream("{}"));
+    });
+
+    HalApiClientException ex = loadResourceAndExpectClientException(loader, VALID_URI);
+
+    assertThat(ex.getErrorResponse().getStatus())
+        .isEqualTo(statusCode);
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = { -1, 0 })
+  void should_ignore_negative_or_zero_status_code(int statusCode) {
+
+    HttpHalResourceLoader loader = createLoader((uri, callback) -> {
+      callback.onHeadersAvailable(statusCode, new HashMap<>());
+      callback.onBodyAvailable(createUtf8Stream("{}"));
+    });
+
+    HalApiClientException ex = loadResourceAndExpectClientException(loader, VALID_URI);
+
+    assertThat(ex.getErrorResponse().getStatus())
+        .isNull();
+  }
+
+  @Test
+  void should_wrap_runtime_exceptions_thrown_by_executeGetRequest() {
 
     RuntimeException expectedCause = new RuntimeException("Something has gone wrong");
 
@@ -164,7 +259,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_ignore_additional_calls_to_onExceptionThrown() throws Exception {
+  void should_ignore_additional_calls_to_onExceptionThrown() {
 
     RuntimeException firstException = new RuntimeException("Something has gone wrong");
     RuntimeException secondException = new RuntimeException("Even more has gone wrong");
@@ -184,7 +279,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_fail_if_onBodyAvailable_is_called_before_onHeaderAvailable() throws Exception {
+  void should_fail_if_onBodyAvailable_is_called_before_onHeaderAvailable() {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
       callback.onBodyAvailable(new ByteArrayInputStream(new byte[0]));
@@ -200,7 +295,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_ignore_if_onBodyAvailable_is_called_multiple_times() throws Exception {
+  void should_ignore_if_onBodyAvailable_is_called_multiple_times() {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
       callback.onHeadersAvailable(200, Collections.emptyMap());
@@ -215,7 +310,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_ignore_if_onBodyAvailable_is_called_after_onExceptionCaught() throws Exception {
+  void should_ignore_if_onBodyAvailable_is_called_after_onExceptionCaught() {
 
     RuntimeException cause = new RuntimeException("Something has failed");
 
@@ -232,7 +327,7 @@ public class HttpHalResourceLoaderTest {
 
 
   @Test
-  public void should_emit_HalResponse_for_ok_json_response() throws Exception {
+  void should_emit_HalResponse_for_ok_json_response() throws JSONException {
 
     String jsonString = "{\"foo\": 123}";
 
@@ -254,7 +349,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_fail_for_empty_json_response() throws Exception {
+  void should_fail_for_empty_json_response() {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
 
@@ -273,7 +368,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_fail_for_invalid_json_response() throws Exception {
+  void should_fail_for_invalid_json_response() {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
 
@@ -292,7 +387,7 @@ public class HttpHalResourceLoaderTest {
   }
 
   @Test
-  public void should_fail_if_body_input_stream_fails() throws Exception {
+  void should_fail_if_body_input_stream_fails() {
 
     InputStream is = Mockito.mock(InputStream.class);
 

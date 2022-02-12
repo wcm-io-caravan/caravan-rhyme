@@ -50,7 +50,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class TemplateVariableTest {
+class TemplateVariableTest {
 
   private final MockClientTestSupport client = ClientTestSupport.withMocking();
   private final HalResource entryPoint = new HalResource();
@@ -76,7 +76,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void link_template_should_be_expanded_if_only_parameter_is_given() {
+  void link_template_can_be_followed_if_only_parameter_is_given() {
 
     entryPoint.addLinks(ITEM, new Link("/item/{number}"));
 
@@ -91,25 +91,41 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void link_template_should_not_be_expanded_if_only_parameter_is_missing() {
+  void link_template_should_not_be_expanded_if_only_parameter_is_missing() {
 
     entryPoint.addLinks(ITEM, new Link("/item/{number}"));
 
     mockHalResponseWithNumber("/item/", 0);
 
-    Throwable ex = catchThrowable(
-        () -> client.createProxy(ResourceWithSimpleLinkTemplate.class)
-            .getLinked(null)
-            .flatMap(ResourceWithSingleState::getProperties)
-            .blockingGet());
+    Link link = client.createProxy(ResourceWithSimpleLinkTemplate.class)
+        .getLinked(null)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
 
-    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("Cannot follow the link template to /item/{number} because it has not been expanded");
+    assertThat(link.getHref())
+        .isEqualTo("/item/{number}");
+  }
 
+  @Test
+  void link_template_should_be_followed_with_incomplete_url_if_only_parameter_is_missing() {
+
+    entryPoint.addLinks(ITEM, new Link("/item/{number}"));
+
+    mockHalResponseWithNumber("/item/", 0);
+
+    TestResourceState state = client.createProxy(ResourceWithSimpleLinkTemplate.class)
+        .getLinked(null)
+        .flatMap(ResourceWithSingleState::getProperties)
+        .blockingGet();
+
+    assertThat(state)
+        .isNotNull();
   }
 
   @HalApiInterface
   interface ResourceWithComplexLinkTemplate {
+
+    static final String TEMPLATE = "/item/{number}{?optionalFlag}";
 
     @Related(ITEM)
     Single<ResourceWithSingleState> getLinked(
@@ -118,9 +134,9 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void link_template_should_be_expanded_if_one_of_multiple_parameters_is_missing() {
+  void link_template_should_be_expanded_and_followed_if_one_of_multiple_parameters_is_missing() {
 
-    entryPoint.addLinks(ITEM, new Link("/item/{number}{?optionalFlag}"));
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
 
     mockHalResponseWithNumber("/item/1", 1);
 
@@ -133,9 +149,9 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void link_template_should_be_expanded_if_all_of_multiple_parameters_are_present() {
+  void link_template_should_be_expanded_and_followed_if_all_of_multiple_parameters_are_present() {
 
-    entryPoint.addLinks(ITEM, new Link("/item/{number}{?optionalFlag}"));
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
 
     mockHalResponseWithNumber("/item/1?optionalFlag=true", 1);
 
@@ -145,6 +161,48 @@ public class TemplateVariableTest {
         .blockingGet();
 
     assertThat(state.number).isEqualTo(1);
+  }
+
+  @Test
+  void link_template_should_be_preserved_if_all_parameters_are_null() {
+
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
+
+    Link link = client.createProxy(ResourceWithComplexLinkTemplate.class)
+        .getLinked(null, null)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo(ResourceWithComplexLinkTemplate.TEMPLATE);
+  }
+
+  @Test
+  void link_template_should_be_partially_expanded_if_some_parameters_are_null() {
+
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
+
+    Link link = client.createProxy(ResourceWithComplexLinkTemplate.class)
+        .getLinked(1, null)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/1{?optionalFlag}");
+  }
+
+  @Test
+  void link_template_should_be_expanded_if_no_parameters_are_null() {
+
+    entryPoint.addLinks(ITEM, new Link(ResourceWithComplexLinkTemplate.TEMPLATE));
+
+    Link link = client.createProxy(ResourceWithComplexLinkTemplate.class)
+        .getLinked(1, false)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/1?optionalFlag=false");
   }
 
   @HalApiInterface
@@ -158,7 +216,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void ignore_link_template_if_method_without_template_variable_is_called_and_there_are_resolved_links() {
+  void ignore_link_template_if_method_without_template_variable_is_called_and_there_are_resolved_links() {
 
     entryPoint.addLinks(ITEM, new Link("/item/{number}"));
 
@@ -180,7 +238,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void expand_link_template_if_method_without_template_variable_is_called_but_there_are_no_resolved_links() {
+  void expand_link_template_if_method_without_template_variable_is_called_but_there_are_no_resolved_links() {
 
     int numTemplates = 5;
     Observable.range(0, numTemplates).forEach(i -> {
@@ -201,7 +259,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void resolved_links_should_be_ignored_if_method_with_template_variable_is_called() {
+  void resolved_links_should_be_ignored_if_method_with_template_variable_is_called() {
 
     int numResolvedLinks = 5;
     Observable.range(0, numResolvedLinks).forEach(i -> {
@@ -222,7 +280,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void resolved_links_should_not_be_followed_if_method_with_template_variable_is_called_but_there_is_no_matching_template() {
+  void resolved_links_should_not_be_followed_if_method_with_template_variable_is_called_but_there_is_no_matching_template() {
 
     String url = "/item/3";
     entryPoint.addLinks(ITEM, new Link(url));
@@ -247,7 +305,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void should_throw_developer_exception_if_annotation_for_parameter_is_missing() {
+  void should_throw_developer_exception_if_annotation_for_parameter_is_missing() {
 
     Throwable ex = catchThrowable(
         () -> client.createProxy(ResourceWithMissingAnnotations.class).getItem("foo"));
@@ -258,7 +316,7 @@ public class TemplateVariableTest {
   }
 
   @Test
-  public void should_not_throw_developer_exception_if_parameter_names_are_available_instead_of_annotation() {
+  void should_not_throw_developer_exception_if_parameter_names_are_available_instead_of_annotation() {
 
     entryPoint.addLinks(ITEM, new Link("/items/{id}"));
 

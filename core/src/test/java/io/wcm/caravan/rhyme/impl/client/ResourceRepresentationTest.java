@@ -41,7 +41,7 @@ import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.ResourceTreeClientTest
 import io.wcm.caravan.rhyme.testing.resources.TestResource;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class ResourceRepresentationTest {
+class ResourceRepresentationTest {
 
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();
   private final TestResource entryPoint = client.getEntryPoint();
@@ -71,7 +71,7 @@ public class ResourceRepresentationTest {
   }
 
   @Test
-  public void representation_should_be_available_as_hal_resource() {
+  void representation_should_be_available_as_hal_resource() {
 
     HalResource hal = client.createProxy(ResourceWithRepresentations.class)
         .asHalResource()
@@ -81,7 +81,7 @@ public class ResourceRepresentationTest {
   }
 
   @Test
-  public void representation_should_be_available_as_object_node() {
+  void representation_should_be_available_as_object_node() {
 
     ObjectNode json = client.createProxy(ResourceWithRepresentations.class)
         .asObjectNode()
@@ -91,7 +91,7 @@ public class ResourceRepresentationTest {
   }
 
   @Test
-  public void representation_should_be_available_as_json_node() {
+  void representation_should_be_available_as_json_node() {
 
     JsonNode json = client.createProxy(ResourceWithRepresentations.class)
         .asJsonNode()
@@ -101,7 +101,7 @@ public class ResourceRepresentationTest {
   }
 
   @Test
-  public void representation_should_be_available_as_string() {
+  void representation_should_be_available_as_string() {
 
     String string = client.createProxy(ResourceWithRepresentations.class)
         .asString()
@@ -118,7 +118,7 @@ public class ResourceRepresentationTest {
   }
 
   @Test
-  public void should_throw_developer_exception_if_emission_type_is_not_supported() {
+  void should_throw_developer_exception_if_emission_type_is_not_supported() {
 
     Throwable ex = catchThrowable(
         () -> client.createProxy(ResourceWithUnsupportedRepresentations.class).asXmlDocument().blockingGet());

@@ -23,7 +23,7 @@ import static org.apache.http.HttpStatus.SC_NOT_IMPLEMENTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
@@ -68,7 +68,7 @@ import io.wcm.caravan.rhyme.jaxrs.impl.docs.RhymeDocsOsgiBundleSupport;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class CaravanRhymeRequestCycleImplTest {
+class CaravanRhymeRequestCycleImplTest {
 
   private static final String REQUEST_URI = "/";
 
@@ -115,7 +115,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void getEntryPoint_should_fetch_entrypoint_through_http_client() throws Exception {
+  void getEntryPoint_should_fetch_entrypoint_through_http_client() {
 
     mockOkHalResponse();
 
@@ -123,14 +123,14 @@ public class CaravanRhymeRequestCycleImplTest {
 
     LinkableTestResource resource = rhyme.getRemoteResource("/serviceId", REQUEST_URI, LinkableTestResource.class);
 
-    verifyZeroInteractions(httpClient);
+    verifyNoInteractions(httpClient);
 
     assertThat(resource.getState()).isNotNull();
     verify(httpClient).execute(ArgumentMatchers.any());
   }
 
   @Test
-  public void getUriInfo_should_return_uri_info() throws Exception {
+  void getUriInfo_should_return_uri_info() {
 
     CaravanRhyme rhyme = requestCycle.createRhymeInstance(uriInfo);
 
@@ -144,7 +144,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void processRequest_should_create_context_resource_and_call_resume() throws Exception {
+  void processRequest_should_create_context_resource_and_call_resume() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImpl::new);
 
@@ -155,7 +155,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void processRequest_should_handle_exception_when_creating_resource() throws Exception {
+  void processRequest_should_handle_exception_when_creating_resource() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, this::failWithNotImplemented);
 
@@ -165,7 +165,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void processRequest_should_handle_exception_when_creating_context() throws Exception {
+  void processRequest_should_handle_exception_when_creating_context() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, this::failWithNotImplemented, ResourceImpl::new);
 
@@ -175,7 +175,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void processRequest_should_not_include_metadata_in_response_by_default() throws Exception {
+  void processRequest_should_not_include_metadata_in_response_by_default() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImpl::new);
 
@@ -186,7 +186,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void processRequest_should_include_metadata_if_query_param_is_set() throws Exception {
+  void processRequest_should_include_metadata_if_query_param_is_set() {
 
     MultivaluedMap<String, String> queryParams = new MultivaluedHashMap<String, String>();
     queryParams.put(RequestMetricsCollector.EMBED_RHYME_METADATA, Collections.emptyList());
@@ -212,7 +212,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void processRequest_should_handle_exception_when_rendering_state() throws Exception {
+  void processRequest_should_handle_exception_when_rendering_state() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImplFailsToRender::new);
 
@@ -222,7 +222,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void processRequest_should_handle_exception_when_creatingLink() throws Exception {
+  void processRequest_should_handle_exception_when_creatingLink() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, RequestContext::new, ResourceImplFailsToCreateLink::new);
 
@@ -244,7 +244,7 @@ public class CaravanRhymeRequestCycleImplTest {
   }
 
   @Test
-  public void setResponseMaxAge_should_limit_max_age() throws Exception {
+  void setResponseMaxAge_should_limit_max_age() {
 
     requestCycle.processRequest(uriInfo, asyncResponse, rhyme -> {
       rhyme.setResponseMaxAge(Duration.ofSeconds(123));

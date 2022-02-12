@@ -43,7 +43,7 @@ import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration
  * </ul>
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ExternalClientIT extends AbstractCompanyApiIT {
+class ExternalClientIT extends AbstractCompanyApiIT {
 
   private final String entryPointUrl;
 
@@ -51,11 +51,21 @@ public class ExternalClientIT extends AbstractCompanyApiIT {
 
   ExternalClientIT(@Autowired ServletWebServerApplicationContext server) {
 
+    HalApiClient apiClient = HalApiClient.create();
+
     this.entryPointUrl = "http://localhost:" + server.getWebServer().getPort();
 
-    HalApiClient apiClient = HalApiClient.create();
     this.companyApi = apiClient.getRemoteResource(entryPointUrl, CompanyApi.class);
+  }
 
+  @Override
+  protected CompanyApi getApiImplementionOrClientProxy() {
+
+    // All of the tests in the superclass will use this single entry point proxy to execute
+    // an HTTP request to the CompanyApiController (exactly as an external consumer would),
+    // and then follow links to other resources as required, which will trigger additional
+    // requests to the other controllers.
+    return companyApi;
   }
 
   // since we don't have access to the repository in this test, the IDs need to be hard-coded
@@ -67,16 +77,6 @@ public class ExternalClientIT extends AbstractCompanyApiIT {
   @Override
   protected Long getIdOfFirstManager() {
     return 1L;
-  }
-
-  @Override
-  protected CompanyApi getApiImplementionOrClientProxy() {
-
-    // All of the tests in the superclass will use this single entry point proxy to execute
-    // an HTTP request to the CompanyApiController (exactly as an external consumer would),
-    // and then follow links to other resources as required, which will trigger additional
-    // requests to the other controllers.
-    return companyApi;
   }
 
   @Test

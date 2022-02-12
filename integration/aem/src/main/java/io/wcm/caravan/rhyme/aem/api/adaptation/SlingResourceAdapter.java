@@ -21,8 +21,8 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
  * <li>(optional): Calling a <b>filter*</b> method allows to limit adaptation to resources that match the specified
  * criteria</li>
  * <li>(required): Calling an <b>adaptTo</b> method defines to which interface or sling model class you want these
- * resources to be adapted to. It returns a generic steps {@link PostAdaptationStage} instance that knows these types, and
- * will be used for the following steps</li>
+ * resources to be adapted to. It returns a generic steps {@link PostAdaptationStage} instance that knows these types,
+ * and will be used for the following steps</li>
  * <li>(optional): Calling a <b>with*</b> method allows you to modify the sling model instances after they have been
  * created. A common use-case is to override link properties.</li>
  * <li>(required): Calling a <b>get*</b> method will finally execute the adaption</li>
@@ -84,7 +84,6 @@ public interface SlingResourceAdapter {
   <I> PostAdaptationStage<I, I> adaptTo(Class<I> halApiInterface);
 
   <I, M extends I> PostAdaptationStage<I, M> adaptTo(Class<I> halApiInterface, Class<M> slingModelClass);
-
 
 
 }

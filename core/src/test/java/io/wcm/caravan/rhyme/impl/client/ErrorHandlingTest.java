@@ -85,7 +85,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void status_code_from_response_should_be_available_in_exception_when_calling_ResourceState_method() {
+  void status_code_from_response_should_be_available_in_exception_when_calling_ResourceState_method() {
 
     client.mockFailedResponse(ENTRY_POINT_URI, 403);
 
@@ -96,7 +96,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void status_code_from_response_should_be_available_in_exception_when_calling_RelatedResource_method() {
+  void status_code_from_response_should_be_available_in_exception_when_calling_RelatedResource_method() {
 
     client.mockFailedResponse(ENTRY_POINT_URI, 501);
 
@@ -108,7 +108,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void status_code_from_response_should_be_available_in_exception_when_calling_ResourceRepresentation_method() {
+  void status_code_from_response_should_be_available_in_exception_when_calling_ResourceRepresentation_method() {
 
     client.mockFailedResponse(ENTRY_POINT_URI, 502);
 
@@ -119,7 +119,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void status_code_from_response_can_be_null_if_request_failed_with_network_issues() {
+  void status_code_from_response_can_be_null_if_request_failed_with_network_issues() {
 
     client.mockFailedResponse(ENTRY_POINT_URI, null);
 
@@ -130,7 +130,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void fails_if_json_resource_loader_returns_null() {
+  void fails_if_json_resource_loader_returns_null() {
 
     client.mockResponseWithSingle(ENTRY_POINT_URI, null);
 
@@ -145,7 +145,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void fails_if_json_resource_loader_throws_unexpected_exception() {
+  void fails_if_json_resource_loader_throws_unexpected_exception() {
 
     IllegalStateException cause = new IllegalStateException();
 
@@ -164,7 +164,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void fails_if_json_resource_loader_emits_unexpected_exception() {
+  void fails_if_json_resource_loader_emits_unexpected_exception() {
 
     IllegalStateException cause = new IllegalStateException();
 
@@ -188,14 +188,14 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void fails_if_type_support_throws_unexpected_exception() {
+  void fails_if_type_support_throws_unexpected_exception() {
 
     NotImplementedException cause = new NotImplementedException("not implemented");
 
     HalApiReturnTypeSupport typeSupport = new HalApiReturnTypeSupport() {
 
       @Override
-      public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
+      public Function<Object, Observable<Object>> convertToObservable(Class<?> sourceType) {
         return (returnValue) -> {
           throw cause;
         };
@@ -235,7 +235,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void retry_operator_should_cause_multiple_subscriptions_to_source_observable_on_failures() {
+  void retry_operator_should_cause_multiple_subscriptions_to_source_observable_on_failures() {
 
     HalResponse response = new HalResponse()
         .withStatus(200)
@@ -256,7 +256,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void retry_operator_should_forward_exception_if_all_retries_failed_() {
+  void retry_operator_should_forward_exception_if_all_retries_failed_() {
 
     HalResponse response = new HalResponse()
         .withStatus(200)
@@ -303,7 +303,7 @@ public class ErrorHandlingTest {
   }
 
   @Test
-  public void should_throw_developer_exception_if_HalApiAnnotation_is_missing() {
+  void should_throw_developer_exception_if_HalApiAnnotation_is_missing() {
 
     Throwable ex = catchThrowable(
         () -> client.createProxy(EntryPointWithoutAnnotation.class).getState().blockingGet());

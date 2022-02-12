@@ -1,7 +1,5 @@
 package io.wcm.caravan.rhyme.aem.impl.adaptation;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -12,7 +10,6 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import com.google.common.base.Preconditions;
 
@@ -26,8 +23,6 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 
 @Model(adaptables = SlingRhyme.class, adapters = SlingResourceAdapter.class)
 public class SlingResourceAdapterImpl implements SlingResourceAdapter {
-
-  private static final Logger log = getLogger(SlingResourceAdapterImpl.class);
 
   private final SlingRhyme slingRhyme;
   private final RhymeResourceRegistry registry;
@@ -155,7 +150,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter selectContainingPage() {
 
-    return resourceSelector.add((res) -> Stream.of(PageUtils.getPageResource(res)), "page containing {}");
+    return resourceSelector.add(res -> Stream.of(PageUtils.getPageResource(res)), "page containing {}");
   }
 
   @Override
@@ -226,14 +221,14 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter filterAdaptableTo(Class<?> adapterClazz) {
 
-    return resourceFilter.add((res) -> res.adaptTo(adapterClazz) != null,
+    return resourceFilter.add(res -> res.adaptTo(adapterClazz) != null,
         "if resource can be adapted to " + adapterClazz.getSimpleName());
   }
 
   @Override
   public <T> SlingResourceAdapter filterAdaptableTo(Class<T> adapterClazz, Predicate<T> predicate) {
 
-    Predicate<Resource> isAdaptableAndAcceptedByPredicated = (res) -> {
+    Predicate<Resource> isAdaptableAndAcceptedByPredicated = res -> {
       T adapted = res.adaptTo(adapterClazz);
       if (adapted == null) {
         return false;
@@ -248,7 +243,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter filterWithName(String resourceName) {
 
-    return resourceFilter.add((res) -> res.getName().equals(resourceName),
+    return resourceFilter.add(res -> res.getName().equals(resourceName),
         "if resource name is " + resourceName);
   }
 
@@ -256,10 +251,10 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   public <I> PostAdaptationStage<I, I> adaptTo(Class<I> clazz) {
 
     if (nullResourcePathGiven) {
-      return new TemplateProxyPostAdaptationStage<I, I>(this, clazz, registry);
+      return new TemplateProxyPostAdaptationStage<>(this, clazz, registry);
     }
 
-    return new SlingModelPostAdaptationStage<I, I>(this, clazz, clazz);
+    return new SlingModelPostAdaptationStage<>(this, clazz, clazz);
   }
 
   @Override
@@ -269,7 +264,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       throw new HalApiDeveloperException("You cannot specify a model class if pure template generation was forced by calling #selectResourceAt");
     }
 
-    return new SlingModelPostAdaptationStage<I, M>(this, halApiInterface, slingModelClass);
+    return new SlingModelPostAdaptationStage<>(this, halApiInterface, slingModelClass);
   }
 
 
@@ -313,9 +308,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
         newFilter = new ResourceFilter(newDescription, newPredicate);
       }
 
-      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, resourceSelector, newFilter);
-
-      return newInstance;
+      return new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, resourceSelector, newFilter);
     }
 
   }
@@ -359,9 +352,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
       }
 
 
-      SlingResourceAdapter newInstance = new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, newSelector, resourceFilter);
-
-      return newInstance;
+      return new SlingResourceAdapterImpl(SlingResourceAdapterImpl.this, newSelector, resourceFilter);
     }
   }
 

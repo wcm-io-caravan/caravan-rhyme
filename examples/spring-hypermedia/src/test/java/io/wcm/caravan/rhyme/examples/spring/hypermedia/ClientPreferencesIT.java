@@ -23,9 +23,9 @@ import io.wcm.caravan.rhyme.testing.client.HalCrawler;
 /**
  * A variation of the {@link MockMvcClientIT} test that verifies
  * if the {@link CompanyApi} functionality remains the same when no embedded resources are used.
- * Additional tests check that
+ * Additional tests check that other client preferences are applied as well.
  */
-public class ClientPreferencesIT extends MockMvcClientIT {
+class ClientPreferencesIT extends MockMvcClientIT {
 
   private Boolean useEmbeddedResources = false;
   private Boolean useFingerprinting = true;
@@ -44,7 +44,7 @@ public class ClientPreferencesIT extends MockMvcClientIT {
   }
 
   @Test
-  public void entry_point_should_have_settings_link_template() {
+  void entry_point_should_have_settings_link_template() {
 
     useEmbeddedResources = null;
     useFingerprinting = null;
@@ -62,7 +62,7 @@ public class ClientPreferencesIT extends MockMvcClientIT {
   }
 
   @Test
-  public void entry_point_url_should_contain_sticky_parameter() {
+  void entry_point_url_should_contain_sticky_parameter() {
 
     CompanyApi resource = getApiImplementionOrClientProxy();
 
@@ -74,7 +74,7 @@ public class ClientPreferencesIT extends MockMvcClientIT {
   }
 
   @Test
-  public void no_resource_should_contain_embedded_resources() {
+  void no_resource_should_contain_embedded_resources() {
 
     List<HalResponse> allResponses = crawlAllResponses();
 
@@ -89,7 +89,7 @@ public class ClientPreferencesIT extends MockMvcClientIT {
   }
 
   @Test
-  public void all_links_in_every_resource_should_contain_sticky_parameter() {
+  void all_links_in_every_resource_should_contain_sticky_parameter() {
 
     List<HalResponse> allResponses = crawlAllResponses();
 
@@ -107,7 +107,7 @@ public class ClientPreferencesIT extends MockMvcClientIT {
   }
 
   @Test
-  public void should_disable_fingerprinting_for_all_resources_via_preferences() {
+  void should_disable_fingerprinting_for_all_resources_via_preferences() {
 
     useFingerprinting = false;
 

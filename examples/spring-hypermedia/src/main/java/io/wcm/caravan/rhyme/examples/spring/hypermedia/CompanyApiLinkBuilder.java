@@ -70,10 +70,10 @@ class CompanyApiLinkBuilder {
 
   private final UrlFingerprinting fingerprinting;
 
-  private boolean hasClientPreferences = false;
+  private final boolean useEmbeddedResources;
+  private final boolean useFingerprinting;
 
-  private Boolean useEmbeddedResources;
-  private Boolean useFingerprinting;
+  private boolean hasClientPreferences;
 
   CompanyApiLinkBuilder(@Autowired SpringRhyme rhyme, @Autowired RepositoryModificationListener repositoryListener,
       @Autowired HttpServletRequest request) {
@@ -83,20 +83,20 @@ class CompanyApiLinkBuilder {
         .withConditionalMaxAge(Duration.ofSeconds(10), Duration.ofDays(100))
         .withTimestampParameter(TIMESTAMP_QUERY_PARAM, repositoryListener::getLastModified);
 
-    useEmbeddedResources = addStickyParameter(request, USE_EMBEDDED_RESOURCES);
-    useFingerprinting = addStickyParameter(request, USE_FINGERPRINTING);
+    this.useEmbeddedResources = keepIncomingRequestParameter(request, USE_EMBEDDED_RESOURCES);
+    this.useFingerprinting = keepIncomingRequestParameter(request, USE_FINGERPRINTING);
 
-    addStickyParameter(request, EMBED_RHYME_METADATA);
+    keepIncomingRequestParameter(request, EMBED_RHYME_METADATA);
   }
 
   /**
    * If a query parameter with the given name is present in the incoming request, it will also be added
-   * (with the same value) to all other links being built by this libk builder instance
+   * (with the same value) to all other links being built by this link builder instance
    * @param request the incoming request
    * @param name of the query parameter
    * @return the value of the parameter (or true if it was not present)
    */
-  private Boolean addStickyParameter(HttpServletRequest request, String name) {
+  private boolean keepIncomingRequestParameter(HttpServletRequest request, String name) {
 
     // if the query parameter was not present in the incoming request, then don't add it to any other links
     String fromRequest = request.getParameter(name);
@@ -108,7 +108,7 @@ class CompanyApiLinkBuilder {
     hasClientPreferences = true;
 
     // if the parameter *was* present, then make sure it's also added to every other link
-    Boolean boolValue = BooleanUtils.toBoolean(fromRequest);
+    boolean boolValue = BooleanUtils.toBoolean(fromRequest);
     fingerprinting.withQueryParameter(name, boolValue);
     return boolValue;
   }

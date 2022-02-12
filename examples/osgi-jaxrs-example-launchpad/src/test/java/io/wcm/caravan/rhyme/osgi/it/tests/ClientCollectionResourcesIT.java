@@ -21,7 +21,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.ItemState;
 import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.collection.CollectionParametersBean;
 
 @ExtendWith({ WaitForServerStartupExtension.class })
-public class ClientCollectionResourcesIT {
+class ClientCollectionResourcesIT {
 
   private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
@@ -47,99 +47,165 @@ public class ClientCollectionResourcesIT {
   }
 
   @Test
-  public void linked_items_can_be_fetched() {
+  void linked_items_can_be_fetched() {
 
-    Integer numItems = 5;
-    Boolean embedItems = false;
-    Integer delayMs = null;
-
-    List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
-
-    assertThat(items).hasSize(numItems);
-  }
-
-  @Test
-  public void linked_items_are_in_correct_order() {
-
-    Integer numItems = 50;
-    Boolean embedItems = false;
-    Integer delayMs = null;
+    int numItems = 5;
+    boolean embedItems = false;
+    int delayMs = 0;
 
     List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
 
-    for (int i = 0; i < numItems; i++) {
-      assertThat(items.get(i).index).isEqualTo(i);
-    }
+    assertThat(items)
+        .hasSize(numItems);
   }
 
   @Test
-  public void linked_items_are_properly_delayed() {
+  void linked_items_are_in_correct_order() {
 
-    Integer numItems = 1;
+    int numItems = 50;
     Boolean embedItems = false;
-    Integer delayMs = 2000;
-
-    Stopwatch stopwatch = Stopwatch.createStarted();
-    getCollectionItemsThroughClient(numItems, embedItems, delayMs);
-    long responseTime = stopwatch.elapsed(MILLISECONDS);
-
-    assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(5 * delayMs);
-  }
-
-  @Test
-  public void linked_items_are_fetched_simultaneously() {
-
-    Integer numItems = 50;
-    Boolean embedItems = false;
-    Integer delayMs = 2000;
-
-    Stopwatch stopwatch = Stopwatch.createStarted();
-    getCollectionItemsThroughClient(numItems, embedItems, delayMs);
-    long responseTime = stopwatch.elapsed(MILLISECONDS);
-
-    assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(numItems * (long)delayMs);
-  }
-
-  @Test
-  public void embedded_items_can_be_fetched() {
-
-    Integer numItems = 20;
-    Boolean embedItems = true;
-    Integer delayMs = null;
-
-    List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
-
-    assertThat(items).hasSize(numItems);
-  }
-
-  @Test
-  public void embedded_items_are_in_correct_order() {
-
-    Integer numItems = 50;
-    Boolean embedItems = true;
-    Integer delayMs = null;
+    int delayMs = 0;
 
     List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
 
     for (int i = 0; i < numItems; i++) {
-      assertThat(items.get(i).index).isEqualTo(i);
+      assertThat(items.get(i).index)
+          .isEqualTo(i);
     }
   }
 
   @Test
-  public void embedded_items_are_properly_delayed() {
+  void linked_items_are_properly_delayed() {
 
-    Integer numItems = 50;
-    Boolean embedItems = true;
-    Integer delayMs = 2000;
+    int numItems = 1;
+    Boolean embedItems = false;
+    int delayMs = 2000;
 
     Stopwatch stopwatch = Stopwatch.createStarted();
     getCollectionItemsThroughClient(numItems, embedItems, delayMs);
     long responseTime = stopwatch.elapsed(MILLISECONDS);
 
-    assertThat(responseTime).isGreaterThanOrEqualTo(delayMs);
-    assertThat(responseTime).isLessThan(5 * delayMs);
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(5 * delayMs);
+  }
+
+  @Test
+  void linked_items_are_fetched_simultaneously() {
+
+    int numItems = 50;
+    Boolean embedItems = false;
+    int delayMs = 2000;
+
+    Stopwatch stopwatch = Stopwatch.createStarted();
+    getCollectionItemsThroughClient(numItems, embedItems, delayMs);
+    long responseTime = stopwatch.elapsed(MILLISECONDS);
+
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(numItems * (long)delayMs);
+  }
+
+  @Test
+  void embedded_items_can_be_fetched() {
+
+    int numItems = 20;
+    Boolean embedItems = true;
+    int delayMs = 0;
+
+    List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
+
+    assertThat(items)
+        .hasSize(numItems);
+  }
+
+  @Test
+  void embedded_items_are_in_correct_order() {
+
+    int numItems = 50;
+    Boolean embedItems = true;
+    int delayMs = 0;
+
+    List<ItemState> items = getCollectionItemsThroughClient(numItems, embedItems, delayMs);
+
+    for (int i = 0; i < numItems; i++) {
+      assertThat(items.get(i).index)
+          .isEqualTo(i);
+    }
+  }
+
+  @Test
+  void embedded_items_are_properly_delayed() {
+
+    int numItems = 50;
+    Boolean embedItems = true;
+    int delayMs = 2000;
+
+    Stopwatch stopwatch = Stopwatch.createStarted();
+    getCollectionItemsThroughClient(numItems, embedItems, delayMs);
+    long responseTime = stopwatch.elapsed(MILLISECONDS);
+
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(5 * delayMs);
+  }
+
+  @Test
+  void individial_item_can_be_fetched_with_null_delayMs_and_has_correct_properties() {
+
+    int index = 3;
+    Integer delayMs = null;
+
+    ItemState item = entryPoint.getCollectionExamples()
+        .flatMap(examples -> examples.getItemThroughClient(index, delayMs))
+        .flatMap(ItemResource::getProperties)
+        .blockingGet();
+
+    assertThat(item.index)
+        .isEqualTo(index);
+
+    assertThat(item.title)
+        .isEqualTo("The item with index " + index);
+  }
+
+  @Test
+  void individial_items_are_properly_delayed() {
+
+    int delayMs = 1000;
+
+    long responseTime = getDelayedItemAndMeasureResponseTime(delayMs);
+
+    assertThat(responseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(5 * delayMs);
+  }
+
+  @Test
+  void individial_items_are_cached_on_repeated_calls() {
+
+    int delayMs = 2000;
+
+    long uncachedResponseTime = getDelayedItemAndMeasureResponseTime(delayMs);
+
+    assertThat(uncachedResponseTime)
+        .isGreaterThanOrEqualTo(delayMs)
+        .isLessThan(5 * delayMs);
+
+    long cachedResponseTime = getDelayedItemAndMeasureResponseTime(delayMs);
+
+    assertThat(cachedResponseTime)
+        .isLessThan(delayMs);
+  }
+
+  private long getDelayedItemAndMeasureResponseTime(int delayMs) {
+
+    Stopwatch stopwatch = Stopwatch.createStarted();
+
+    entryPoint.getCollectionExamples()
+        .flatMap(examples -> examples.getItemThroughClient(3, delayMs))
+        .flatMap(ItemResource::getProperties)
+        .blockingGet();
+
+    return stopwatch.elapsed(MILLISECONDS);
   }
 }

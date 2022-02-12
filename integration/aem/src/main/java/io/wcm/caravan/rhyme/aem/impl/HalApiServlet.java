@@ -7,6 +7,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,10 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
 
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.rhyme.aem.impl.resources.AemApiDiscoveryResourceImpl;
@@ -36,7 +34,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 
-@Component(service = Servlet.class, property = {
+@Component(service = { Servlet.class, HalApiServlet.class }, property = {
     SERVICE_DESCRIPTION + "=Servlet to render HAL responses using the Rhyme framework",
     SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
     SLING_SERVLET_RESOURCE_TYPES + "=" + DEFAULT_RESOURCE_TYPE,
@@ -67,13 +65,13 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
 
       HalResponse halResponse = rhyme.getCoreRhyme().renderResponse(requestedResource).blockingGet();
 
-      writeHalResponse(request, halResponse, response);
+      writeHalResponse(halResponse, response);
     }
     catch (RuntimeException ex) {
 
       HalResponse errorResponse = rhyme.getCoreRhyme().renderVndErrorResponse(ex);
 
-      writeHalResponse(request, errorResponse, response);
+      writeHalResponse(errorResponse, response);
     }
   }
 
@@ -105,11 +103,11 @@ public class HalApiServlet extends SlingSafeMethodsServlet {
     return rhyme.adaptResource(request.getResource(), modelClass);
   }
 
-  private void writeHalResponse(SlingHttpServletRequest request, HalResponse halResponse, SlingHttpServletResponse servletResponse)
-      throws IOException, JsonGenerationException, JsonMappingException {
+  private void writeHalResponse(HalResponse halResponse, SlingHttpServletResponse servletResponse)
+      throws IOException {
 
     servletResponse.setContentType(halResponse.getContentType());
-    servletResponse.setCharacterEncoding(Charsets.UTF_8.name());
+    servletResponse.setCharacterEncoding(StandardCharsets.UTF_8.name());
     servletResponse.setStatus(halResponse.getStatus());
     if (halResponse.getMaxAge() != null) {
       servletResponse.setHeader("cache-control", "max-age=" + halResponse.getMaxAge());

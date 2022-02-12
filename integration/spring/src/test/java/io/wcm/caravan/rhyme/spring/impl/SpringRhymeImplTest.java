@@ -53,7 +53,7 @@ import io.wcm.caravan.rhyme.spring.impl.LinkableResourceMessageConverterTest.Min
 
 
 @ExtendWith(MockitoExtension.class)
-public class SpringRhymeImplTest {
+class SpringRhymeImplTest {
 
   private static final String REQUEST_PATH = "/foo";
   private static final String REQUEST_QUERY = "bar=123";
@@ -87,7 +87,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  public void getRemoteResource_should_use_HalResourceLoader() throws Exception {
+  void getRemoteResource_should_use_HalResourceLoader() {
 
     String resourceUri = "/bar";
 
@@ -104,7 +104,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  public void renderVndErrorResponse_should_use_request_url() throws Exception {
+  void renderVndErrorResponse_should_use_request_url() {
 
     ResponseEntity<JsonNode> errorEntity = rhyme.renderVndErrorResponse(new RuntimeException());
 
@@ -117,7 +117,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  public void renderResponse_should_use_max_age() throws Exception {
+  void renderResponse_should_use_max_age() {
 
     rhyme.setResponseMaxAge(Duration.ofSeconds(10));
 
@@ -131,7 +131,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  public void renderResponse_should_not_embed_metadata_by_default() throws Exception {
+  void renderResponse_should_not_embed_metadata_by_default() {
 
     MinimalTestResourceImpl resource = new MinimalTestResourceImpl();
 
@@ -144,7 +144,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  public void renderResponse_should_embed_metadata_if_toggled_by_query() throws Exception {
+  void renderResponse_should_embed_metadata_if_toggled_by_query() {
 
     MinimalTestResourceImpl resource = new MinimalTestResourceImpl();
 
@@ -162,7 +162,7 @@ public class SpringRhymeImplTest {
   }
 
   @Test
-  public void getCoreRhyme_should_return_the_same_core_Rhyme_instance_for_multiple_calls() throws Exception {
+  void getCoreRhyme_should_return_the_same_core_Rhyme_instance_for_multiple_calls() {
 
     Rhyme coreRhyme = rhyme.getCoreRhyme();
 

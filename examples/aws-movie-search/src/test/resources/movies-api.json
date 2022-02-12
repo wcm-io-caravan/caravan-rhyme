@@ -1,0 +1,15 @@
+{
+  "_links":{
+    "self":{
+      "href":"https://hypermedia-movies-demo.herokuapp.com/api"
+    },
+    "movies":{
+      "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies{?size,page}",
+      "templated":true
+    },
+    "directors":{
+      "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors{?size,page}",
+      "templated":true
+    }
+  }
+}

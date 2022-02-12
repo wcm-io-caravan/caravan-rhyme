@@ -47,7 +47,7 @@ import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 
-public class TemplateVariablesTest {
+class TemplateVariablesTest {
 
   private final MockClientTestSupport client = ClientTestSupport.withMocking();
   private final HalResource entryPoint = new HalResource();
@@ -111,27 +111,31 @@ public class TemplateVariablesTest {
   }
 
   @Test
-  public void should_expand_template_with_variables_from_dto() throws Exception {
+  void should_expand_template_with_variables_from_dto() {
 
-    String template = "/item/{id}{?text*}";
+    String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
 
     VariablesDto dto = new VariablesDto();
     dto.id = 123;
-    dto.text = "text";
+    dto.text = "foo";
+
+    Single<LinkedResourceWithSingleState> linkedItem = client.createProxy(ResourceWithTemplateVariablesDto.class).getItem(dto);
+
+    Link link = linkedItem.map(LinkedResourceWithSingleState::createLink).blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/123?text=foo");
 
     mockHalResponseForTemplateExpandedWithDto(template, dto);
 
-    TestResourceState linkedState = client.createProxy(ResourceWithTemplateVariablesDto.class)
-        .getItem(dto)
-        .flatMap(LinkedResourceWithSingleState::getProperties)
-        .blockingGet();
-
-    assertThat(linkedState).isNotNull();
+    TestResourceState state = linkedItem.flatMap(LinkedResourceWithSingleState::getProperties).blockingGet();
+    assertThat(state.text)
+        .isEqualTo("foo");
   }
 
   @Test
-  public void should_expand_template_with_null_field_in_dto() throws Exception {
+  void should_parially_expand_template_with_null_field_in_dto() {
 
     String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -140,18 +144,24 @@ public class TemplateVariablesTest {
     dto.id = 123;
     dto.text = null;
 
+    Single<LinkedResourceWithSingleState> linkedItem = client.createProxy(ResourceWithTemplateVariablesDto.class).getItem(dto);
+
+    // calling createLink should return a partially expanded template
+    Link link = linkedItem.map(LinkedResourceWithSingleState::createLink).blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/123{?text}");
+
+    // but actually following the link should be a fully expanded template even if text is null
     mockHalResponseForTemplateExpandedWithDto(template, dto);
 
-    TestResourceState linkedState = client.createProxy(ResourceWithTemplateVariablesDto.class)
-        .getItem(dto)
-        .flatMap(LinkedResourceWithSingleState::getProperties)
-        .blockingGet();
-
-    assertThat(linkedState).isNotNull();
+    TestResourceState state = linkedItem.flatMap(LinkedResourceWithSingleState::getProperties).blockingGet();
+    assertThat(state.text)
+        .isNull();
   }
 
   @Test
-  public void should_expand_template_with_only_null_fields_in_dto() throws Exception {
+  void should_expand_template_with_only_null_fields_in_dto() {
 
     String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -160,18 +170,24 @@ public class TemplateVariablesTest {
     dto.id = null;
     dto.text = null;
 
+    Single<LinkedResourceWithSingleState> linkedItem = client.createProxy(ResourceWithTemplateVariablesDto.class).getItem(dto);
+
+    // calling createLink should return a partially expanded template
+    Link link = linkedItem.map(LinkedResourceWithSingleState::createLink).blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/item/{id}{?text}");
+
+    // but actually following the link should be a fully expanded template even if text is null
     mockHalResponseForTemplateExpandedWithDto(template, dto);
 
-    TestResourceState linkedState = client.createProxy(ResourceWithTemplateVariablesDto.class)
-        .getItem(dto)
-        .flatMap(LinkedResourceWithSingleState::getProperties)
-        .blockingGet();
-
-    assertThat(linkedState).isNotNull();
+    TestResourceState state = linkedItem.flatMap(LinkedResourceWithSingleState::getProperties).blockingGet();
+    assertThat(state.text)
+        .isNull();
   }
 
   @Test
-  public void should_not_expand_template_if_null_dto_is_used() throws Exception {
+  void should_not_expand_template_if_null_dto_is_used() {
 
     String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -181,7 +197,8 @@ public class TemplateVariablesTest {
         .map(LinkedResourceWithSingleState::createLink)
         .blockingGet();
 
-    assertThat(link.getHref()).isEqualTo(template);
+    assertThat(link.getHref())
+        .isEqualTo(template);
   }
 
   @SuppressWarnings("unused")
@@ -200,7 +217,7 @@ public class TemplateVariablesTest {
   }
 
   @Test
-  public void should_fail_if_dto_fields_are_private() throws Exception {
+  void should_fail_if_dto_fields_are_private() {
 
     VariablesDtoWithPrivateFields dto = new VariablesDtoWithPrivateFields();
 
@@ -228,7 +245,7 @@ public class TemplateVariablesTest {
   }
 
   @Test
-  public void should_expand_template_with_variables_interface() throws Exception {
+  void should_expand_template_with_variables_interface() {
 
     String template = "/item/{id}{?text*}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -258,7 +275,7 @@ public class TemplateVariablesTest {
   }
 
   @Test
-  public void should_not_expand_template_if_null_interface_is_used() throws Exception {
+  void should_not_expand_template_if_null_interface_is_used() {
 
     String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -272,7 +289,7 @@ public class TemplateVariablesTest {
   }
 
   @Test
-  public void should_fail_if_calling_interface_method_throws_exception() throws Exception {
+  void should_fail_if_calling_interface_method_throws_exception() {
 
     VariablesInterface variables = Mockito.mock(VariablesInterface.class);
     Mockito.when(variables.getId()).thenThrow(new IllegalArgumentException());
@@ -287,7 +304,7 @@ public class TemplateVariablesTest {
   }
 
   @Test
-  public void should_fail_if_non_null_variable_is_not_present_in_template() throws Exception {
+  void should_fail_if_non_null_variable_is_not_present_in_template() {
 
     String template = "/item/{id}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -309,7 +326,7 @@ public class TemplateVariablesTest {
   }
 
   @Test
-  public void should_not_fail_if_null_variable_is_not_present_in_template() throws Exception {
+  void should_not_fail_if_null_variable_is_not_present_in_template() {
 
     String template = "/item/{id}";
     entryPoint.addLinks(ITEM, new Link(template));
@@ -329,7 +346,7 @@ public class TemplateVariablesTest {
   }
 
   @Test
-  public void should_fail_if_no_bean_properties_defined_in_interface() throws Exception {
+  void should_fail_if_no_bean_properties_defined_in_interface() {
 
     Throwable ex = catchThrowable(() -> client.createProxy(ResourceWithInvalidTemplateVariables.class).getItem(null));
 

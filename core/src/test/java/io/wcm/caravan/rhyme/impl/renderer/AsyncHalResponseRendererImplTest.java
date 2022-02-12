@@ -25,7 +25,6 @@ import static io.wcm.caravan.rhyme.api.relations.VndErrorRelations.ABOUT;
 import static io.wcm.caravan.rhyme.api.relations.VndErrorRelations.ERRORS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -53,7 +52,7 @@ import io.wcm.caravan.rhyme.impl.reflection.DefaultHalApiTypeSupport;
 import io.wcm.caravan.rhyme.testing.LinkableTestResource;
 
 @ExtendWith(MockitoExtension.class)
-public class AsyncHalResponseRendererImplTest {
+class AsyncHalResponseRendererImplTest {
 
   private static final String REQUEST_URI = "/requestUri";
 
@@ -76,19 +75,24 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   private HalResource mockRenderedResource() {
+
     HalResource hal = new HalResource();
-    when(renderer.renderResource(eq(resource))).thenReturn(Single.just(hal));
+    when(renderer.renderResource(resource))
+        .thenReturn(Single.just(hal));
+
     return hal;
   }
 
   private <T extends Exception> T mockExceptionDuringRendering(T exception) {
 
-    when(renderer.renderResource(eq(resource))).thenReturn(Single.error(exception));
+    when(renderer.renderResource(resource))
+        .thenReturn(Single.error(exception));
+
     return exception;
   }
 
   @Test
-  public void response_should_have_uri_set_if_resource_was_rendered_succesfully() throws Exception {
+  void response_should_have_uri_set_if_resource_was_rendered_succesfully() {
 
     mockRenderedResource();
 
@@ -98,7 +102,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void response_should_have_status_200_if_resource_was_rendered_succesfully() throws Exception {
+  void response_should_have_status_200_if_resource_was_rendered_succesfully() {
 
     mockRenderedResource();
 
@@ -108,7 +112,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void response_should_have_hal_content_type_if_resource_was_rendered_succesfully() throws Exception {
+  void response_should_have_hal_content_type_if_resource_was_rendered_succesfully() {
 
     mockRenderedResource();
 
@@ -123,7 +127,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void response_should_use_custom_content_type_if_defined_in_annotation() throws Exception {
+  void response_should_use_custom_content_type_if_defined_in_annotation() {
 
     resource = Mockito.mock(CustomContentTypeResource.class);
 
@@ -136,7 +140,7 @@ public class AsyncHalResponseRendererImplTest {
 
 
   @Test
-  public void response_should_contain_hal_resource_from_renderer() throws Exception {
+  void response_should_contain_hal_resource_from_renderer() {
 
     HalResource hal = mockRenderedResource();
 
@@ -146,7 +150,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void response_should_contain_embedded_metadata_from_metrics() throws Exception {
+  void response_should_contain_embedded_metadata_from_metrics() {
 
     mockRenderedResource();
 
@@ -156,12 +160,14 @@ public class AsyncHalResponseRendererImplTest {
     HalResponse response = renderResponse();
 
     HalResource hal = response.getBody();
-    assertThat(hal.hasEmbedded(ResponseMetadataRelations.RHYME_METADATA_RELATION));
-    assertThat(hal.getEmbeddedResource(ResponseMetadataRelations.RHYME_METADATA_RELATION).getModel()).isEqualTo(metadata.getModel());
+    assertThat(hal.hasEmbedded(ResponseMetadataRelations.RHYME_METADATA_RELATION))
+        .isTrue();
+    assertThat(hal.getEmbeddedResource(ResponseMetadataRelations.RHYME_METADATA_RELATION).getModel())
+        .isEqualTo(metadata.getModel());
   }
 
   @Test
-  public void response_should_allow_null_values_for_max_age_from_metrics() throws Exception {
+  void response_should_allow_null_values_for_max_age_from_metrics() {
 
     mockRenderedResource();
     when(metrics.getResponseMaxAge()).thenReturn(null);
@@ -171,7 +177,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void response_should_contain_max_age_from_metrics() throws Exception {
+  void response_should_contain_max_age_from_metrics() {
 
     mockRenderedResource();
     when(metrics.getResponseMaxAge()).thenReturn(99);
@@ -182,7 +188,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_contain_uri() {
+  void error_response_should_contain_uri() {
 
     mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
 
@@ -193,7 +199,7 @@ public class AsyncHalResponseRendererImplTest {
 
 
   @Test
-  public void error_response_should_have_status_code_500_for_unknown_exceptions() {
+  void error_response_should_have_status_code_500_for_unknown_exceptions() {
 
     mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
 
@@ -203,7 +209,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_use_status_code_from_HalApiClientException() {
+  void error_response_should_use_status_code_from_HalApiClientException() {
 
     mockExceptionDuringRendering(new HalApiClientException("Something went wrong", 404, "uri", null));
 
@@ -213,9 +219,10 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_be_generated_if_synchronous_calls_fail() {
+  void error_response_should_be_generated_if_synchronous_calls_fail() {
 
-    when(renderer.renderResource(eq(resource))).thenThrow(new NotImplementedException("Foo"));
+    when(renderer.renderResource(resource))
+        .thenThrow(new NotImplementedException("Foo"));
 
     HalResponse response = renderResponse();
 
@@ -224,7 +231,7 @@ public class AsyncHalResponseRendererImplTest {
 
 
   @Test
-  public void error_response_should_use_status_code_from_strategy() {
+  void error_response_should_use_status_code_from_strategy() {
 
     exceptionStrategy = new ExceptionStatusAndLoggingStrategy() {
 
@@ -246,7 +253,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_use_500_instead_of_null_status_code() {
+  void error_response_should_use_500_instead_of_null_status_code() {
 
     exceptionStrategy = new ExceptionStatusAndLoggingStrategy() {
 
@@ -265,7 +272,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_use_500_instead_of_0_status_code() {
+  void error_response_should_use_500_instead_of_0_status_code() {
 
     exceptionStrategy = new ExceptionStatusAndLoggingStrategy() {
 
@@ -284,7 +291,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_have_vnderror_content_type() {
+  void error_response_should_have_vnderror_content_type() {
 
     mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
 
@@ -294,7 +301,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_contain_message_from_exception() {
+  void error_response_should_contain_message_from_exception() {
 
     RuntimeException ex = mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
 
@@ -304,7 +311,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_contain_embedded_resource_for_cause_of_exception() {
+  void error_response_should_contain_embedded_resource_for_cause_of_exception() {
 
     RuntimeException cause = new RuntimeException("This was the root cause");
     mockExceptionDuringRendering(new RuntimeException("Something went wrong", cause));
@@ -317,7 +324,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_contain_multiple_embedded_resources_for_causes_of_exception() {
+  void error_response_should_contain_multiple_embedded_resources_for_causes_of_exception() {
 
     RuntimeException rootCause = new RuntimeException("This was the root cause");
     RuntimeException cause = new RuntimeException("This was an intermediate", rootCause);
@@ -333,7 +340,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_contain_about_and_canonical_link_to_resource() {
+  void error_response_should_contain_about_and_canonical_link_to_resource() {
 
     mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
 
@@ -350,7 +357,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_contain_only_about_link_if_self_link_matches_request_uri() {
+  void error_response_should_contain_only_about_link_if_self_link_matches_request_uri() {
 
     mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
 
@@ -366,7 +373,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_ignore_exception_when_creating_canonical_link() {
+  void error_response_should_ignore_exception_when_creating_canonical_link() {
 
     mockExceptionDuringRendering(new RuntimeException("Something went wrong"));
 
@@ -395,7 +402,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_contain_embedded_errors_from_upstream() {
+  void error_response_should_contain_embedded_errors_from_upstream() {
 
     String upstreamMessage = "Upstream error message";
     RuntimeException ex = createWrappedHalClientExceptionWithVndErrorBody(501, upstreamMessage);
@@ -422,7 +429,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_contain_root_cause_if_no_body_available_from_upstream() {
+  void error_response_should_contain_root_cause_if_no_body_available_from_upstream() {
 
     String clientMessage = "Client root cause message";
     RuntimeException ex = createWrappedHalClientExceptionWithoutVndErrorBody(clientMessage);
@@ -453,7 +460,7 @@ public class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  public void error_response_should_handle_empty_body() {
+  void error_response_should_handle_empty_body() {
 
     RuntimeException ex = createWrappedHalClientExceptionWithEmptyBody(404);
 

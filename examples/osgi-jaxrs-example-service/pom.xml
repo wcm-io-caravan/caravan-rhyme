@@ -25,7 +25,7 @@
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../../tooling/parent/pom.xml</relativePath>
   </parent>
 
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.osgi-jaxrs</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.1.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 
@@ -99,7 +99,7 @@
       <plugin>
         <groupId>io.wcm.caravan.maven.plugins</groupId>
         <artifactId>rhyme-docs-maven-plugin</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>

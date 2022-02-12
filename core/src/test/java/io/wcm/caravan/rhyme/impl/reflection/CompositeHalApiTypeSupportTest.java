@@ -53,7 +53,7 @@ import io.wcm.caravan.rhyme.impl.renderer.AsyncHalResponseRendererImpl;
 import io.wcm.caravan.rhyme.testing.resources.TestResource;
 
 @ExtendWith(MockitoExtension.class)
-public class CompositeHalApiTypeSupportTest {
+class CompositeHalApiTypeSupportTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -76,7 +76,7 @@ public class CompositeHalApiTypeSupportTest {
     String getString();
   }
 
-  private void assertThatMockAnnotationSupportIsEffective(HalApiAnnotationSupport annotationSupport) throws Exception {
+  private void assertThatMockAnnotationSupportIsEffective(HalApiAnnotationSupport annotationSupport) throws NoSuchMethodException, SecurityException {
 
     Method method = TestInterface.class.getMethod("getString");
 
@@ -103,7 +103,7 @@ public class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  public void client_should_use_custom_return_types() throws Exception {
+  void client_should_use_custom_return_types() {
 
     HalApiClient client = HalApiClientBuilder.create().withReturnTypeSupport(mockReturnTypeSupport).build();
 
@@ -111,7 +111,7 @@ public class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  public void client_should_use_custom_annotations() throws Exception {
+  void client_should_use_custom_annotations() throws NoSuchMethodException, SecurityException {
 
     HalApiClient client = HalApiClientBuilder.create().withAnnotationTypeSupport(mockAnnotationSupport).build();
 
@@ -119,7 +119,7 @@ public class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  public void resource_renderer_should_use_custom_return_types() throws Exception {
+  void resource_renderer_should_use_custom_return_types() {
 
     HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(null, mockReturnTypeSupport);
 
@@ -129,7 +129,7 @@ public class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  public void resource_renderer_should_use_custom_annotations() throws Exception {
+  void resource_renderer_should_use_custom_annotations() throws NoSuchMethodException, SecurityException {
 
     HalApiTypeSupport typeSupport = DefaultHalApiTypeSupport.extendWith(mockAnnotationSupport, null);
 
@@ -139,7 +139,7 @@ public class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  public void response_renderer_should_use_custom_annotations() throws Exception {
+  void response_renderer_should_use_custom_annotations() throws NoSuchMethodException, SecurityException {
 
     AsyncHalResponseRenderer renderer = HalResponseRendererBuilder.create().withAnnotationTypeSupport(mockAnnotationSupport).build();
 
@@ -193,83 +193,83 @@ public class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  public void isHalApiInterface_should_return_first_true_value() throws Exception {
+  void isHalApiInterface_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isHalApiInterface(TestResource.class));
   }
 
   @Test
-  public void getContentType_should_return_first_non_null_value() throws Exception {
+  void getContentType_should_return_first_non_null_value() {
 
     assertThatCompositeReturnsFirstNonNullValueOfMock(a -> a.getContentType(TestResource.class), "text/json");
   }
 
   @Test
-  public void isRelatedResourceMethod_should_return_first_true_value() throws Exception {
+  void isRelatedResourceMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isRelatedResourceMethod(firstMethod));
   }
 
   @Test
-  public void getRelation_should_return_first_non_null_value() throws Exception {
+  void getRelation_should_return_first_non_null_value() {
 
     assertThatCompositeReturnsFirstNonNullValueOfMock(a -> a.getRelation(firstMethod), "rel");
   }
 
   @Test
-  public void isResourceLinkMethod_should_return_first_true_value() throws Exception {
+  void isResourceLinkMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourceLinkMethod(firstMethod));
   }
 
   @Test
-  public void isResourceReoresentationMethod_should_return_first_true_value() throws Exception {
+  void isResourceReoresentationMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourceRepresentationMethod(firstMethod));
   }
 
   @Test
-  public void isResourceStateMethod_should_return_first_true_value() throws Exception {
+  void isResourceStateMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourceStateMethod(firstMethod));
   }
 
   @Test
-  public void isResourcePropertyMethod_should_return_first_true_value() throws Exception {
+  void isResourcePropertyMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourcePropertyMethod(firstMethod));
   }
 
   @Test
-  public void getPropertyName_should_return_first_non_null_value() throws Exception {
+  void getPropertyName_should_return_first_non_null_value() {
 
     assertThatCompositeReturnsFirstNonNullValueOfMock(a -> a.getPropertyName(firstMethod), "prop");
   }
 
 
   @Test
-  public void convertFromObservable_should_return_first_non_null_value() throws Exception {
+  void convertFromObservable_should_return_first_non_null_value() {
 
     Function<Observable, Iterator> fun = o -> ((List)o.toList().blockingGet()).iterator();
     assertThatCompositeReturnsFirstNonNullValueOfReturnTypeMock(a -> a.convertFromObservable(Iterator.class), fun);
   }
 
   @Test
-  public void convertToObservable_should_return_first_non_null_value() throws Exception {
+  void convertToObservable_should_return_first_non_null_value() {
 
     @SuppressWarnings("unchecked")
-    Function<Object, Observable<?>> fun = o -> Observable.fromIterable(() -> ((List)o).iterator());
+    Function<Object, Observable<Object>> fun = o -> Observable.fromIterable(() -> ((List)o).iterator());
     assertThatCompositeReturnsFirstNonNullValueOfReturnTypeMock(a -> a.convertToObservable(Iterator.class), fun);
   }
 
   @Test
-  public void isProviderOfMultiplerValues_should_return_first_true_value() throws Exception {
+  void isProviderOfMultiplerValues_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfMultiplerValues(Set.class));
   }
 
   @Test
-  public void isProviderOptionalValues_should_return_first_true_value() throws Exception {
+  void isProviderOptionalValues_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfReturnTypeMock(a -> a.isProviderOfOptionalValue(Set.class));
   }

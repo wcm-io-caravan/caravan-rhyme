@@ -45,7 +45,7 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 
 @ExtendWith(MockitoExtension.class)
-public class EmissionStopwatchTest {
+class EmissionStopwatchTest {
 
   private static final String METHOD_DESC = "test";
   @Mock
@@ -77,7 +77,7 @@ public class EmissionStopwatchTest {
   }
 
   @Test
-  public void should_measure_emission_times_for_single() throws Exception {
+  void should_measure_emission_times_for_single() throws InterruptedException {
 
     SingleSubject<String> subject = SingleSubject.create();
 
@@ -92,7 +92,7 @@ public class EmissionStopwatchTest {
   }
 
   @Test
-  public void should_measure_emission_times_for_observable() throws Exception {
+  void should_measure_emission_times_for_observable() throws InterruptedException {
 
     Subject<String> subject = PublishSubject.create();
 
@@ -108,7 +108,7 @@ public class EmissionStopwatchTest {
   }
 
   @Test
-  public void should_allow_multiple_subscribers_for_observable() throws Exception {
+  void should_allow_multiple_subscribers_for_observable() throws InterruptedException {
 
     SingleSubject<String> subject = SingleSubject.create();
 
@@ -124,7 +124,7 @@ public class EmissionStopwatchTest {
   }
 
   @Test
-  public void should_not_fail_if_emissions_come_before_subscriptions() throws Exception {
+  void should_not_fail_if_emissions_come_before_subscriptions() {
 
     Subject<String> subject = PublishSubject.create();
 

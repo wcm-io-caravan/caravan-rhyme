@@ -72,7 +72,7 @@ public interface HalApiAnnotationSupport {
    */
   default boolean isResourcePropertyMethod(Method method) {
     return false;
-  };
+  }
 
   /**
    * @param method for which {@link #isResourcePropertyMethod(Method)} returns true
@@ -80,7 +80,7 @@ public interface HalApiAnnotationSupport {
    */
   default String getPropertyName(Method method) {
     return null;
-  };
+  }
 
   /**
    * @param method for which {@link #isResourceLinkMethod(Method)} returns true

@@ -103,14 +103,12 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
 
     String contentType = getContentTypeFromAnnotation(halApiInterface);
 
-    HalResponse response = new HalResponse()
+    return new HalResponse()
         .withUri(requestUri)
         .withStatus(200)
         .withContentType(contentType)
         .withBody(halResource)
         .withMaxAge(metrics.getResponseMaxAge());
-
-    return response;
   }
 
   private String getContentTypeFromAnnotation(Class<?> halApiInterface) {

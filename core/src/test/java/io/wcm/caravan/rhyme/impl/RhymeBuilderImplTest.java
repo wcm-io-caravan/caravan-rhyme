@@ -73,7 +73,7 @@ import io.wcm.caravan.rhyme.testing.resources.TestResource;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
 
 @ExtendWith(MockitoExtension.class)
-public class RhymeBuilderImplTest {
+class RhymeBuilderImplTest {
 
   private static final String UPSTREAM_ENTRY_POINT_URI = "/";
   private static final String INCOMING_REQUEST_URI = "/incoming";
@@ -81,7 +81,7 @@ public class RhymeBuilderImplTest {
   private final TestResourceTree upstreamResourceTree = new TestResourceTree();
 
   @Test
-  public void build_cannot_be_called_multiple_times() {
+  void build_cannot_be_called_multiple_times() {
 
     RhymeBuilder builder = RhymeBuilder.create();
 
@@ -103,7 +103,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void withExceptionStrategy_should_apply_custom_exception_strategy() {
+  void withExceptionStrategy_should_apply_custom_exception_strategy() {
 
     Rhyme rhyme = createRhymeWithCustomExceptionStrategy();
 
@@ -115,7 +115,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void withExceptionStrategy_should_not_disable_default_exception_strategy() {
+  void withExceptionStrategy_should_not_disable_default_exception_strategy() {
 
     Rhyme rhyme = createRhymeWithCustomExceptionStrategy();
 
@@ -143,7 +143,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void withExceptionStrategy_should_allow_multiple_custom_strategies() {
+  void withExceptionStrategy_should_allow_multiple_custom_strategies() {
 
     Rhyme rhyme = RhymeBuilder.create()
         .withExceptionStrategy(new CustomExceptionStrategy())
@@ -221,7 +221,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void withReturnTypeSupport_should_enable_rendering_of_resources_with_custom_return_types() {
+  void withReturnTypeSupport_should_enable_rendering_of_resources_with_custom_return_types() {
 
     Rhyme rhyme = createRhymeWithSetReturnTypeSupport();
 
@@ -235,7 +235,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void withReturnTypeSupport_should_enable_fetching_of_resources_with_custom_return_types() {
+  void withReturnTypeSupport_should_enable_fetching_of_resources_with_custom_return_types() {
 
     upstreamResourceTree.createLinked(StandardRelations.ITEM);
     upstreamResourceTree.createLinked(StandardRelations.ITEM);
@@ -268,7 +268,7 @@ public class RhymeBuilderImplTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
+    public Function<Object, Observable<Object>> convertToObservable(Class<?> sourceType) {
       if (Set.class.isAssignableFrom(sourceType)) {
         return o -> Observable.fromIterable((Set)o);
       }
@@ -350,7 +350,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void withAnnotationTypeSupport_should_enable_rendering_of_resources_with_custom_annotation() {
+  void withAnnotationTypeSupport_should_enable_rendering_of_resources_with_custom_annotation() {
 
     Rhyme rhyme = createRhymeWithCustomAnnotationTypeSupport();
 
@@ -366,7 +366,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void withAnnotationTypeSupport_should_enable_fetching_of_resources_with_custom_annotation() {
+  void withAnnotationTypeSupport_should_enable_fetching_of_resources_with_custom_annotation() {
 
     TestResource entryPoint = upstreamResourceTree.getEntryPoint();
     entryPoint.setNumber(123);
@@ -453,7 +453,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void no_curies_are_rendered_if_withRhymeDocsSupport_is_not_called() {
+  void no_curies_are_rendered_if_withRhymeDocsSupport_is_not_called() {
 
     Rhyme rhyme = RhymeBuilder.create()
         .buildForRequestTo(INCOMING_REQUEST_URI);
@@ -464,7 +464,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void curies_are_rendered_if_withRhymeDocsSupport_is_called() {
+  void curies_are_rendered_if_withRhymeDocsSupport_is_called() {
 
     String baseUrl = "/docs/";
 
@@ -516,7 +516,7 @@ public class RhymeBuilderImplTest {
 
 
   @Test
-  public void should_use_default_object_mapper_which_serialises_null_fields() {
+  void should_use_default_object_mapper_which_serialises_null_fields() {
 
     LinkableTestResource resourceImpl = new ResourceWithNullStateFields();
 
@@ -533,7 +533,7 @@ public class RhymeBuilderImplTest {
   }
 
   @Test
-  public void should_use_custom_object_mapper_which_ignores_null_fields() {
+  void should_use_custom_object_mapper_which_ignores_null_fields() {
 
     ObjectMapper customMapper = new ObjectMapper()
         .setSerializationInclusion(Include.NON_NULL);
@@ -564,5 +564,46 @@ public class RhymeBuilderImplTest {
     public Link createLink() {
       return new Link("/foo");
     }
+  }
+
+  @Test
+  void should_use_remote_resource_override() {
+
+    String remotePath = "https://foo.bar";
+
+    LinkableTestResource overrideImpl = new LinkableTestResource() {
+
+      @Override
+      public Maybe<TestState> getState() {
+        return Maybe.just(new TestState("foo"));
+      }
+
+      @Override
+      public Link createLink() {
+        return new Link(remotePath);
+      }
+    };
+
+    Rhyme rhyme = RhymeBuilder.create()
+        .withRemoteResourceOverride(remotePath, LinkableTestResource.class, metrics -> overrideImpl)
+        .buildForRequestTo(INCOMING_REQUEST_URI);
+
+    LinkableTestResource resourceImpl = new LinkableTestResource() {
+
+      @Override
+      public Maybe<TestState> getState() {
+        return rhyme.getRemoteResource(remotePath, LinkableTestResource.class).getState();
+      }
+
+      @Override
+      public Link createLink() {
+        return new Link(INCOMING_REQUEST_URI);
+      }
+    };
+
+    HalResource hal = rhyme.renderResponse(resourceImpl).blockingGet().getBody();
+
+    assertThat(hal.adaptTo(TestState.class).string)
+        .isEqualTo("foo");
   }
 }

@@ -20,17 +20,19 @@
 
 package io.wcm.caravan.rhyme.impl.client.proxy;
 
+import static io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils.convertObservableTo;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
-import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.hal.resource.HalResource;
@@ -40,20 +42,21 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.common.RequestMetricsStopwatch;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
-import io.wcm.caravan.rhyme.impl.reflection.RxJavaReflectionUtils;
+import io.wcm.caravan.rhyme.impl.util.RxJavaTransformers;
 
 /**
  * Handles calls to proxy methods from dynamic proxies created with {@link HalApiClientProxyFactory}
  */
 final class HalApiInvocationHandler implements InvocationHandler {
 
-
-  private final Cache<String, Observable> returnValueCache = CacheBuilder.newBuilder().build();
+  private final Cache<String, Observable<Object>> returnValueCache = CacheBuilder.newBuilder().build();
 
   private final Single<HalResource> rxResource;
   private final Class resourceInterface;
   private final Link linkToResource;
+
   private final HalApiClientProxyFactory proxyFactory;
   private final RequestMetricsCollector metrics;
   private final HalApiTypeSupport typeSupport;
@@ -83,30 +86,32 @@ final class HalApiInvocationHandler implements InvocationHandler {
 
     // collect the time spend calling all proxy methods during the current request in the HalResponseMetadata object
     try (RequestMetricsStopwatch sw = metrics.startStopwatch(HalApiClient.class, () -> "calling " + invocation)) {
-      Observable rxReturnValue = getCachedObservableReturnValue(invocation);
-      return RxJavaReflectionUtils.convertObservableTo(rxReturnValue, method.getReturnType(), typeSupport);
+
+      Observable<Object> rxReturnValue = getCachingObservableReturnValue(invocation);
+
+      return convertObservableTo(method.getReturnType(), rxReturnValue, typeSupport);
     }
     // CHECKSTYLE:OFF
     catch (HalApiDeveloperException | HalApiClientException ex) {
-      // these exceptions should just be re-thrown as they are implementation errors by the developer
-      // (e.g. using invalid types in the signatures of the HAL API interface),
-      //or contain important context information from failed HTTP request
+      // these exceptions should just be re-thrown as they are either implementation errors by the developer
+      // (e.g. using invalid types in the signatures of the HAL API interface), or client errors
+      // which both already contain important context information
       throw ex;
     }
     // CHECKSTYLE:ON
     catch (NoSuchElementException ex) {
       // these exceptions should be re-thrown with a better error message
       throw new HalApiDeveloperException("The invocation of " + invocation + " has failed, "
-          + "most likely because no link or embedded resource with appropriate relation was found in the HAL resource", ex);
+          + "most likely because no link or embedded resource with the appropriate relation was found in the HAL resource", ex);
     }
     // CHECKSTYLE:OFF - we really want to catch any other possible runtime exceptions here to add additional information on the method being called
     catch (Exception e) {
       // CHECKSTYLE:ON
-      throw new RuntimeException("The invocation of " + invocation + " on a client proxy has failed with an unexpected exception", e);
+      throw new HalApiDeveloperException("The invocation of " + invocation + " on a client proxy has failed with an unexpected exception", e);
     }
   }
 
-  private Observable getCachedObservableReturnValue(HalApiMethodInvocation invocation) throws ExecutionException {
+  private Observable<Object> getCachingObservableReturnValue(HalApiMethodInvocation invocation) throws ExecutionException {
     try {
       return returnValueCache.get(invocation.getCacheKey(), () -> callAnnotationSpecificHandler(invocation));
     }
@@ -115,46 +120,9 @@ final class HalApiInvocationHandler implements InvocationHandler {
     }
   }
 
-  private Single<HalResource> addContextToHalApiClientException(Throwable ex, HalApiMethodInvocation invocation) {
-    if (ex instanceof HalApiClientException) {
-      String msg = "Failed to load an upstream resource that was requested by calling " + invocation;
-      return Single.error(new HalApiClientException(msg, (HalApiClientException)ex));
-    }
-    return Single.error(ex);
-  }
+  private Observable<Object> callAnnotationSpecificHandler(HalApiMethodInvocation invocation) {
 
-  @SuppressWarnings("PMD.AvoidRethrowingException")
-  private Observable callAnnotationSpecificHandler(HalApiMethodInvocation invocation) {
-
-    if (invocation.isForMethodAnnotatedWithResourceState()) {
-
-      Maybe<Object> state = rxResource
-          .onErrorResumeNext(ex -> addContextToHalApiClientException(ex, invocation))
-          .map(hal -> new ResourceStateHandler(hal, typeSupport, objectMapper))
-          .flatMapMaybe(handler -> handler.handleMethodInvocation(invocation));
-
-      return RxJavaReflectionUtils.convertAndCacheReactiveType(state, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
-    }
-
-    if (invocation.isForMethodAnnotatedWithResourceProperties()) {
-
-      Observable<Object> property = rxResource
-          .onErrorResumeNext(ex -> addContextToHalApiClientException(ex, invocation))
-          .map(hal -> new ResourcePropertyHandler(hal, typeSupport, objectMapper))
-          .flatMapObservable(handler -> handler.handleMethodInvocation(invocation));
-
-      return RxJavaReflectionUtils.convertAndCacheReactiveType(property, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
-    }
-
-    if (invocation.isForMethodAnnotatedWithRelatedResource()) {
-
-      Observable<Object> relatedProxies = rxResource
-          .onErrorResumeNext(ex -> addContextToHalApiClientException(ex, invocation))
-          .map(hal -> new RelatedResourceHandler(hal, proxyFactory, typeSupport))
-          .flatMapObservable(handler -> handler.handleMethodInvocation(invocation));
-
-      return RxJavaReflectionUtils.convertAndCacheReactiveType(relatedProxies, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
-    }
+    // first handle the calls for methods that don't need the HAL resource to be loaded
 
     if (invocation.isForMethodAnnotatedWithResourceLink()) {
 
@@ -162,22 +130,60 @@ final class HalApiInvocationHandler implements InvocationHandler {
       return Observable.just(handler.handleMethodInvocation(invocation));
     }
 
-    if (invocation.isForMethodAnnotatedWithResourceRepresentation()) {
-
-      Single<Object> representation = rxResource
-          .onErrorResumeNext(ex -> addContextToHalApiClientException(ex, invocation))
-          .map(hal -> new ResourceRepresentationHandler(hal))
-          .flatMap(handler -> handler.handleMethodInvocation(invocation));
-
-      return RxJavaReflectionUtils.convertAndCacheReactiveType(representation, invocation.getReturnType(), metrics, invocation::getDescription, typeSupport);
-    }
-
     if (invocation.toString().endsWith("#toString()")) {
+
       String linkDesc = linkToResource != null ? " at " + linkToResource.getHref() : " (embedded without self link)";
       return Observable.just("dynamic client proxy for " + invocation.getResourceInterfaceName() + linkDesc);
     }
 
+    // create the right handler depending on the annotation on the method
+    Function<HalResource, Observable<Object>> handler = createAnnotationSpecificHandler(invocation);
+
+    // load the resource
+    return rxResource
+        // once it's loaded, create the method's return value as an Observable
+        .flatMapObservable(handler::apply)
+        // add context information if the client failed to load the resource
+        .onErrorResumeNext(ex -> addContextToHalApiClientException(ex, invocation))
+        // measure the time it takes for all this to complete
+        .compose(EmissionStopwatch.collectMetrics(invocation::getDescription, metrics))
+        // ensure that the Observable can be replayed if there are multiple invocations of the same proxy method,
+        // but not use Observable#cache() here, because we want consumers to be able to use Observable#retry()
+        .compose(RxJavaTransformers.cacheIfCompleted());
+  }
+
+  private Function<HalResource, Observable<Object>> createAnnotationSpecificHandler(HalApiMethodInvocation invocation) {
+
+    if (invocation.isForMethodAnnotatedWithResourceState()) {
+
+      return new ResourceStateHandler(invocation, typeSupport, objectMapper);
+    }
+
+    if (invocation.isForMethodAnnotatedWithResourceProperties()) {
+
+      return new ResourcePropertyHandler(invocation, typeSupport, objectMapper);
+    }
+
+    if (invocation.isForMethodAnnotatedWithRelatedResource()) {
+
+      return new RelatedResourceHandler(invocation, typeSupport, proxyFactory);
+    }
+
+    if (invocation.isForMethodAnnotatedWithResourceRepresentation()) {
+
+      return new ResourceRepresentationHandler(invocation);
+    }
+
     // unsupported operation
     throw new HalApiDeveloperException("The method " + invocation + " is not annotated with one of the supported HAL API annotations");
+  }
+
+  private Observable<HalResource> addContextToHalApiClientException(Throwable ex, HalApiMethodInvocation invocation) {
+
+    if (ex instanceof HalApiClientException) {
+      String msg = "Failed to load an upstream resource that was requested by calling " + invocation;
+      return Observable.error(new HalApiClientException(msg, (HalApiClientException)ex));
+    }
+    return Observable.error(ex);
   }
 }

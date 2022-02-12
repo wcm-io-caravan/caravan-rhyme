@@ -22,7 +22,7 @@ package io.wcm.caravan.rhyme.spring.impl;
 import static io.wcm.caravan.rhyme.spring.impl.SpringLinkBuilderTestController.BASE_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -46,7 +46,7 @@ import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
 
 
 @ExtendWith(MockitoExtension.class)
-public class UrlFingerprintingImplTest {
+class UrlFingerprintingImplTest {
 
   private static final String PARAM = "time";
   private static final String PARAM2 = "time2";
@@ -70,7 +70,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void should_build_links_if_no_other_methods_are_called() throws Exception {
+  void should_build_links_if_no_other_methods_are_called() {
 
     UrlFingerprinting fingerprinting = createFingerprinting();
 
@@ -82,7 +82,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void should_expand_value_of_required_annotated_parameter() throws Exception {
+  void should_expand_value_of_required_annotated_parameter() {
 
     UrlFingerprinting fingerprinting = createFingerprinting();
 
@@ -95,7 +95,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void should_create_template_for_required_annotated_parameter() throws Exception {
+  void should_create_template_for_required_annotated_parameter() {
 
     UrlFingerprinting fingerprinting = createFingerprinting();
 
@@ -103,13 +103,14 @@ public class UrlFingerprintingImplTest {
         .controllerWithRequiredAnnotatedParamFoo(null)))
         .build();
 
-    assertThat(link.isTemplated());
+    assertThat(link.isTemplated())
+        .isTrue();
     assertThat(link.getHref())
         .endsWith("?foo={foo}");
   }
 
   @Test
-  public void should_use_timestamp_from_request_if_present() throws Exception {
+  void should_use_timestamp_from_request_if_present() {
 
     String valueFromRequest = "123";
 
@@ -123,7 +124,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void should_use_timestamp_from_supplier_if_not_present_in_request() throws Exception {
+  void should_use_timestamp_from_supplier_if_not_present_in_request() {
 
     UrlFingerprinting fingerprinting = createFingerprinting()
         .withTimestampParameter(PARAM, () -> NOW);
@@ -133,7 +134,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void should_handle_multiple_params_present_in_request() throws Exception {
+  void should_handle_multiple_params_present_in_request() {
 
     String valueFromRequest = "123";
     String valueFromRequest2 = "123";
@@ -150,7 +151,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void should_handle_multiple_params_not_all_of_which_are_present_in_request() throws Exception {
+  void should_handle_multiple_params_not_all_of_which_are_present_in_request() {
 
     String valueFromRequest = "123";
 
@@ -165,7 +166,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void should_not_set_max_age_if_withConditionalMaxAge_was_not_called() {
+  void should_not_set_max_age_if_withConditionalMaxAge_was_not_called() {
 
     String valueFromRequest = "123";
     when(request.getParameter(PARAM)).thenReturn(valueFromRequest);
@@ -175,11 +176,11 @@ public class UrlFingerprintingImplTest {
 
     assertThatFingerprintContains(fingerprinting, valueFromRequest);
 
-    verifyZeroInteractions(rhyme);
+    verifyNoInteractions(rhyme);
   }
 
   @Test
-  public void should_set_mutable_max_age_if_timestamp_not_present_in_request() {
+  void should_set_mutable_max_age_if_timestamp_not_present_in_request() {
 
     UrlFingerprinting fingerprinting = createFingerprinting()
         .withTimestampParameter(PARAM, () -> NOW)
@@ -191,7 +192,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void should_set_immutable_max_age_if_timestamp_present_in_request() {
+  void should_set_immutable_max_age_if_timestamp_present_in_request() {
 
     String valueFromRequest = "123";
     when(request.getParameter(PARAM)).thenReturn(valueFromRequest);
@@ -206,7 +207,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void should_add_additional_query_parameters() throws Exception {
+  void should_add_additional_query_parameters() {
 
     UrlFingerprinting fingerprinting = createFingerprinting()
         .withQueryParameter("foo", "123")
@@ -219,7 +220,7 @@ public class UrlFingerprintingImplTest {
   }
 
   @Test
-  public void additional_query_parameters_should_not_replace_existing() throws Exception {
+  void additional_query_parameters_should_not_replace_existing() {
 
     UrlFingerprinting fingerprinting = createFingerprinting()
         .withQueryParameter("foo", "123")

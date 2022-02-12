@@ -34,23 +34,24 @@ import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.impl.client.ClientTestSupport.MockClientTestSupport;
 import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
 
 
-public class ResourceStateTest {
+class ResourceStateTest {
 
   private final MockClientTestSupport client = ClientTestSupport.withMocking();
 
   @HalApiInterface
-  interface ResourceWithSingleState {
+  interface ResourceWithSingleState extends LinkableResource {
 
     @ResourceState
     Single<TestResourceState> getProperties();
   }
 
   @Test
-  public void single_resource_state_should_be_emitted() throws Exception {
+  void single_resource_state_should_be_emitted() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test"));
 
@@ -71,7 +72,7 @@ public class ResourceStateTest {
   }
 
   @Test
-  public void maybe_resource_state_should_be_emitted() throws Exception {
+  void maybe_resource_state_should_be_emitted() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, new TestResourceState().withText("test"));
 
@@ -84,7 +85,7 @@ public class ResourceStateTest {
   }
 
   @Test
-  public void maybe_resource_state_should_be_empty_if_no_properties_are_set() throws Exception {
+  void maybe_resource_state_should_be_empty_if_no_properties_are_set() {
 
     client.mockHalResponseWithState(ENTRY_POINT_URI, JsonNodeFactory.instance.objectNode());
 
@@ -104,7 +105,7 @@ public class ResourceStateTest {
   }
 
   @Test
-  public void should_throw_developer_exception_if_return_type_is_not_supported() {
+  void should_throw_developer_exception_if_return_type_is_not_supported() {
 
     Throwable ex = catchThrowable(
         () -> client.createProxy(ResourceWithIllegalReturnType.class).notSupported());

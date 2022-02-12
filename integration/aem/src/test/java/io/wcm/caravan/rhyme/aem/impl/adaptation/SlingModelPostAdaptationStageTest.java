@@ -43,7 +43,7 @@ import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 @ExtendWith(AemContextExtension.class)
-public class SlingModelPostAdaptationStageTest {
+class SlingModelPostAdaptationStageTest {
 
   private AemContext context = AppAemContext.newAemContext();
 
@@ -66,7 +66,7 @@ public class SlingModelPostAdaptationStageTest {
 
 
   @Test
-  public void withLinkTitle_allows_to_overide_title_for_SlingLinkableResource_instances() {
+  void withLinkTitle_allows_to_overide_title_for_SlingLinkableResource_instances() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -82,7 +82,7 @@ public class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  public void withLinkTitle_fails_to_overide_title_if_model_class_does_not_implement_SlingLinkableResource() {
+  void withLinkTitle_fails_to_overide_title_if_model_class_does_not_implement_SlingLinkableResource() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -100,7 +100,7 @@ public class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  public void withLinkName_allows_to_overide_name_for_SlingLinkableResource_instances() {
+  void withLinkName_allows_to_overide_name_for_SlingLinkableResource_instances() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -116,7 +116,7 @@ public class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  public void withLinkName_and_withLinkTitle_can_be_combined() {
+  void withLinkName_and_withLinkTitle_can_be_combined() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -141,7 +141,7 @@ public class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  public void withModifications_should_allow_to_append_muliple_query_parameters() {
+  void withModifications_should_allow_to_append_muliple_query_parameters() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
 
@@ -156,7 +156,7 @@ public class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  public void withQueryParameterTemplate_fails_if_non_null_resource_path_was_selected() {
+  void withQueryParameterTemplate_fails_if_non_null_resource_path_was_selected() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -172,7 +172,7 @@ public class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  public void withPartialLinkTemplate_should_keep_parameters_with_null_values() {
+  void withPartialLinkTemplate_should_keep_parameters_with_null_values() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
 
@@ -187,7 +187,7 @@ public class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  public void withModifications_should_allow_calls_to_impl_instance() {
+  void withModifications_should_allow_calls_to_impl_instance() {
 
     String customTitle = "This is a link to foo!";
 

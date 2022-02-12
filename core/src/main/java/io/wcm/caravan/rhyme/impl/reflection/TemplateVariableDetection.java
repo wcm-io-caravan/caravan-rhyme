@@ -195,7 +195,7 @@ public final class TemplateVariableDetection {
     return getVariablesInfosFromFields(instance, dtoClass);
   }
 
-  private static <T> List<TemplateVariableWithTypeInfo> getVariableInfosFromPublicGetter(Object instance, Class dtoClass) {
+  private static List<TemplateVariableWithTypeInfo> getVariableInfosFromPublicGetter(Object instance, Class dtoClass) {
     try {
 
       PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(dtoClass).getPropertyDescriptors();
@@ -227,14 +227,14 @@ public final class TemplateVariableDetection {
     }
 
     try {
-      return readMethod.invoke(instance, new Object[0]);
+      return readMethod.invoke(instance);
     }
     catch (InvocationTargetException | IllegalAccessException | RuntimeException ex) {
       throw new HalApiDeveloperException("Failed to invoke getter " + readMethod.getName() + " from class " + instance.getClass().getSimpleName(), ex);
     }
   }
 
-  private static <T> List<TemplateVariableWithTypeInfo> getVariablesInfosFromFields(Object instance, Class dtoClass) {
+  private static List<TemplateVariableWithTypeInfo> getVariablesInfosFromFields(Object instance, Class dtoClass) {
 
     try {
       return Stream.of(FieldUtils.getAllFields(dtoClass))

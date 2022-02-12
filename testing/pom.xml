@@ -25,12 +25,12 @@
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../tooling/parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Rhyme - Testing Support</name>
@@ -63,24 +63,6 @@
 
   <dependencies>
 
-    <!-- Jackson - overriding managed version from wcm.io parent, because we need a version that
-    is compatible with the version used in spring-webflux -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.11.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.11.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.11.2</version>
-    </dependency>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -91,7 +73,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <!-- AssertJ for fluent assertions -->
@@ -130,12 +112,6 @@
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-jre8-standalone</artifactId>
       <version>2.27.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.mercateo</groupId>
-      <artifactId>test-clock</artifactId>
-      <version>1.0.2</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>

@@ -48,12 +48,12 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
   @Reference
   private RhymeDocsOsgiBundleSupport rhymeDocsSupport;
 
-  private BundleTracker bundleTracker;
+  private BundleTracker<String> bundleTracker;
 
   @Activate
   void activate(ComponentContext componentContext) {
 
-    bundleTracker = new BundleTracker<String>(componentContext.getBundleContext(), Bundle.ACTIVE, this);
+    bundleTracker = new BundleTracker<>(componentContext.getBundleContext(), Bundle.ACTIVE, this);
     bundleTracker.open();
   }
 
@@ -70,7 +70,7 @@ public class RhymeDocsBundleTracker implements BundleTrackerCustomizer<String> {
     URL rhymeDocsUrl = bundle.getResource(rhymeDocsPath);
 
     if (rhymeDocsUrl == null) {
-      log.debug("No rhyme docs were found in bundle at {}", bundle.getSymbolicName(), rhymeDocsPath);
+      log.debug("No rhyme docs were found in bundle {} at {}", bundle.getSymbolicName(), rhymeDocsPath);
       return false;
     }
 

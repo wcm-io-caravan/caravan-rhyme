@@ -37,10 +37,10 @@ import io.wcm.caravan.rhyme.api.relations.StandardRelations;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import wiremock.com.github.jknack.handlebars.internal.lang3.math.NumberUtils;
 
-public class HalCrawlerTest {
+class HalCrawlerTest {
 
   @Test
-  public void should_crawl_from_root_resource() throws Exception {
+  void should_crawl_from_root_resource() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLimit(5);
@@ -54,7 +54,7 @@ public class HalCrawlerTest {
   }
 
   @Test
-  public void should_crawl_from_custom_entry_point() throws Exception {
+  void should_crawl_from_custom_entry_point() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLimit(5);
@@ -69,7 +69,7 @@ public class HalCrawlerTest {
   }
 
   @Test
-  public void should_ignore_link_templates() throws Exception {
+  void should_ignore_link_templates() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLinkTemplate()
@@ -84,19 +84,18 @@ public class HalCrawlerTest {
   }
 
   @Test
-  public void should_respect_default_limit() throws Exception {
+  void should_respect_default_limit() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader();
 
     HalCrawler crawler = new HalCrawler(loader);
 
     assertThat(crawler.getAllResponses())
-        .hasSize(1000)
-        .extracting(HalResponse::getUri);
+        .hasSize(1000);
   }
 
   @Test
-  public void should_respect_custom_limit() throws Exception {
+  void should_respect_custom_limit() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader();
 
@@ -110,7 +109,7 @@ public class HalCrawlerTest {
   }
 
   @Test
-  public void should_ignore_relations() throws Exception {
+  void should_ignore_relations() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader();
 
@@ -124,7 +123,7 @@ public class HalCrawlerTest {
   }
 
   @Test
-  public void should_filter_links_with_custom_content_type() throws Exception {
+  void should_filter_links_with_custom_content_type() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader()
         .withAdditionalLink(new Link("/foo").setType("text/html"));
@@ -139,7 +138,7 @@ public class HalCrawlerTest {
   }
 
   @Test
-  public void should_not_filter_links_with_hal_content_type() throws Exception {
+  void should_not_filter_links_with_hal_content_type() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader()
         .withAdditionalLink(new Link("/foo").setType(HalResource.CONTENT_TYPE));
@@ -154,7 +153,7 @@ public class HalCrawlerTest {
   }
 
   @Test
-  public void should_not_crawl_multiple_times() throws Exception {
+  void should_not_crawl_multiple_times() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLimit(5);
@@ -171,7 +170,7 @@ public class HalCrawlerTest {
   }
 
   @Test
-  public void should_modify_uris() throws Exception {
+  void should_modify_uris() {
 
     MockResourceChainLoader loader = new MockResourceChainLoader()
         .withLimit(5);

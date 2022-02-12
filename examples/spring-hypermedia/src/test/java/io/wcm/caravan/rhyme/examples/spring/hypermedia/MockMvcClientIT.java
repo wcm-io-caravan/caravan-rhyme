@@ -70,7 +70,7 @@ import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration
  */
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
-public class MockMvcClientIT extends AbstractCompanyApiIT {
+class MockMvcClientIT extends AbstractCompanyApiIT {
 
   @Autowired
   protected HalResourceLoader mockMvcResourceLoader;

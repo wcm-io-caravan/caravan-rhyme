@@ -22,12 +22,11 @@ package io.wcm.caravan.rhyme.caravan.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.Charsets;
 
 import hu.akarnokd.rxjava3.interop.RxJavaInterop;
 import io.reactivex.rxjava3.core.Single;
@@ -86,7 +85,7 @@ public class CaravanResilientHttpSupport implements HttpClientSupport {
     }
   }
 
-  void handleException(HttpClientCallback callback, Throwable ex) throws Throwable {
+  void handleException(HttpClientCallback callback, Throwable ex) {
 
     if (ex instanceof IllegalResponseRuntimeException) {
       IllegalResponseRuntimeException irre = (IllegalResponseRuntimeException)ex;
@@ -94,7 +93,7 @@ public class CaravanResilientHttpSupport implements HttpClientSupport {
       callback.onHeadersAvailable(irre.getResponseStatusCode(), Collections.emptyMap());
 
       String body = StringUtils.defaultIfBlank(irre.getResponseBody(), "");
-      InputStream bodyAsStream = IOUtils.toInputStream(body, Charsets.UTF_8);
+      InputStream bodyAsStream = IOUtils.toInputStream(body, StandardCharsets.UTF_8);
       callback.onBodyAvailable(bodyAsStream);
 
       return;

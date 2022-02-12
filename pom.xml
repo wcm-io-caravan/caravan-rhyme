@@ -26,7 +26,7 @@
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>tooling/parent/pom.xml</relativePath>
   </parent>
 
@@ -41,6 +41,7 @@
     <module>api-interfaces</module>
     <module>core</module>
     <module>examples/aem-hal-browser</module>
+    <module>examples/aws-movie-search</module>
     <module>examples/osgi-jaxrs-example-launchpad</module>
     <module>examples/osgi-jaxrs-example-service</module>
     <module>examples/spring-hello-world</module>

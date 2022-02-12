@@ -46,38 +46,13 @@ import wiremock.com.google.common.collect.ImmutableMap;
 
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
-public class UrlFingerprintingIT {
+class UrlFingerprintingIT {
 
   private static final int SHORT_MAX_AGE_SECONDS = 10;
   private static final int LONG_MAX_AGE_SECONDS = (int)Duration.ofDays(100).getSeconds();
 
   @Autowired
   private HalResourceLoader mockMvcResourceLoader;
-
-  private HalResponse getResponse(String uri) {
-
-    return mockMvcResourceLoader.getHalResource(uri).blockingGet();
-  }
-
-  private List<String> getAllLinkHrefsFrom(HalResponse entryPoint) {
-
-    return entryPoint.getBody().getLinks().entries().stream()
-        .filter(entry -> !entry.getKey().equals("curies"))
-        .map(Entry::getValue)
-        .map(Link::getHref)
-        .collect(Collectors.toList());
-  }
-
-  private String getTimestampQueryParamFromUri(String uri) {
-
-    String expanded = UriTemplate.expand(uri, ImmutableMap.of(USE_EMBEDDED_RESOURCES, true, USE_FINGERPRINTING, true, CompanyApi.ID, 1));
-
-    UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(expanded);
-
-    return builder.build()
-        .getQueryParams()
-        .getFirst("timestamp");
-  }
 
   @Test
   void max_age_of_entry_point_without_timestamp_should_be_short() {
@@ -151,6 +126,31 @@ public class UrlFingerprintingIT {
     assertThat(responses)
         .extracting(HalResponse::getMaxAge)
         .containsOnly(SHORT_MAX_AGE_SECONDS);
+  }
+
+  private HalResponse getResponse(String uri) {
+
+    return mockMvcResourceLoader.getHalResource(uri).blockingGet();
+  }
+
+  private List<String> getAllLinkHrefsFrom(HalResponse entryPoint) {
+
+    return entryPoint.getBody().getLinks().entries().stream()
+        .filter(entry -> !entry.getKey().equals("curies"))
+        .map(Entry::getValue)
+        .map(Link::getHref)
+        .collect(Collectors.toList());
+  }
+
+  private String getTimestampQueryParamFromUri(String uri) {
+
+    String expanded = UriTemplate.expand(uri, ImmutableMap.of(USE_EMBEDDED_RESOURCES, true, USE_FINGERPRINTING, true, CompanyApi.ID, 1));
+
+    UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(expanded);
+
+    return builder.build()
+        .getQueryParams()
+        .getFirst("timestamp");
   }
 
   private String removeQuery(String url) {

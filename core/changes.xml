@@ -23,6 +23,56 @@
     xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/plugins/maven-changes-plugin/xsd/changes-1.0.0.xsd">
   <body>
 
+    <release version="1.2.0" date="not released">
+      <action type="add" dev="ssauder">
+        Allow to provide custom mock/stub implementations for remote HAL API interfaces (via #withRemoteResourceOverride in RhymeBuilder and HalApiClientBuilder)
+      </action>
+      <action type="add" dev="ssauder">
+        Improved consistency for handling of null values for link template variables. When calling #createLink on a client proxy, you'll now always
+        get the link template (which may be partially expanded if some values were not null in the invocation).
+        When following such links, any non-resolved variables will be removed before loading the target resource (rather than throwing an exception).
+        This adds support for following link templates were all variables are optional.
+      </action>
+      <action type="add" dev="ssauder">
+        Ensure that the max-age value of failed upstream requests is also captured and taken into account for calculating the max-age
+        of the resource being rendered.
+      </action>
+      <action type="fix" dev="ssauder">
+        Improved reliability when parsing max-age response header.
+      </action>
+     <action type="update" dev="ssauder">
+        Simplified generics in signature of HalApiReturnTypeSupport#convertToObservable. The change is binary compatible at runtime,
+        but (only) if you are implementing your own HalApiReturnTypeSupport, you may see a build error after upgrading the compile time dependency.
+      </action>
+    </release>
+
+    <release version="1.1.0" date="2022-01-12">
+      <action type="add" dev="ssauder">
+        Added functions in builder to specify custom ObjectMapper (to avoid jackson-datatype-guava dependency).
+      </action>
+      <action type="add" dev="ssauder">
+        Allow methods annotated with Related to return Link instances directly.
+      </action>
+      <action type="add" dev="ssauder">
+        Introduce RhymeMetadataConfiguration to opt-in for generation of embedded "rhyme:metadata" resource.
+      </action>
+      <action type="add" dev="ssauder">
+        Updated dependencies for Java 17 compatibility.
+      </action>
+      <action type="add" dev="ssauder">
+        Added HalApiClientBuilder and HalResponseRendererBuilder.
+      </action>
+      <action type="add" dev="ssauder">
+        Introduced support for @ResourceProperty annotation.
+      </action>
+      <action type="add" dev="ssauder">
+        Add caching functionality via HalResourceLoaderBuilder.
+      </action>
+      <action type="add" dev="ssauder">
+        Introduced a simpler SPI interface for custom HTTP client implementations.
+      </action>
+    </release>
+
     <release version="1.0.0" date="2021-05-26">
       <action type="add" dev="ssauder">
         Initial release.

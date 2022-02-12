@@ -38,7 +38,7 @@ import io.wcm.caravan.rhyme.testing.TestState;
 import io.wcm.caravan.rhyme.testing.resources.TestResource;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class MaxAgeTest {
+class MaxAgeTest {
 
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();
   private final TestResource entryPoint = client.getEntryPoint();
@@ -70,7 +70,7 @@ public class MaxAgeTest {
   }
 
   @Test
-  public void max_age_should_be_null_if_nothing_was_specified() {
+  void max_age_should_be_null_if_nothing_was_specified() {
 
     loadEntryPoint();
 
@@ -78,7 +78,7 @@ public class MaxAgeTest {
   }
 
   @Test
-  public void explicit_max_age_should_be_used_if_no_headers_found_in_response() {
+  void explicit_max_age_should_be_used_if_no_headers_found_in_response() {
 
     metrics.setResponseMaxAge(Duration.ofSeconds(45));
 
@@ -88,7 +88,7 @@ public class MaxAgeTest {
   }
 
   @Test
-  public void max_age_from_entrypoint_response_should_be_used_if_no_explicit_value_defined() {
+  void max_age_from_entrypoint_response_should_be_used_if_no_explicit_value_defined() {
 
     entryPoint.withMaxAge(55);
 
@@ -98,7 +98,7 @@ public class MaxAgeTest {
   }
 
   @Test
-  public void max_age_from_entrypoint_response_should_be_used_if_smaller_than_explicit_value() {
+  void max_age_from_entrypoint_response_should_be_used_if_smaller_than_explicit_value() {
 
     metrics.setResponseMaxAge(Duration.ofSeconds(125));
     entryPoint.withMaxAge(55);
@@ -109,7 +109,7 @@ public class MaxAgeTest {
   }
 
   @Test
-  public void explicit_max_age_should_be_used_if_smaller_than_header_from_entry_point() {
+  void explicit_max_age_should_be_used_if_smaller_than_header_from_entry_point() {
 
     metrics.setResponseMaxAge(Duration.ofSeconds(45));
     entryPoint.withMaxAge(180);
@@ -120,7 +120,7 @@ public class MaxAgeTest {
   }
 
   @Test
-  public void smallest_max_age_from_all_loaded_resources_should_be_used() {
+  void smallest_max_age_from_all_loaded_resources_should_be_used() {
 
     entryPoint.withMaxAge(55);
     entryPoint.createLinked(ITEM).withMaxAge(15);
@@ -134,7 +134,7 @@ public class MaxAgeTest {
   }
 
   @Test
-  public void resources_without_max_age_header_should_be_ignored() {
+  void resources_without_max_age_header_should_be_ignored() {
 
     entryPoint.withMaxAge(55);
     entryPoint.createLinked(ITEM);

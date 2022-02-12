@@ -25,12 +25,12 @@
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../../tooling/parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme.spring</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Rhyme - Spring Integration</name>
@@ -101,29 +101,11 @@
       <artifactId>spring-boot-autoconfigure</artifactId>
     </dependency>
 
-    <!-- Jackson - overriding managed version from wcm.io parent, because we need a version that
-    is compatible with the version used in spring-webflux -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.11.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.11.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.11.2</version>
-    </dependency>
-
     <!-- wcm.io -->
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
   
@@ -147,7 +129,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 
