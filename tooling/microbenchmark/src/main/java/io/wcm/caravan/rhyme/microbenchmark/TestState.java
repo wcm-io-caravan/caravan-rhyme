@@ -1,11 +1,14 @@
 package io.wcm.caravan.rhyme.microbenchmark;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 public class TestState {
 
@@ -15,6 +18,8 @@ public class TestState {
   private Integer bar;
 
   private List<Integer> list;
+
+  private Map<String, TestState> nestedObjects = new HashMap<String, TestState>();
 
   public String getFoo() {
     return foo;
@@ -43,7 +48,26 @@ public class TestState {
     return this;
   }
 
+  public Map<String, TestState> getNestedObjects() {
+    return nestedObjects;
+  }
+
+  public TestState setNestedObjects(Map<String, TestState> value) {
+    this.nestedObjects = value;
+    return this;
+  }
+
   static TestState createTestState() {
+    return new TestState()
+        .setFoo("123")
+        .setBar(456)
+        .setList(ImmutableList.of(7, 8, 9))
+        .setNestedObjects(ImmutableMap.of(
+            "foo", createNestedTestState(),
+            "bar", createNestedTestState()));
+  }
+
+  private static TestState createNestedTestState() {
     return new TestState()
         .setFoo("123")
         .setBar(456)
@@ -51,6 +75,19 @@ public class TestState {
   }
 
   static ObjectNode createTestJson() {
+    ObjectNode json = JsonNodeFactory.instance.objectNode();
+    json.put("foo", "123")
+        .put("bar", 456)
+        .putArray("list").add(7).add(8).add(9);
+
+    ObjectNode nested = json.putObject("nestedObjects");
+    nested.set("foo", createNestedTestJson());
+    nested.set("bar", createNestedTestJson());
+
+    return json;
+  }
+
+  static ObjectNode createNestedTestJson() {
     ObjectNode json = JsonNodeFactory.instance.objectNode();
     json.put("foo", "123")
         .put("bar", 456)

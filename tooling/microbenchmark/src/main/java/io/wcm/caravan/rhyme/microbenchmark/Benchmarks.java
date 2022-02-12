@@ -172,10 +172,12 @@ public class Benchmarks {
 
     Rhyme rhyme = createRhyme(loader, metrics);
 
-    Resource clientProxy = rhyme.getRemoteResource("/foo", Resource.class);
+    LinkableBenchmarkResource clientProxy = rhyme.getRemoteResource("/foo", LinkableBenchmarkResource.class);
 
     return ImmutableList.of(clientProxy.getState().blockingGet(), clientProxy.createLink(),
+        clientProxy.getEmbedded1().flatMapSingle(e -> e.getState()).toList().blockingGet(),
         clientProxy.getLinked1().map(l -> l.getState()).toList().blockingGet(),
+
         clientProxy.getLinked1().map(l -> l.createLink().getHref()).toList().blockingGet(),
         clientProxy.getLinked2().map(l -> l.createLink().getHref()).toList().blockingGet(),
         clientProxy.getLinked3().map(l -> l.createLink().getHref()).toList().blockingGet(),
