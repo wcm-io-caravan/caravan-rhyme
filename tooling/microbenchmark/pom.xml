@@ -35,7 +35,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../../tooling/parent/pom.xml</relativePath>
   </parent>
     <artifactId>io.wcm.caravan.rhyme.microbenchmark</artifactId>
@@ -53,7 +53,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 <dependency>
