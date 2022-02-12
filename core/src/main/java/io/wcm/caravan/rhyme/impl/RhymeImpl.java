@@ -32,7 +32,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.api.server.VndErrorResponseRenderer;
 
-final class RhymeImpl implements Rhyme {
+public final class RhymeImpl implements Rhyme {
 
   private final String incomingRequestUri;
   private final VndErrorResponseRenderer errorRenderer;
@@ -78,5 +78,9 @@ final class RhymeImpl implements Rhyme {
   public RequestMetricsStopwatch startStopwatch(Class clazz, Supplier<String> taskDescription) {
 
     return metrics.startStopwatch(clazz, taskDescription);
+  }
+
+  public RequestMetricsCollector getMetrics() {
+    return metrics;
   }
 }
