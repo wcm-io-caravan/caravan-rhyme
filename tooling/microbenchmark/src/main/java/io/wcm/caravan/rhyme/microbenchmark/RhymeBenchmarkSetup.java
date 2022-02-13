@@ -63,7 +63,7 @@ import io.wcm.caravan.rhyme.microbenchmark.resources.DynamicResourceImpl;
 import io.wcm.caravan.rhyme.microbenchmark.server.NettyHttpServer;
 
 @State(Scope.Benchmark)
-public class RhymeState {
+public class RhymeBenchmarkSetup {
 
   private BenchmarkResourceState firstResponseState;
   private ObjectNode firstResponseJson;

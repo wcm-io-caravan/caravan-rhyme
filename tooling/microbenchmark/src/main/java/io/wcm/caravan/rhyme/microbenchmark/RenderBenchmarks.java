@@ -42,7 +42,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.microbenchmark.RhymeState.Metrics;
+import io.wcm.caravan.rhyme.microbenchmark.RhymeBenchmarkSetup.Metrics;
 import io.wcm.caravan.rhyme.microbenchmark.resources.DynamicResourceImpl;
 import io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters;
 import io.wcm.caravan.rhyme.microbenchmark.resources.StaticResourceImpl;
@@ -57,7 +57,7 @@ public class RenderBenchmarks {
 
   private final ObjectMapper mapper = new ObjectMapper();
 
-  HalResponse render(RhymeState state, LinkableResource resource, Metrics metrics) {
+  HalResponse render(RhymeBenchmarkSetup state, LinkableResource resource, Metrics metrics) {
 
     Rhyme rhyme = state.createRhyme(HalResourceLoader.create(), metrics);
 
@@ -65,25 +65,25 @@ public class RenderBenchmarks {
   }
 
   @Benchmark
-  public HalResponse withoutOverhead(RhymeState state) {
+  public HalResponse withoutOverhead(RhymeBenchmarkSetup state) {
 
     return render(state, new StaticResourceImpl("/"), Metrics.DISABLED);
   }
 
   @Benchmark
-  public HalResponse withMetrics(RhymeState state) {
+  public HalResponse withMetrics(RhymeBenchmarkSetup state) {
 
     return render(state, new StaticResourceImpl("/"), Metrics.ENABLED);
   }
 
   @Benchmark
-  public HalResponse withInstanceCreation(RhymeState state) {
+  public HalResponse withInstanceCreation(RhymeBenchmarkSetup state) {
 
     return render(state, new DynamicResourceImpl("/"), Metrics.DISABLED);
   }
 
   @Benchmark
-  public List<ObjectNode> onlyObjectMapping(RhymeState state) {
+  public List<ObjectNode> onlyObjectMapping(RhymeBenchmarkSetup state) {
 
     List<ObjectNode> list = new ArrayList<>();
     for (int i = 0; i < ResourceParameters.NUM_EMBEDDED_RESOURCES + 1; i++) {

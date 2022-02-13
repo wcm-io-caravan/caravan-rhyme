@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -72,27 +71,6 @@ public class BenchmarkResourceState {
         .setFoo("123")
         .setBar(456)
         .setList(ImmutableList.of(7, 8, 9));
-  }
-
-  public static ObjectNode createTestJson() {
-    ObjectNode json = JsonNodeFactory.instance.objectNode();
-    json.put("foo", "123")
-        .put("bar", 456)
-        .putArray("list").add(7).add(8).add(9);
-
-    ObjectNode nested = json.putObject("nestedObjects");
-    nested.set("foo", createNestedTestJson());
-    nested.set("bar", createNestedTestJson());
-
-    return json;
-  }
-
-  static ObjectNode createNestedTestJson() {
-    ObjectNode json = JsonNodeFactory.instance.objectNode();
-    json.put("foo", "123")
-        .put("bar", 456)
-        .putArray("list").add(7).add(8).add(9);
-    return json;
   }
 
   public static ObjectNode createMappedJson() {

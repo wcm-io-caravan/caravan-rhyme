@@ -49,7 +49,7 @@ import com.google.common.collect.ImmutableList;
 
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.microbenchmark.RhymeState.Metrics;
+import io.wcm.caravan.rhyme.microbenchmark.RhymeBenchmarkSetup.Metrics;
 import io.wcm.caravan.rhyme.microbenchmark.resources.BenchmarkResourceState;
 import io.wcm.caravan.rhyme.microbenchmark.resources.EmbeddableBenchmarkResource;
 import io.wcm.caravan.rhyme.microbenchmark.resources.LinkableBenchmarkResource;
@@ -66,7 +66,7 @@ public class ClientBenchmarks {
 
   private final JsonFactory jsonFactory = new JsonFactory(objectMapper);
 
-  private ImmutableList<Object> callClientMethods(RhymeState state, HalResourceLoader loader, Metrics metrics) {
+  private ImmutableList<Object> callClientMethods(RhymeBenchmarkSetup state, HalResourceLoader loader, Metrics metrics) {
 
     Rhyme rhyme = state.createRhyme(loader, metrics);
 
@@ -89,32 +89,32 @@ public class ClientBenchmarks {
   }
 
   @Benchmark
-  public Object withoutOverhead(RhymeState state) {
+  public Object withoutOverhead(RhymeBenchmarkSetup state) {
     return callClientMethods(state, state.preBuiltLoader, Metrics.DISABLED);
   }
 
   @Benchmark
-  public Object withMetrics(RhymeState state) {
+  public Object withMetrics(RhymeBenchmarkSetup state) {
     return callClientMethods(state, state.preBuiltLoader, Metrics.ENABLED);
   }
 
   @Benchmark
-  public Object withParsing(RhymeState state) {
+  public Object withParsing(RhymeBenchmarkSetup state) {
     return callClientMethods(state, state.parsingLoader, Metrics.DISABLED);
   }
 
   @Benchmark
-  public Object withNetworkAndParsing(RhymeState state) {
+  public Object withNetworkAndParsing(RhymeBenchmarkSetup state) {
     return callClientMethods(state, state.networkLoader, Metrics.DISABLED);
   }
 
   @Benchmark
-  public Object withCaching(RhymeState state) {
+  public Object withCaching(RhymeBenchmarkSetup state) {
     return callClientMethods(state, state.cachingLoader, Metrics.DISABLED);
   }
 
   @Benchmark
-  public List<ObjectNode> onlyParsing(RhymeState state) throws IOException {
+  public List<ObjectNode> onlyParsing(RhymeBenchmarkSetup state) throws IOException {
     List<ObjectNode> list = new ArrayList<>();
     for (int i = 0; i < NUM_LINKED_RESOURCES + 1; i++) {
       try (JsonParser parser = jsonFactory.createParser(state.getFirstResponseBytes())) {
@@ -125,7 +125,7 @@ public class ClientBenchmarks {
   }
 
   @Benchmark
-  public List<String> onlyNetwork(RhymeState state) throws IOException {
+  public List<String> onlyNetwork(RhymeBenchmarkSetup state) throws IOException {
 
     List<String> responses = new ArrayList<>();
     for (int i = 0; i < NUM_LINKED_RESOURCES + 1; i++) {
@@ -135,7 +135,7 @@ public class ClientBenchmarks {
   }
 
   @Benchmark
-  public List<BenchmarkResourceState> onlyMapping(RhymeState state) throws IOException {
+  public List<BenchmarkResourceState> onlyMapping(RhymeBenchmarkSetup state) throws IOException {
 
     List<BenchmarkResourceState> list = new ArrayList<>();
     for (int i = 0; i < NUM_LINKED_RESOURCES + NUM_EMBEDDED_RESOURCES + 1; i++) {
