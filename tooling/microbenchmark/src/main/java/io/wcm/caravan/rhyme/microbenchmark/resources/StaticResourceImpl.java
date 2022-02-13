@@ -1,4 +1,7 @@
-package io.wcm.caravan.rhyme.microbenchmark;
+package io.wcm.caravan.rhyme.microbenchmark.resources;
+
+import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.NUM_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.NUM_LINKED_RESOURCES;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,19 +15,19 @@ import io.wcm.caravan.hal.resource.Link;
 
 public class StaticResourceImpl implements LinkableBenchmarkResource {
 
-  private static final Single<ObjectNode> STATE_SINGLE = Single.just(TestState.createTestJson());
+  private static final Single<ObjectNode> STATE_SINGLE = Single.just(StatePojo.createTestJson());
 
-  private static final Observable<LinkableBenchmarkResource> LINKED = Observable.range(0, ResourceParameters.numLinkedResource())
+  private static final Observable<LinkableBenchmarkResource> LINKED = Observable.range(0, NUM_LINKED_RESOURCES)
       .map(i -> (LinkableBenchmarkResource)new StaticResourceImpl("/" + i))
       .cache();
 
-  private static final Observable<EmbeddableBenchmarkResource> EMBEDDED = Observable.range(0, ResourceParameters.numEmbeddedResource())
+  private static final Observable<EmbeddableBenchmarkResource> EMBEDDED = Observable.range(0, NUM_EMBEDDED_RESOURCES)
       .map(i -> (EmbeddableBenchmarkResource)new Embedded())
       .cache();
 
   private final Link link;
 
-  StaticResourceImpl(String path) {
+  public StaticResourceImpl(String path) {
     this.link = new Link(path)
         .setName(StringUtils.trimToNull(path.substring(1)))
         .setTitle("A test resource for microbenchmarking")

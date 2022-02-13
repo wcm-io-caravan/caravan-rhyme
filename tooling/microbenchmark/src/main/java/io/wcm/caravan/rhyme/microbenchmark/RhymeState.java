@@ -19,11 +19,14 @@
  */
 package io.wcm.caravan.rhyme.microbenchmark;
 
+import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.NUM_LINKED_RESOURCES;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,11 +57,18 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.RhymeImpl;
+import io.wcm.caravan.rhyme.microbenchmark.resources.DynamicResourceImpl;
+import io.wcm.caravan.rhyme.microbenchmark.resources.StatePojo;
+import io.wcm.caravan.rhyme.microbenchmark.server.NettyHttpServer;
 
 @State(Scope.Benchmark)
 public class RhymeState {
 
+  private StatePojo firstResponseState;
+
   HalResourceLoader preBuiltLoader;
+
+  private Map<String, byte[]> preBuiltResponseBytes;
 
   HalResourceLoader parsingLoader;
 
@@ -68,21 +78,23 @@ public class RhymeState {
 
   HalResourceLoader cachingLoader;
 
+
   private Rhyme lastRhymeInstance;
 
   @Setup(Level.Trial)
   public void init() {
 
-    Stream<String> allPaths = Stream.concat(Stream.of("/"), IntStream.range(0, ResourceParameters.numLinkedResource()).mapToObj(i -> "/" + i));
+    firstResponseState = StatePojo.createTestState();
+
+    Stream<String> allPaths = Stream.concat(Stream.of("/"), IntStream.range(0, NUM_LINKED_RESOURCES).mapToObj(i -> "/" + i));
 
     Map<String, HalResponse> preBuiltResponses = allPaths
         .map(this::renderResponse)
-        .collect(Collectors.toMap(HalResponse::getUri, Function.identity()));
+        .collect(Collectors.toMap(HalResponse::getUri, Function.identity(), (v1, v2) -> v1, LinkedHashMap::new));
 
     preBuiltLoader = uri -> Single.just(preBuiltResponses.get(uri));
 
-
-    Map<String, byte[]> preBuiltResponseBytes = new HashMap<>();
+    preBuiltResponseBytes = new HashMap<>();
     preBuiltResponses.forEach((uri, response) -> preBuiltResponseBytes.put(uri, response.getBody().getModel().toString().getBytes(StandardCharsets.UTF_8)));
 
     parsingLoader = HalResourceLoader.create((uri, callback) -> {
@@ -157,6 +169,10 @@ public class RhymeState {
     }
   }
 
+  public byte[] getFirstResponseBytes() {
+    return preBuiltResponseBytes.values().iterator().next();
+  }
+
   Rhyme createRhyme(HalResourceLoader loader, Metrics metrics) {
 
     lastRhymeInstance = RhymeBuilder.withResourceLoader(loader)
@@ -174,5 +190,13 @@ public class RhymeState {
 
   enum Metrics {
     ENABLED, DISABLED
+  }
+
+  public int getNettyPort() {
+    return NettyHttpServer.NETTY_PORT_NR;
+  }
+
+  public StatePojo getFirstResponseState() {
+    return firstResponseState;
   }
 }

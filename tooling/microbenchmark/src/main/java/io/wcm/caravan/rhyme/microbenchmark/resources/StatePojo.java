@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.microbenchmark;
+package io.wcm.caravan.rhyme.microbenchmark.resources;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-public class TestState {
+public class StatePojo {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -19,13 +19,13 @@ public class TestState {
 
   private List<Integer> list;
 
-  private Map<String, TestState> nestedObjects = new HashMap<String, TestState>();
+  private Map<String, StatePojo> nestedObjects = new HashMap<>();
 
   public String getFoo() {
     return foo;
   }
 
-  public TestState setFoo(String foo) {
+  public StatePojo setFoo(String foo) {
     this.foo = foo;
     return this;
   }
@@ -34,7 +34,7 @@ public class TestState {
     return bar;
   }
 
-  public TestState setBar(Integer bar) {
+  public StatePojo setBar(Integer bar) {
     this.bar = bar;
     return this;
   }
@@ -43,22 +43,22 @@ public class TestState {
     return list;
   }
 
-  public TestState setList(List<Integer> list) {
+  public StatePojo setList(List<Integer> list) {
     this.list = list;
     return this;
   }
 
-  public Map<String, TestState> getNestedObjects() {
+  public Map<String, StatePojo> getNestedObjects() {
     return nestedObjects;
   }
 
-  public TestState setNestedObjects(Map<String, TestState> value) {
+  public StatePojo setNestedObjects(Map<String, StatePojo> value) {
     this.nestedObjects = value;
     return this;
   }
 
-  static TestState createTestState() {
-    return new TestState()
+  public static StatePojo createTestState() {
+    return new StatePojo()
         .setFoo("123")
         .setBar(456)
         .setList(ImmutableList.of(7, 8, 9))
@@ -67,14 +67,14 @@ public class TestState {
             "bar", createNestedTestState()));
   }
 
-  private static TestState createNestedTestState() {
-    return new TestState()
+  private static StatePojo createNestedTestState() {
+    return new StatePojo()
         .setFoo("123")
         .setBar(456)
         .setList(ImmutableList.of(7, 8, 9));
   }
 
-  static ObjectNode createTestJson() {
+  public static ObjectNode createTestJson() {
     ObjectNode json = JsonNodeFactory.instance.objectNode();
     json.put("foo", "123")
         .put("bar", 456)

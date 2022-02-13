@@ -1,13 +1,16 @@
-package io.wcm.caravan.rhyme.microbenchmark;
+package io.wcm.caravan.rhyme.microbenchmark.resources;
 
-import static io.wcm.caravan.rhyme.microbenchmark.ResourceParameters.numEmbeddedResource;
-import static io.wcm.caravan.rhyme.microbenchmark.ResourceParameters.numLinkedResource;
+import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.NUM_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.NUM_LINKED_RESOURCES;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 
 public class DynamicResourceImpl implements LinkableBenchmarkResource {
@@ -20,11 +23,11 @@ public class DynamicResourceImpl implements LinkableBenchmarkResource {
 
   @Override
   public Single<ObjectNode> getState() {
-    return Single.just(TestState.createTestJson());
+    return Single.just(StatePojo.createTestJson());
   }
 
   private static Observable<LinkableBenchmarkResource> createLinked() {
-    return Observable.range(0, numLinkedResource()).map(i -> new DynamicResourceImpl("/" + i));
+    return Observable.range(0, NUM_LINKED_RESOURCES).map(i -> new DynamicResourceImpl("/" + i));
   }
 
   @Override
@@ -54,16 +57,16 @@ public class DynamicResourceImpl implements LinkableBenchmarkResource {
 
   @Override
   public Observable<EmbeddableBenchmarkResource> getEmbedded1() {
-    return Observable.range(0, numEmbeddedResource()).map(i -> new Embedded(i));
+    return Observable.range(0, NUM_EMBEDDED_RESOURCES).map(i -> new Embedded(i));
   }
 
   @Override
   public Link createLink() {
 
-    return new Link(path);
-    //    .setName(StringUtils.trimToNull(path.substring(1)))
-    //    .setTitle("A test resource for microbenchmarking")
-    //    .setType(HalResource.CONTENT_TYPE);
+    return new Link(path)
+        .setName(StringUtils.trimToNull(path.substring(1)))
+        .setTitle("A test resource for microbenchmarking")
+        .setType(HalResource.CONTENT_TYPE);
   }
 
   static class Embedded implements EmbeddableBenchmarkResource {
@@ -76,7 +79,7 @@ public class DynamicResourceImpl implements LinkableBenchmarkResource {
 
     @Override
     public Single<ObjectNode> getState() {
-      return Single.just(TestState.createTestJson());
+      return Single.just(StatePojo.createTestJson());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package io.wcm.caravan.rhyme.microbenchmark;
+package io.wcm.caravan.rhyme.microbenchmark.resources;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

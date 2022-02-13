@@ -23,6 +23,12 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -32,11 +38,18 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.microbenchmark.RhymeState.Metrics;
+import io.wcm.caravan.rhyme.microbenchmark.resources.EmbeddableBenchmarkResource;
+import io.wcm.caravan.rhyme.microbenchmark.resources.LinkableBenchmarkResource;
+import io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters;
 
 @BenchmarkMode(AverageTime)
 @OutputTimeUnit(MILLISECONDS)
@@ -45,6 +58,8 @@ import io.wcm.caravan.rhyme.microbenchmark.RhymeState.Metrics;
 @Measurement(iterations = 4, time = 2, timeUnit = SECONDS)
 @State(Scope.Benchmark)
 public class ClientBenchmarks {
+
+  private final JsonFactory jsonFactory = new JsonFactory(new ObjectMapper());
 
   private ImmutableList<Object> callClientMethods(RhymeState state, HalResourceLoader loader, Metrics metrics) {
 
@@ -84,12 +99,33 @@ public class ClientBenchmarks {
   }
 
   @Benchmark
-  public Object withNetwork(RhymeState state) {
+  public Object withNetworkAndParsing(RhymeState state) {
     return callClientMethods(state, state.networkLoader, Metrics.DISABLED);
   }
 
   @Benchmark
-  public Object withCachingO(RhymeState state) {
+  public Object withCaching(RhymeState state) {
     return callClientMethods(state, state.cachingLoader, Metrics.DISABLED);
+  }
+
+  @Benchmark
+  public List<ObjectNode> onlyParsing(RhymeState state) throws IOException {
+    List<ObjectNode> parsedJson = new ArrayList<>();
+    for (int i = 0; i < ResourceParameters.NUM_LINKED_RESOURCES + 1; i++) {
+      try (JsonParser parser = jsonFactory.createParser(state.getFirstResponseBytes())) {
+        parsedJson.add(parser.readValueAsTree());
+      }
+    }
+    return parsedJson;
+  }
+
+  @Benchmark
+  public List<String> onlyNetwork(RhymeState state) throws IOException {
+
+    List<String> responses = new ArrayList<>();
+    for (int i = 0; i < ResourceParameters.NUM_LINKED_RESOURCES + 1; i++) {
+      responses.add(IOUtils.toString(URI.create("http://localhost:" + state.getNettyPort() + "/")));
+    }
+    return responses;
   }
 }

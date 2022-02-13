@@ -23,6 +23,9 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -32,11 +35,18 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.microbenchmark.RhymeState.Metrics;
+import io.wcm.caravan.rhyme.microbenchmark.resources.DynamicResourceImpl;
+import io.wcm.caravan.rhyme.microbenchmark.resources.MappingResourceImpl;
+import io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters;
+import io.wcm.caravan.rhyme.microbenchmark.resources.StaticResourceImpl;
 
 @BenchmarkMode(AverageTime)
 @OutputTimeUnit(MILLISECONDS)
@@ -45,6 +55,8 @@ import io.wcm.caravan.rhyme.microbenchmark.RhymeState.Metrics;
 @Measurement(iterations = 2, time = 1, timeUnit = SECONDS)
 @State(Scope.Benchmark)
 public class RenderBenchmarks {
+
+  private final ObjectMapper mapper = new ObjectMapper();
 
   HalResponse render(RhymeState state, LinkableResource resource, Metrics metrics) {
 
@@ -75,5 +87,15 @@ public class RenderBenchmarks {
   public HalResponse withObjectMapping(RhymeState state) {
 
     return render(state, new MappingResourceImpl("/"), Metrics.DISABLED);
+  }
+
+  @Benchmark
+  public List<ObjectNode> onlyObjectMapping(RhymeState state) {
+
+    List<ObjectNode> list = new ArrayList<>();
+    for (int i = 0; i < ResourceParameters.NUM_EMBEDDED_RESOURCES + 1; i++) {
+      list.add(mapper.convertValue(state.getFirstResponseState(), ObjectNode.class));
+    }
+    return list;
   }
 }

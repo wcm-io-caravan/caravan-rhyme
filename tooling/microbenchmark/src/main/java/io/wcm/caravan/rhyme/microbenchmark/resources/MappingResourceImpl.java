@@ -1,6 +1,6 @@
-package io.wcm.caravan.rhyme.microbenchmark;
+package io.wcm.caravan.rhyme.microbenchmark.resources;
 
-import static io.wcm.caravan.rhyme.microbenchmark.ResourceParameters.numEmbeddedResource;
+import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.NUM_EMBEDDED_RESOURCES;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -16,12 +16,12 @@ public class MappingResourceImpl extends DynamicResourceImpl {
 
   @Override
   public Single<ObjectNode> getState() {
-    return Single.just(TestState.createMappedJson());
+    return Single.just(StatePojo.createMappedJson());
   }
 
   @Override
   public Observable<EmbeddableBenchmarkResource> getEmbedded1() {
-    return Observable.range(0, numEmbeddedResource()).map(i -> new Embedded(i));
+    return Observable.range(0, NUM_EMBEDDED_RESOURCES).map(i -> new Embedded(i));
   }
 
   static class Embedded implements EmbeddableBenchmarkResource {
@@ -34,7 +34,7 @@ public class MappingResourceImpl extends DynamicResourceImpl {
 
     @Override
     public Single<ObjectNode> getState() {
-      return Single.just(TestState.createMappedJson());
+      return Single.just(StatePojo.createMappedJson());
     }
 
     @Override
