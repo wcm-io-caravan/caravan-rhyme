@@ -24,6 +24,7 @@ import static io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils.isHalAp
 import java.lang.reflect.Proxy;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 import com.damnhandy.uri.template.UriTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +44,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.metadata.EmissionStopwatch;
 import io.wcm.caravan.rhyme.impl.reflection.HalApiTypeSupport;
+import io.wcm.caravan.rhyme.impl.util.RxJavaTransformers;
 
 /**
  * Contains factory methods to create proxy implementations of a given interface annotated with
@@ -74,23 +76,17 @@ public final class HalApiClientProxyFactory {
 
   public <T> T createProxyFromUrl(Class<T> relatedResourceType, String url) {
 
-    Single<HalResource> rxHal = loadHalResource(url, relatedResourceType);
-
-    return getProxy(relatedResourceType, rxHal, new Link(url));
+    return getProxy(relatedResourceType, new Link(url), () -> loadHalResource(url, relatedResourceType));
   }
 
   <T> T createProxyFromLink(Class<T> relatedResourceType, Link link) {
 
-    Single<HalResource> rxHal = loadHalResource(link.getHref(), relatedResourceType);
-
-    return getProxy(relatedResourceType, rxHal, link);
+    return getProxy(relatedResourceType, link, () -> loadHalResource(link.getHref(), relatedResourceType));
   }
 
   <T> T createProxyFromHalResource(Class<T> relatedResourceType, HalResource contextResource, Link link) {
 
-    Single<HalResource> rxHal = Single.just(contextResource);
-
-    return getProxy(relatedResourceType, rxHal, link);
+    return getProxy(relatedResourceType, link, () -> Single.just(contextResource));
   }
 
   private <T> Single<HalResource> loadHalResource(String resourceUrl, Class<T> relatedResourceType) {
@@ -101,7 +97,8 @@ public final class HalApiClientProxyFactory {
     // by calling a method annotated with @ResourceLink.
     return Single.just(resourceUrl)
         .flatMap(this::validateUrlAndLoadResourceBody)
-        .compose(EmissionStopwatch.collectMetrics(() -> "fetching " + relatedResourceType.getSimpleName() + " from upstream server (or cache)", metrics));
+        .compose(EmissionStopwatch.collectMetrics(() -> "fetching " + relatedResourceType.getSimpleName() + " from upstream server (or cache)", metrics))
+        .compose(RxJavaTransformers.cacheSingleIfCompleted());
   }
 
   private Single<HalResource> validateUrlAndLoadResourceBody(String uriOrTemplate) {
@@ -122,11 +119,11 @@ public final class HalApiClientProxyFactory {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> T getProxy(Class<T> relatedResourceType, Single<HalResource> rxHal, Link linkToResource) {
+  private <T> T getProxy(Class<T> relatedResourceType, Link linkToResource, Supplier<Single<HalResource>> resourceSupplier) {
 
     // do not try to cache proxies for resources for which no link is available
     if (linkToResource == null) {
-      return createProxy(relatedResourceType, rxHal, null);
+      return createProxy(relatedResourceType, resourceSupplier.get(), null);
     }
 
     // the same proxy instance can be re-used when the link is pointing to the same resource, and the interface type to proxy are the same.
@@ -135,7 +132,7 @@ public final class HalApiClientProxyFactory {
     String cacheKey = linkToResource.getModel().toString() + relatedResourceType.getName();
 
     try {
-      return (T)proxyCache.get(cacheKey, () -> createProxy(relatedResourceType, rxHal, linkToResource));
+      return (T)proxyCache.get(cacheKey, () -> createProxy(relatedResourceType, resourceSupplier.get(), linkToResource));
     }
     catch (UncheckedExecutionException | ExecutionException ex) {
       // we know that createProxy never throws any checked exception, so it's safe in this case to re-throw the original exception
