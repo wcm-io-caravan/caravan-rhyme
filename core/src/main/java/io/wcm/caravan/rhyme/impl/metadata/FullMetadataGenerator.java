@@ -33,11 +33,9 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -86,8 +84,6 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
       MICROSECONDS, "μs",
       NANOSECONDS, "ns");
 
-  private static final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
-
   private final List<Link> sourceLinks = Collections.synchronizedList(new ArrayList<>());
 
   private final List<TimeMeasurement> inputMaxAges = Collections.synchronizedList(new ArrayList<>());
@@ -97,10 +93,6 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
   private final AtomicLong metricsCollectionNanos = new AtomicLong();
 
   private final AtomicBoolean metadataWasRendered = new AtomicBoolean();
-
-  static {
-    numberFormat.setMaximumFractionDigits(3);
-  }
 
   @Override
   public void onResponseRetrieved(String resourceUri, String resourceTitle, Integer maxAgeSeconds, long responseTimeMicros) {
@@ -348,10 +340,15 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
     ArrayNode individualMetrics = model.putArray("measurements");
 
     list.stream()
-        .map(measurement -> numberFormat.format(measurement.getTime(unit)) + " " + TIME_UNIT_ABBRS.get(unit) + " - " + measurement.getText())
+        .map(measurement -> formatFloat(measurement.getTime(unit)) + " " + TIME_UNIT_ABBRS.get(unit) + " - " + measurement.getText())
         .forEach(individualMetrics::add);
 
     return new HalResource(model);
+  }
+
+  private static String formatFloat(float value) {
+    // this is slightly faster then creating a DecimalFormat with pattern "0.0##"
+    return Float.toString(Math.round(value * 1000) / 1000.f);
   }
 
   /**
