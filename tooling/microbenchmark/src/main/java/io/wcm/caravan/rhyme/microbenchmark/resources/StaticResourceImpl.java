@@ -5,8 +5,6 @@ import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.N
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
@@ -15,7 +13,7 @@ import io.wcm.caravan.hal.resource.Link;
 
 public class StaticResourceImpl implements LinkableBenchmarkResource {
 
-  private static final Single<ObjectNode> STATE_SINGLE = Single.just(StatePojo.createTestJson());
+  private static final Single<BenchmarkResourceState> STATE_SINGLE = Single.just(BenchmarkResourceState.createTestState());
 
   private static final Observable<LinkableBenchmarkResource> LINKED = Observable.range(0, NUM_LINKED_RESOURCES)
       .map(i -> (LinkableBenchmarkResource)new StaticResourceImpl("/" + i))
@@ -35,7 +33,7 @@ public class StaticResourceImpl implements LinkableBenchmarkResource {
   }
 
   @Override
-  public Single<ObjectNode> getState() {
+  public Single<BenchmarkResourceState> getState() {
     return STATE_SINGLE;
   }
 
@@ -78,7 +76,7 @@ public class StaticResourceImpl implements LinkableBenchmarkResource {
   static class Embedded implements EmbeddableBenchmarkResource {
 
     @Override
-    public Single<ObjectNode> getState() {
+    public Single<BenchmarkResourceState> getState() {
       return STATE_SINGLE;
     }
 

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-public class StatePojo {
+public class BenchmarkResourceState {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -19,13 +19,13 @@ public class StatePojo {
 
   private List<Integer> list;
 
-  private Map<String, StatePojo> nestedObjects = new HashMap<>();
+  private Map<String, BenchmarkResourceState> nestedObjects = new HashMap<>();
 
   public String getFoo() {
     return foo;
   }
 
-  public StatePojo setFoo(String foo) {
+  public BenchmarkResourceState setFoo(String foo) {
     this.foo = foo;
     return this;
   }
@@ -34,7 +34,7 @@ public class StatePojo {
     return bar;
   }
 
-  public StatePojo setBar(Integer bar) {
+  public BenchmarkResourceState setBar(Integer bar) {
     this.bar = bar;
     return this;
   }
@@ -43,22 +43,22 @@ public class StatePojo {
     return list;
   }
 
-  public StatePojo setList(List<Integer> list) {
+  public BenchmarkResourceState setList(List<Integer> list) {
     this.list = list;
     return this;
   }
 
-  public Map<String, StatePojo> getNestedObjects() {
+  public Map<String, BenchmarkResourceState> getNestedObjects() {
     return nestedObjects;
   }
 
-  public StatePojo setNestedObjects(Map<String, StatePojo> value) {
+  public BenchmarkResourceState setNestedObjects(Map<String, BenchmarkResourceState> value) {
     this.nestedObjects = value;
     return this;
   }
 
-  public static StatePojo createTestState() {
-    return new StatePojo()
+  public static BenchmarkResourceState createTestState() {
+    return new BenchmarkResourceState()
         .setFoo("123")
         .setBar(456)
         .setList(ImmutableList.of(7, 8, 9))
@@ -67,8 +67,8 @@ public class StatePojo {
             "bar", createNestedTestState()));
   }
 
-  private static StatePojo createNestedTestState() {
-    return new StatePojo()
+  private static BenchmarkResourceState createNestedTestState() {
+    return new BenchmarkResourceState()
         .setFoo("123")
         .setBar(456)
         .setList(ImmutableList.of(7, 8, 9));

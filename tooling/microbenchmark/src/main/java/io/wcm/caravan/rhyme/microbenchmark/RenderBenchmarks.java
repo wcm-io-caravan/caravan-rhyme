@@ -44,7 +44,6 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.microbenchmark.RhymeState.Metrics;
 import io.wcm.caravan.rhyme.microbenchmark.resources.DynamicResourceImpl;
-import io.wcm.caravan.rhyme.microbenchmark.resources.MappingResourceImpl;
 import io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters;
 import io.wcm.caravan.rhyme.microbenchmark.resources.StaticResourceImpl;
 
@@ -81,12 +80,6 @@ public class RenderBenchmarks {
   public HalResponse withInstanceCreation(RhymeState state) {
 
     return render(state, new DynamicResourceImpl("/"), Metrics.DISABLED);
-  }
-
-  @Benchmark
-  public HalResponse withObjectMapping(RhymeState state) {
-
-    return render(state, new MappingResourceImpl("/"), Metrics.DISABLED);
   }
 
   @Benchmark

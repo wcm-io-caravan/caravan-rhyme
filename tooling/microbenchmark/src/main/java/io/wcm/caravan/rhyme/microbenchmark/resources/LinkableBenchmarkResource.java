@@ -1,7 +1,5 @@
 package io.wcm.caravan.rhyme.microbenchmark.resources;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -13,7 +11,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 public interface LinkableBenchmarkResource extends LinkableResource {
 
 	@ResourceState
-	Single<ObjectNode> getState();
+  Single<BenchmarkResourceState> getState();
 
 	@Related("linked1")
 	Observable<LinkableBenchmarkResource> getLinked1();

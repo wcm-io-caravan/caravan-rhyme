@@ -45,6 +45,7 @@ import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 
 import io.reactivex.rxjava3.core.Single;
@@ -57,14 +58,15 @@ import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.impl.RhymeImpl;
+import io.wcm.caravan.rhyme.microbenchmark.resources.BenchmarkResourceState;
 import io.wcm.caravan.rhyme.microbenchmark.resources.DynamicResourceImpl;
-import io.wcm.caravan.rhyme.microbenchmark.resources.StatePojo;
 import io.wcm.caravan.rhyme.microbenchmark.server.NettyHttpServer;
 
 @State(Scope.Benchmark)
 public class RhymeState {
 
-  private StatePojo firstResponseState;
+  private BenchmarkResourceState firstResponseState;
+  private ObjectNode firstResponseJson;
 
   HalResourceLoader preBuiltLoader;
 
@@ -84,7 +86,8 @@ public class RhymeState {
   @Setup(Level.Trial)
   public void init() {
 
-    firstResponseState = StatePojo.createTestState();
+    firstResponseState = BenchmarkResourceState.createTestState();
+    firstResponseJson = BenchmarkResourceState.createMappedJson();
 
     Stream<String> allPaths = Stream.concat(Stream.of("/"), IntStream.range(0, NUM_LINKED_RESOURCES).mapToObj(i -> "/" + i));
 
@@ -196,7 +199,11 @@ public class RhymeState {
     return NettyHttpServer.NETTY_PORT_NR;
   }
 
-  public StatePojo getFirstResponseState() {
+  public BenchmarkResourceState getFirstResponseState() {
     return firstResponseState;
+  }
+
+  public ObjectNode getFirstResponseJson() {
+    return firstResponseJson;
   }
 }

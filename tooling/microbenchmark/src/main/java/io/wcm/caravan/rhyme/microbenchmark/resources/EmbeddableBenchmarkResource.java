@@ -19,8 +19,6 @@
  */
 package io.wcm.caravan.rhyme.microbenchmark.resources;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -33,7 +31,7 @@ import io.wcm.caravan.rhyme.api.resources.EmbeddableResource;
 public interface EmbeddableBenchmarkResource extends EmbeddableResource {
 
   @ResourceState
-  Single<ObjectNode> getState();
+  Single<BenchmarkResourceState> getState();
 
   @Related(StandardRelations.RELATED)
   Maybe<LinkableBenchmarkResource> getRelated();

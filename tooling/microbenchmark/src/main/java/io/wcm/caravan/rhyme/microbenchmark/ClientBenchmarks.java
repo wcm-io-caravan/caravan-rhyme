@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.rhyme.microbenchmark;
 
+import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.NUM_EMBEDDED_RESOURCES;
+import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.NUM_LINKED_RESOURCES;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
@@ -40,6 +42,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
@@ -47,9 +50,9 @@ import com.google.common.collect.ImmutableList;
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.microbenchmark.RhymeState.Metrics;
+import io.wcm.caravan.rhyme.microbenchmark.resources.BenchmarkResourceState;
 import io.wcm.caravan.rhyme.microbenchmark.resources.EmbeddableBenchmarkResource;
 import io.wcm.caravan.rhyme.microbenchmark.resources.LinkableBenchmarkResource;
-import io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters;
 
 @BenchmarkMode(AverageTime)
 @OutputTimeUnit(MILLISECONDS)
@@ -59,7 +62,9 @@ import io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters;
 @State(Scope.Benchmark)
 public class ClientBenchmarks {
 
-  private final JsonFactory jsonFactory = new JsonFactory(new ObjectMapper());
+  private final ObjectMapper objectMapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+  private final JsonFactory jsonFactory = new JsonFactory(objectMapper);
 
   private ImmutableList<Object> callClientMethods(RhymeState state, HalResourceLoader loader, Metrics metrics) {
 
@@ -72,9 +77,9 @@ public class ClientBenchmarks {
 
         clientProxy.createLink(),
 
-        clientProxy.getEmbedded1().flatMapSingle(EmbeddableBenchmarkResource::getState).toList().blockingGet(),
+        clientProxy.getEmbedded1().flatMapSingle(EmbeddableBenchmarkResource::getState).map(BenchmarkResourceState::getBar).toList().blockingGet(),
 
-        clientProxy.getLinked1().flatMapSingle(LinkableBenchmarkResource::getState).toList().blockingGet(),
+        clientProxy.getLinked1().flatMapSingle(LinkableBenchmarkResource::getState).map(BenchmarkResourceState::getBar).toList().blockingGet(),
 
         clientProxy.getLinked1().map(l -> l.createLink().getHref()).toList().blockingGet(),
         clientProxy.getLinked2().map(l -> l.createLink().getHref()).toList().blockingGet(),
@@ -110,22 +115,32 @@ public class ClientBenchmarks {
 
   @Benchmark
   public List<ObjectNode> onlyParsing(RhymeState state) throws IOException {
-    List<ObjectNode> parsedJson = new ArrayList<>();
-    for (int i = 0; i < ResourceParameters.NUM_LINKED_RESOURCES + 1; i++) {
+    List<ObjectNode> list = new ArrayList<>();
+    for (int i = 0; i < NUM_LINKED_RESOURCES + 1; i++) {
       try (JsonParser parser = jsonFactory.createParser(state.getFirstResponseBytes())) {
-        parsedJson.add(parser.readValueAsTree());
+        list.add(parser.readValueAsTree());
       }
     }
-    return parsedJson;
+    return list;
   }
 
   @Benchmark
   public List<String> onlyNetwork(RhymeState state) throws IOException {
 
     List<String> responses = new ArrayList<>();
-    for (int i = 0; i < ResourceParameters.NUM_LINKED_RESOURCES + 1; i++) {
+    for (int i = 0; i < NUM_LINKED_RESOURCES + 1; i++) {
       responses.add(IOUtils.toString(URI.create("http://localhost:" + state.getNettyPort() + "/")));
     }
     return responses;
+  }
+
+  @Benchmark
+  public List<BenchmarkResourceState> onlyMapping(RhymeState state) throws IOException {
+
+    List<BenchmarkResourceState> list = new ArrayList<>();
+    for (int i = 0; i < NUM_LINKED_RESOURCES + NUM_EMBEDDED_RESOURCES + 1; i++) {
+      list.add(objectMapper.convertValue(state.getFirstResponseJson(), BenchmarkResourceState.class));
+    }
+    return list;
   }
 }
