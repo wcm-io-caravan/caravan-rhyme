@@ -42,7 +42,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.microbenchmark.RhymeBenchmarkSetup.Metrics;
+import io.wcm.caravan.rhyme.microbenchmark.RhymeState.MetricsToggle;
 import io.wcm.caravan.rhyme.microbenchmark.resources.DynamicResourceImpl;
 import io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters;
 import io.wcm.caravan.rhyme.microbenchmark.resources.StaticResourceImpl;
@@ -57,7 +57,7 @@ public class RenderBenchmarks {
 
   private final ObjectMapper mapper = new ObjectMapper();
 
-  HalResponse render(RhymeBenchmarkSetup state, LinkableResource resource, Metrics metrics) {
+  HalResponse render(RhymeState state, LinkableResource resource, MetricsToggle metrics) {
 
     Rhyme rhyme = state.createRhyme(HalResourceLoader.create(), metrics);
 
@@ -65,29 +65,29 @@ public class RenderBenchmarks {
   }
 
   @Benchmark
-  public HalResponse withoutOverhead(RhymeBenchmarkSetup state) {
+  public HalResponse withoutOverhead(RhymeState state) {
 
-    return render(state, new StaticResourceImpl("/"), Metrics.DISABLED);
+    return render(state, new StaticResourceImpl("/"), MetricsToggle.DISABLED);
   }
 
   @Benchmark
-  public HalResponse withMetrics(RhymeBenchmarkSetup state) {
+  public HalResponse withMetrics(RhymeState state) {
 
-    return render(state, new StaticResourceImpl("/"), Metrics.ENABLED);
+    return render(state, new StaticResourceImpl("/"), MetricsToggle.ENABLED);
   }
 
   @Benchmark
-  public HalResponse withInstanceCreation(RhymeBenchmarkSetup state) {
+  public HalResponse withInstanceCreation(RhymeState state) {
 
-    return render(state, new DynamicResourceImpl("/"), Metrics.DISABLED);
+    return render(state, new DynamicResourceImpl("/"), MetricsToggle.DISABLED);
   }
 
   @Benchmark
-  public List<ObjectNode> onlyObjectMapping(RhymeBenchmarkSetup state) {
+  public List<ObjectNode> onlyObjectMapping(ResourceLoaders loaders) {
 
     List<ObjectNode> list = new ArrayList<>();
     for (int i = 0; i < ResourceParameters.NUM_EMBEDDED_RESOURCES + 1; i++) {
-      list.add(mapper.convertValue(state.getFirstResponseState(), ObjectNode.class));
+      list.add(mapper.convertValue(loaders.getFirstResponseState(), ObjectNode.class));
     }
     return list;
   }

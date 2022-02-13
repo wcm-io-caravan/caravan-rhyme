@@ -49,7 +49,7 @@ import com.google.common.collect.ImmutableList;
 
 import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.microbenchmark.RhymeBenchmarkSetup.Metrics;
+import io.wcm.caravan.rhyme.microbenchmark.RhymeState.MetricsToggle;
 import io.wcm.caravan.rhyme.microbenchmark.resources.BenchmarkResourceState;
 import io.wcm.caravan.rhyme.microbenchmark.resources.EmbeddableBenchmarkResource;
 import io.wcm.caravan.rhyme.microbenchmark.resources.LinkableBenchmarkResource;
@@ -66,7 +66,7 @@ public class ClientBenchmarks {
 
   private final JsonFactory jsonFactory = new JsonFactory(objectMapper);
 
-  private ImmutableList<Object> callClientMethods(RhymeBenchmarkSetup state, HalResourceLoader loader, Metrics metrics) {
+  private ImmutableList<Object> callClientMethods(RhymeState state, HalResourceLoader loader, MetricsToggle metrics) {
 
     Rhyme rhyme = state.createRhyme(loader, metrics);
 
@@ -89,35 +89,36 @@ public class ClientBenchmarks {
   }
 
   @Benchmark
-  public Object withoutOverhead(RhymeBenchmarkSetup state) {
-    return callClientMethods(state, state.preBuiltLoader, Metrics.DISABLED);
+  public List<Object> withoutOverhead(RhymeState state, ResourceLoaders loaders) {
+    return callClientMethods(state, loaders.preBuilt, MetricsToggle.DISABLED);
   }
 
   @Benchmark
-  public Object withMetrics(RhymeBenchmarkSetup state) {
-    return callClientMethods(state, state.preBuiltLoader, Metrics.ENABLED);
+  public List<Object> withMetrics(RhymeState state, ResourceLoaders loaders) {
+    return callClientMethods(state, loaders.preBuilt, MetricsToggle.ENABLED);
   }
 
   @Benchmark
-  public Object withParsing(RhymeBenchmarkSetup state) {
-    return callClientMethods(state, state.parsingLoader, Metrics.DISABLED);
+  public List<Object> withParsing(RhymeState state, ResourceLoaders loaders) {
+    return callClientMethods(state, loaders.parsing, MetricsToggle.DISABLED);
   }
 
   @Benchmark
-  public Object withNetworkAndParsing(RhymeBenchmarkSetup state) {
-    return callClientMethods(state, state.networkLoader, Metrics.DISABLED);
+  public List<Object> withNetworkAndParsing(RhymeState state, ResourceLoaders loaders) {
+    return callClientMethods(state, loaders.network, MetricsToggle.DISABLED);
   }
 
   @Benchmark
-  public Object withCaching(RhymeBenchmarkSetup state) {
-    return callClientMethods(state, state.cachingLoader, Metrics.DISABLED);
+  public List<Object> withCaching(RhymeState state, ResourceLoaders loaders) {
+    return callClientMethods(state, loaders.caching, MetricsToggle.DISABLED);
   }
 
   @Benchmark
-  public List<ObjectNode> onlyParsing(RhymeBenchmarkSetup state) throws IOException {
+  public List<ObjectNode> onlyParsing(ResourceLoaders loaders) throws IOException {
+
     List<ObjectNode> list = new ArrayList<>();
     for (int i = 0; i < NUM_LINKED_RESOURCES + 1; i++) {
-      try (JsonParser parser = jsonFactory.createParser(state.getFirstResponseBytes())) {
+      try (JsonParser parser = jsonFactory.createParser(loaders.getFirstResponseBytes())) {
         list.add(parser.readValueAsTree());
       }
     }
@@ -125,21 +126,21 @@ public class ClientBenchmarks {
   }
 
   @Benchmark
-  public List<String> onlyNetwork(RhymeBenchmarkSetup state) throws IOException {
+  public List<String> onlyNetwork(ResourceLoaders loaders) throws IOException {
 
-    List<String> responses = new ArrayList<>();
+    List<String> list = new ArrayList<>();
     for (int i = 0; i < NUM_LINKED_RESOURCES + 1; i++) {
-      responses.add(IOUtils.toString(URI.create("http://localhost:" + state.getNettyPort() + "/")));
+      list.add(IOUtils.toString(URI.create("http://localhost:" + loaders.getNettyPort() + "/")));
     }
-    return responses;
+    return list;
   }
 
   @Benchmark
-  public List<BenchmarkResourceState> onlyMapping(RhymeBenchmarkSetup state) throws IOException {
+  public List<BenchmarkResourceState> onlyMapping(ResourceLoaders loaders) throws IOException {
 
     List<BenchmarkResourceState> list = new ArrayList<>();
     for (int i = 0; i < NUM_LINKED_RESOURCES + NUM_EMBEDDED_RESOURCES + 1; i++) {
-      list.add(objectMapper.convertValue(state.getFirstResponseJson(), BenchmarkResourceState.class));
+      list.add(objectMapper.convertValue(loaders.getFirstResponseJson(), BenchmarkResourceState.class));
     }
     return list;
   }

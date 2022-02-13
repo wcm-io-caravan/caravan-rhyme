@@ -22,8 +22,6 @@ package io.wcm.caravan.rhyme.microbenchmark;
 import static io.wcm.caravan.rhyme.microbenchmark.resources.ResourceParameters.NUM_LINKED_RESOURCES;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -39,55 +37,39 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 
 import io.reactivex.rxjava3.core.Single;
-import io.wcm.caravan.hal.resource.HalResource;
-import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
-import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
-import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
-import io.wcm.caravan.rhyme.impl.RhymeImpl;
 import io.wcm.caravan.rhyme.microbenchmark.resources.BenchmarkResourceState;
 import io.wcm.caravan.rhyme.microbenchmark.resources.DynamicResourceImpl;
 import io.wcm.caravan.rhyme.microbenchmark.server.NettyHttpServer;
 
 @State(Scope.Benchmark)
-public class RhymeBenchmarkSetup {
+public class ResourceLoaders {
+
+  HalResourceLoader preBuilt;
+
+  private Map<String, byte[]> preBuiltResponseBytes;
+
+  HalResourceLoader parsing;
+
+  private NettyHttpServer nettyServer;
+
+  HalResourceLoader network;
+
+  HalResourceLoader caching;
 
   private BenchmarkResourceState firstResponseState;
   private ObjectNode firstResponseJson;
 
-  HalResourceLoader preBuiltLoader;
-
-  private Map<String, byte[]> preBuiltResponseBytes;
-
-  HalResourceLoader parsingLoader;
-
-  private NettyHttpServer nettyServer;
-
-  HalResourceLoader networkLoader;
-
-  HalResourceLoader cachingLoader;
-
-
-  private Rhyme lastRhymeInstance;
 
   @Setup(Level.Trial)
   public void init() {
-
-    firstResponseState = BenchmarkResourceState.createTestState();
-    firstResponseJson = BenchmarkResourceState.createMappedJson();
 
     Stream<String> allPaths = Stream.concat(Stream.of("/"), IntStream.range(0, NUM_LINKED_RESOURCES).mapToObj(i -> "/" + i));
 
@@ -95,12 +77,12 @@ public class RhymeBenchmarkSetup {
         .map(this::renderResponse)
         .collect(Collectors.toMap(HalResponse::getUri, Function.identity(), (v1, v2) -> v1, LinkedHashMap::new));
 
-    preBuiltLoader = uri -> Single.just(preBuiltResponses.get(uri));
+    preBuilt = uri -> Single.just(preBuiltResponses.get(uri));
 
     preBuiltResponseBytes = new HashMap<>();
     preBuiltResponses.forEach((uri, response) -> preBuiltResponseBytes.put(uri, response.getBody().getModel().toString().getBytes(StandardCharsets.UTF_8)));
 
-    parsingLoader = HalResourceLoader.create((uri, callback) -> {
+    parsing = HalResourceLoader.create((uri, callback) -> {
 
       callback.onHeadersAvailable(200, ImmutableMap.of());
       callback.onBodyAvailable(new ByteArrayInputStream(preBuiltResponseBytes.get(uri.toString())));
@@ -110,7 +92,7 @@ public class RhymeBenchmarkSetup {
     nettyServer = new NettyHttpServer(preBuiltResponseBytes);
     nettyServer.start();
 
-    networkLoader = new HalResourceLoader() {
+    network = new HalResourceLoader() {
 
       private final HalResourceLoader loader = HalResourceLoader.create();
 
@@ -120,10 +102,13 @@ public class RhymeBenchmarkSetup {
       }
     };
 
-    cachingLoader = HalResourceLoaderBuilder.create()
-        .withExistingLoader(parsingLoader)
+    caching = HalResourceLoaderBuilder.create()
+        .withExistingLoader(parsing)
         .withMemoryCache()
         .build();
+
+    firstResponseState = BenchmarkResourceState.createTestState();
+    firstResponseJson = BenchmarkResourceState.createMappedJson();
   }
 
   protected HalResponse renderResponse(String path) {
@@ -140,63 +125,14 @@ public class RhymeBenchmarkSetup {
     if (nettyServer != null) {
       nettyServer.shutdown();
     }
-
-    if (lastRhymeInstance != null) {
-      RequestMetricsCollector metrics = ((RhymeImpl)lastRhymeInstance).getMetrics();
-      HalResource metadata = metrics.createMetadataResource(null);
-      if (metadata != null) {
-
-        writeMetadataToConsole(metadata);
-      }
-    }
-  }
-
-  protected void writeMetadataToConsole(HalResource metadata) {
-
-    DefaultIndenter indenter = new DefaultIndenter("  ", "\n");
-
-    ObjectMapper mapper = new ObjectMapper()
-        .enable(SerializationFeature.INDENT_OUTPUT)
-        .setDefaultPrettyPrinter(new DefaultPrettyPrinter()
-            .withArrayIndenter(indenter));
-
-    JsonFactory factory = new JsonFactory(mapper);
-
-    System.err.println("Rhyme performance metadata of last measurement:");
-
-    try (JsonGenerator generator = factory.createGenerator(System.err)) {
-      generator.writeTree(metadata.getModel());
-    }
-    catch (IOException ex) {
-      throw new UncheckedIOException("Failed to write metadata to console", ex);
-    }
-  }
-
-  public byte[] getFirstResponseBytes() {
-    return preBuiltResponseBytes.values().iterator().next();
-  }
-
-  Rhyme createRhyme(HalResourceLoader loader, Metrics metrics) {
-
-    lastRhymeInstance = RhymeBuilder.withResourceLoader(loader)
-        .withMetadataConfiguration(new RhymeMetadataConfiguration() {
-
-          @Override
-          public boolean isMetadataGenerationEnabled() {
-            return metrics == Metrics.ENABLED;
-          }
-
-        }).buildForRequestTo("/foo");
-
-    return lastRhymeInstance;
-  }
-
-  enum Metrics {
-    ENABLED, DISABLED
   }
 
   public int getNettyPort() {
     return NettyHttpServer.NETTY_PORT_NR;
+  }
+
+  public byte[] getFirstResponseBytes() {
+    return preBuiltResponseBytes.values().iterator().next();
   }
 
   public BenchmarkResourceState getFirstResponseState() {
