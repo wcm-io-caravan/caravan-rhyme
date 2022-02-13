@@ -10,23 +10,23 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 @HalApiInterface
 public interface LinkableBenchmarkResource extends LinkableResource {
 
-	@ResourceState
+  @ResourceState
   Single<BenchmarkResourceState> getState();
 
-	@Related("linked1")
-	Observable<LinkableBenchmarkResource> getLinked1();
+  @Related("linked1")
+  Observable<LinkableBenchmarkResource> getLinked1();
 
-	@Related("linked2")
-	Observable<LinkableBenchmarkResource> getLinked2();
+  @Related("linked2")
+  Observable<LinkableBenchmarkResource> getLinked2();
 
-	@Related("linked3")
-	Observable<LinkableBenchmarkResource> getLinked3();
+  @Related("linked3")
+  Observable<LinkableBenchmarkResource> getLinked3();
 
-	@Related("linked4")
-	Observable<LinkableBenchmarkResource> getLinked4();
+  @Related("linked4")
+  Observable<LinkableBenchmarkResource> getLinked4();
 
-	@Related("linked2")
-	Observable<LinkableBenchmarkResource> getLinked5();
+  @Related("linked2")
+  Observable<LinkableBenchmarkResource> getLinked5();
 
   @Related("embedded")
   Observable<EmbeddableBenchmarkResource> getEmbedded1();
