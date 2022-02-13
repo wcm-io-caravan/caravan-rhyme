@@ -44,22 +44,22 @@ public class StaticResourceImpl implements LinkableBenchmarkResource {
 
   @Override
   public Observable<LinkableBenchmarkResource> getLinked2() {
-    return LINKED;
+    return getLinked1();
   }
 
   @Override
   public Observable<LinkableBenchmarkResource> getLinked3() {
-    return LINKED;
+    return getLinked1();
   }
 
   @Override
   public Observable<LinkableBenchmarkResource> getLinked4() {
-    return LINKED;
+    return getLinked1();
   }
 
   @Override
   public Observable<LinkableBenchmarkResource> getLinked5() {
-    return LINKED;
+    return getLinked1();
   }
 
   @Override
