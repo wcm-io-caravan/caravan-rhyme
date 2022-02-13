@@ -40,10 +40,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -71,6 +75,8 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
  */
 public class FullMetadataGenerator extends MaxAgeOnlyCollector implements RequestMetricsCollector {
 
+  private static final Logger log = LoggerFactory.getLogger(FullMetadataGenerator.class);
+
   private final Stopwatch overalResponseTimeStopwatch = Stopwatch.createStarted();
 
   private static final Map<TimeUnit, String> TIME_UNIT_ABBRS = ImmutableMap.of(
@@ -82,12 +88,15 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
 
   private static final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
 
+  private final List<Link> sourceLinks = Collections.synchronizedList(new ArrayList<>());
+
+  private final List<TimeMeasurement> inputMaxAges = Collections.synchronizedList(new ArrayList<>());
   private final List<TimeMeasurement> inputResponseTimes = Collections.synchronizedList(new ArrayList<>());
   private final ListMultimap<String, TimeMeasurement> methodInvocationTimes = Multimaps.synchronizedListMultimap(LinkedListMultimap.create());
 
-  private final List<Link> sourceLinks = Collections.synchronizedList(new ArrayList<>());
-
   private final AtomicLong metricsCollectionNanos = new AtomicLong();
+
+  private final AtomicBoolean metadataWasRendered = new AtomicBoolean();
 
   static {
     numberFormat.setMaximumFractionDigits(3);
@@ -98,6 +107,14 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
 
     super.onResponseRetrieved(resourceUri, resourceTitle, maxAgeSeconds, responseTimeMicros);
 
+    if (metadataWasRendered.get()) {
+      log.warn("Response from {} was retrieved after embedded metadata resource was rendered", resourceUri);
+      return;
+    }
+
+    if (maxAgeSeconds != null) {
+      inputMaxAges.add(new TimeMeasurement(resourceUri, maxAgeSeconds, SECONDS));
+    }
     inputResponseTimes.add(new TimeMeasurement(resourceUri, responseTimeMicros, MICROSECONDS));
 
     Link link = new Link(resourceUri);
@@ -164,6 +181,10 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
     return groupedInvocationTimes;
   }
 
+  List<TimeMeasurement> getSortedInputMaxAgeSeconds() {
+    return TimeMeasurement.LONGEST_TIME_FIRST.sortedCopy(inputMaxAges);
+  }
+
   float getOverallResponseTimeMillis() {
     return overalResponseTimeStopwatch.elapsed(MICROSECONDS) / 1000.f;
   }
@@ -193,6 +214,8 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
   public HalResource createMetadataResource(LinkableResource resourceImpl) {
 
     super.createMetadataResource(resourceImpl);
+
+    metadataWasRendered.set(true);
 
     Stopwatch stopwatch = Stopwatch.createStarted();
 
