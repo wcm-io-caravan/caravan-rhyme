@@ -1,25 +1,35 @@
 package io.wcm.caravan.rhyme.microbenchmark;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
+import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 
 public class StaticResourceImpl implements LinkableBenchmarkResource {
 
   private static final Single<ObjectNode> STATE_SINGLE = Single.just(TestState.createTestJson());
 
-  private static final Link LINK = new Link("/foo");
-
   private static final Observable<LinkableBenchmarkResource> LINKED = Observable.range(0, ResourceParameters.numLinkedResource())
-      .map(i -> (LinkableBenchmarkResource)new StaticResourceImpl())
+      .map(i -> (LinkableBenchmarkResource)new StaticResourceImpl("/" + i))
       .cache();
 
   private static final Observable<EmbeddableBenchmarkResource> EMBEDDED = Observable.range(0, ResourceParameters.numEmbeddedResource())
       .map(i -> (EmbeddableBenchmarkResource)new Embedded())
       .cache();
+
+  private final Link link;
+
+  StaticResourceImpl(String path) {
+    this.link = new Link(path)
+        .setName(StringUtils.trimToNull(path.substring(1)))
+        .setTitle("A test resource for microbenchmarking")
+        .setType(HalResource.CONTENT_TYPE);
+  }
 
   @Override
   public Single<ObjectNode> getState() {
@@ -58,7 +68,7 @@ public class StaticResourceImpl implements LinkableBenchmarkResource {
 
   @Override
   public Link createLink() {
-    return LINK;
+    return link;
   }
 
 

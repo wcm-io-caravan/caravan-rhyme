@@ -10,6 +10,10 @@ import io.reactivex.rxjava3.core.Single;
 
 public class MappingResourceImpl extends DynamicResourceImpl {
 
+  public MappingResourceImpl(String path) {
+    super(path);
+  }
+
   @Override
   public Single<ObjectNode> getState() {
     return Single.just(TestState.createMappedJson());
@@ -17,10 +21,16 @@ public class MappingResourceImpl extends DynamicResourceImpl {
 
   @Override
   public Observable<EmbeddableBenchmarkResource> getEmbedded1() {
-    return Observable.range(0, numEmbeddedResource()).map(i -> new Embedded());
+    return Observable.range(0, numEmbeddedResource()).map(i -> new Embedded(i));
   }
 
   static class Embedded implements EmbeddableBenchmarkResource {
+
+    private final int index;
+
+    Embedded(int index) {
+      this.index = index;
+    }
 
     @Override
     public Single<ObjectNode> getState() {
@@ -29,7 +39,7 @@ public class MappingResourceImpl extends DynamicResourceImpl {
 
     @Override
     public Maybe<LinkableBenchmarkResource> getRelated() {
-      return Maybe.just(new MappingResourceImpl());
+      return Maybe.just(new MappingResourceImpl("/" + index));
     }
   }
 }

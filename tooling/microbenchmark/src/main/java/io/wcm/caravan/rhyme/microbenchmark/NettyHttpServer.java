@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,8 @@
  * #L%
  */
 package io.wcm.caravan.rhyme.microbenchmark;
+
+import java.util.Map;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.Unpooled;
@@ -44,13 +46,14 @@ class NettyHttpServer {
 
   private static final int NETTY_PORT_NR = 12345;
 
-  private final String body = ResourceLoaders.getJsonResponse();
+  private final Map<String, byte[]> responseBodyMap;
 
   private ChannelFuture channel;
   private final EventLoopGroup masterGroup;
   private final EventLoopGroup slaveGroup;
 
-  public NettyHttpServer() {
+  public NettyHttpServer(Map<String, byte[]> responseBodyMap) {
+    this.responseBodyMap = responseBodyMap;
     masterGroup = new NioEventLoopGroup();
     slaveGroup = new NioEventLoopGroup();
   }
@@ -87,11 +90,11 @@ class NettyHttpServer {
                   if (msg instanceof FullHttpRequest) {
                     final FullHttpRequest request = (FullHttpRequest)msg;
 
-                    final String responseMessage = body;
+                    final byte[] body = responseBodyMap.get(request.uri());
 
                     FullHttpResponse response = new DefaultFullHttpResponse(
                         HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
-                        Unpooled.copiedBuffer(responseMessage.getBytes()));
+                        Unpooled.copiedBuffer(body));
 
                     if (HttpHeaders.isKeepAlive(request)) {
                       response.headers().set(HttpHeaders.Names.CONNECTION,
@@ -100,7 +103,7 @@ class NettyHttpServer {
                     response.headers().set(HttpHeaders.Names.CONTENT_TYPE,
                         HalResource.CONTENT_TYPE);
                     response.headers().set(HttpHeaders.Names.CONTENT_LENGTH,
-                        responseMessage.length());
+                        body.length);
 
                     ctx.writeAndFlush(response);
                   }

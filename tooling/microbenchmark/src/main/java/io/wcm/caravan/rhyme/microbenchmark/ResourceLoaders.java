@@ -3,6 +3,12 @@ package io.wcm.caravan.rhyme.microbenchmark;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -17,8 +23,23 @@ public class ResourceLoaders {
 
   private static NettyHttpServer nettyServer;
 
+  private static Map<String, HalResponse> preBuiltResponses;
+
+  private static Map<String, byte[]> preBuiltResponseBytes;
+
   static void init() {
-    nettyServer = new NettyHttpServer();
+
+    preBuiltResponses = Stream.concat(Stream.of("/"), IntStream.range(0, ResourceParameters.numLinkedResource()).mapToObj(i -> "/" + i))
+        .map(path -> RhymeBuilder.create()
+            .buildForRequestTo(path)
+            .renderResponse(new DynamicResourceImpl(path))
+            .blockingGet())
+        .collect(Collectors.toMap(HalResponse::getUri, Function.identity()));
+
+    preBuiltResponseBytes = new HashMap<>();
+    preBuiltResponses.forEach((uri, response) -> preBuiltResponseBytes.put(uri, response.getBody().getModel().toString().getBytes(StandardCharsets.UTF_8)));
+
+    nettyServer = new NettyHttpServer(preBuiltResponseBytes);
     nettyServer.start();
   }
 
@@ -32,14 +53,9 @@ public class ResourceLoaders {
 
     return new HalResourceLoader() {
 
-      private final HalResponse response = RhymeBuilder.create()
-          .buildForRequestTo("/foo")
-          .renderResponse(new DynamicResourceImpl())
-          .blockingGet();
-
       @Override
       public Single<HalResponse> getHalResource(String uri) {
-        return Single.just(response);
+        return Single.just(preBuiltResponses.get(uri));
       }
     };
   }
@@ -48,13 +64,11 @@ public class ResourceLoaders {
 
     return HalResourceLoader.create(new HttpClientSupport() {
 
-      private final byte[] bytes = getJsonResponse().getBytes(StandardCharsets.UTF_8);
-
       @Override
       public void executeGetRequest(URI uri, HttpClientCallback callback) {
 
         callback.onHeadersAvailable(200, ImmutableMap.of());
-        callback.onBodyAvailable(new ByteArrayInputStream(bytes));
+        callback.onBodyAvailable(new ByteArrayInputStream(preBuiltResponseBytes.get(uri.toString())));
       }
     });
   }
@@ -63,10 +77,6 @@ public class ResourceLoaders {
 
     HalResourceLoader loader = HalResourceLoader.create();
 
-    return path -> loader.getHalResource("http://localhost:" + nettyServer.getPort());
-  }
-
-  static String getJsonResponse() {
-    return preBuilt().getHalResource("/foo").blockingGet().getBody().getModel().toString();
+    return path -> loader.getHalResource("http://localhost:" + nettyServer.getPort() + path);
   }
 }

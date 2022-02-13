@@ -36,7 +36,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
 import java.io.IOException;
-import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -71,8 +70,8 @@ import io.wcm.caravan.rhyme.impl.RhymeImpl;
 @BenchmarkMode(AverageTime)
 @OutputTimeUnit(MILLISECONDS)
 @Fork(value = 2, warmups = 0)
-@Warmup(iterations = 3, time = 1, timeUnit = SECONDS)
-@Measurement(iterations = 2, time = 1, timeUnit = SECONDS)
+@Warmup(iterations = 4, time = 2, timeUnit = SECONDS)
+@Measurement(iterations = 4, time = 2, timeUnit = SECONDS)
 @State(Scope.Benchmark)
 public class Benchmarks {
 
@@ -137,46 +136,51 @@ public class Benchmarks {
     return lastRhymeInstance;
   }
 
-  HalResponse render(Supplier<LinkableResource> constructor, Metrics metrics) {
+  HalResponse render(LinkableResource resource, Metrics metrics) {
 
     Rhyme rhyme = createRhyme(HalResourceLoader.create(), metrics);
 
-    return rhyme.renderResponse(constructor.get()).blockingGet();
+    return rhyme.renderResponse(resource).blockingGet();
   }
 
   @Benchmark
   public HalResponse render() {
 
-    return render(StaticResourceImpl::new, Metrics.DISABLED);
+    return render(new StaticResourceImpl("/"), Metrics.DISABLED);
   }
 
   @Benchmark
   public HalResponse renderWithMetrics() {
 
-    return render(StaticResourceImpl::new, Metrics.ENABLED);
+    return render(new StaticResourceImpl("/"), Metrics.ENABLED);
   }
 
   @Benchmark
   public HalResponse renderWithInstanceCreation() {
 
-    return render(DynamicResourceImpl::new, Metrics.DISABLED);
+    return render(new DynamicResourceImpl("/"), Metrics.DISABLED);
   }
 
   @Benchmark
   public HalResponse renderWithObjectMapping() {
 
-    return render(MappingResourceImpl::new, Metrics.DISABLED);
+    return render(new MappingResourceImpl("/"), Metrics.DISABLED);
   }
 
   private ImmutableList<Object> callClientMethods(HalResourceLoader loader, Metrics metrics) {
 
     Rhyme rhyme = createRhyme(loader, metrics);
 
-    LinkableBenchmarkResource clientProxy = rhyme.getRemoteResource("/foo", LinkableBenchmarkResource.class);
+    LinkableBenchmarkResource clientProxy = rhyme.getRemoteResource("/", LinkableBenchmarkResource.class);
 
-    return ImmutableList.of(clientProxy.getState().blockingGet(), clientProxy.createLink(),
-        clientProxy.getEmbedded1().flatMapSingle(e -> e.getState()).toList().blockingGet(),
-        clientProxy.getLinked1().map(l -> l.getState()).toList().blockingGet(),
+    return ImmutableList.of(
+        clientProxy.getState().blockingGet(),
+
+        clientProxy.createLink(),
+
+        clientProxy.getEmbedded1().flatMapSingle(EmbeddableBenchmarkResource::getState).toList().blockingGet(),
+
+        clientProxy.getLinked1().flatMapSingle(LinkableBenchmarkResource::getState).toList().blockingGet(),
 
         clientProxy.getLinked1().map(l -> l.createLink().getHref()).toList().blockingGet(),
         clientProxy.getLinked2().map(l -> l.createLink().getHref()).toList().blockingGet(),
