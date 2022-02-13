@@ -20,12 +20,15 @@
 package io.wcm.caravan.rhyme.microbenchmark;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UncheckedIOException;
 
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -44,6 +47,8 @@ import io.wcm.caravan.rhyme.impl.RhymeImpl;
 
 @State(Scope.Benchmark)
 public class RhymeState {
+
+  private static final Logger log = LoggerFactory.getLogger(RhymeState.class);
 
   private Rhyme lastRhymeInstance;
 
@@ -70,10 +75,11 @@ public class RhymeState {
 
     JsonFactory factory = new JsonFactory(mapper);
 
-    System.err.println("Rhyme performance metadata of last measurement:");
-
-    try (JsonGenerator generator = factory.createGenerator(System.err)) {
+    StringWriter writer = new StringWriter();
+    try (JsonGenerator generator = factory.createGenerator(writer)) {
       generator.writeTree(metadata.getModel());
+
+      log.info("Rhyme performance metadata of last measurement:\n{}", writer);
     }
     catch (IOException ex) {
       throw new UncheckedIOException("Failed to write metadata to console", ex);

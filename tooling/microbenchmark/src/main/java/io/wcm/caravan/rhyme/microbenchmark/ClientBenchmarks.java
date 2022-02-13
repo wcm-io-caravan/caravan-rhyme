@@ -136,7 +136,7 @@ public class ClientBenchmarks {
   }
 
   @Benchmark
-  public List<BenchmarkResourceState> onlyMapping(ResourceLoaders loaders) throws IOException {
+  public List<BenchmarkResourceState> onlyMapping(ResourceLoaders loaders) {
 
     List<BenchmarkResourceState> list = new ArrayList<>();
     for (int i = 0; i < NUM_LINKED_RESOURCES + NUM_EMBEDDED_RESOURCES + 1; i++) {

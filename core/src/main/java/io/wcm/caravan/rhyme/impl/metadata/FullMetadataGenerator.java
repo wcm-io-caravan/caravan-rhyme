@@ -134,7 +134,7 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
     rememberInvocationTimes(category, () -> methodDescription, MICROSECONDS.toNanos(invocationDurationMicros));
   }
 
-  private void rememberInvocationTimes(Class category, Supplier<String> methodDescription, long invocationDurationNanos) {
+  private void rememberInvocationTimes(Class<?> category, Supplier<String> methodDescription, long invocationDurationNanos) {
 
     Stopwatch sw = Stopwatch.createStarted();
 

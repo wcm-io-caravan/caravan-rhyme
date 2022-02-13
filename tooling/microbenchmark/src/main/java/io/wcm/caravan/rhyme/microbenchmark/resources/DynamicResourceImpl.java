@@ -55,7 +55,7 @@ public class DynamicResourceImpl implements LinkableBenchmarkResource {
 
   @Override
   public Observable<EmbeddableBenchmarkResource> getEmbedded1() {
-    return Observable.range(0, NUM_EMBEDDED_RESOURCES).map(i -> new Embedded(i));
+    return Observable.range(0, NUM_EMBEDDED_RESOURCES).map(Embedded::new);
   }
 
   @Override
