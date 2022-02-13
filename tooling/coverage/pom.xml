@@ -86,6 +86,11 @@
       <version>1-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>io.wcm.caravan.rhyme.microbenchmark</artifactId>
+      <version>1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>io.wcm.caravan.maven.plugins</groupId>
       <artifactId>rhyme-docs-maven-plugin</artifactId>
       <version>1.0.1-SNAPSHOT</version>
