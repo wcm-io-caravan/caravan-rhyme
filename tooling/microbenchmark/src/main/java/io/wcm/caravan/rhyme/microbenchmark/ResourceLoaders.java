@@ -33,7 +33,8 @@ public class ResourceLoaders {
         .map(path -> RhymeBuilder.create()
             .buildForRequestTo(path)
             .renderResponse(new DynamicResourceImpl(path))
-            .blockingGet())
+            .blockingGet()
+            .withMaxAge(3600))
         .collect(Collectors.toMap(HalResponse::getUri, Function.identity()));
 
     preBuiltResponseBytes = new HashMap<>();

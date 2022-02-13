@@ -35,6 +35,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -104,6 +105,7 @@ class NettyHttpServer {
                         HalResource.CONTENT_TYPE);
                     response.headers().set(HttpHeaders.Names.CONTENT_LENGTH,
                         body.length);
+                    response.headers().set(HttpHeaderNames.CACHE_CONTROL, "max-age=3600");
 
                     ctx.writeAndFlush(response);
                   }
