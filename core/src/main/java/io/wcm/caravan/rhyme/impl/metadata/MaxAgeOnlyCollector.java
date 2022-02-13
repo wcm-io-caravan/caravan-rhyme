@@ -19,6 +19,9 @@
  */
 package io.wcm.caravan.rhyme.impl.metadata;
 
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +63,7 @@ public class MaxAgeOnlyCollector implements RequestMetricsCollector {
     }
 
     if (maxAgeSeconds != null) {
-      inputMaxAgeSeconds.add(new TimeMeasurement(resourceUri, maxAgeSeconds / 1.f, TimeUnit.SECONDS));
+      inputMaxAgeSeconds.add(new TimeMeasurement(resourceUri, maxAgeSeconds, SECONDS));
     }
   }
 
@@ -93,7 +96,7 @@ public class MaxAgeOnlyCollector implements RequestMetricsCollector {
 
     // find the max-age values of all requested resources
     int inputMaxAge = inputMaxAgeSeconds.stream()
-        .mapToInt(maxAge -> Math.round(maxAge.getTime()))
+        .mapToInt(maxAge -> (int)NANOSECONDS.toSeconds(maxAge.getNanos()))
         // get the smallest max age time
         .min()
         // or fall back to the upper limit if no resources were retrieved

@@ -27,16 +27,23 @@ import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RENDE
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RESPONSE_TIMES;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.SLING_MODELS;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.SOURCE_LINKS;
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
+import java.util.stream.LongStream;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -67,11 +74,13 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
   private final Stopwatch overalResponseTimeStopwatch = Stopwatch.createStarted();
 
   private static final Map<TimeUnit, String> TIME_UNIT_ABBRS = ImmutableMap.of(
-      TimeUnit.MINUTES, "m",
-      TimeUnit.SECONDS, "s",
-      TimeUnit.MILLISECONDS, "ms",
-      TimeUnit.MICROSECONDS, "μs",
-      TimeUnit.NANOSECONDS, "ns");
+      MINUTES, "m",
+      SECONDS, "s",
+      MILLISECONDS, "ms",
+      MICROSECONDS, "μs",
+      NANOSECONDS, "ns");
+
+  private static final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
 
   private final List<TimeMeasurement> inputResponseTimes = Collections.synchronizedList(new ArrayList<>());
   private final ListMultimap<String, TimeMeasurement> methodInvocationTimes = Multimaps.synchronizedListMultimap(LinkedListMultimap.create());
@@ -80,12 +89,16 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
 
   private final AtomicLong metricsCollectionNanos = new AtomicLong();
 
+  static {
+    numberFormat.setMaximumFractionDigits(3);
+  }
+
   @Override
   public void onResponseRetrieved(String resourceUri, String resourceTitle, Integer maxAgeSeconds, long responseTimeMicros) {
 
     super.onResponseRetrieved(resourceUri, resourceTitle, maxAgeSeconds, responseTimeMicros);
 
-    inputResponseTimes.add(new TimeMeasurement(resourceUri, responseTimeMicros / 1000.f, TimeUnit.MILLISECONDS));
+    inputResponseTimes.add(new TimeMeasurement(resourceUri, responseTimeMicros, MICROSECONDS));
 
     Link link = new Link(resourceUri);
     link.setTitle(resourceTitle);
@@ -101,7 +114,7 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
 
       @Override
       public void close() {
-        rememberInvocationTimes(measuringClass, taskDescription, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+        rememberInvocationTimes(measuringClass, taskDescription, stopwatch.elapsed(NANOSECONDS));
       }
     };
   }
@@ -109,17 +122,17 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
   @Override
   public void onMethodInvocationFinished(Class category, String methodDescription, long invocationDurationMicros) {
 
-    rememberInvocationTimes(category, () -> methodDescription, invocationDurationMicros);
+    rememberInvocationTimes(category, () -> methodDescription, MICROSECONDS.toNanos(invocationDurationMicros));
   }
 
-  private void rememberInvocationTimes(Class category, Supplier<String> methodDescription, long invocationDurationMicros) {
+  private void rememberInvocationTimes(Class category, Supplier<String> methodDescription, long invocationDurationNanos) {
 
     Stopwatch sw = Stopwatch.createStarted();
 
     methodInvocationTimes.put(category.getSimpleName(),
-        new TimeMeasurement(methodDescription.get(), invocationDurationMicros / 1000.f, TimeUnit.MILLISECONDS));
+        new TimeMeasurement(methodDescription.get(), invocationDurationNanos));
 
-    metricsCollectionNanos.addAndGet(sw.elapsed(TimeUnit.NANOSECONDS));
+    metricsCollectionNanos.addAndGet(sw.elapsed(NANOSECONDS));
   }
 
   List<TimeMeasurement> getSortedInputResponseTimes() {
@@ -134,16 +147,16 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
     invocationTimes.stream()
         .collect(Collectors.groupingBy(TimeMeasurement::getText))
         .forEach((text, measurements) -> {
-          DoubleStream individualTimes = measurements.stream().mapToDouble(TimeMeasurement::getTime);
+          LongStream individualTimes = measurements.stream().mapToLong(TimeMeasurement::getNanos);
 
-          double totalTime = useMax ? individualTimes.max().orElse(0.f) : individualTimes.sum();
+          long totalNanos = useMax ? individualTimes.max().orElse(0) : individualTimes.sum();
           long invocations = measurements.stream().count();
 
           String prefix = "";
           if (measurements.size() > 1) {
             prefix = useMax ? "max of " : "sum of ";
           }
-          groupedInvocationTimes.add(new TimeMeasurement(prefix + invocations + "x " + text, (float)totalTime, measurements.get(0).getUnit()));
+          groupedInvocationTimes.add(new TimeMeasurement(prefix + invocations + "x " + text, totalNanos));
         });
 
     groupedInvocationTimes.sort(TimeMeasurement.LONGEST_TIME_FIRST);
@@ -152,19 +165,19 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
   }
 
   float getOverallResponseTimeMillis() {
-    return overalResponseTimeStopwatch.elapsed(TimeUnit.MICROSECONDS) / 1000.f;
+    return overalResponseTimeStopwatch.elapsed(MICROSECONDS) / 1000.f;
   }
 
   float getSumOfResponseTimeMillis() {
-    return (float)inputResponseTimes.stream()
-        .mapToDouble(TimeMeasurement::getTime)
-        .sum();
+    return inputResponseTimes.stream()
+        .mapToLong(TimeMeasurement::getNanos)
+        .sum() / 1.0e+6f;
   }
 
   float getSumOfInvocationMillis(Class category) {
-    return (float)methodInvocationTimes.get(category.getSimpleName()).stream()
-        .mapToDouble(TimeMeasurement::getTime)
-        .sum();
+    return methodInvocationTimes.get(category.getSimpleName()).stream()
+        .mapToLong(TimeMeasurement::getNanos)
+        .sum() / 1.0e+6f;
   }
 
   List<Link> getSourceLinks() {
@@ -195,7 +208,7 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
         "Links to all requested upstream HAL resources (in the order the responses have been retrieved)",
         "If you see lots of untitled resources here then free feel to add a title to the self link in that resource in the upstream service.");
 
-    HalResource responseTimes = createTimingResource(getSortedInputResponseTimes());
+    HalResource responseTimes = createTimingResource(getSortedInputResponseTimes(), MILLISECONDS);
     addEmbedded(metadataResource, RESPONSE_TIMES, responseTimes,
         "The individual response & parse times of all retrieved HAL resources",
         "Response times > ~20ms usually indicate that the resource was not found in cache"
@@ -203,7 +216,7 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
             + "If you see many individual requests here then check if the upstream "
             + "service also provides a way to fetch this data all at once. ");
 
-    HalResource maxAgeResource = createTimingResource(getSortedInputMaxAgeSeconds());
+    HalResource maxAgeResource = createTimingResource(getSortedInputMaxAgeSeconds(), SECONDS);
     addEmbedded(metadataResource, MAX_AGE, maxAgeResource,
         "The max-age cache header values of all retrieved resources",
         "If the max-age in this response's cache headers is lower then you expected, "
@@ -211,7 +224,7 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
 
     List<TimingResourceCategory> allCategories = getAllCategories();
 
-    allCategories.forEach(category -> createAndEmbed(metadataResource, category));
+    allCategories.forEach(category -> createAndEmbed(metadataResource, category, MILLISECONDS));
 
     // and also include the overall max-age of the response
     metadataResource.getModel().put("maxAge", getResponseMaxAge() + " s");
@@ -221,8 +234,8 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
     metadataResource.getModel().put("sumOfResourceAssemblyTime", getSumOfInvocationMillis(AsyncHalResponseRenderer.class) + "ms");
     metadataResource.getModel().put("sumOfResponseAndParseTimes", getSumOfResponseTimeMillis() + "ms");
     metadataResource.getModel().put("overallServerSideResponseTime", getOverallResponseTimeMillis() + "ms");
-    metadataResource.getModel().put("metricsCollectionTime", TimeUnit.NANOSECONDS.toMillis(metricsCollectionNanos.get()) + "ms");
-    metadataResource.getModel().put("metadataGenerationTime", stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
+    metadataResource.getModel().put("metricsCollectionTime", NANOSECONDS.toMillis(metricsCollectionNanos.get()) + "ms");
+    metadataResource.getModel().put("metadataGenerationTime", stopwatch.elapsed(MILLISECONDS) + "ms");
 
     return metadataResource;
   }
@@ -284,9 +297,9 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
     }
   }
 
-  private void createAndEmbed(HalResource metadataResource, TimingResourceCategory category) {
+  private void createAndEmbed(HalResource metadataResource, TimingResourceCategory category, TimeUnit unit) {
 
-    HalResource timingResource = createTimingResource(getGroupedAndSortedInvocationTimes(category.simpleClassName, category.useMaxForAggregration));
+    HalResource timingResource = createTimingResource(getGroupedAndSortedInvocationTimes(category.simpleClassName, category.useMaxForAggregration), unit);
 
     addEmbedded(metadataResource, category.relation, timingResource, category.description, category.developerHint);
   }
@@ -306,13 +319,13 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
     metadataResource.addEmbedded(relation, toEmbed);
   }
 
-  private static HalResource createTimingResource(List<TimeMeasurement> list) {
+  private HalResource createTimingResource(List<TimeMeasurement> list, TimeUnit unit) {
 
     ObjectNode model = JsonNodeFactory.instance.objectNode();
     ArrayNode individualMetrics = model.putArray("measurements");
 
     list.stream()
-        .map(measurement -> measurement.getTime() + " " + TIME_UNIT_ABBRS.get(measurement.getUnit()) + " - " + measurement.getText())
+        .map(measurement -> numberFormat.format(measurement.getTime(unit)) + " " + TIME_UNIT_ABBRS.get(unit) + " - " + measurement.getText())
         .forEach(individualMetrics::add);
 
     return new HalResource(model);
@@ -323,30 +336,31 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
    */
   public static class TimeMeasurement {
 
-    static final Ordering<TimeMeasurement> LONGEST_TIME_FIRST = Ordering.natural().onResultOf(TimeMeasurement::getTime).reverse();
+    static final Ordering<TimeMeasurement> LONGEST_TIME_FIRST = Ordering.natural().onResultOf(TimeMeasurement::getNanos).reverse();
 
     private final String text;
-    private final Float time;
-    private final TimeUnit unit;
+    private final Long nanos;
 
-    TimeMeasurement(String text, Float time, TimeUnit unit) {
+    TimeMeasurement(String text, long nanos) {
       this.text = text;
-      this.time = time;
-      this.unit = unit;
+      this.nanos = nanos;
+    }
+
+    TimeMeasurement(String text, long duration, TimeUnit unit) {
+      this.text = text;
+      this.nanos = unit.toNanos(duration);
     }
 
     public String getText() {
       return this.text;
     }
 
-    public Float getTime() {
-      return this.time;
+    public Long getNanos() {
+      return this.nanos;
     }
 
-    public TimeUnit getUnit() {
-      return this.unit;
+    public float getTime(TimeUnit unit) {
+      return unit.convert(nanos * 1000, NANOSECONDS) / 1000.f;
     }
   }
-
-
 }

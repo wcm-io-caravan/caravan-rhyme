@@ -25,12 +25,13 @@ import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.MAX_A
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RENDERING_TIMES;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.RESPONSE_TIMES;
 import static io.wcm.caravan.rhyme.impl.metadata.ResponseMetadataRelations.SOURCE_LINKS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Percentage.withPercentage;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -177,10 +178,9 @@ class ResponseMetadataGeneratorTest {
     List<TimeMeasurement> maxAge = metrics.getSortedInputMaxAgeSeconds();
 
     assertThat(maxAge).hasSize(3);
-    assertThat(maxAge.get(0).getUnit()).isEqualTo(TimeUnit.SECONDS);
-    assertThat(maxAge.get(0).getTime()).isEqualTo(200.f);
-    assertThat(maxAge.get(1).getTime()).isEqualTo(30.f);
-    assertThat(maxAge.get(2).getTime()).isEqualTo(10.f);
+    assertThat(maxAge.get(0).getTime(SECONDS)).isEqualTo(200.f);
+    assertThat(maxAge.get(1).getTime(SECONDS)).isEqualTo(30.f);
+    assertThat(maxAge.get(2).getTime(SECONDS)).isEqualTo(10.f);
   }
 
   @Test
@@ -193,10 +193,9 @@ class ResponseMetadataGeneratorTest {
     List<TimeMeasurement> maxAge = metrics.getSortedInputResponseTimes();
 
     assertThat(maxAge).hasSize(3);
-    assertThat(maxAge.get(0).getUnit()).isEqualTo(TimeUnit.MILLISECONDS);
-    assertThat(maxAge.get(0).getTime()).isEqualTo(0.2f);
-    assertThat(maxAge.get(1).getTime()).isEqualTo(0.03f);
-    assertThat(maxAge.get(2).getTime()).isEqualTo(0.01f);
+    assertThat(maxAge.get(0).getTime(MILLISECONDS)).isEqualTo(0.2f);
+    assertThat(maxAge.get(1).getTime(MILLISECONDS)).isEqualTo(0.03f);
+    assertThat(maxAge.get(2).getTime(MILLISECONDS)).isEqualTo(0.01f);
   }
 
   @Test
@@ -224,12 +223,10 @@ class ResponseMetadataGeneratorTest {
     List<TimeMeasurement> maxAge = metrics.getGroupedAndSortedInvocationTimes(HalApiClient.class.getSimpleName(), true);
 
     assertThat(maxAge).hasSize(2);
-    assertThat(maxAge.get(0).getUnit()).isEqualTo(TimeUnit.MILLISECONDS);
     assertThat(maxAge.get(0).getText()).isEqualTo("1x " + METHOD2);
-    assertThat(maxAge.get(0).getTime()).isCloseTo(2.0f, withPercentage(0.01f));
-    assertThat(maxAge.get(1).getUnit()).isEqualTo(TimeUnit.MILLISECONDS);
+    assertThat(maxAge.get(0).getTime(MILLISECONDS)).isCloseTo(2.0f, withPercentage(0.01f));
     assertThat(maxAge.get(1).getText()).isEqualTo("max of 2x " + METHOD1);
-    assertThat(maxAge.get(1).getTime()).isCloseTo(1.5f, withPercentage(0.01f));
+    assertThat(maxAge.get(1).getTime(MILLISECONDS)).isCloseTo(1.5f, withPercentage(0.01f));
   }
 
   @Test
@@ -242,12 +239,10 @@ class ResponseMetadataGeneratorTest {
     List<TimeMeasurement> maxAge = metrics.getGroupedAndSortedInvocationTimes(HalApiClient.class.getSimpleName(), false);
 
     assertThat(maxAge).hasSize(2);
-    assertThat(maxAge.get(0).getUnit()).isEqualTo(TimeUnit.MILLISECONDS);
     assertThat(maxAge.get(0).getText()).isEqualTo("sum of 2x " + METHOD1);
-    assertThat(maxAge.get(0).getTime()).isCloseTo(1.4f, withPercentage(0.01f));
-    assertThat(maxAge.get(1).getUnit()).isEqualTo(TimeUnit.MILLISECONDS);
+    assertThat(maxAge.get(0).getTime(MILLISECONDS)).isCloseTo(1.4f, withPercentage(0.01f));
     assertThat(maxAge.get(1).getText()).isEqualTo("1x " + METHOD2);
-    assertThat(maxAge.get(1).getTime()).isCloseTo(1.f, withPercentage(0.01f));
+    assertThat(maxAge.get(1).getTime(MILLISECONDS)).isCloseTo(1.f, withPercentage(0.01f));
   }
 
   @Test
