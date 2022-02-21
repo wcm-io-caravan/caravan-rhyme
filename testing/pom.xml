@@ -31,7 +31,7 @@
 
   <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
   <version>1.0.1-SNAPSHOT</version>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
 
   <name>Rhyme - Testing Support</name>
   <description>Additional classes for unit / integration tests (but are only meant to be used as test scoped dependencies)</description>

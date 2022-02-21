@@ -235,6 +235,14 @@
             <Sling-Model-Packages>io.wcm.caravan.rhyme.aem</Sling-Model-Packages>
           </instructions>
         </configuration>
+        <executions>
+          <execution>
+            <id>baseline</id>
+            <goals>
+              <goal>baseline</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
