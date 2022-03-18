@@ -12,12 +12,6 @@ templateDir: aem-hal-browser-aem-cms
 
 files:
 
-# AEM Service Pack
-- url: mvn:adobe.binary.aem.65.servicepack/aem-service-pkg/6.5.8/zip
-  dir: packages
-  modelOptions:
-    delayAfterInstallSec: 30
-
 # AEM OSGi System Configuration
 - file: aem-hal-browser-aem-cms-config.provisioning
   dir: packages
