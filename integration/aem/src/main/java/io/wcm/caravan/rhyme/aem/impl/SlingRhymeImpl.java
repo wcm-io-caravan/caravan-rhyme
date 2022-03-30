@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
-import io.wcm.caravan.rhyme.aem.impl.client.ResourceLoaderManager;
 import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -47,7 +46,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   private final Rhyme rhyme;
 
   @Inject
-  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ModelFactory modelFactory, ResourceLoaderManager resourceLoaders,
+  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ModelFactory modelFactory, SlingRhymeCustomizationManager customization,
       RhymeDocsOsgiBundleSupport rhymeDocs) {
 
     this.modelFactory = modelFactory;
@@ -58,7 +57,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     // created for different context-resources.
     this.urlHandler = request.adaptTo(UrlHandler.class);
 
-    this.rhyme = RhymeBuilder.withResourceLoader(resourceLoaders.getResourceLoader())
+    RhymeBuilder rhymeBuilder = RhymeBuilder.withResourceLoader(customization.getResourceLoader())
         .withRhymeDocsSupport(rhymeDocs)
         .withMetadataConfiguration(new RhymeMetadataConfiguration() {
 
@@ -66,8 +65,11 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
           public boolean isMetadataGenerationEnabled() {
             return request.getParameterMap().containsKey(EMBED_RHYME_METADATA);
           }
-        })
-        .buildForRequestTo(request.getRequestURL().toString());
+        });
+
+    customization.configureRhymeBuilder(rhymeBuilder, request);
+
+    this.rhyme = rhymeBuilder.buildForRequestTo(request.getRequestURL().toString());
   }
 
   private SlingRhymeImpl(SlingRhymeImpl slingRhyme, Resource currentResource) {
