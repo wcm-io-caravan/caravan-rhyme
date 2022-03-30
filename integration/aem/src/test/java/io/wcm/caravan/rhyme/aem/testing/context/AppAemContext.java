@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import io.wcm.caravan.commons.httpclient.impl.HttpClientFactoryImpl;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.aem.impl.RhymeResourceRegistry;
-import io.wcm.caravan.rhyme.aem.impl.client.ResourceLoaderManager;
+import io.wcm.caravan.rhyme.aem.impl.SlingRhymeCustomizationManager;
 import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.aem.impl.parameters.QueryParamInjector;
 import io.wcm.testing.mock.aem.junit5.AemContext;
@@ -43,7 +43,7 @@ public final class AppAemContext {
         .build();
 
     context.registerInjectActivateService(new HttpClientFactoryImpl());
-    context.registerInjectActivateService(new ResourceLoaderManager());
+    context.registerInjectActivateService(new SlingRhymeCustomizationManager());
 
     context.registerInjectActivateService(new RhymeDocsOsgiBundleSupport());
 
