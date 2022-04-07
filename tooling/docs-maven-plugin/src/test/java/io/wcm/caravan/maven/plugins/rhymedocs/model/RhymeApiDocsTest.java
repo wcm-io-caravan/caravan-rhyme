@@ -54,7 +54,8 @@ public class RhymeApiDocsTest {
       RhymePropertiesDocsTest.ResourceWithAnnotatedProperties.class,
       RhymePropertiesDocsTest.ResourceWithJsonIgnoreAnnotation.class,
       RhymePropertiesDocsTest.ResourceWithPrivateFieldsAndBeanProperties.class,
-      RhymePropertiesDocsTest.ResourceWithResourceProperty.class
+      RhymePropertiesDocsTest.ResourceWithResourceProperty.class,
+      RhymePropertiesDocsTest.ResourceWithGenericProperties.class
   };
 
   static RhymeApiDocs getApiDocs() {

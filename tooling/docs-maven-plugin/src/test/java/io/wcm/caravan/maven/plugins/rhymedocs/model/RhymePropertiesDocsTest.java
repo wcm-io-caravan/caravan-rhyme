@@ -22,6 +22,7 @@ package io.wcm.caravan.maven.plugins.rhymedocs.model;
 import static io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocsTest.getDocsFor;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -677,5 +678,31 @@ class RhymePropertiesDocsTest {
 
     @ResourceProperty
     String something();
+  }
+
+  @Test
+  void getProperties_should_handle_generic_properties() {
+
+    RhymeResourceDocs docs = getDocsFor(ResourceWithGenericProperties.class);
+
+    assertThat(docs.getProperties())
+        .extracting(RhymePropertyDocs::getJsonPointer)
+        .containsExactly(
+            "/mapOfMaps");
+
+    assertThat(findDocsForProperty("/mapOfMaps", docs).getType())
+        .isEqualTo("Map<String>"); // TODO: this could be improved to report something like Map<String, Map<String, String>>
+  }
+
+  @HalApiInterface
+  interface ResourceWithGenericProperties {
+
+    @ResourceState
+    GenericProperties getState();
+
+    class GenericProperties {
+
+      public Map<String, Map<String, String>> mapOfMaps = new HashMap<>();
+    }
   }
 }

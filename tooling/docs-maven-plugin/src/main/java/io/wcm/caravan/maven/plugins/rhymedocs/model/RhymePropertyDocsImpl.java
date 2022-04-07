@@ -323,6 +323,7 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
 
     return Stream.of(observableType.getActualTypeArguments())
         .filter(typeArgument -> !"?".equals(typeArgument.getTypeName()))
+        .filter(typeArgument -> typeArgument instanceof Class)
         .map(typeArgument -> (Class<?>)typeArgument);
   }
 
