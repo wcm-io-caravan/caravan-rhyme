@@ -1,6 +1,6 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> Rhyme Testing Support
 ======
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.testing/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.testing)
+[![Maven Central](https://img.shields.io/maven-central/v/io.wcm.caravan/io.wcm.caravan.rhyme.testing)](https://repo1.maven.org/maven2/io/wcm/caravan/io.wcm.caravan.rhyme.testing/)
 
 This module contains some additional classes only to be used in **test** scope.
 

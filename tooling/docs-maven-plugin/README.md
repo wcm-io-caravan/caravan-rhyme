@@ -1,6 +1,6 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> Rhyme Documentation Maven Plugin
 ======
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan.maven.plugins/rhyme-docs-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan.maven.plugins/rhyme-docs-maven-plugin)
+[![Maven Central](https://img.shields.io/maven-central/v/io.wcm.caravan.maven.plugins/rhyme-docs-maven-plugin)](https://repo1.maven.org/maven2/io/wcm/caravan/maven/plugins/rhyme-docs-maven-plugin)
 # Introduction
 
 This plugin will generate HTML documentation from annotated HAL API Java interfaces, and embed them into the packaged jar so they are deployed and served together with your application.

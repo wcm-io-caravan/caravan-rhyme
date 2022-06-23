@@ -1,6 +1,6 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> Rhyme - OSGi / JAX-RS Integration
 ======
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.osgi-jaxrs/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.osgi-jaxrs)
+[![Maven Central](https://img.shields.io/maven-central/v/io.wcm.caravan/io.wcm.caravan.rhyme.osgi-jaxrs)](https://repo1.maven.org/maven2/io/wcm/caravan/io.wcm.caravan.rhyme.osgi-jaxrs/)
 
 This module contains OSGi service interfaces and implementations to use Rhyme in an OSGI R7 container with the [JAX-RS Whiteboard](http://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.jaxrs.html)
 

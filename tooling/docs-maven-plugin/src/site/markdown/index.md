@@ -2,7 +2,7 @@
 
 Generates API service documenation for HAL+JSON APIs defines with the wcm.io Caravan Rhyme framework
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan.maven.plugins/rhyme-docs-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan.maven.plugins/rhyme-docs-maven-plugin)
+[![Maven Central](https://img.shields.io/maven-central/v/io.wcm.caravan.maven.plugins/rhyme-docs-maven-plugin)](https://repo1.maven.org/maven2/io/wcm/caravan/maven/plugins/rhyme-docs-maven-plugin)
 
 
 ### Documentation
