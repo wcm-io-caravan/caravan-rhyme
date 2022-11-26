@@ -195,6 +195,15 @@
         <artifactId>junit-jupiter-engine</artifactId>
         <scope>test</scope>
     </dependency>
+
+    <!-- ensure that the jacoco java agent is available, which is required to instrument the launchpad for code coverage --> 
+    <dependency>
+      <groupId>org.jacoco</groupId>
+      <artifactId>org.jacoco.agent</artifactId>
+      <version>${jacoco-maven-plugin.version}</version>
+      <classifier>runtime</classifier>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   
   <build>
