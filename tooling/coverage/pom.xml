@@ -29,66 +29,79 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
       <version>1.1.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
       <version>1.2.0-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.aem</artifactId>
       <version>1.0.0-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.osgi-jaxrs</artifactId>
       <version>1.1.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.spring</artifactId>
       <version>1.0.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.testing</artifactId>
       <version>1.0.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.examples.aem-hal-browser.core</artifactId>
       <version>1.0.0-SNAPSHOT</version>
-    </dependency>   
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.examples.aws-movie-search</artifactId>
       <version>1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.examples.osgi-jaxrs-example-launchpad</artifactId>
       <version>1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.examples.osgi-jaxrs-example-service</artifactId>
       <version>1.0.0-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.examples.spring-hello-world</artifactId>
       <version>1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.examples.spring-hypermedia</artifactId>
       <version>1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan.maven.plugins</groupId>
       <artifactId>rhyme-docs-maven-plugin</artifactId>
       <version>1.0.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

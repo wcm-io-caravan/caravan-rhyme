@@ -63,26 +63,31 @@
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.httpclient</artifactId>
       <version>1.2.2</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.httpasyncclient</artifactId>
       <version>1.2.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.jsonpath</artifactId>
       <version>0.5.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.metrics</artifactId>
       <version>0.6.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.performance</artifactId>
       <version>0.5.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
@@ -118,6 +123,7 @@
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.io.http</artifactId>
       <version>0.10.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
@@ -135,6 +141,7 @@
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.pipeline.cache.guava</artifactId>
       <version>0.7.0</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Apache HTTP Client (version overrides are required by the io.wcm.caravan.io.http bundle) -->
@@ -142,26 +149,31 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.5.10</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
       <version>4.4.12</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
       <version>4.5.10</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore-osgi</artifactId>
       <version>4.4.12</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient-osgi</artifactId>
       <version>4.1.4</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     
     <!-- actual dependencies -->
@@ -185,15 +197,15 @@
 
     <!-- AssertJ for fluent assertions -->
     <dependency>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-core</artifactId>
-        <version>3.8.0</version>
-        <scope>test</scope>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.8.0</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <scope>test</scope>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <!-- ensure that the jacoco java agent is available, which is required to instrument the launchpad for code coverage --> 
