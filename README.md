@@ -604,6 +604,6 @@ As soon as you subscribe to the response `Single`, all the other reactives insta
 
 # Related Links
 
-Issues: https://wcm-io.atlassian.net/projects/WCARAV/<br/>
+Issues: https://github.com/wcm-io-caravan/caravan-rhyme/issues<br/>
 Continuous Integration: https://github.com/wcm-io-caravan/caravan-rhyme/actions<br/>
 Commercial support: https://wcm.io/commercial-support.html
