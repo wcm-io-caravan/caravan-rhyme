@@ -19,8 +19,7 @@
   <properties>
 
     <!-- Java version -->
-    <java.version>1.8</java.version>
-    <build.compiler.release>8</build.compiler.release>
+    <java.version>11</java.version>
 
     <!-- AEM instance parameters -->
     <sling.url>http://localhost:4502</sling.url>

@@ -45,8 +45,7 @@
 
   <properties>
     <site.url.module.prefix>rhyme/spring</site.url.module.prefix>
-    <java.version>1.8</java.version>
-    <build.compiler.release>8</build.compiler.release>
+    <java.version>11</java.version>
     <spring-boot.version>2.5.8</spring-boot.version>
   </properties>
 
