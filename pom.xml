@@ -40,12 +40,6 @@
   <modules>
     <module>api-interfaces</module>
     <module>core</module>
-    <module>examples/aem-hal-browser</module>
-    <module>examples/aws-movie-search</module>
-    <module>examples/osgi-jaxrs-example-launchpad</module>
-    <module>examples/osgi-jaxrs-example-service</module>
-    <module>examples/spring-hello-world</module>
-    <module>examples/spring-hypermedia</module>
     <module>integration/aem</module>
     <module>integration/osgi-jaxrs</module>
     <module>integration/spring</module>    
@@ -53,6 +47,12 @@
     <module>tooling/coverage</module>
     <module>tooling/docs-maven-plugin</module>    
     <module>tooling/parent</module>
+    <module>examples/aem-hal-browser</module>
+    <module>examples/aws-movie-search</module>
+    <module>examples/osgi-jaxrs-example-launchpad</module>
+    <module>examples/osgi-jaxrs-example-service</module>
+    <module>examples/spring-hello-world</module>
+    <module>examples/spring-hypermedia</module>
 
   </modules>
 
