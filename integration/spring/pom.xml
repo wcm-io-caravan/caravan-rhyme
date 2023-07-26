@@ -45,7 +45,7 @@
 
   <properties>
     <site.url.module.prefix>rhyme/spring</site.url.module.prefix>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <spring-boot.version>2.5.8</spring-boot.version>
   </properties>
 
@@ -147,6 +147,14 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
+        <dependencies>
+            <!-- this is needed for Java 17 support until there's new release of the plugin with a newer version of ASM -->
+          <dependency>
+              <groupId>org.ow2.asm</groupId>
+              <artifactId>asm</artifactId>
+              <version>9.1</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
             <id>baseline</id>
