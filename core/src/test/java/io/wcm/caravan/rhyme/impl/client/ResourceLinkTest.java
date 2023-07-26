@@ -300,7 +300,7 @@ class ResourceLinkTest {
   }
 
   @HalApiInterface
-  interface EntyPointWithEmbedded {
+  interface EntryPointWithEmbedded {
 
     @Related(ITEM)
     Single<ResourceWithUri> getEmbedded();
@@ -311,7 +311,7 @@ class ResourceLinkTest {
 
     entryPoint.createEmbedded(ITEM);
 
-    String uri = client.createProxy(EntyPointWithEmbedded.class)
+    String uri = client.createProxy(EntryPointWithEmbedded.class)
         .getEmbedded()
         .map(ResourceWithUri::getUri)
         .blockingGet();

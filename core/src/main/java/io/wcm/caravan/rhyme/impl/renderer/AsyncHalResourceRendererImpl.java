@@ -100,7 +100,7 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
       return Single.zip(rxState, rxRelated,
           // ...then create the HalResource instance
           (stateNode, listOfRelated) -> createHalResource(resourceImplInstance, stateNode, listOfRelated))
-          // and measure the time of thsee emissions
+          // and measure the time of these emissions
           .compose(EmissionStopwatch.collectMetrics(() -> "rendering " + simpleClassName + " instances", metrics));
     }
   }
@@ -151,14 +151,14 @@ public final class AsyncHalResourceRendererImpl implements AsyncHalResourceRende
 
           Observable<?> rxReturnValue = RxJavaReflectionUtils.invokeMethodAndReturnObservable(resourceImplInstance, method, metrics, typeSupport);
 
-          // if the getter methods are returning an Observable, Stream or List, then the invocation above would give us a single
-          // observable that emits multiple item. We do however want to convert this all into one array, so we'll convert the observable to a list first
+          // If the getter methods are returning an Observable, Stream or List, then the invocation above would give us a single
+          // observable that emits multiple item. We do, however, want to convert this all into one array, so we'll convert the observable to a list first
           if (typeSupport.isProviderOfMultiplerValues(method.getReturnType())) {
             rxReturnValue = rxReturnValue.toList().toObservable();
           }
 
           return rxReturnValue
-              // convert the emitted property value to a JSON  node
+              // convert the emitted property value to a JSON node
               .map(returnValue -> objectMapper.convertValue(returnValue, JsonNode.class))
               .map(jsonNode -> Pair.of(propertyName, jsonNode));
         });

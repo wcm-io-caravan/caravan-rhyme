@@ -66,7 +66,7 @@ class SlingModelPostAdaptationStageTest {
 
 
   @Test
-  void withLinkTitle_allows_to_overide_title_for_SlingLinkableResource_instances() {
+  void withLinkTitle_allows_to_override_title_for_SlingLinkableResource_instances() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -82,7 +82,7 @@ class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  void withLinkTitle_fails_to_overide_title_if_model_class_does_not_implement_SlingLinkableResource() {
+  void withLinkTitle_fails_to_override_title_if_model_class_does_not_implement_SlingLinkableResource() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -100,7 +100,7 @@ class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  void withLinkName_allows_to_overide_name_for_SlingLinkableResource_instances() {
+  void withLinkName_allows_to_override_name_for_SlingLinkableResource_instances() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
@@ -141,7 +141,7 @@ class SlingModelPostAdaptationStageTest {
   }
 
   @Test
-  void withModifications_should_allow_to_append_muliple_query_parameters() {
+  void withModifications_should_allow_to_append_multiple_query_parameters() {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content");
 

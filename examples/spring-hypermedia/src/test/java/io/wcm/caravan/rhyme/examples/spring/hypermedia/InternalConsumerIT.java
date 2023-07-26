@@ -45,7 +45,7 @@ class InternalConsumerIT extends AbstractCompanyApiIT {
   private CompanyApi api;
 
   @Override
-  protected CompanyApi getApiImplementionOrClientProxy() {
+  protected CompanyApi getApiImplementationOrClientProxy() {
     return api;
   }
 

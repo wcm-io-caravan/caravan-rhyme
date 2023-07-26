@@ -52,7 +52,7 @@ class HalResourceMessageBodyWriterTest {
   }
 
   @Test
-  void isWriteable_should_return_fals_for_other_class() {
+  void isWriteable_should_return_false_for_other_class() {
 
     boolean writeable = messageBodyWriter.isWriteable(JsonNode.class, null, new Annotation[0], WILDCARD_TYPE);
 

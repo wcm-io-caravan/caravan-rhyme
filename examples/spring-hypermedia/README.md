@@ -53,7 +53,7 @@ The test package [io.wcm.caravan.rhyme.examples.spring.hypermedia](src/test/java
 One key thing to note here is that all test cases defined in `AbstractCompanyApiIT` are using only the `CompanyApi` entry point interface
 to navigate to the resources under test. This allows the same set of tests to be run multiple times (by the subclasses):
 - directly using the server-side implementations (like a consumer of the API running in the same application context would)
-- using Spring's `MockMvc` to create mock requests to the contollers (to also test the path mappings, link generation and JSON (de)serialization)
+- using Spring's `MockMvc` to create mock requests to the controllers (to also test the path mappings, link generation and JSON (de)serialization)
 - actually starting up the server on a random port and using a regular HTTP client to retrieve the resources, exactly as an external consumer would do
 
 # Examples for Key Concepts
@@ -76,11 +76,11 @@ also the single source for the generated HTML documentation that is automaticall
 
 Tools such as the HAL Browser or HAL Explorer will automatically link to this documentation directly for any custom relation that is being used.
 
-The exact same documentation is also used by developers implementing the service (as its based on Javadocs), and consumers will also see the same Javadocs when using the Rhyme client proxies to access your API (if you decide to publish your interfaces to your consumers as a seperate module). This ensures that documentation is easy to maintain at a single location and immediately available to everyone using the API.
+The exact same documentation is also used by developers implementing the service (as its based on Javadocs), and consumers will also see the same Javadocs when using the Rhyme client proxies to access your API (if you decide to publish your interfaces to your consumers as a separate module). This ensures that documentation is easy to maintain at a single location and immediately available to everyone using the API.
 
 ## Rendering HAL resources
 
-To **render** a HAL resource in a web service built with Spring Boot & Rhyme, you only have to return an **implementation of the corresponding interface** in your controller method. In this example, the implementations clasess don't have much logic so they are all defined directly in the controllers (often as anonymous inner classes). The nice thing about having these resources represented as classes is that you can easily refactor (and move the code around) as required while your project grows, and use either composition or inheritance where it makes sense.
+To **render** a HAL resource in a web service built with Spring Boot & Rhyme, you only have to return an **implementation of the corresponding interface** in your controller method. In this example, the implementations classes don't have much logic so they are all defined directly in the controllers (often as anonymous inner classes). The nice thing about having these resources represented as classes is that you can easily refactor (and move the code around) as required while your project grows, and use either composition or inheritance where it makes sense.
 
 **Linking** to other resources works by **returning resource implementations created by other controllers**. See the [CompanyApiController](src/main/java/io/wcm/caravan/rhyme/examples/spring/hypermedia/CompanyApiController.java) as an example how it easily defines links for the HAL representation of the entry point. Note that the way this works also allows internal consumers to call those methods directly, with the same semantics defined in the interface.
 
@@ -118,8 +118,8 @@ If you expand the `company:detailedEmployee` link template in the entry point wi
 
 If you do enter a non-numeric id, you'll see a nice chain of errors explaining why a 400 / Bad Request response is returned.
 
-If you are using a non-existant integer employee id, things get more interesting: You'll see that the expected 404 / Not Found was caused by a failed request to load the regular employee resource. Again you see the full chain of exceptions, and the last entry in the embedded `errors` resources is actually originating from the response body of the request that has failed. There's also a `via` link to the exact URL that failed to load.
+If you are using a non-existent integer employee id, things get more interesting: You'll see that the expected 404 / Not Found was caused by a failed request to load the regular employee resource. Again you see the full chain of exceptions, and the last entry in the embedded `errors` resources is actually originating from the response body of the request that has failed. There's also a `via` link to the exact URL that failed to load.
 
-Having this constent error representation allows a very quick root cause analysis (without having to correlate log entries from multiple systems) when you have a larger distributed system with multiple web services.
+Having this consistent error representation allows a very quick root cause analysis (without having to correlate log entries from multiple systems) when you have a larger distributed system with multiple web services.
 
 Of course you wouldn't want to show such detailed error information on a public-facing service, but it can all be easily stripped out by an API gateway.

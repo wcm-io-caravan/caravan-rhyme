@@ -37,7 +37,7 @@ import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 
 /**
  * A full implementation of {@link AsyncHalResourceRenderer} that uses {@link VndErrorResponseRendererImpl}
- * to handle any errors that occured when rendering the {@link HalResource}
+ * to handle any errors that occurred when rendering the {@link HalResource}
  */
 public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
 
@@ -55,10 +55,10 @@ public class AsyncHalResponseRendererImpl implements AsyncHalResponseRenderer {
    * @param renderer used to asynchronously render a {@link HalResource}
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance and caching information for
    *          the current incoming request
-   * @param exceptionStrategy allows to control the status code and logging of exceptions being thrown during rendering
+   * @param exceptionStrategy allows controlling the status code and logging of exceptions being thrown during rendering
    * @param annotationSupport the strategy to detect HAL API annotations
    * @param rhymeDocsSupport to determine the base URL where documentation is mounted. Can be null, but then no curies
-   *          will generated
+   *          will be generated
    */
   public AsyncHalResponseRendererImpl(AsyncHalResourceRenderer renderer, RequestMetricsCollector metrics,
       ExceptionStatusAndLoggingStrategy exceptionStrategy, HalApiAnnotationSupport annotationSupport, RhymeDocsSupport rhymeDocsSupport) {

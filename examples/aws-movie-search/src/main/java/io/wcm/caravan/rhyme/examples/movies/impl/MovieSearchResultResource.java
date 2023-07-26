@@ -48,7 +48,7 @@ class MovieSearchResultResource extends AbstractPagingResource<SearchResultPage,
 
     String searchTerm = queryParameters.get(PARAM_SEARCH_TERM);
     if (StringUtils.isBlank(searchTerm)) {
-      throw new HalApiServerException(HttpStatusCode.BAD_REQUEST, "You must specifiy a value for the query parameter " + PARAM_SEARCH_TERM);
+      throw new HalApiServerException(HttpStatusCode.BAD_REQUEST, "You must specify a value for the query parameter " + PARAM_SEARCH_TERM);
     }
 
     return new MovieSearchResultResource(rhyme, searchTerm, page);

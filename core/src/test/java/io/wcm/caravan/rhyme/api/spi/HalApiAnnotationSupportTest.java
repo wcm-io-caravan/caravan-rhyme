@@ -74,7 +74,7 @@ class HalApiAnnotationSupportTest {
   }
 
   @Test
-  void should_have_default_implementation_for_getProeprtyName() {
+  void should_have_default_implementation_for_getPropertyName() {
 
     assertThat(annotationSupport.getPropertyName(null))
         .isNull();

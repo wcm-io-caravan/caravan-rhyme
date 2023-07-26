@@ -158,7 +158,7 @@ class HttpHalResourceLoaderTest {
     Map<String, Collection<String>> headers = new HashMap<>();
     headers.put(HttpHeaders.CONTENT_TYPE, ImmutableList.of("foo/bar"));
 
-    HalResponse response = executeSuccessfullRequestWithReponseHeaders(headers);
+    HalResponse response = executeSuccessfulRequestWithResponseHeaders(headers);
 
     assertThat(response.getContentType())
         .isEqualTo("foo/bar");
@@ -171,7 +171,7 @@ class HttpHalResourceLoaderTest {
     Map<String, Collection<String>> headers = new HashMap<>();
     headers.put(null, ImmutableList.of("HTTP/1.1 200 OK"));
 
-    HalResponse response = executeSuccessfullRequestWithReponseHeaders(headers);
+    HalResponse response = executeSuccessfulRequestWithResponseHeaders(headers);
 
     assertThat(response.getStatus())
         .isEqualTo(200);
@@ -183,13 +183,13 @@ class HttpHalResourceLoaderTest {
     Map<String, Collection<String>> headers = new HashMap<>();
     headers.put("cache-control", ImmutableList.of("max-age=123"));
 
-    HalResponse response = executeSuccessfullRequestWithReponseHeaders(headers);
+    HalResponse response = executeSuccessfulRequestWithResponseHeaders(headers);
 
     assertThat(response.getMaxAge())
         .isEqualTo(123);
   }
 
-  private HalResponse executeSuccessfullRequestWithReponseHeaders(Map<String, Collection<String>> headers) {
+  private HalResponse executeSuccessfulRequestWithResponseHeaders(Map<String, Collection<String>> headers) {
 
     HttpHalResourceLoader loader = createLoader((uri, callback) -> {
 
@@ -203,7 +203,7 @@ class HttpHalResourceLoaderTest {
   @Test
   void should_use_status_code_from_ok_response() {
 
-    HalResponse response = executeSuccessfullRequestWithReponseHeaders(new HashMap<>());
+    HalResponse response = executeSuccessfulRequestWithResponseHeaders(new HashMap<>());
 
     assertThat(response.getStatus())
         .isEqualTo(200);

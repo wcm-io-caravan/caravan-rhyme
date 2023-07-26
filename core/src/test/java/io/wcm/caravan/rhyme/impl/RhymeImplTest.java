@@ -241,7 +241,7 @@ class RhymeImplTest {
   }
 
   @Test
-  void startStopwatch_should_not_create_metadata_with_defaut_configuration() {
+  void startStopwatch_should_not_create_metadata_with_default_configuration() {
 
     MeasuringTestResource resourceImpl = new MeasuringTestResource(rhyme);
 

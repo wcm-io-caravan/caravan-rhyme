@@ -233,7 +233,7 @@ class CaravanRhymeRequestCycleImplTest {
 
   private void assertThatVndErrorResponseIsRendered(Response response) {
 
-    // verify that the status code from the thrown exception is actually used in the rsponse
+    // verify that the status code from the thrown exception is actually used in the response
     assertThat(response.getStatus()).isEqualTo(SC_NOT_IMPLEMENTED);
     assertThat(response.getHeaderString(HttpHeaders.CONTENT_TYPE)).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);
   }

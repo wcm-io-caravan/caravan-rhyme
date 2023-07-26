@@ -36,7 +36,7 @@ import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
 
 /**
- * Implemention of {@link UrlFingerprinting} that will be created when {@link SpringRhyme#enableUrlFingerprinting()} is
+ * Implementation of {@link UrlFingerprinting} that will be created when {@link SpringRhyme#enableUrlFingerprinting()} is
  * called.
  */
 class UrlFingerprintingImpl implements UrlFingerprinting {

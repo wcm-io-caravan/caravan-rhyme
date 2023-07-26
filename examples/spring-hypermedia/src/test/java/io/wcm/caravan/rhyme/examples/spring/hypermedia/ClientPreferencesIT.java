@@ -32,12 +32,12 @@ class ClientPreferencesIT extends MockMvcClientIT {
   private Boolean embedRhymeMetadata = false;
 
   @Override
-  protected CompanyApi getApiImplementionOrClientProxy() {
+  protected CompanyApi getApiImplementationOrClientProxy() {
 
     // since we are extending AbstractCompanyIT, all tests defined there will be executed
     // against the client proxy that is created here
 
-    return super.getApiImplementionOrClientProxy()
+    return super.getApiImplementationOrClientProxy()
         // and we are returning the alternative entry point with the settings
         // that disable the usage of embedded resource
         .withClientPreferences(useEmbeddedResources, useFingerprinting, embedRhymeMetadata);
@@ -50,7 +50,7 @@ class ClientPreferencesIT extends MockMvcClientIT {
     useFingerprinting = null;
     embedRhymeMetadata = null;
 
-    Link settingsLink = getApiImplementionOrClientProxy().createLink();
+    Link settingsLink = getApiImplementationOrClientProxy().createLink();
 
     assertThat(settingsLink.isTemplated())
         .isTrue();
@@ -64,7 +64,7 @@ class ClientPreferencesIT extends MockMvcClientIT {
   @Test
   void entry_point_url_should_contain_sticky_parameter() {
 
-    CompanyApi resource = getApiImplementionOrClientProxy();
+    CompanyApi resource = getApiImplementationOrClientProxy();
 
     URI uri = getURI(resource);
 
@@ -134,7 +134,7 @@ class ClientPreferencesIT extends MockMvcClientIT {
 
   private List<HalResponse> crawlAllResponses() {
 
-    String entryPointUri = getURI(getApiImplementionOrClientProxy()).toString();
+    String entryPointUri = getURI(getApiImplementationOrClientProxy()).toString();
 
     HalCrawler crawler = new HalCrawler(mockMvcResourceLoader)
         .withEntryPoint(entryPointUri);

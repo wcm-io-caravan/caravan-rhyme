@@ -69,7 +69,7 @@ public interface CollectionExamplesResource {
       @TemplateVariable("delayMs") Integer delayMs);
 
   /**
-   * Fetch an collection resource generated via the <b>delayed:collection</b>
+   * Fetch a collection resource generated via the <b>delayed:collection</b>
    * link through the Rhyme framework's HTTP client proxies.
    * Specifying a large number of items with delayed responses allows you to verify
    * that the upstream resources are indeed fetched in parallel. Note that the items

@@ -59,7 +59,7 @@ public class ApacheAsyncHttpSupport implements HttpClientSupport {
   }
 
   /**
-   * Allows to provide a customised {@link CloseableHttpAsyncClient} instance to be used for all requests.
+   * Allows providing a customised {@link CloseableHttpAsyncClient} instance to be used for all requests.
    * @param client to use for all requests
    */
   public ApacheAsyncHttpSupport(CloseableHttpAsyncClient client) {

@@ -28,7 +28,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 /**
  * Represents an ongoing measurement of execution time that was started with
  * {@link Rhyme#startStopwatch(Class, Supplier)} or {@link RequestMetricsCollector#startStopwatch(Class, Supplier)},
- * and needs to beclosed to finish the measurement.
+ * and needs to be closed to finish the measurement.
  * This interface extends {@link AutoCloseable} so the easiest way to use this is to wrap the code block in a
  * try-with-resources statement
  */

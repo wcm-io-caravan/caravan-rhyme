@@ -102,15 +102,15 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
 
   public static List<RhymePropertyDocs> create(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
 
-    Stream<RhymePropertyDocs> resourceStateDocs = crreateDocsFromResourceState(apiInterface, builder, projectClassLoader);
+    Stream<RhymePropertyDocs> resourceStateDocs = createDocsFromResourceState(apiInterface, builder, projectClassLoader);
 
-    Stream<RhymePropertyDocs> resourcePropertyDocs = crreateDocsFromResourceProperty(apiInterface, builder, projectClassLoader);
+    Stream<RhymePropertyDocs> resourcePropertyDocs = createDocsFromResourceProperty(apiInterface, builder, projectClassLoader);
 
     return Stream.concat(resourceStateDocs, resourcePropertyDocs)
         .collect(Collectors.toList());
   }
 
-  private static Stream<RhymePropertyDocs> crreateDocsFromResourceProperty(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
+  private static Stream<RhymePropertyDocs> createDocsFromResourceProperty(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
 
     Stream<JavaMethod> javaMethods = DocumentationUtils.getMethodsWithAnnotation(apiInterface, ResourceProperty.class);
 
@@ -144,7 +144,7 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
     return Introspector.decapitalize(name);
   }
 
-  private static Stream<RhymePropertyDocs> crreateDocsFromResourceState(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
+  private static Stream<RhymePropertyDocs> createDocsFromResourceState(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
 
     Optional<JavaMethod> javaMethod = DocumentationUtils.getMethodsWithAnnotation(apiInterface, ResourceState.class).findFirst();
     if (!javaMethod.isPresent()) {

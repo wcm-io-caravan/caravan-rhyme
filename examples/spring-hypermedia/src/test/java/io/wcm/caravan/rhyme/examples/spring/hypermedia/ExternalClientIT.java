@@ -59,9 +59,9 @@ class ExternalClientIT extends AbstractCompanyApiIT {
   }
 
   @Override
-  protected CompanyApi getApiImplementionOrClientProxy() {
+  protected CompanyApi getApiImplementationOrClientProxy() {
 
-    // All of the tests in the superclass will use this single entry point proxy to execute
+    // All the tests in the superclass will use this single entry point proxy to execute
     // an HTTP request to the CompanyApiController (exactly as an external consumer would),
     // and then follow links to other resources as required, which will trigger additional
     // requests to the other controllers.
@@ -82,7 +82,7 @@ class ExternalClientIT extends AbstractCompanyApiIT {
   @Test
   void all_resolved_links_should_lead_to_a_valid_hal_resource_with_titled_self_link() {
 
-    // in addition to the detailed tests in the superclass we also do a quick smoke test here
+    // in addition to the detailed tests in the superclass, we also do a quick smoke test here
     // that verifies if any resource that can be reached from the entry point (by following
     // resolved links) can actually be retrieved
 

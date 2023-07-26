@@ -218,7 +218,7 @@ class ProxyCachingTest {
     TestState item1 = entryPoint.getLinked().concatMapMaybe(LinkableTestResource::getState).blockingFirst();
     TestState alt1 = entryPoint.getAlternate().concatMapMaybe(LinkableTestResource::getState).blockingFirst();
 
-    // since the both resourcse have exactly the same link and interface, the same proxy instance will be returned
+    // since the both resource have exactly the same link and interface, the same proxy instance will be returned
     assertThat(item1).isSameAs(alt1);
 
     assertThat(entryPointCounter.getCount()).isEqualTo(1);
@@ -235,7 +235,7 @@ class ProxyCachingTest {
     TestState item1 = entryPoint.getLinked().concatMapMaybe(LinkableTestResource::getState).blockingFirst();
     TestState alt1 = entryPoint.getAlternate().concatMapMaybe(LinkableTestResource::getState).blockingFirst();
 
-    // since the second link has a different name, a dfferent proxy instance will be returned
+    // since the second link has a different name, a different proxy instance will be returned
     assertThat(item1).isNotSameAs(alt1);
 
     // but JSON resources are still only loaded once

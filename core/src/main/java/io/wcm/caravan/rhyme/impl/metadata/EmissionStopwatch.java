@@ -48,7 +48,7 @@ public class EmissionStopwatch<T> implements SingleTransformer<T, T>, Observable
 
   /**
    * @param message describes the task that was executed
-   * @param metrics to collect the emisison times
+   * @param metrics to collect the emission times
    * @return a Transformer to use with {@link Single#compose(SingleTransformer)} or
    *         {@link Observable#compose(ObservableTransformer)}
    */

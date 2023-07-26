@@ -38,7 +38,7 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 /**
  * A base class that you can extend if you are implementing your own {@link HalResourceLoader}
  * or {@link HttpClientSupport} classes.
- * It will run a extensive suite of tests where a {@link WireMockServer} will respond
+ * It will run an extensive suite of tests where a {@link WireMockServer} will respond
  * with a variety of responses, including client/server errors and corrupt responses.
  */
 public abstract class AbstractHalResourceLoaderTest {

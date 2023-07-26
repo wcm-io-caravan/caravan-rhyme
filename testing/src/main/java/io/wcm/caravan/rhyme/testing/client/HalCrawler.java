@@ -91,7 +91,7 @@ public class HalCrawler {
   }
 
   /**
-   * Do not follow links (or look into links from embedded resources) with the given relatins
+   * Do not follow links (or look into links from embedded resources) with the given relations
    * @param relations the relations that should not be crawled
    * @return this
    */

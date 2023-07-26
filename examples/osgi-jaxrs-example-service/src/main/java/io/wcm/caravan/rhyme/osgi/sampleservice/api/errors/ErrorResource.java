@@ -24,7 +24,7 @@ import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 
 /**
- * This is used as target resource type by the error handling examples,
+ * This is used as the target resource type by the error handling examples,
  * but you'll never see a resource of this type being successfully rendered, because the examples
  * are implemented to always throw an exception which is rendered as a vnd.error resource
  */

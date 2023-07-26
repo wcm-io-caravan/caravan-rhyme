@@ -71,7 +71,7 @@ class LazyLoadingTest {
 
     Single<ObjectNode> rxState = client.createProxy(ResourceWithObjectNode.class).getProperties();
 
-    // verify that any subscription on the returned single will result in a subsription to the mock response
+    // verify that any subscription on the returned single will result in a subscription to the mock response
     TestObserver<ObjectNode> stateObserver = TestObserver.create();
     rxState.subscribe(stateObserver);
     assertThat(mockJsonResponse.hasObservers()).isTrue();
