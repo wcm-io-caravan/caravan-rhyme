@@ -14,7 +14,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * A browseable page of directors in the database. The number of elements per page can be specified in the
+ * A browsable page of directors in the database. The number of elements per page can be specified in the
  * link template from the API's entry point.
  */
 @HalApiInterface

@@ -86,7 +86,7 @@ public abstract class AbstractPagingResource<P, I> {
   }
 
   /**
-   * @return the next page (empty if the current page already include the last available items)
+   * @return the next page (empty if the current page already includes the last available items)
    */
   public Optional<P> getNextPage() {
 

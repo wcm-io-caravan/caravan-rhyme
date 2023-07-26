@@ -47,7 +47,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
  */
 abstract class AbstractCompanyApiIT {
 
-  private static final long NON_EXISTANT_ID = 999L;
+  private static final long NON_EXISTENT_ID = 999L;
 
   @Autowired
   private EmployeeRepository employeeRepository;
@@ -58,16 +58,16 @@ abstract class AbstractCompanyApiIT {
 
   @BeforeEach
   void setUp() {
-    api = getApiImplementionOrClientProxy();
+    api = getApiImplementationOrClientProxy();
   }
 
   /**
    * This will be overridden in the subclasses to return either the server-side implementation of
    * the {@link CompanyApi} interface, or a dynamic client proxy that fetches the entry point
-   * with a HTTP request.
+   * with an HTTP request.
    * @return the implementation of {@link CompanyApi} used to run the tests
    */
-  protected abstract CompanyApi getApiImplementionOrClientProxy();
+  protected abstract CompanyApi getApiImplementationOrClientProxy();
 
   // The repositories are initialized with the same DatabaseLoader that
   // is used when the application is started. For the tests that need to
@@ -119,7 +119,7 @@ abstract class AbstractCompanyApiIT {
   void getEmployeeById_should_respond_with_404_for_non_existing_id() {
 
     assertThat404isReturnedFor(
-        () -> api.getEmployeeById(NON_EXISTANT_ID).getState());
+        () -> api.getEmployeeById(NON_EXISTENT_ID).getState());
   }
 
   @Test
@@ -165,7 +165,7 @@ abstract class AbstractCompanyApiIT {
   void getManagerById_should_respond_with_404_for_non_existing_id() {
 
     assertThat404isReturnedFor(
-        () -> api.getManagerById(NON_EXISTANT_ID).getState());
+        () -> api.getManagerById(NON_EXISTENT_ID).getState());
   }
 
   @Test
@@ -205,7 +205,7 @@ abstract class AbstractCompanyApiIT {
   void getDetailedEmployeeById_should_respond_with_404_for_non_existing_id() {
 
     assertThat404isReturnedFor(
-        () -> api.getDetailedEmployeeById(NON_EXISTANT_ID).getState());
+        () -> api.getDetailedEmployeeById(NON_EXISTENT_ID).getState());
   }
 
   @Test
@@ -219,7 +219,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  void getDetailedEmployeeById_should_list_colleages() {
+  void getDetailedEmployeeById_should_list_colleagues() {
 
     Long firstId = getIdOfFirstEmployee();
 

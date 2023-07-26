@@ -6,11 +6,11 @@ This module contains OSGi service interfaces and implementations to use Rhyme in
 
 It's meant to be used in combination with related [wcm.io Caravan](https://caravan.wcm.io/) projects:
 
-- [Resilient HTTP](https://caravan.wcm.io/io/http/) - an asychronous resilient HTTP transport layer (required)
+- [Resilient HTTP](https://caravan.wcm.io/io/http/) - an asynchronous resilient HTTP transport layer (required)
 - [JSON Pipeline](https://caravan.wcm.io/pipeline/) - for aggregation, slicing and caching of JSON responses (optional)
 
 # Key Differences and Extensions to Rhyme Core Module
-- `CaravanHalApiClient` is an alternative to the core module's `HalApiClient` based on the Reslient HTTP project
+- `CaravanHalApiClient` is an alternative to the core module's `HalApiClient` based on the Resilient HTTP project
   - if the JSON Pipeline bundles are available in the OSGI container, then they will be used for caching 
 - `JaxRsAsyncHalResponseRenderer` - a wrapper around the core module's `AsyncHalResponseRender` that renders resources into JAX-RS `AsyncResponse` instances
 

@@ -26,7 +26,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.api.collection.CollectionParamete
 
 /**
  * An implementation of the {@link CollectionParameters} interface that
- * contains JAX-RS annotations so it can be used as a {@link BeanParam}
+ * contains JAX-RS annotations, so it can be used as a {@link BeanParam}
  * argument in a resource method signature
  */
 public class CollectionParametersBean implements CollectionParameters {

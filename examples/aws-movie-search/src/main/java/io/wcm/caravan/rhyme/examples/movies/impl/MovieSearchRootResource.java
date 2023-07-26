@@ -37,7 +37,7 @@ class MovieSearchRootResource implements ApiEntryPoint {
 
   @Override
   public Link createLink() {
-    // the RymeLinkBuilder will take care of converting this to an absolute URL
+    // the RhymeLinkBuilder will take care of converting this to an absolute URL
     return rhyme.buildLinkTo(PATH)
         .build();
   }

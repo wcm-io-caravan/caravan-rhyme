@@ -46,7 +46,7 @@ public class HalApiClientImpl implements HalApiClient {
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance relevant data for the current
    *          incoming request
    * @param typeSupport the strategy to detect HAL API annotations and perform type conversions
-   * @param objectMapper the Jackson {@link ObjectMapper} to use for all JSON deserialisation
+   * @param objectMapper the Jackson {@link ObjectMapper} to use for all JSON deserialization
    * @param overrides provides alternative implementations to be returned by {@link #getRemoteResource(String, Class)}
    */
   public HalApiClientImpl(HalResourceLoader resourceLoader, RequestMetricsCollector metrics, HalApiTypeSupport typeSupport, ObjectMapper objectMapper,

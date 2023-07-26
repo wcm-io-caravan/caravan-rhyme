@@ -92,7 +92,7 @@ class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_have_uri_set_if_resource_was_rendered_succesfully() {
+  void response_should_have_uri_set_if_resource_was_rendered_successfully() {
 
     mockRenderedResource();
 
@@ -102,7 +102,7 @@ class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_have_status_200_if_resource_was_rendered_succesfully() {
+  void response_should_have_status_200_if_resource_was_rendered_successfully() {
 
     mockRenderedResource();
 
@@ -112,7 +112,7 @@ class AsyncHalResponseRendererImplTest {
   }
 
   @Test
-  void response_should_have_hal_content_type_if_resource_was_rendered_succesfully() {
+  void response_should_have_hal_content_type_if_resource_was_rendered_successfully() {
 
     mockRenderedResource();
 

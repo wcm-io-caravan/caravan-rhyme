@@ -114,7 +114,7 @@ class JaxRsAsyncHalResponseHandlerImplTest {
   }
 
   @Test
-  void respondWith_should_handle_successfull_rendering() {
+  void respondWith_should_handle_successful_rendering() {
 
     LinkableResource resourceImpl = new LinkableTestResource() {
 
@@ -213,7 +213,7 @@ class JaxRsAsyncHalResponseHandlerImplTest {
   @Test
   void respondWith_should_resume_with_fatal_error_thrown_in_handler() {
 
-    NotImplementedException expectedEx = new NotImplementedException("request URI not availbable");
+    NotImplementedException expectedEx = new NotImplementedException("request URI not available");
     Mockito.when(uriInfo.getRequestUri()).thenThrow(expectedEx);
 
     LinkableResource resourceImpl = new LinkableTestResource() {
@@ -245,7 +245,7 @@ class JaxRsAsyncHalResponseHandlerImplTest {
   @Test
   void respondWithError_should_resume_with_fatal_error_thrown_in_handler() {
 
-    NotImplementedException expectedEx = new NotImplementedException("request URI not availbable");
+    NotImplementedException expectedEx = new NotImplementedException("request URI not available");
     Mockito.when(uriInfo.getRequestUri()).thenThrow(expectedEx);
 
     handler.respondWithError(new RuntimeException("foo"), uriInfo, asyncResponse, metrics);

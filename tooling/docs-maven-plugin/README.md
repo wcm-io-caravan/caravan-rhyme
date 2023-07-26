@@ -9,7 +9,7 @@ It will use the Javadoc comments from the interfaces annotated with `HalApiInter
 
 You can run the [Spring Hypermedia Example](/examples/spring-hypermedia) to see how the documentation is automatically linked from the HAL resources and shows up in tools such as the HAL browser (via the `docs` icon that shows up for every link with a relation using a curie prefix). If you compare the source code of the API interfaces with the generated HTML documentation, you will see how they relate to each other.
 
-Note that the documentation for a relation depends on the **context** of the resource where this it is used in. A link template with relation `foo:bar` can have different parameters (and also different meaning) in different resources, and the generated documentation considers this by documenting each link **relation** based on the Javadocs of the corresponding method annnotated with `@Related`. The documentation of the resoure/media **types** is taken directly from the Javadoc description of the interface annotated with `@HalApiInterface`.
+Note that the documentation for a relation depends on the **context** of the resource where this it is used in. A link template with relation `foo:bar` can have different parameters (and also different meaning) in different resources, and the generated documentation considers this by documenting each link **relation** based on the Javadocs of the corresponding method annotated with `@Related`. The documentation of the resource/media **types** is taken directly from the Javadoc description of the interface annotated with `@HalApiInterface`.
 
 # Usage
 

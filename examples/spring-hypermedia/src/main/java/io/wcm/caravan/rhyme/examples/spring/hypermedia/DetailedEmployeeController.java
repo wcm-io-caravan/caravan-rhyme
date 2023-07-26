@@ -41,7 +41,7 @@ import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
  * but is instead loading other {@link EmployeeResource} and {@link ManagerResource} by HTTP.
  * It combines them into a {@link DetailedEmployeeResource} with embedded resources, so all of this information
  * can be fetched with a single request.
- * While this is a bit over-complicated here (where the repositories are also available locally) all this would work
+ * While this is a bit over-complicated here (where the repositories are also available locally), all this would work
  * the same way if you wanted to aggregate or enrich resources from an external API.
  * @see HalApiClient more details on how the client proxies work
  */
@@ -50,7 +50,7 @@ class DetailedEmployeeController {
 
   /**
    * Inject the same request-scoped {@link SpringRhyme} component that is also used to render the resource.
-   * This allows to include detailed information about all HTTP requests executed by this controller in the
+   * This allows including detailed information about all HTTP requests executed by this controller in the
    * embedded "rhyme:metadata" resource. It also ensures that the max-age cache directives of this controller's
    * response are properly calculated (i.e. the max-age of upstream resources and cached content is taken
    * into account)
@@ -72,7 +72,7 @@ class DetailedEmployeeController {
   DetailedEmployeeResource findById(@PathVariable Long id) {
 
     // Create and return an implementation of the HAL API interface which defines the resource structure.
-    // All methods will be automatically invoked later, when the response is being rendered
+    // All methods will be automatically invoked later when the response is being rendered
     // by the LinkableResourceMessageConverter.
     return new DetailedEmployeeResource() {
 

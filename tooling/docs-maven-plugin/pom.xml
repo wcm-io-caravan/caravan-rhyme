@@ -35,7 +35,7 @@
   <packaging>maven-plugin</packaging>
 
   <name>Rhyme - Documentation Maven Plugin</name>
-  <description>Generates HTML documentation for HAL+JSON APIs defined using Caravan Ryhme annotations</description>
+  <description>Generates HTML documentation for HAL+JSON APIs defined using Caravan Rhyme annotations</description>
   <url>${site.url}/${site.url.module.prefix}/</url>
 
   <scm>

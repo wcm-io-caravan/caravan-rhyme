@@ -135,7 +135,7 @@ class CollectionResourcesIT {
   }
 
   @Test
-  void individial_item_can_be_fetched_with_null_delayMs_and_has_correct_properties() {
+  void individual_item_can_be_fetched_with_null_delayMs_and_has_correct_properties() {
 
     int index = 3;
     Integer delayMs = null;
@@ -153,7 +153,7 @@ class CollectionResourcesIT {
   }
 
   @Test
-  void individial_item_is_properly_delayed() {
+  void individual_item_is_properly_delayed() {
 
     int index = 3;
     int delayMs = 1000;

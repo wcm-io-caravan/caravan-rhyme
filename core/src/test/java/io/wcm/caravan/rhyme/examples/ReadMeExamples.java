@@ -319,7 +319,7 @@ class ReadMeExamples {
     // be aware that 'id' can be null (e.g. if this resource is created/linked to from the entry point)
     private final String id;
 
-    // your constructors should be as leight-weight as possible, as an instance of your
+    // your constructors should be as light-weight as possible, as an instance of your
     // resource is created even if only a link to the resource is rendered
     ItemResourceImpl(ItemDatabase database, String id) {
       this.database = database;

@@ -96,9 +96,9 @@ class MovieSearchLambdaIT {
 
     SearchResultPage firstPage = api.getSearchResults("the");
 
-    HalResponse reponse = testClient.getResponse(firstPage);
+    HalResponse response = testClient.getResponse(firstPage);
 
-    assertThat(reponse.getMaxAge())
+    assertThat(response.getMaxAge())
         .isEqualTo(3600);
   }
 

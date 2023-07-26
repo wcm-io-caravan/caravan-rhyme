@@ -51,7 +51,7 @@ public final class RxJavaTransformers {
   }
 
   /**
-   * Cache the emissions if the observable completes succesfully, but clears the cache on any error (so that you can use
+   * Cache the emissions if the observable completes successfully, but clears the cache on any error (so that you can use
    * {@link Observable#retry()}
    * @param <T> the emission type
    * @return an {@link ObservableTransformer} that can be passed to {@link Observable#compose(ObservableTransformer)}
@@ -61,7 +61,7 @@ public final class RxJavaTransformers {
   }
 
   /**
-   * Cache the emissions if the Single completes succesfully, but clears the cache on any error (so that you can use
+   * Cache the emissions if the Single completes successfully, but clears the cache on any error (so that you can use
    * {@link Single#retry()}
    * @param <T> the emission type
    * @return a {@link SingleTransformer} that can be passed to {@link Single#compose(SingleTransformer)}

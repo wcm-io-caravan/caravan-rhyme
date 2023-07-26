@@ -26,7 +26,7 @@ The key concepts and features of **Rhyme** are:
 - **Forwarding error information over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
 - **Supporting asynchronous, reactive programming** on the client and server side
 
-Each of thease concepts and features are explained in more detail below.
+Each of these concepts and features are explained in more detail below.
 
 **Rhyme** is based on several years of experience and best practices from a large production HAL microservice platform (based on OSGi, JAX-RS, RxJava & wcm.io Caravan code). Since we switched over to using to Spring Boot for new services, we took the opportunity to rewrite the HAL client and rendering code to be usable within any Java project, and make it accessible to anyone. 
 
@@ -214,7 +214,7 @@ It just requires two lines of code to create a client implementation of your HAL
 ```
 
 Note: If you are also using Rhyme to **render** your resources, you shouldn't use `HalApiClient` directly, but call the `Rhyme#getRemoteResource` method instead,
-which has the exact same signature and behaviour. This ensures that the same `HalApiClient` instance will be used throught your incoming request, which
+which has the exact same signature and behaviour. This ensures that the same `HalApiClient` instance will be used through your incoming request, which
 allows some caching and collection of performance metrics as explained in a later section.
 
 Using the proxy instance of your entry point you can easily navigate through all resources of the API by simply calling the methods defined in your interfaces: 
@@ -330,7 +330,7 @@ Note that the implementation of the `@Related` methods look exactly the same as 
 Having the same interfaces on the server- and client-side allows the following approach when designing a larger software system:
 - You can start with keeping everything in the same JVM, but separate the code into modules that are using `@HalApiInterface`s as internal API from the beginning.
 - This encourages that your modules are only sharing data structures and common IDs, but not share any service implementations or other dependencies
-- During development you can easily expose these internal APIs through HTTP using the **Rhyme** framework (even though your other modules are still using the services directly). This can for eaxample be helpful for inspecting data sources in detail without using a debugger.
+- During development you can easily expose these internal APIs through HTTP using the **Rhyme** framework (even though your other modules are still using the services directly). This can, for example, be helpful for inspecting data sources in detail without using a debugger.
 - You can still refactor everything with full IDE support during development, and continuously verify that the API is designed well.
 - When there is an actual reason to break up your system into multiple services, you can easily do so. As the interfaces for remote access via HAL+API are exactly the same as for internal consumers, you can keep much of the existing code. 
 
@@ -418,7 +418,7 @@ The [Spring integration module](/integration/spring) however does have additiona
 
 One main goal of the `Rhyme` framework is to allow writing extensive integration tests for your application that are easy to read and written entirely from the perspective of an external client.
 
-Since the clients shouldn't make any assumptions on the full URL structures of an API's resources, your integration tests shouldn't do either. So instead of manually creating URLs to your resoures, fetching them and verifying that related link URLs are constructed correctly, the tests should check if **following** the links (and expanding link templates where neccessary) according to the HAL specifications will actually lead to the expected resource. This ensures that changes to the URL structure (which you can do at any time without breaking API compatibility) don't require any adjustments to your tests.
+Since the clients shouldn't make any assumptions on the full URL structures of an API's resources, your integration tests shouldn't do either. So instead of manually creating URLs to your resources, fetching them and verifying that related link URLs are constructed correctly, the tests should check if **following** the links (and expanding link templates where necessary) according to the HAL specifications will actually lead to the expected resource. This ensures that changes to the URL structure (which you can do at any time without breaking API compatibility) don't require any adjustments to your tests.
 
 The [integration test](/examples/spring-hello-world/src/test/java/io/wcm/caravan/rhyme/examples/spring/helloworld/HelloWorldTest.java) for the [Spring Hello World example](/examples/spring-hello-world) shows how there is only a single URL being constructed manually (the URL of the entry point running on a random port). All other assertions are based on following links by calling methods on the dynamic proxies created by the `HalApiClient` instance.
 
@@ -443,7 +443,7 @@ You can also create a nested hierarchy of embedded resources. This may for examp
 
 Since the interfaces annotated with `@HalApiInterface` define the structure and relations of all resources in the API, they can also be used to generate a nice context-dependant documentation for your API. Using `curies` links, this documentation can be automatically integrated in tools such as the [HAL Browser](https://github.com/mikekelly/hal-browser) or [HAL Explorer](https://github.com/toedter/hal-explorer).
 
-All you have to do to is to configure the [Rhyme Maven Documention Plugin](/tooling/docs-maven-plugin) in your project, and add Javadocs comments to your annotated interfaces and methods. The generated documenation will be deployed (and served) with your application, and is always guaranteed to be up to date with the current implementation on each environment.
+All you have to do to is to configure the [Rhyme Maven Documentation Plugin](/tooling/docs-maven-plugin) in your project, and add Javadocs comments to your annotated interfaces and methods. The generated documentation will be deployed (and served) with your application, and is always guaranteed to be up to date with the current implementation on each environment.
 
 ## Cache-Control Header and URL Fingerprinting
 
@@ -451,7 +451,7 @@ The `cache-control: max-age` header is arguably the most useful way of controlli
 
 ### Controlling the 'max-age' directive on the server
 
-Within your server-side implementation, you can simply call `Rhyme#setResponseMaxAge(Duration)` at any time to set this cache header in the respose. If you call it multiple times, the lowest duration will be used. 
+Within your server-side implementation, you can simply call `Rhyme#setResponseMaxAge(Duration)` at any time to set this cache header in the response. If you call it multiple times, the lowest duration will be used. 
 
 If you are building a service that is also fetching HAL+JSON responses from other services (which is the main use case for **Rhyme**), the `max-age` headers from these upstream responses should also be taken into account: If any of those responses are only to be cached for a short time, the derived response that you are creating must also not be cached any longer than that. Otherwise you'll run into issues that changes to these upstream resources won't become effective for your consumers. This will all happen automatically if you make sure to re-use the same `Rhyme` instance to fetch upstream resources and render your own response.
 
@@ -462,7 +462,7 @@ To enable caching for your upstream requests executed with `Rhyme` or `HalApiCli
 Any response retrieved by the **Rhyme** framework will then be stored in this cache, and following requests to the same URL will use the cached response instance. Again, the `max-age` cache directive will be taken into account:
 
 - if the response in the cache is older than the `max-age` value, it it considered stale and will not be used. A fresh copy will be loaded (and again stored in the cache) 
-- the 'max-age' value of responses taken from cache will be updated automatically: if an upstream response required by your resource had specified a max-age of 60 seconds, but was already requested and cached 55 seconds ago, calling `HalResponse#getMaxAge` on the cachged instance will return 5 seconds
+- the 'max-age' value of responses taken from cache will be updated automatically: if an upstream response required by your resource had specified a max-age of 60 seconds, but was already requested and cached 55 seconds ago, calling `HalResponse#getMaxAge` on the cached instance will return 5 seconds
 - If you are using this cached response in a service that is also rendering HAL+JSON resources with Rhyme, loading this cached response with the adjusted max-age will automatically reduce the max-age of your own response: Since your response depends on data that is about to go stale in 5 seconds, your consumers shouldn't cache your response for longer than that either. 
 
 By default only responses with status code 200 will be cached, and a default max-age of 60 seconds will be used if no such directive is found in the upstream response headers. You can override these defaults by providing your own implementation of [CachingConfiguration](core/src/main/java/io/wcm/caravan/rhyme/api/client/CachingConfiguration.java) to `HalResourceLoaderBuilder#withCachingConfiguration`.
@@ -476,7 +476,7 @@ For all this to work best, you should build your API with the following pattern:
 - when a resource with such a fingerprint in the URL is rendered, you can set the max-age to a very high value as they are now essentially immutable (because if data changes, the clients will fetch them with a different URL instead)
 - Consumers will now automatically "poll" the entry point repeatedly. But as long as the data (and therefore the URLs) doesn't change, they will continue to use the same fingerprinted URLs to fetch the more expensive resources (and there is a high chance that those can be found in cache)
 
-Your consumers will not have to do anything to benefit from these immutable resoures, as the additional fingerprinting in your URLs is not exposed anywhere in your API. It's entirely up to the server-side implementation to decide for which links these fingerprints are added, and the clients will just pick it up by following the links.
+Your consumers will not have to do anything to benefit from these immutable resources, as the additional fingerprinting in your URLs is not exposed anywhere in your API. It's entirely up to the server-side implementation to decide for which links these fingerprints are added, and the clients will just pick it up by following the links.
 
 The [SpringRhyme](integration/spring/src/main/java/io/wcm/caravan/rhyme/spring/api/SpringRhyme.java) integration has some built-in support for this via the [UrlFingerprinting](integration/spring/src/main/java/io/wcm/caravan/rhyme/spring/api/UrlFingerprinting.java) interface. To see it in action, check out the [examples/spring-hypermedia](examples/spring-hypermedia) module.
 
@@ -506,7 +506,7 @@ This resource will contain the following information:
 }
 ```
 
-While the overhead of using the **Rhyme** framework is usually neglible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
+While the overhead of using the **Rhyme** framework is usually negligible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
 
 If you do have a section of yor own code that you suspect to be a hotspot for performance optimization, you can easily add your own metrics to the response metadata:
 
@@ -543,7 +543,7 @@ Some exceptions may also be thrown **before** you are calling `Rhyme#renderRespo
 
 The benefit of rendering this vnd.error response body for any error is that clients using the `Rhyme` framework will be able to parse this body, and include the error information in the [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java). If an upstream service fails, your service will not only render the information from the exception that has been caught, but also all information extracted from the vnd.error response of the upstream service. Even if you have multiple layers of remote services, your vnd.error response will have a neat list of all exception classes and messages, up to the original root cause on the remote server. This may sound trivial, but is very helpful to immediately understand what went wrong, without having to look into the logs of several external services.
 
-The embedded `rhyme:metadata` resource with `via` links to all upstream resources that were loaded (until the error occured) is also present in the vnd.error resource. This can be useful to investigate the root cause as often a runtime exception is caused by unexpected data in an upstream service.
+The embedded `rhyme:metadata` resource with `via` links to all upstream resources that were loaded (until the error occurred) is also present in the vnd.error resource. This can be useful to investigate the root cause as often a runtime exception is caused by unexpected data in an upstream service.
 
 ## Using reactive types in your API
 
@@ -570,7 +570,7 @@ If you want to keep your client and server-side code completely asynchronous and
 - `Observable<T>` is used (instead of `Stream<T>`) whenever multiple values can be emitted
 - `Maybe<T>` is used (instead of `Optional<T>`) when a value may be present or not
 
-If you rather want to use [Spring Reactor](https://projectreactor.io/) types (or types from othe RxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the additional types to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java).
+If you rather want to use [Spring Reactor](https://projectreactor.io/) types (or types from other RxJava versions), you can add support for that through the [HalApiReturnTypeSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalApiReturnTypeSupport.java) SPI. You'll just need to implement a couple of functions that convert the additional types to/from RxJava3's `Observable`. You can register your return type extension before you create a `Rhyme` instance with the [RhymeBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/RhymeBuilder.java).
 
 On the client side, you'll have to implement [HalResourceLoader](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HalResourceLoader.java) using a fully asynchronous HTTP client library. 
 

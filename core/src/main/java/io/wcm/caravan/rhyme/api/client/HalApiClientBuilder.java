@@ -105,7 +105,7 @@ public interface HalApiClientBuilder {
 
   /**
    * Defines an override that will make {@link HalApiClient#getRemoteResource(String, Class)} return a custom
-   * implementation for a specific combination of entry point URI and interface class (rather then the default
+   * implementation for a specific combination of entry point URI and interface class (rather than the default
    * dynamic proxy). This can be used to mock/stub remote resources in unit and integration tests, or to delegate
    * remote resource proxy creation for a specific service to a completely different {@link Rhyme} or
    * {@link HalApiClient} instance.

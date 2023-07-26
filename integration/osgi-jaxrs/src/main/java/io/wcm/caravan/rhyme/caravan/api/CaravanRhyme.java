@@ -53,7 +53,7 @@ public interface CaravanRhyme {
 
   /**
    * Limit the maximum time for which the response should be cached by clients and downstream services. Note that
-   * calling this method only sets the upper limit: if other upstream resource fetched during the current request
+   * calling this method only sets the upper limit: if another upstream resource fetched during the current request
    * indicate a lower max-age value in their header, that lower value will be used instead.
    * @param duration the max cache time
    */

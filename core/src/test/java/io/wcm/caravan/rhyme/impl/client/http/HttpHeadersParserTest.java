@@ -78,7 +78,7 @@ class HttpHeadersParserTest {
   }
 
   @Test
-  void parseMaxAge_should_ignore_preceeding_directives() {
+  void parseMaxAge_should_ignore_preceding_directives() {
 
     assertThat(parseMaxAge("public, max-age=456"))
         .isEqualTo(456);

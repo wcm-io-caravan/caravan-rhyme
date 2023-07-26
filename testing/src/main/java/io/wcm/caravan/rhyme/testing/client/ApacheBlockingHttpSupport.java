@@ -60,7 +60,7 @@ public class ApacheBlockingHttpSupport implements HttpClientSupport {
   }
 
   /**
-   * Allows to provide a customised {@link CloseableHttpClient} instance to be used for all requests.
+   * Allows providing a customised {@link CloseableHttpClient} instance to be used for all requests.
    * @param client to use for all requests
    */
   public ApacheBlockingHttpSupport(CloseableHttpClient client) {

@@ -295,7 +295,7 @@ class RelatedResourceTest {
   @Test
   void list_embedded_resource_should_be_empty_if_no_resources_are_present() {
 
-    // create an embeded resource with a different relation then defined in the interface
+    // create an embedded resource with a different relation then defined in the interface
     entryPoint.createEmbedded(ALTERNATE).setText("item text");
 
     List<ResourceWithRequiredState> embeddedResources = createClientProxy(ResourceWithMultipleRelated.class)

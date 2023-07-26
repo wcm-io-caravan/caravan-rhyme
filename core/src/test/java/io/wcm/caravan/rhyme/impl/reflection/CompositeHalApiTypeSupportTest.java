@@ -223,7 +223,7 @@ class CompositeHalApiTypeSupportTest {
   }
 
   @Test
-  void isResourceReoresentationMethod_should_return_first_true_value() {
+  void isResourceRepresentationMethod_should_return_first_true_value() {
 
     assertThatCompositeReturnsFirstTrueValueOfMock(a -> a.isResourceRepresentationMethod(firstMethod));
   }

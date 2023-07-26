@@ -41,7 +41,7 @@ class AemRepositoryImplTest {
   }
 
   @Test
-  void can_be_rendererd() {
+  void can_be_rendered() {
 
     assertResourceCanBeRendered(repository);
   }

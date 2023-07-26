@@ -200,7 +200,7 @@ class RhymeBuilderImplTest {
     Set<LinkableTestResource> getLinks();
   }
 
-  private static final class ResourcewithSetOfLinksImpl implements ResourceWithSetOfLinks {
+  private static final class ResourceWithSetOfLinksImpl implements ResourceWithSetOfLinks {
 
     @Override
     public Set<LinkableTestResource> getLinks() {
@@ -225,7 +225,7 @@ class RhymeBuilderImplTest {
 
     Rhyme rhyme = createRhymeWithSetReturnTypeSupport();
 
-    ResourceWithSetOfLinks resourceImpl = new ResourcewithSetOfLinksImpl();
+    ResourceWithSetOfLinks resourceImpl = new ResourceWithSetOfLinksImpl();
 
     HalResponse response = rhyme.renderResponse(resourceImpl).blockingGet();
     assertThat(response.getStatus()).isEqualTo(200);

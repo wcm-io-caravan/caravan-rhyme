@@ -135,7 +135,7 @@ class TemplateVariablesTest {
   }
 
   @Test
-  void should_parially_expand_template_with_null_field_in_dto() {
+  void should_partially_expand_template_with_null_field_in_dto() {
 
     String template = "/item/{id}{?text}";
     entryPoint.addLinks(ITEM, new Link(template));

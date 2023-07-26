@@ -76,7 +76,7 @@ class MockMvcClientIT extends AbstractCompanyApiIT {
   protected HalResourceLoader mockMvcResourceLoader;
 
   @Override
-  protected CompanyApi getApiImplementionOrClientProxy() {
+  protected CompanyApi getApiImplementationOrClientProxy() {
 
     // Create a HalApiClient that is using Spring's MockMvc to simulate actual HTTP requests
     // going into the currently running WebApplicationContext.

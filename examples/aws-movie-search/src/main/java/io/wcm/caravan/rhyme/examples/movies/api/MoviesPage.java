@@ -14,7 +14,7 @@ import io.wcm.caravan.rhyme.api.annotations.ResourceState;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * A browseable page of movies in the database, sorted by their IMDB ranking. The number of elements per page can be
+ * A browsable page of movies in the database, sorted by their IMDB ranking. The number of elements per page can be
  * specified in the link template from the API's entry point.
  */
 @HalApiInterface

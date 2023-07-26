@@ -44,7 +44,7 @@ public class AppAemContext extends AemContext {
 
     context.registerInjectActivateService(new AemHalBrowserResourceRegistration());
 
-    // this should be moved to ContextPlugins but if we do, our registration doesn't become effective
+    // this should be moved to ContextPlugins, but if we do, our registration doesn't become effective
     context.registerInjectActivateService(new RhymeResourceRegistry());
     context.registerInjectActivateService(new HalApiServlet());
   }

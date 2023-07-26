@@ -29,7 +29,7 @@ import io.wcm.caravan.rhyme.impl.reflection.HalApiReflectionUtils;
 
 /**
  * Contains utility methods to perform conversions between resources that are semantically identical, but
- * need some tweeks for the framework to properly handle them
+ * need some tweaks for the framework to properly handle them
  */
 public final class ResourceConversions {
 

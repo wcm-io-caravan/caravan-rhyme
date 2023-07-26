@@ -89,7 +89,7 @@ class RhymeDocsServletTest {
   }
 
   @Test
-  void doGet_should_return_400_if_relative_path_was_prerent_in_request() throws ServletException, IOException {
+  void doGet_should_return_400_if_relative_path_was_present_in_request() throws ServletException, IOException {
 
     getHtmlDocumentation("/../Foo.html");
 
@@ -98,7 +98,7 @@ class RhymeDocsServletTest {
   }
 
   @Test
-  void doGet_should_return_400_if_relative_suffix_was_prerent_in_request() throws ServletException, IOException {
+  void doGet_should_return_400_if_relative_suffix_was_present_in_request() throws ServletException, IOException {
 
     getHtmlDocumentation("Foo.html");
 

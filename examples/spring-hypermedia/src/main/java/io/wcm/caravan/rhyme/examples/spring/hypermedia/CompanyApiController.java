@@ -64,9 +64,9 @@ class CompanyApiController implements CompanyApi {
   @GetMapping("/")
   CompanyApi get() {
 
-    // Since the controller class is directly implementing the CompanyApi interface we can simply return this.
+    // Since the controller class is directly implementing the CompanyApi interface, we can simply return this.
 
-    // Because CompanyApi extends LinkableResource, all methods from the interface will be automatically invoked later,
+    // Because CompanyApi extends LinkableResource, all methods from the interface will be automatically invoked later
     // when the response is being rendered by the LinkableResourceMessageConverter.
     return this;
   }
@@ -122,7 +122,7 @@ class CompanyApiController implements CompanyApi {
         .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, EMBED_RHYME_METADATA)
         .withTitle("Reload the entry point with different settings")
         // since this method is never called by internal consumers, we don't have to return a full server-side
-        // CompanyApi implementation. Instead we create and return a minimal proxy that only can render the link.
+        // CompanyApi implementation. Instead, we create and return a minimal proxy that only can render the link.
         .buildLinked(CompanyApi.class);
   }
 

@@ -391,7 +391,7 @@ class SlingResourceAdapterImplTest {
         .getStream()
         .collect(Collectors.toList());
 
-    assertThatResourcesMatch(resources, "/content/foo/1", "/confent/foo2");
+    assertThatResourcesMatch(resources, "/content/foo/1", "/content/foo2");
   }
 
   @Test

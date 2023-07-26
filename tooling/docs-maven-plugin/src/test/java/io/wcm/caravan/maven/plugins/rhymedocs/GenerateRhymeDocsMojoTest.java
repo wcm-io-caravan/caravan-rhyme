@@ -116,7 +116,7 @@ class GenerateRhymeDocsMojoTest {
 
 
   @Test
-  void execute_should_generate_documention_if_interfaces_are_found_in_classpath()
+  void execute_should_generate_documentation_if_interfaces_are_found_in_classpath()
       throws DependencyResolutionRequiredException, MojoExecutionException, MojoFailureException, IOException {
 
     setupMocksForSuccessfulGeneration();

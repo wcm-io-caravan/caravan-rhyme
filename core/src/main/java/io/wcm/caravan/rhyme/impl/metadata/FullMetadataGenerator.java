@@ -273,20 +273,20 @@ public class FullMetadataGenerator extends MaxAgeOnlyCollector implements Reques
 
     private final String description;
     private final String developerHint;
-    private final boolean useMaxForAggregration;
+    private final boolean useMaxForAggregation;
 
-    TimingResourceCategory(String simpleClassName, String relation, String description, String developerHint, boolean useMaxForAggregration) {
+    TimingResourceCategory(String simpleClassName, String relation, String description, String developerHint, boolean useMaxForAggregation) {
       this.simpleClassName = simpleClassName;
       this.relation = relation;
       this.description = description;
       this.developerHint = developerHint;
-      this.useMaxForAggregration = useMaxForAggregration;
+      this.useMaxForAggregation = useMaxForAggregation;
     }
   }
 
   private void createAndEmbed(HalResource metadataResource, TimingResourceCategory category) {
 
-    HalResource timingResource = createTimingResource(getGroupedAndSortedInvocationTimes(category.simpleClassName, category.useMaxForAggregration));
+    HalResource timingResource = createTimingResource(getGroupedAndSortedInvocationTimes(category.simpleClassName, category.useMaxForAggregation));
 
     addEmbedded(metadataResource, category.relation, timingResource, category.description, category.developerHint);
   }

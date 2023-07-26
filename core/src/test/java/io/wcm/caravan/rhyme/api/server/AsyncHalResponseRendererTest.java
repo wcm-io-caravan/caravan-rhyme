@@ -49,7 +49,7 @@ class AsyncHalResponseRendererTest {
   }
 
   // these are just two very basic test cases to cover the wiring in the api.server package,
-  // and verify basic interaction for a succesfull and one error response
+  // and verify basic interaction for a successful and one error response
 
   @Test
   void valid_resource_should_be_rendered() {

@@ -108,7 +108,7 @@ public class SlingResourceAdapterImpl implements SlingResourceAdapter {
   @Override
   public SlingResourceAdapter select(Stream<Resource> resources) {
 
-    return resourceSelector.add(resources, "custom stream of resourcs");
+    return resourceSelector.add(resources, "custom stream of resources");
   }
 
   @Override

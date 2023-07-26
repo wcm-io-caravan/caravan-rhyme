@@ -220,7 +220,7 @@ final class RelatedResourcesRendererImpl {
           .map(EmbeddableResource.class::cast)
           .filter(r -> r.isEmbedded());
 
-      // and render them by recursively calling the render function from AsyncHalresourceRendererImpl
+      // and render them by recursively calling the render function from AsyncHalResourceRendererImpl
       Observable<HalResource> rxHalResources = rxEmbeddedResourceImpls
           .concatMapEager(r -> recursiveRenderFunc.apply(r).toObservable());
 

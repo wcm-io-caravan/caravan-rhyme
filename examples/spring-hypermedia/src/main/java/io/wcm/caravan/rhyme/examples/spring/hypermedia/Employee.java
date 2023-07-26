@@ -43,7 +43,7 @@ public class Employee {
   private String role;
 
   /**
-   * To break the recursive, bi-directional relationship, don't serialize {@literal manager}.
+   * To break the recursive, bidirectional relationship, don't serialize {@literal manager}.
    */
   @JsonIgnore
   @OneToOne
