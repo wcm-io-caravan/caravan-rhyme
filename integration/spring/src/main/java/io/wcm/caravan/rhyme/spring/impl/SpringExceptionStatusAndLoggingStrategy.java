@@ -42,7 +42,7 @@ class SpringExceptionStatusAndLoggingStrategy implements ExceptionStatusAndLoggi
   public Integer extractStatusCode(Throwable error) {
 
     if (error instanceof ResponseStatusException) {
-      return ((ResponseStatusException)error).getStatus().value();
+      return ((ResponseStatusException)error).getStatusCode().value();
     }
 
     if (error.getClass().isAnnotationPresent(ResponseStatus.class)) {
