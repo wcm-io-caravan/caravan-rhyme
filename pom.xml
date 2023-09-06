@@ -42,8 +42,7 @@
     <module>core</module>
     <module>integration/aem</module>
     <module>integration/osgi-jaxrs</module>
-    <module>integration/spring</module>    
-    <module>testing</module>    
+    <module>testing</module>
     <module>tooling/coverage</module>
     <module>tooling/docs-maven-plugin</module>    
     <module>tooling/parent</module>
@@ -95,5 +94,17 @@
       <url>${site.deploy.url}</url>
     </site>
   </distributionManagement>
+
+  <profiles>
+    <profile>
+      <id>java17</id>
+      <activation>
+        <jdk>[17,)</jdk>
+      </activation>
+      <modules>
+        <module>integration/spring</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>
