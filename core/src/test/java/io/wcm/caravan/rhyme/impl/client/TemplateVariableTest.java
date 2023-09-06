@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -125,7 +126,7 @@ class TemplateVariableTest {
   @HalApiInterface
   interface ResourceWithComplexLinkTemplate {
 
-    static final String TEMPLATE = "/item/{number}{?optionalFlag}";
+    String TEMPLATE = "/item/{number}{?optionalFlag}";
 
     @Related(ITEM)
     Single<ResourceWithSingleState> getLinked(
@@ -175,6 +176,20 @@ class TemplateVariableTest {
 
     assertThat(link.getHref())
         .isEqualTo(ResourceWithComplexLinkTemplate.TEMPLATE);
+  }
+
+  @HalApiInterface
+  interface ResourceWithOptionalLinkedResource {
+
+    @Related(ITEM)
+    Optional<ResourceWithSingleState> getLinked(@TemplateVariable("number") Integer number);
+  }
+
+  @Test
+  void linked_resource_should_not_be_present_if_there_is_no_link_in_entryPoint() {
+    assertThat(client.createProxy(ResourceWithOptionalLinkedResource.class)
+        .getLinked(null))
+        .isNotPresent();
   }
 
   @Test

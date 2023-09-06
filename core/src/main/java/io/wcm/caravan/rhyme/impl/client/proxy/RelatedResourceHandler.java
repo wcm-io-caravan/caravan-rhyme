@@ -97,6 +97,10 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
     Map<String, Object> variables = invocation.getTemplateVariables();
 
     if (!variables.isEmpty()) {
+      // if null values were specified for all method parameters, we assume that the caller is only interested in the link templates
+      if (invocation.isCalledWithOnlyNullParameters()) {
+        return createProxiesFromLinkTemplates(relatedResourceType, relevantLinks);
+      }
 
       // ignore any resolved links, and only consider link templates that contain all variables specified
       // in the method invocation
@@ -195,4 +199,12 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
     clonedLink.setHref(uri);
     return clonedLink;
   }
+
+  private Observable<Object> createProxiesFromLinkTemplates(Class<?> relatedResourceType, List<Link> links) {
+
+    // do not expand the link templates
+    return Observable.fromIterable(links)
+        .map(link -> proxyFactory.createProxyFromLink(relatedResourceType, link));
+  }
+
 }
