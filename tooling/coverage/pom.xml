@@ -24,7 +24,7 @@
 
   <dependencies>
     <!-- because sonarcube will *only* pick up coverage data from this aggregated report,  we have to ensure
-         that all modules with code to be covered is included here as a *direct* dependency -->
+         that all modules with code to be covered are included here as a *direct* dependency -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
