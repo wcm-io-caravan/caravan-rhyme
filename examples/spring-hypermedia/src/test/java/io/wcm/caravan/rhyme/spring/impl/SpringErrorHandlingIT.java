@@ -149,10 +149,12 @@ class SpringErrorHandlingIT {
 
     String nonExistingUrl = baseUri + "/foo/bar";
 
-    HalResponse errorResponse = getResponseFromCaughtClientException(
-        (er) -> client.getRemoteResource(nonExistingUrl, ErrorThrowingResource.class));
+    ErrorThrowingResource errorResource = client.getRemoteResource(nonExistingUrl, ErrorThrowingResource.class);
 
-    assertThat(errorResponse.getStatus())
-        .isEqualTo(HttpStatus.NOT_FOUND.value());
+    HalApiClientException ex = assertThrows(HalApiClientException.class,
+        () -> errorResource.getStateWithError());
+
+    assertThat(ex.getErrorResponse()).isNotNull();
+    assertThat(ex.getErrorResponse().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
   }
 }

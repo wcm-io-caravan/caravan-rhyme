@@ -27,8 +27,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.time.Duration;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +39,7 @@ import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.spring.api.RhymeLinkBuilder;
 import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Defines common logic (e.g. URL fingerprinting) for building any link to your resources in this project .
@@ -126,9 +125,9 @@ class CompanyApiLinkBuilder {
    * by the {@link WebMvcLinkBuilder} class, but additional query parameters that are not directly
    * present in the API and controller signatures can be appended by {@link UrlFingerprinting}.
    * @param webMvcLinkBuilder created with {@link WebMvcLinkBuilder#linkTo(Class)} and
-   *          {@link WebMvcLinkBuilder#methodOn(Class, Object...)}
+   *     {@link WebMvcLinkBuilder#methodOn(Class, Object...)}
    * @return a {@link RhymeLinkBuilder} that you can use to decorate the link with name and title attributes, and
-   *         then finally build it
+   *     then finally build it
    * @see WebMvcLinkBuilder
    */
   RhymeLinkBuilder create(WebMvcLinkBuilder webMvcLinkBuilder) {

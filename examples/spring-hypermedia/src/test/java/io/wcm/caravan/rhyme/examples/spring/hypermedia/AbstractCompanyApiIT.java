@@ -30,9 +30,10 @@ import java.util.stream.Stream;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.util.collections.Iterables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+
+import com.google.common.collect.Iterables;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
@@ -75,12 +76,12 @@ abstract class AbstractCompanyApiIT {
 
   protected Long getIdOfFirstEmployee() {
 
-    return Iterables.firstOf(employeeRepository.findAll()).getId();
+    return Iterables.get(employeeRepository.findAll(), 0).getId();
   }
 
   protected Long getIdOfFirstManager() {
 
-    return Iterables.firstOf(managerRepository.findAll()).getId();
+    return Iterables.get(managerRepository.findAll(), 0).getId();
   }
 
   @Test

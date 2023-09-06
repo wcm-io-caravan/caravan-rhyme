@@ -22,7 +22,7 @@ Make sure not to miss loading a `company:detailedEmployee` link when you run the
 # Build and Run
 
 
-Using **JDK 8, 11 or 17** and **Apache Maven 3.6.3** (or higher) you should be able to build and run the example like this:
+Using **JDK 17** and **Apache Maven 3.6.3** (or higher) you should be able to build and run the example like this:
 
 ```
 git clone https://github.com/wcm-io-caravan/caravan-rhyme.git

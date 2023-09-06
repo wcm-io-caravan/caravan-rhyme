@@ -8,13 +8,13 @@ to render and consume [HAL+JSON](https://stateless.group/hal_specification.html)
 
 # Build and Run
 
-Using **JDK 8, 11 or 17** and **Apache Maven 3.6.3** (or higher) you should be able to build and run the example like this:
+Using **JDK 17** and **Apache Maven 3.6.3** (or higher) you should be able to build and run the example like this:
 
 ```
 git clone https://github.com/wcm-io-caravan/caravan-rhyme.git
 cd caravan-rhyme
 git checkout master
-mvn -f examples/spring-helloworld/ clean verify spring-boot:run
+mvn -f examples/spring-hello-world/ clean verify spring-boot:run
 ```
 
 If there are any failures during the build or integration tests, then please open an issue on github!

@@ -71,7 +71,7 @@ class ExternalClientIT extends AbstractCompanyApiIT {
   // since we don't have access to the repository in this test, the IDs need to be hard-coded
   @Override
   protected Long getIdOfFirstEmployee() {
-    return 2L;
+    return 1L;
   }
 
   @Override

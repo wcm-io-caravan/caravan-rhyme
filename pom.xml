@@ -43,16 +43,12 @@
     <module>integration/aem</module>
     <module>integration/osgi-jaxrs</module>
     <module>testing</module>
-    <module>tooling/coverage</module>
-    <module>tooling/docs-maven-plugin</module>    
+    <module>tooling/docs-maven-plugin</module>
     <module>tooling/parent</module>
     <module>examples/aem-hal-browser</module>
     <module>examples/aws-movie-search</module>
     <module>examples/osgi-jaxrs-example-launchpad</module>
     <module>examples/osgi-jaxrs-example-service</module>
-    <module>examples/spring-hello-world</module>
-    <module>examples/spring-hypermedia</module>
-
   </modules>
 
   <build>
@@ -103,6 +99,9 @@
       </activation>
       <modules>
         <module>integration/spring</module>
+        <module>examples/spring-hello-world</module>
+        <module>examples/spring-hypermedia</module>
+        <module>tooling/coverage</module>
       </modules>
     </profile>
   </profiles>
