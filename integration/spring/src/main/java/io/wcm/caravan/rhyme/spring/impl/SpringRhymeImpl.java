@@ -98,7 +98,7 @@ class SpringRhymeImpl implements SpringRhyme {
 
   private static String getRequestUrl(HttpServletRequest httpRequest) {
 
-    StringBuffer requestUrl = httpRequest.getRequestURL();
+    StringBuilder requestUrl = new StringBuilder(httpRequest.getRequestURL());
 
     if (httpRequest.getQueryString() != null) {
       requestUrl.append("?");
