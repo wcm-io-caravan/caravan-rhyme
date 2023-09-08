@@ -47,8 +47,10 @@ class ManagerController {
 
   // inject the controllers for all related resources
   @Autowired
+  @org.springframework.context.annotation.Lazy
   private CompanyApiController api;
   @Autowired
+  @org.springframework.context.annotation.Lazy
   private EmployeeController employees;
 
   @Autowired

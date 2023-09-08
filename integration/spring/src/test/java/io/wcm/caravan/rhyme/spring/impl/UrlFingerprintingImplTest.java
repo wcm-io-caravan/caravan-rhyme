@@ -30,7 +30,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.time.Duration;
 import java.time.Instant;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -77,6 +78,7 @@ class UrlFingerprintingImplTest {
     assertThatNoFingerprintingIsPresentInLink(fingerprinting);
   }
 
+  @GetMapping("/somePath")
   ResponseEntity<String> controllerWithRequiredAnnotatedParamFoo(@RequestParam("foo") String foo) {
     return ResponseEntity.ok("foo was set to " + foo);
   }

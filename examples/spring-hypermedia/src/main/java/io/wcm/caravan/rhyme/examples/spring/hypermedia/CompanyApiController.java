@@ -24,6 +24,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,10 +49,13 @@ class CompanyApiController implements CompanyApi {
 
   // inject the controllers for all resources that are linked from the entry point
   @Autowired
+  @Lazy
   private EmployeeController employees;
   @Autowired
+  @Lazy
   private ManagerController managers;
   @Autowired
+  @Lazy
   private DetailedEmployeeController detailedEmployees;
 
   @Autowired
@@ -108,7 +112,6 @@ class CompanyApiController implements CompanyApi {
   }
 
   @Override
-
   public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
     return detailedEmployees.findById(id);
   }
