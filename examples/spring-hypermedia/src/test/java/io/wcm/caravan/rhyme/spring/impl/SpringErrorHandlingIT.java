@@ -54,7 +54,8 @@ import io.wcm.caravan.rhyme.spring.impl.SpringErrorHandlingController.ErrorThrow
  * there are a few error cases in this test where {@link WebEnvironment#MOCK} doesn't work the same way
  * as if the application is serving requests on an actual network socket.
  */
-@SpringBootTest(classes = SpringRhymeHypermediaApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = SpringRhymeHypermediaApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT,
+properties = {"spring.mvc.throwExceptionIfNoHandlerFound=true", "spring.web.resources.add-mappings=false"})
 class SpringErrorHandlingIT {
 
   private final String baseUri;
@@ -149,12 +150,10 @@ class SpringErrorHandlingIT {
 
     String nonExistingUrl = baseUri + "/foo/bar";
 
-    ErrorThrowingResource errorResource = client.getRemoteResource(nonExistingUrl, ErrorThrowingResource.class);
+    HalResponse errorResponse = getResponseFromCaughtClientException(
+        (er) -> client.getRemoteResource(nonExistingUrl, ErrorThrowingResource.class));
 
-    HalApiClientException ex = assertThrows(HalApiClientException.class,
-        () -> errorResource.getStateWithError());
-
-    assertThat(ex.getErrorResponse()).isNotNull();
-    assertThat(ex.getErrorResponse().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    assertThat(errorResponse.getStatus())
+        .isEqualTo(HttpStatus.NOT_FOUND.value());
   }
 }
