@@ -22,6 +22,7 @@ package io.wcm.caravan.rhyme.spring.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
@@ -29,18 +30,19 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.testing.client.AbstractHalResourceLoaderTest;
 
 /**
- * Runs a set of tests for the {@link WebClientHalResourceLoader} against a Wiremock server
+ * Runs a set of tests for the {@link WebClientSupport} based HalResourceLoader against a Wiremock server
  */
 class WebClientSupportTest extends AbstractHalResourceLoaderTest {
 
   @Override
   protected HalResourceLoader createLoaderUnderTest() {
 
-    return HalResourceLoader.create(new WebClientSupport());
+    WebClient webClient = WebClient.create();
+    return HalResourceLoader.create(new WebClientSupport(uri -> webClient));
   }
 
   // after upgrading to Spring Boot 2.5.8, WebClient is handling a few edge cases differently,
-  // so for now we are overriding the text with updated expectations
+  // so for now we are overriding the test with updated expectations
 
   @Override
   @Test
