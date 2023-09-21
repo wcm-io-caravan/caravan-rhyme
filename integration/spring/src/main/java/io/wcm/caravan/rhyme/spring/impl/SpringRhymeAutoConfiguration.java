@@ -107,7 +107,9 @@ class SpringRhymeAutoConfiguration {
 
     HttpClient httpClient = HttpClient.create(connectionProvider);
 
-    httpClientCustomizerProvider.orderedStream().forEach(customizer -> customizer.customize(httpClient));
+    for (HttpClientCustomizer customizer : httpClientCustomizerProvider) {
+      httpClient = customizer.customize(httpClient);
+    }
 
     return WebClient.builder()
         .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))

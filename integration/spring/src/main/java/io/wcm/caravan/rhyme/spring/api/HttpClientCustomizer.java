@@ -12,6 +12,6 @@ public interface HttpClientCustomizer {
    * Callback to customize a {@link reactor.netty.http.client.HttpClient} instance.
    * @param httpClient the client to customize
    */
-  void customize(HttpClient httpClient);
+  HttpClient customize(HttpClient httpClient);
 
 }
