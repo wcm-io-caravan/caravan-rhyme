@@ -49,6 +49,11 @@
     <url>https://github.com/wcm-io-caravan/caravan-rhyme/actions</url>
   </ciManagement>
 
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/wcm-io-caravan/caravan-rhyme/issues/</url>
+  </issueManagement>
+
   <properties>
     <site.url.module.prefix>rhyme</site.url.module.prefix>
     <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/tooling/coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>

@@ -22,6 +22,13 @@
 <document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/changes/1.0.0"
     xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/plugins/maven-changes-plugin/xsd/changes-1.0.0.xsd">
   <body>
+
+    <release version="1.2.0" date="not released">
+      <action type="update" dev="sseifert">
+        Switch to Java 11 as minimum version.
+      </action>
+    </release>
+
     <release version="1.1.0" date="2022-01-12">
       <action type="add" dev="ssauder">
         Removed jackson-datatype-guava dependency
