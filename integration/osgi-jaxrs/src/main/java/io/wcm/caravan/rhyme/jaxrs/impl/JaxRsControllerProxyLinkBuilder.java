@@ -46,6 +46,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.osgi.service.component.annotations.Component;
@@ -55,6 +56,7 @@ import com.damnhandy.uri.template.UriTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -269,6 +271,17 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
       String[] sortedVarNames = getQueryParameterVarNames(tp -> parameterMap.containsKey(tp.name));
 
       for (String varName : sortedVarNames) {
+
+        // Here comes a workaround for a weird issue that was introduced with Java 21:
+        // The UriTemplate class is suddenly no longer able to expand a query parameter template
+        // with an empty list/array value.
+        // This can be avoided by simply not adding this parameter to the template in the first place
+        String key = StringUtils.substringBefore(varName, "*");
+        Object value = parameterMap.get(key);
+        if (value instanceof Iterable && Iterables.isEmpty((Iterable)value)) {
+            continue;
+        }
+
         if (queries.length() == 0) {
           queries.append("{?");
         }
