@@ -16,4 +16,4 @@ Generates API service documentation for HAL+JSON APIs defines with the wcm.io Ca
 TBD
 
 [plugindocs]: plugin-info.html
-[changelog]: changes-report.html
+[changelog]: changes.html
