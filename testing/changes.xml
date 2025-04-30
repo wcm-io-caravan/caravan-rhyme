@@ -24,6 +24,12 @@
     xsi:schemaLocation="http://maven.apache.org/changes/2.0.0 https://maven.apache.org/xsd/changes-2.0.0.xsd">
   <body>
 
+    <release version="1.1.0" date="2025-04-30">
+      <action type="update" dev="ssauder">
+        Update to io.wcm.caravan.rhyme.core 1.2.0.
+      </action>
+    </release>
+
     <release version="1.0.0" date="2022-01-12">
       <action type="add" dev="ssauder">
         Initial release.
