@@ -24,7 +24,7 @@
     xsi:schemaLocation="http://maven.apache.org/changes/2.0.0 https://maven.apache.org/xsd/changes-2.0.0.xsd">
   <body>
 
-    <release version="1.0.2" date="not yet released">
+    <release version="1.1.0" date="2025-04-30">
       <action type="fix" dev="ssauder">
         ensure that doc generation fails if no interfaces annotated with @HalApiInterfaces could be found
       </action>
