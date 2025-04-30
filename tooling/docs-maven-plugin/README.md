@@ -22,7 +22,7 @@ Add the following to the pom.xml of the module that contains your interfaces ann
       <plugin>
         <groupId>io.wcm.caravan.maven.plugins</groupId>
         <artifactId>rhyme-docs-maven-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <executions>
           <execution>
             <goals>
