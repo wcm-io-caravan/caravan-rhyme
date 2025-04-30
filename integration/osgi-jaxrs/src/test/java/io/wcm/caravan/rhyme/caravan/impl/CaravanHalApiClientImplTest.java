@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.time.Duration;
 
@@ -54,7 +54,7 @@ import io.wcm.caravan.rhyme.impl.client.cache.CachingHalResourceLoader;
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class CaravanHalApiClientImplTest {
+class CaravanHalApiClientImplTest {
 
   private static final String SERVICE_ID = "/serviceId";
 
@@ -88,7 +88,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  public void should_use_CachingHalResourceLoader_if_JsonPipeline_not_present_at_runtime() throws Exception {
+  void should_use_CachingHalResourceLoader_if_JsonPipeline_not_present_at_runtime() {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
@@ -99,7 +99,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  public void should_use_JsonPipelineResourceLoader_if_JsonPipeline_is_present_at_runtime() throws Exception {
+  void should_use_JsonPipelineResourceLoader_if_JsonPipeline_is_present_at_runtime() {
 
     createAndActivateJsonPipelineFactory();
 
@@ -112,7 +112,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  public void should_fail_if_null_service_id_is_used() throws Exception {
+  void should_fail_if_null_service_id_is_used() {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
@@ -128,7 +128,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  public void getEntryPoint_reuses_resource_loader_for_multiple_Requests() throws Exception {
+  void getEntryPoint_reuses_resource_loader_for_multiple_Requests() {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 
@@ -138,7 +138,7 @@ public class CaravanHalApiClientImplTest {
 
     // no HTTP requests will be made before the state is accessed
     assertThat(resource).isNotNull();
-    verifyZeroInteractions(httpClient);
+    verifyNoInteractions(httpClient);
 
     // but when it is accessed, a single http client request will be executed
     assertThat(resource.getState()).isNotNull();
@@ -151,7 +151,7 @@ public class CaravanHalApiClientImplTest {
   }
 
   @Test
-  public void should_use_configuration_that_caches_exceptions() throws Exception {
+  void should_use_configuration_that_caches_exceptions() {
 
     CaravanHalApiClientImpl clientImpl = createAndActivateHalApiClient();
 

@@ -21,7 +21,7 @@ package io.wcm.caravan.rhyme.spring.impl;
 
 import static io.wcm.caravan.rhyme.spring.impl.SpringErrorHandlingController.BASE_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.function.Function;
 
@@ -54,8 +54,9 @@ import io.wcm.caravan.rhyme.spring.impl.SpringErrorHandlingController.ErrorThrow
  * there are a few error cases in this test where {@link WebEnvironment#MOCK} doesn't work the same way
  * as if the application is serving requests on an actual network socket.
  */
-@SpringBootTest(classes = SpringRhymeHypermediaApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SpringErrorHandlingIT {
+@SpringBootTest(classes = SpringRhymeHypermediaApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT,
+properties = {"spring.mvc.throwExceptionIfNoHandlerFound=true", "spring.web.resources.add-mappings=false"})
+class SpringErrorHandlingIT {
 
   private final String baseUri;
 
@@ -73,9 +74,9 @@ public class SpringErrorHandlingIT {
 
   private HalResponse getResponseFromCaughtClientException(Function<ErrorHandlingResource, ErrorThrowingResource> callable) {
 
-    HalApiClientException ex = catchThrowableOfType(() -> callable.apply(errors).getStateWithError(), HalApiClientException.class);
+    ErrorThrowingResource errorResource = callable.apply(errors);
 
-    assertThat(ex).isNotNull();
+    HalApiClientException ex = assertThrows(HalApiClientException.class, errorResource::getStateWithError);
 
     assertThat(ex.getErrorResponse()).isNotNull();
     assertThat(ex.getErrorResponse().getContentType()).isEqualTo(VndErrorResponseRenderer.CONTENT_TYPE);

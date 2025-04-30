@@ -29,7 +29,7 @@ import io.wcm.caravan.rhyme.api.annotations.Related;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
- * This resource is available on all systems where the Rhyme AEM integration bundle is installed. It's purpose
+ * This resource is available on all systems where the Rhyme AEM integration bundle is installed. Its purpose
  * is that you have a single URL from which you can discover the entry points of all other services
  * implemented with caravan Rhyme that have been installed on this system. To achieve this,
  * the service developer has to implement

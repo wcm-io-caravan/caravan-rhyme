@@ -27,6 +27,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.NoSuchElementException;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Build;
@@ -42,12 +43,15 @@ import org.apache.maven.project.MavenProject;
 
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocs;
 import io.wcm.caravan.maven.plugins.rhymedocs.templating.RhymeDocsHtmlRenderer;
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 
 @Mojo(name = "generate-rhyme-docs", defaultPhase = LifecyclePhase.PROCESS_CLASSES,
     requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
 public class GenerateRhymeDocsMojo extends AbstractMojo {
+
+  static final String NO_INTERFACES_FOUND_MSG = "No interfaces annotated with @HalApiInterface were found in the sources for this project";
 
   @Parameter(property = "project", required = true, readonly = true)
   protected MavenProject project;
@@ -70,6 +74,10 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
 
       RhymeApiDocs apiDocs = new RhymeApiDocs(Paths.get(source), compileClassLoader);
 
+      if (apiDocs.getResourceDocs().isEmpty()) {
+        throw new MojoExecutionException(NO_INTERFACES_FOUND_MSG);
+      }
+
       Path outputDirectory = createOutputDirectory();
 
       RhymeDocsHtmlRenderer renderer = new RhymeDocsHtmlRenderer(outputDirectory, getLog());
@@ -77,7 +85,7 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
 
       addResourcesToClassPath(outputDirectory);
     }
-    catch (Throwable ex) {
+    catch (Exception ex) {
       throw new MojoExecutionException("Generating Rhyme documentation failed: " + ex.getMessage(), ex);
     }
   }
@@ -94,10 +102,14 @@ public class GenerateRhymeDocsMojo extends AbstractMojo {
 
   private URL createFileUrl(String path) {
     try {
-      return new File(path).toURI().toURL();
+      File file = new File(path);
+      if (!file.exists()) {
+        throw new NoSuchElementException("The classpath element " + file.getAbsolutePath() + " does not exist");
+      }
+      return file.toURI().toURL();
     }
     catch (MalformedURLException | RuntimeException ex) {
-      throw new RuntimeException("Failed to create URL from path " + path, ex);
+      throw new HalApiDeveloperException("Failed to create URL from path " + path, ex);
     }
   }
 

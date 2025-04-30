@@ -25,7 +25,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +98,7 @@ class SpringRhymeImpl implements SpringRhyme {
 
   private static String getRequestUrl(HttpServletRequest httpRequest) {
 
-    StringBuffer requestUrl = httpRequest.getRequestURL();
+    StringBuilder requestUrl = new StringBuilder(httpRequest.getRequestURL());
 
     if (httpRequest.getQueryString() != null) {
       requestUrl.append("?");

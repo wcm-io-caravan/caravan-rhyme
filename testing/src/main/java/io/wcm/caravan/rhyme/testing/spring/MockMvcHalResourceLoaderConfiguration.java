@@ -36,7 +36,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.common.collect.LinkedHashMultimap;
 
-import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
@@ -45,12 +44,6 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
  * A Spring configuration that will replace the default {@link HalResourceLoader} bean
  * with one that fetches resources from the currently running {@link WebApplicationContext} using the Spring
  * {@link MockMvc} class.
- * <ul>
- * <li>the calls to the controller methods that create your server-side resource implementations</li>
- * <li>the rendering / serialization of these resources to the HAL+JSON format</li>
- * <li>parsing these responses as HAL+JSON with the {@link HalApiClient}</li>
- * <li>expanding link templates and following links to other resources</li>
- * </ul>
  */
 @TestConfiguration
 public class MockMvcHalResourceLoaderConfiguration {

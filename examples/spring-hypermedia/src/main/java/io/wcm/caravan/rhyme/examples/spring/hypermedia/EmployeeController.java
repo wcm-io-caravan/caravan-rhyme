@@ -46,10 +46,13 @@ class EmployeeController {
 
   // inject the controllers for all related resources
   @Autowired
+  @org.springframework.context.annotation.Lazy
   private CompanyApiController api;
   @Autowired
+  @org.springframework.context.annotation.Lazy
   private ManagerController managers;
   @Autowired
+  @org.springframework.context.annotation.Lazy
   private DetailedEmployeeController detailedEmployees;
 
   @Autowired
@@ -123,7 +126,7 @@ class EmployeeController {
    */
   List<EmployeeResource> findEmployeesOfManagerWithId(long id) {
 
-    // create an embedded resource implementation for every employee managed by the given amanger
+    // create an embedded resource implementation for every employee managed by the given manager
     return StreamUtils.createResourcesFrom(repository.findByManagerId(id), EmployeeResourceImpl::new);
   }
 

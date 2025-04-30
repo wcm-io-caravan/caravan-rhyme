@@ -24,39 +24,23 @@ import java.net.URI;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
+import io.wcm.caravan.rhyme.spring.api.WebClientProvider;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.resources.ConnectionProvider;
 
-final class WebClientSupport implements HttpClientSupport {
+public final class WebClientSupport implements HttpClientSupport {
 
-  private final ConnectionProvider connectionProvider = ConnectionProvider
-      .builder(WebClientSupport.class.getSimpleName())
-      .maxConnections(5000)
-      .build();
+  private final WebClientProvider webClientProvider;
 
-  private WebClient createDefaultWebClient() {
-
-    HttpClient httpClient = HttpClient.create(connectionProvider);
-
-    return WebClient.builder()
-        .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
-        .clientConnector(new ReactorClientHttpConnector(httpClient))
-        .build();
-  }
+  public WebClientSupport(WebClientProvider webClientProvider) {this.webClientProvider = webClientProvider;}
 
   @Override
   public void executeGetRequest(URI uri, HttpClientCallback callback) {
-
-    WebClient client = createDefaultWebClient();
-
-    client.get().uri(uri).retrieve()
+    webClientProvider.webClientForUri(uri)
+        .get().uri(uri).retrieve()
         // any 200 responses will be parsed as a string and forwarded to the callback
         .toEntity(byte[].class).doOnSuccess(entity -> handleOkResponse(callback, entity))
         // any responses with error status should be handled specifically, as we want to
@@ -66,13 +50,13 @@ final class WebClientSupport implements HttpClientSupport {
         // any other exceptions thrown during the request or while handling the response
         // should be caught as well
         .doOnError(callback::onExceptionCaught)
-        // finally subscribe so that the request is actually executed
+        // finally, subscribe so that the request is actually executed
         .subscribe();
   }
 
   private void handleOkResponse(HttpClientCallback callback, ResponseEntity<byte[]> entity) {
 
-    callback.onHeadersAvailable(entity.getStatusCodeValue(), entity.getHeaders());
+    callback.onHeadersAvailable(entity.getStatusCode().value(), entity.getHeaders());
 
     byte[] body = ObjectUtils.defaultIfNull(entity.getBody(), new byte[0]);
 
@@ -82,7 +66,7 @@ final class WebClientSupport implements HttpClientSupport {
   private Mono<ResponseEntity<byte[]>> handleErrorResponse(HttpClientCallback callback,
       WebClientResponseException ex) {
 
-    callback.onHeadersAvailable(ex.getRawStatusCode(), ex.getHeaders());
+    callback.onHeadersAvailable(ex.getStatusCode().value(), ex.getHeaders());
 
     callback.onBodyAvailable(new ByteArrayInputStream(ex.getResponseBodyAsByteArray()));
 

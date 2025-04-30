@@ -46,6 +46,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.osgi.service.component.annotations.Component;
@@ -55,6 +56,7 @@ import com.damnhandy.uri.template.UriTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -66,16 +68,16 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 /**
  * Implementation of {@link JaxRsLinkBuilder}
- * @param <JaxRsResourceType> the class of the {@link Component} annotated with {@link JaxrsResource}
+ * @param <T> the class of the {@link Component} annotated with {@link JaxrsResource}
  */
-public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements InvocationHandler, JaxRsLinkBuilder<JaxRsResourceType> {
+public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, JaxRsLinkBuilder<T> {
 
   private static final String CAPTURED_URI_FIELD_NAME = "__capturedUri";
 
   private final String baseUrl;
 
-  private final Class<JaxRsResourceType> resourceClass;
-  private final Class<? extends JaxRsResourceType> proxyClass;
+  private final Class<T> resourceClass;
+  private final Class<? extends T> proxyClass;
 
   private final List<TemplateParameter> additionalQueryParameters = new LinkedList<>();
 
@@ -85,7 +87,7 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
    * @param baseUrl the base path of the JAX-RS {@link Application}
    * @param resourceClass the class of the {@link Component} annotated with {@link JaxrsResource}
    */
-  public JaxRsControllerProxyLinkBuilder(String baseUrl, Class<JaxRsResourceType> resourceClass) {
+  public JaxRsControllerProxyLinkBuilder(String baseUrl, Class<T> resourceClass) {
 
     this.baseUrl = baseUrl;
     this.resourceClass = resourceClass;
@@ -93,7 +95,7 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
     this.proxyClass = createProxyClass(resourceClass);
   }
 
-  private Class<? extends JaxRsResourceType> createProxyClass(Class<JaxRsResourceType> superClass) {
+  private Class<? extends T> createProxyClass(Class<T> superClass) {
 
     try {
       return new ByteBuddy()
@@ -114,7 +116,7 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
   }
 
   @Override
-  public JaxRsLinkBuilder<JaxRsResourceType> withAdditionalQueryParameters(Map<String, Object> parameters) {
+  public JaxRsLinkBuilder<T> withAdditionalQueryParameters(Map<String, Object> parameters) {
 
     parameters.forEach((name, value) -> {
 
@@ -132,10 +134,10 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
   }
 
   @Override
-  public Link buildLinkTo(Consumer<JaxRsResourceType> consumer) {
+  public Link buildLinkTo(Consumer<T> consumer) {
 
     try {
-      JaxRsResourceType instance = proxyClass.newInstance();
+      T instance = proxyClass.newInstance();
 
       consumer.accept(instance);
 
@@ -160,7 +162,7 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
     return null;
   }
 
-  private JaxRsControllerProxyLinkBuilder<JaxRsResourceType>.MethodDetails getCachedMethodDetails(Method method) throws ExecutionException {
+  private JaxRsControllerProxyLinkBuilder<T>.MethodDetails getCachedMethodDetails(Method method) throws ExecutionException {
 
     try {
       return cache.get(method, () -> new MethodDetails(resourceClass, method));
@@ -269,6 +271,17 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
       String[] sortedVarNames = getQueryParameterVarNames(tp -> parameterMap.containsKey(tp.name));
 
       for (String varName : sortedVarNames) {
+
+        // Here comes a workaround for a weird issue that was introduced with Java 21:
+        // The UriTemplate class is suddenly no longer able to expand a query parameter template
+        // with an empty list/array value.
+        // This can be avoided by simply not adding this parameter to the template in the first place
+        String key = StringUtils.substringBefore(varName, "*");
+        Object value = parameterMap.get(key);
+        if (value instanceof Iterable && Iterables.isEmpty((Iterable)value)) {
+            continue;
+        }
+
         if (queries.length() == 0) {
           queries.append("{?");
         }
@@ -301,28 +314,30 @@ public class JaxRsControllerProxyLinkBuilder<JaxRsResourceType> implements Invoc
 
       boolean allRequiredParametersResolved = parameters.stream()
           .filter(tp -> tp.required)
-          .allMatch(tp -> valueAvailableCheck.test(tp));
+          .allMatch(valueAvailableCheck::test);
 
-      String[] varSpecs = parameters.stream()
-          .filter(tp -> tp.query)
-          .filter(tp -> {
-            // a query template variable should be kept if....
-            return !allRequiredParametersResolved // not all required parameters have been set, so a full URI template is rendered
-                || tp.required // this specific template variable is required
-                || valueAvailableCheck.test(tp); // tis (optional) template variable does have a value
-          })
+      return parameters.stream()
+          .filter(tp -> isQueryParamToKeep(tp, valueAvailableCheck, allRequiredParametersResolved))
           .sorted(comparator)
           .map(TemplateParameter::getVarName)
           .toArray(String[]::new);
-
-      return varSpecs;
     }
 
-    abstract class AnnotatedParamFinder<AnnotationType extends Annotation> {
+    private boolean isQueryParamToKeep(TemplateParameter parameter, Predicate<TemplateParameter> valueAvailableCheck,
+        boolean allRequiredParametersResolved) {
 
-      protected final Class<AnnotationType> annotationClass;
+      // a query template variable should be kept if....
+      return parameter.query &&
+          (!allRequiredParametersResolved // not all required parameters have been set, so a full URI template is rendered
+              || parameter.required // this specific template variable is required
+              || valueAvailableCheck.test(parameter)); // its (optional) template variable does have a value
+    }
 
-      AnnotatedParamFinder(Class<AnnotationType> annotationClass) {
+    abstract class AnnotatedParamFinder<A extends Annotation> {
+
+      protected final Class<A> annotationClass;
+
+      AnnotatedParamFinder(Class<A> annotationClass) {
         this.annotationClass = annotationClass;
       }
 

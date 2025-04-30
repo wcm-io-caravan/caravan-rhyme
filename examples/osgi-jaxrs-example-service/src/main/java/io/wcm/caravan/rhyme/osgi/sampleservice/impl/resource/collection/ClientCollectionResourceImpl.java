@@ -72,9 +72,6 @@ public class ClientCollectionResourceImpl implements ItemCollectionResource, Lin
     if (params == null) {
       title = "Load a collection through the HalApiClient, and simulate a delay for each item on the server-side";
     }
-    else if (params.getEmbedItems() == null) {
-      title = "Choose whether the items should already be embedded on the server-side";
-    }
     else {
       title = "A collection of " + params.getNumItems() + " " + " item resources that were fetched from "
           + (params.getEmbedItems() ? "embedded" : "linked") + " resources";

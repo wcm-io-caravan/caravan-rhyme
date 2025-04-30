@@ -17,20 +17,34 @@
  * limitations under the License.
  * #L%
  */
-package io.wcm.caravan.rhyme.aem.impl.client;
+package io.wcm.caravan.rhyme.aem.impl;
 
+import java.util.List;
+
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 import io.wcm.caravan.commons.httpclient.HttpClientFactory;
+import io.wcm.caravan.rhyme.aem.api.SlingRhymeCustomization;
+import io.wcm.caravan.rhyme.aem.impl.client.ApacheHttpClientFactorySupport;
+import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.client.HalResourceLoaderBuilder;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
-@Component(service = ResourceLoaderManager.class, immediate = true)
-public class ResourceLoaderManager {
+@Component(service = SlingRhymeCustomizationManager.class, immediate = true)
+public class SlingRhymeCustomizationManager {
 
   private HalResourceLoader resourceLoader;
+
+  @Reference(cardinality = ReferenceCardinality.MULTIPLE,
+      policy = ReferencePolicy.STATIC,
+      policyOption = ReferencePolicyOption.GREEDY)
+  private List<SlingRhymeCustomization> customizations;
 
   @Reference
   private HttpClientFactory clientFactory;
@@ -46,5 +60,12 @@ public class ResourceLoaderManager {
 
   public HalResourceLoader getResourceLoader() {
     return resourceLoader;
+  }
+
+  public void configureRhymeBuilder(RhymeBuilder rhymeBuilder, SlingHttpServletRequest request) {
+
+    for (SlingRhymeCustomization customization : customizations) {
+      customization.configureRhymeBuilder(rhymeBuilder, request);
+    }
   }
 }

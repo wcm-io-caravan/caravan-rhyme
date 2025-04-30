@@ -44,7 +44,7 @@ import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 @ExtendWith(AemContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class AemApiDiscoveryResourceImplTest {
+class AemApiDiscoveryResourceImplTest {
 
   private AemContext context = AppAemContext.newAemContext();
 

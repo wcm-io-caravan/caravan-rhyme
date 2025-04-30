@@ -1,0 +1,501 @@
+{
+  "_embedded":{
+    "movies":[
+      {
+        "title":"The Shawshank Redemption",
+        "year":1994,
+        "imdbId":"tt0111161",
+        "rating":9.3,
+        "rank":1,
+        "thumb":"/movie-data/thumbs/tt0111161.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/1"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/2",
+            "name":"Frank Darabont"
+          }
+        }
+      },
+      {
+        "title":"The Godfather",
+        "year":1972,
+        "imdbId":"tt0068646",
+        "rating":9.2,
+        "rank":2,
+        "thumb":"/movie-data/thumbs/tt0068646.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/3"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/4",
+            "name":"Francis Ford Coppola"
+          }
+        }
+      },
+      {
+        "title":"The Godfather: Part II",
+        "year":1974,
+        "imdbId":"tt0071562",
+        "rating":9.0,
+        "rank":3,
+        "thumb":"/movie-data/thumbs/tt0071562.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/5"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/4",
+            "name":"Francis Ford Coppola"
+          }
+        }
+      },
+      {
+        "title":"The Dark Knight",
+        "year":2008,
+        "imdbId":"tt0468569",
+        "rating":9.0,
+        "rank":4,
+        "thumb":"/movie-data/thumbs/tt0468569.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/6"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/7",
+            "name":"Christopher Nolan"
+          }
+        }
+      },
+      {
+        "title":"12 Angry Men",
+        "year":1957,
+        "imdbId":"tt0050083",
+        "rating":8.9,
+        "rank":5,
+        "thumb":"/movie-data/thumbs/tt0050083.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/8"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/9",
+            "name":"Sidney Lumet"
+          }
+        }
+      },
+      {
+        "title":"Schindler's List",
+        "year":1993,
+        "imdbId":"tt0108052",
+        "rating":8.9,
+        "rank":6,
+        "thumb":"/movie-data/thumbs/tt0108052.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/10"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/11",
+            "name":"Steven Spielberg"
+          }
+        }
+      },
+      {
+        "title":"The Lord of the Rings: The Return of the King",
+        "year":2003,
+        "imdbId":"tt0167260",
+        "rating":8.9,
+        "rank":7,
+        "thumb":"/movie-data/thumbs/tt0167260.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/12"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/13",
+            "name":"Peter Jackson"
+          }
+        }
+      },
+      {
+        "title":"Pulp Fiction",
+        "year":1994,
+        "imdbId":"tt0110912",
+        "rating":8.9,
+        "rank":8,
+        "thumb":"/movie-data/thumbs/tt0110912.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/14"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/15",
+            "name":"Quentin Tarantino"
+          }
+        }
+      },
+      {
+        "title":"The Good, the Bad and the Ugly",
+        "year":1966,
+        "imdbId":"tt0060196",
+        "rating":8.9,
+        "rank":9,
+        "thumb":"/movie-data/thumbs/tt0060196.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/16"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/17",
+            "name":"Sergio Leone"
+          }
+        }
+      },
+      {
+        "title":"Fight Club",
+        "year":1999,
+        "imdbId":"tt0137523",
+        "rating":8.8,
+        "rank":10,
+        "thumb":"/movie-data/thumbs/tt0137523.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/18"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/19",
+            "name":"David Fincher"
+          }
+        }
+      },
+      {
+        "title":"The Lord of the Rings: The Fellowship of the Ring",
+        "year":2001,
+        "imdbId":"tt0120737",
+        "rating":8.8,
+        "rank":11,
+        "thumb":"/movie-data/thumbs/tt0120737.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/20"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/13",
+            "name":"Peter Jackson"
+          }
+        }
+      },
+      {
+        "title":"Forrest Gump",
+        "year":1994,
+        "imdbId":"tt0109830",
+        "rating":8.8,
+        "rank":12,
+        "thumb":"/movie-data/thumbs/tt0109830.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/21"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/22",
+            "name":"Robert Zemeckis"
+          }
+        }
+      },
+      {
+        "title":"Star Wars: Episode V - The Empire Strikes Back",
+        "year":1980,
+        "imdbId":"tt0080684",
+        "rating":8.8,
+        "rank":13,
+        "thumb":"/movie-data/thumbs/tt0080684.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/23"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/24",
+            "name":"Irvin Kershner"
+          }
+        }
+      },
+      {
+        "title":"Inception",
+        "year":2010,
+        "imdbId":"tt1375666",
+        "rating":8.8,
+        "rank":14,
+        "thumb":"/movie-data/thumbs/tt1375666.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/25"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/7",
+            "name":"Christopher Nolan"
+          }
+        }
+      },
+      {
+        "title":"The Lord of the Rings: The Two Towers",
+        "year":2002,
+        "imdbId":"tt0167261",
+        "rating":8.7,
+        "rank":15,
+        "thumb":"/movie-data/thumbs/tt0167261.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/26"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/13",
+            "name":"Peter Jackson"
+          }
+        }
+      },
+      {
+        "title":"One Flew Over the Cuckoo's Nest",
+        "year":1975,
+        "imdbId":"tt0073486",
+        "rating":8.7,
+        "rank":16,
+        "thumb":"/movie-data/thumbs/tt0073486.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/27"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/28",
+            "name":"Milos Forman"
+          }
+        }
+      },
+      {
+        "title":"Goodfellas",
+        "year":1990,
+        "imdbId":"tt0099685",
+        "rating":8.7,
+        "rank":17,
+        "thumb":"/movie-data/thumbs/tt0099685.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/29"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/30",
+            "name":"Martin Scorsese"
+          }
+        }
+      },
+      {
+        "title":"The Matrix",
+        "year":1999,
+        "imdbId":"tt0133093",
+        "rating":8.7,
+        "rank":18,
+        "thumb":"/movie-data/thumbs/tt0133093.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/31"
+          },
+          "directors":[
+            {
+              "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/32",
+              "name":"Lana Wachowski"
+            },
+            {
+              "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/33",
+              "name":"Lilly Wachowski"
+            }
+          ]
+        }
+      },
+      {
+        "title":"Seven Samurai",
+        "year":1954,
+        "imdbId":"tt0047478",
+        "rating":8.7,
+        "rank":19,
+        "thumb":"/movie-data/thumbs/tt0047478.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/34"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/35",
+            "name":"Akira Kurosawa"
+          }
+        }
+      },
+      {
+        "title":"Se7en",
+        "year":1995,
+        "imdbId":"tt0114369",
+        "rating":8.6,
+        "rank":20,
+        "thumb":"/movie-data/thumbs/tt0114369.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/36"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/19",
+            "name":"David Fincher"
+          }
+        }
+      },
+      {
+        "title":"City of God",
+        "year":2002,
+        "imdbId":"tt0317248",
+        "rating":8.6,
+        "rank":21,
+        "thumb":"/movie-data/thumbs/tt0317248.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/37"
+          },
+          "directors":[
+            {
+              "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/38",
+              "name":"Fernando Meirelles"
+            },
+            {
+              "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/39",
+              "name":"Kátia Lund(co-director)"
+            }
+          ]
+        }
+      },
+      {
+        "title":"Star Wars: Episode IV - A New Hope",
+        "year":1977,
+        "imdbId":"tt0076759",
+        "rating":8.6,
+        "rank":22,
+        "thumb":"/movie-data/thumbs/tt0076759.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/40"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/41",
+            "name":"George Lucas"
+          }
+        }
+      },
+      {
+        "title":"The Silence of the Lambs",
+        "year":1991,
+        "imdbId":"tt0102926",
+        "rating":8.6,
+        "rank":23,
+        "thumb":"/movie-data/thumbs/tt0102926.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/42"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/43",
+            "name":"Jonathan Demme"
+          }
+        }
+      },
+      {
+        "title":"It's a Wonderful Life",
+        "year":1946,
+        "imdbId":"tt0038650",
+        "rating":8.6,
+        "rank":24,
+        "thumb":"/movie-data/thumbs/tt0038650.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/44"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/45",
+            "name":"Frank Capra"
+          }
+        }
+      },
+      {
+        "title":"Life Is Beautiful",
+        "year":1997,
+        "imdbId":"tt0118799",
+        "rating":8.6,
+        "rank":25,
+        "thumb":"/movie-data/thumbs/tt0118799.jpg",
+        "_links":{
+          "self":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies/46"
+          },
+          "directors":{
+            "href":"https://hypermedia-movies-demo.herokuapp.com/api/directors/47",
+            "name":"Roberto Benigni"
+          }
+        }
+      }
+    ]
+  },
+  "_links":{
+    "self":{
+      "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies?page=0&size=25"
+    },
+    "next":{
+      "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies?page=1&size=25"
+    },
+    "last":{
+      "href":"https://hypermedia-movies-demo.herokuapp.com/api/movies?page=9&size=25"
+    }
+  },
+  "page":{
+    "size":25,
+    "totalElements":250,
+    "totalPages":10,
+    "number":0
+  },
+  "_templates":{
+    "default":{
+      "title":"Create Movie",
+      "method":"POST",
+      "properties":[
+        {
+          "name":"imdbId",
+          "prompt":"IMDB Id",
+          "type":"text"
+        },
+        {
+          "name":"rank",
+          "prompt":"Rank",
+          "type":"number"
+        },
+        {
+          "name":"rating",
+          "prompt":"IMDB Rating",
+          "type":"number"
+        },
+        {
+          "name":"thumb",
+          "prompt":"Poster",
+          "type":"text"
+        },
+        {
+          "name":"title",
+          "prompt":"Title",
+          "required":true,
+          "type":"text"
+        },
+        {
+          "name":"year",
+          "prompt":"Release Year",
+          "regex":"\\d{4}$",
+          "type":"number"
+        }
+      ],
+      "target":"https://hypermedia-movies-demo.herokuapp.com/api/movies"
+    }
+  }
+}

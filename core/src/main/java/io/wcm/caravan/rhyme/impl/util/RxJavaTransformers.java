@@ -47,27 +47,27 @@ public final class RxJavaTransformers {
    * @return an {@link ObservableTransformer} that can be passed to {@link Observable#compose(ObservableTransformer)}
    */
   public static <T> ObservableTransformer<T, T> filterWith(Function<T, Single<Boolean>> asyncFilterFunc) {
-    return new AsyncFilterTransformer<T>(asyncFilterFunc);
+    return new AsyncFilterTransformer<>(asyncFilterFunc);
   }
 
   /**
-   * Cache the emissions if the observable completes succesfully, but clears the cache on any error (so that you can use
+   * Cache the emissions if the observable completes successfully, but clears the cache on any error (so that you can use
    * {@link Observable#retry()}
    * @param <T> the emission type
    * @return an {@link ObservableTransformer} that can be passed to {@link Observable#compose(ObservableTransformer)}
    */
   public static <T> ObservableTransformer<T, T> cacheIfCompleted() {
-    return new CacheOnlyCompletedTransformer<T>();
+    return new CacheOnlyCompletedTransformer<>();
   }
 
   /**
-   * Cache the emissions if the Single completes succesfully, but clears the cache on any error (so that you can use
+   * Cache the emissions if the Single completes successfully, but clears the cache on any error (so that you can use
    * {@link Single#retry()}
    * @param <T> the emission type
    * @return a {@link SingleTransformer} that can be passed to {@link Single#compose(SingleTransformer)}
    */
   public static <T> SingleTransformer<T, T> cacheSingleIfCompleted() {
-    return new CacheOnlyCompletedTransformer<T>();
+    return new CacheOnlyCompletedTransformer<>();
   }
 
   private static final class AsyncFilterTransformer<T> implements ObservableTransformer<T, T> {
@@ -109,9 +109,7 @@ public final class RxJavaTransformers {
 
     @Override
     public SingleSource<T> apply(Single<T> upstream) {
-      return Single.defer(() -> {
-        return handleSubscription(upstream.toObservable()).firstOrError();
-      });
+      return Single.defer(() -> handleSubscription(upstream.toObservable()).firstOrError());
     }
 
     private synchronized Observable<T> handleSubscription(Observable<T> upstream) {

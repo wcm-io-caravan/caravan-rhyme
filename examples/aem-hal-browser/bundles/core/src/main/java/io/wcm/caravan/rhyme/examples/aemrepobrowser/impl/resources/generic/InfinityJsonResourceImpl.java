@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.InfinityJsonResource;
+import io.wcm.caravan.rhyme.tooling.annotations.ExcludeFromJacocoGeneratedReport;
 import io.wcm.handler.url.UrlHandler;
 
 @Model(adaptables = SlingRhyme.class, adapters = InfinityJsonResource.class)
@@ -21,9 +22,12 @@ public class InfinityJsonResourceImpl implements InfinityJsonResource {
   @Self
   private Resource currentResource;
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public ObjectNode getProperties() {
-    throw new NotImplementedException("This method doesn't need to be implemented");
+
+    throw new NotImplementedException("This method doesn't need to be implemented and should never be called, "
+        + "because createLink() builds links to the built-in servlet from AEM.");
   }
 
   @Override
@@ -35,8 +39,6 @@ public class InfinityJsonResourceImpl implements InfinityJsonResource {
         .buildExternalResourceUrl();
 
     return new Link(url)
-        .setTitle("The native infinity.json representation of the jcr:content node of this resource");
+        .setTitle("AEM's built-in infinity.json representation of the jcr:content node of this resource");
   }
-
-
 }

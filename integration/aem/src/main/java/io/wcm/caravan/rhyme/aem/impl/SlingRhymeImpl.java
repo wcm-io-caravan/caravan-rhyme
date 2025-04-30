@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 import io.wcm.caravan.rhyme.aem.api.SlingRhyme;
-import io.wcm.caravan.rhyme.aem.impl.client.ResourceLoaderManager;
 import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.aem.impl.util.PageUtils;
 import io.wcm.caravan.rhyme.api.Rhyme;
@@ -47,7 +46,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
   private final Rhyme rhyme;
 
   @Inject
-  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ModelFactory modelFactory, ResourceLoaderManager resourceLoaders,
+  public SlingRhymeImpl(@Self SlingHttpServletRequest request, ModelFactory modelFactory, SlingRhymeCustomizationManager customization,
       RhymeDocsOsgiBundleSupport rhymeDocs) {
 
     this.modelFactory = modelFactory;
@@ -58,7 +57,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     // created for different context-resources.
     this.urlHandler = request.adaptTo(UrlHandler.class);
 
-    this.rhyme = RhymeBuilder.withResourceLoader(resourceLoaders.getResourceLoader())
+    RhymeBuilder rhymeBuilder = RhymeBuilder.withResourceLoader(customization.getResourceLoader())
         .withRhymeDocsSupport(rhymeDocs)
         .withMetadataConfiguration(new RhymeMetadataConfiguration() {
 
@@ -66,8 +65,11 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
           public boolean isMetadataGenerationEnabled() {
             return request.getParameterMap().containsKey(EMBED_RHYME_METADATA);
           }
-        })
-        .buildForRequestTo(request.getRequestURL().toString());
+        });
+
+    customization.configureRhymeBuilder(rhymeBuilder, request);
+
+    this.rhyme = rhymeBuilder.buildForRequestTo(request.getRequestURL().toString());
   }
 
   private SlingRhymeImpl(SlingRhymeImpl slingRhyme, Resource currentResource) {
@@ -110,15 +112,13 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
 
   private void verifyModelAnnotationIfPresent(Class<?> modelClass) {
 
-    if (modelClass.isAnnotationPresent(Model.class)) {
-      if (!isDirectlyAdaptableFromSlingRhyme(modelClass)) {
-        throw new HalApiDeveloperException(modelClass + " is not declared to be adaptable from " + SlingRhyme.class);
-      }
+    if (modelClass.isAnnotationPresent(Model.class) && !isDirectlyAdaptableFromSlingRhyme(modelClass)) {
+      throw new HalApiDeveloperException(modelClass + " is not declared to be adaptable from " + SlingRhyme.class);
     }
   }
 
   @Override
-  public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
+  public <T> T adaptTo(Class<T> type) {
 
     // there was some confusing branch coverage issue when using this try-with-resource-statement
     // with multiple return statements, that's why the content was moved into a doAdaptTo method
@@ -127,14 +127,14 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     }
   }
 
-  private <AdapterType> AdapterType doAdaptTo(Class<AdapterType> type) {
+  private <T> T doAdaptTo(Class<T> type) {
 
     // immediately return the current resource or request if they are the target of the adaption
     if (Resource.class.isAssignableFrom(type)) {
-      return (AdapterType)currentResource;
+      return (T)currentResource;
     }
     if (HttpServletRequest.class.isAssignableFrom(type)) {
-      return (AdapterType)request;
+      return (T)request;
     }
 
     // use the model factory if the target type is a sling model, so that if anything goes wrong,
@@ -165,7 +165,7 @@ public class SlingRhymeImpl extends SlingAdaptable implements SlingRhyme {
     return builder.build();
   }
 
-  private <AdapterType> Optional<AdapterType> tryAdapting(Class<AdapterType> type, Collection<Adaptable> adaptables) {
+  private <T> Optional<T> tryAdapting(Class<T> type, Collection<Adaptable> adaptables) {
 
     return adaptables.stream()
         .filter(Objects::nonNull)

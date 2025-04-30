@@ -71,9 +71,6 @@ public class DelayableCollectionResourceImpl implements ItemCollectionResource, 
     if (params == null) {
       title = "A link template that allows to specify the number of items in the collection, and whether you want the items to be embedded";
     }
-    else if (params.getEmbedItems() == null) {
-      title = "Choose whether the items should be embedded in the collection (or only linked)";
-    }
     else {
       title = "A collection of " + params.getNumItems() + " " + (params.getEmbedItems() ? "embedded" : "linked") + " item resources";
       if (params.getDelayMs() > 0) {

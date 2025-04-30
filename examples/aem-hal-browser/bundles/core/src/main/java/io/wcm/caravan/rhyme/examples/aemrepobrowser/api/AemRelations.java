@@ -1,7 +1,11 @@
 package io.wcm.caravan.rhyme.examples.aemrepobrowser.api;
 
 
-public class AemRelations {
+public final class AemRelations {
+
+  private AemRelations() {
+    // contains constants only, no need to instantiate
+  }
 
   public static final String PAGE = "aem:page";
 

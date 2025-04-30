@@ -29,10 +29,10 @@ import org.junit.jupiter.api.Test;
 import io.reactivex.rxjava3.core.Observable;
 
 
-public class HalApiReturnTypeSupportTest {
+class HalApiReturnTypeSupportTest {
 
   @Test
-  public void isProviderOfOptionalValue_should_have_default_implementation() throws Exception {
+  void isProviderOfOptionalValue_should_have_default_implementation() {
 
     HalApiReturnTypeSupport returnTypeSupport = new HalApiReturnTypeSupport() {
 
@@ -42,7 +42,7 @@ public class HalApiReturnTypeSupportTest {
       }
 
       @Override
-      public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
+      public Function<Object, Observable<Object>> convertToObservable(Class<?> sourceType) {
         return null;
       }
 

@@ -19,6 +19,8 @@
  */
 package io.wcm.caravan.maven.plugins.rhymedocs.model;
 
+import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
+
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -33,7 +35,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.TreeNode;
@@ -92,12 +93,6 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
         .orElse(null);
   }
 
-  /* (non-Javadoc)
-   * @see io.wcm.caravan.maven.plugins.rhymedocs.model.RhymePropertyDocs#getDescription()
-   */
-  @Override
-  public abstract String getDescription();
-
   protected abstract Type getPropertyGenericType();
 
   protected abstract Class<?> getPropertyClass();
@@ -107,15 +102,15 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
 
   public static List<RhymePropertyDocs> create(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
 
-    Stream<RhymePropertyDocs> resourceStateDocs = crreateDocsFromResourceState(apiInterface, builder, projectClassLoader);
+    Stream<RhymePropertyDocs> resourceStateDocs = createDocsFromResourceState(apiInterface, builder, projectClassLoader);
 
-    Stream<RhymePropertyDocs> resourcePropertyDocs = crreateDocsFromResourceProperty(apiInterface, builder, projectClassLoader);
+    Stream<RhymePropertyDocs> resourcePropertyDocs = createDocsFromResourceProperty(apiInterface, builder, projectClassLoader);
 
     return Stream.concat(resourceStateDocs, resourcePropertyDocs)
         .collect(Collectors.toList());
   }
 
-  private static Stream<RhymePropertyDocs> crreateDocsFromResourceProperty(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
+  private static Stream<RhymePropertyDocs> createDocsFromResourceProperty(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
 
     Stream<JavaMethod> javaMethods = DocumentationUtils.getMethodsWithAnnotation(apiInterface, ResourceProperty.class);
 
@@ -149,7 +144,7 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
     return Introspector.decapitalize(name);
   }
 
-  private static Stream<RhymePropertyDocs> crreateDocsFromResourceState(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
+  private static Stream<RhymePropertyDocs> createDocsFromResourceState(JavaClass apiInterface, JavaProjectBuilder builder, ClassLoader projectClassLoader) {
 
     Optional<JavaMethod> javaMethod = DocumentationUtils.getMethodsWithAnnotation(apiInterface, ResourceState.class).findFirst();
     if (!javaMethod.isPresent()) {
@@ -180,11 +175,9 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
     Stream<RhymePropertyDocsImpl> fieldProperties = DocumentationUtils.getPublicFields(stateType)
         .map(field -> new FieldPropertyModel(builder, stateType, field, basePointer));
 
-    Stream<RhymePropertyDocs> recursiveStream = Stream.concat(beanProperties, fieldProperties)
+    return Stream.concat(beanProperties, fieldProperties)
         .sorted(Ordering.natural().onResultOf(RhymePropertyDocs::getJsonPointer))
         .flatMap(docs -> handleObjectsAndArrays(docs, processedClassNames));
-
-    return recursiveStream;
   }
 
   private static Stream<RhymePropertyDocs> handleObjectsAndArrays(RhymePropertyDocsImpl docs, Map<String, String> processedClassNames) {
@@ -196,22 +189,20 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
     if (isSerialisedAsJsonArray(propertyType)) {
 
       Class<?> elementType = docs.getFirstTypeParameter();
-      if (elementType != null) {
 
-        if (isSerialisedAsJsonObject(elementType)) {
+      if (elementType != null && hasNestedProperties(elementType)) {
 
-          if (processedClassNames.containsKey(elementType.getName())) {
-            String previous = processedClassNames.get(elementType.getName());
-            return Stream.of(docs,
-                new FixedPropertyModel(elementType.getSimpleName(), "(an object with same properties as " + previous + ")", docs.getJsonPointer() + "/0"));
-          }
-
-          return Stream.concat(stream,
-              createPropertyDocsRecursively(docs.builder, elementType, docs.getJsonPointer() + "/0", processedClassNames));
+        if (processedClassNames.containsKey(elementType.getName())) {
+          String previous = processedClassNames.get(elementType.getName());
+          return Stream.of(docs,
+              new FixedPropertyModel(elementType.getSimpleName(), "(an object with same properties as " + previous + ")", docs.getJsonPointer() + "/0"));
         }
+
+        return Stream.concat(stream,
+            createPropertyDocsRecursively(docs.builder, elementType, docs.getJsonPointer() + "/0", processedClassNames));
       }
     }
-    else if (isSerialisedAsJsonObject(propertyType)) {
+    else if (hasNestedProperties(propertyType)) {
 
       if (processedClassNames.containsKey(propertyType.getName())) {
         String previous = processedClassNames.get(propertyType.getName());
@@ -332,6 +323,7 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
 
     return Stream.of(observableType.getActualTypeArguments())
         .filter(typeArgument -> !"?".equals(typeArgument.getTypeName()))
+        .filter(typeArgument -> typeArgument instanceof Class)
         .map(typeArgument -> (Class<?>)typeArgument);
   }
 
@@ -340,16 +332,15 @@ public abstract class RhymePropertyDocsImpl implements RhymePropertyDocs {
     return Collection.class.isAssignableFrom(propertyType) || propertyType.isArray();
   }
 
-  private static boolean isSerialisedAsJsonObject(Class<?> propertyType) {
+  private static boolean hasNestedProperties(Class<?> propertyType) {
 
-    if (ClassUtils.isPrimitiveOrWrapper(propertyType)
-        || isSerialisedAsJsonArray(propertyType)
+    boolean isObjectWithoutProperties = isPrimitiveOrWrapper(propertyType)
         || String.class.isAssignableFrom(propertyType)
-        || Map.class.isAssignableFrom(propertyType)) {
+        // map entries will be serialized as JSON properties, but there is no way we can document them
+        || Map.class.isAssignableFrom(propertyType)
+        // arrays are handled separately in handleObjectsAndArrays
+        || isSerialisedAsJsonArray(propertyType);
 
-      return false;
-    }
-
-    return true;
+    return !isObjectWithoutProperties;
   }
 }

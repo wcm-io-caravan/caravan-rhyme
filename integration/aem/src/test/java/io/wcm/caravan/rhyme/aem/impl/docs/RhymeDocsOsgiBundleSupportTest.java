@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
+import java.io.IOException;
+
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.apache.sling.testing.mock.osgi.junit5.OsgiContextExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,13 +33,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.osgi.framework.Bundle;
 
-import io.wcm.caravan.rhyme.aem.impl.docs.RhymeDocsOsgiBundleSupport;
 import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 
 @ExtendWith(OsgiContextExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsOsgiBundleSupportTest {
+class RhymeDocsOsgiBundleSupportTest {
 
   private final OsgiContext context = new OsgiContext();
 
@@ -64,14 +65,14 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  public void getRhymeDocsBaseUrl_should_return_base_url() throws Exception {
+  void getRhymeDocsBaseUrl_should_return_base_url() {
 
     assertThat(docsSupport.getRhymeDocsBaseUrl())
         .isEqualTo("/content.rhymedocs.html/");
   }
 
   @Test
-  public void openResourceStream_should_return_null_if_no_bundles_were_registered() throws Exception {
+  void openResourceStream_should_return_null_if_no_bundles_were_registered() throws IOException {
 
     String resourcePath = constructResourcePath("Foo.html");
 
@@ -80,7 +81,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  public void openResourceStream_should_return_stream_if_bundle_with_matching_resource_is_registered() throws Exception {
+  void openResourceStream_should_return_stream_if_bundle_with_matching_resource_is_registered() throws IOException {
 
     String resourcePath = constructResourcePath("Foo.html");
 
@@ -93,7 +94,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  public void openResourceStream_should_return_null_if_bundle_with_different_file_was_registered() throws Exception {
+  void openResourceStream_should_return_null_if_bundle_with_different_file_was_registered() throws IOException {
 
     String fooResourcePath = constructResourcePath("Foo.html");
     String barResourcePath = constructResourcePath("Bar.html");
@@ -107,7 +108,7 @@ public class RhymeDocsOsgiBundleSupportTest {
   }
 
   @Test
-  public void openResourceStream_should_return_null_if_bundle_with_with_matching_resource_was_deregistered() throws Exception {
+  void openResourceStream_should_return_null_if_bundle_with_with_matching_resource_was_deregistered() throws IOException {
 
     String resourcePath = constructResourcePath("Foo.html");
 

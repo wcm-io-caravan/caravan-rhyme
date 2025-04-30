@@ -40,12 +40,12 @@ import io.wcm.caravan.rhyme.osgi.it.extensions.WaitForServerStartupExtension;
 import io.wcm.caravan.rhyme.osgi.sampleservice.api.ExamplesEntryPointResource;
 
 @ExtendWith({ WaitForServerStartupExtension.class })
-public class RhymeDocsIT {
+class RhymeDocsIT {
 
   private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
   @Test
-  public void entry_point_should_contain_curies_link() {
+  void entry_point_should_contain_curies_link() {
 
     HalResource hal = entryPoint.asHalResource();
 
@@ -56,7 +56,7 @@ public class RhymeDocsIT {
   }
 
   @Test
-  public void html_docs_should_be_served_on_URI_from_curie_link() throws IOException {
+  void html_docs_should_be_served_on_URI_from_curie_link() throws IOException {
 
     HalResource hal = entryPoint.asHalResource();
 

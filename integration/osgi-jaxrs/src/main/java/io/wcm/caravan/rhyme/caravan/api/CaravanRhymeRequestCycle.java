@@ -49,10 +49,10 @@ public interface CaravanRhymeRequestCycle {
    * @param response the suspended response that will be asynchronously resumed
    * @param requestContextConstructor a function that will create a RequestContextType
    * @param resourceImplConstructor a function that creates the resource implementation to be rendered
-   * @param <RequestContextType> a project-specific type that allows to pass on OSGI references and request-specific
+   * @param <T> a project-specific type that allows to pass on OSGI references and request-specific
    *          information to all resource implementations being created within the request cycle
    */
-  <RequestContextType> void processRequest(UriInfo requestUri, AsyncResponse response,
-      Function<CaravanRhyme, RequestContextType> requestContextConstructor,
-      Function<RequestContextType, ? extends LinkableResource> resourceImplConstructor);
+  <T> void processRequest(UriInfo requestUri, AsyncResponse response,
+      Function<CaravanRhyme, T> requestContextConstructor,
+      Function<T, ? extends LinkableResource> resourceImplConstructor);
 }

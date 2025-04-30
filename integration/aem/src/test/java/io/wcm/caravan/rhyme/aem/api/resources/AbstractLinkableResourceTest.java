@@ -31,7 +31,7 @@ import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 @ExtendWith(AemContextExtension.class)
-public class AbstractLinkableResourceTest {
+class AbstractLinkableResourceTest {
 
   private static final String DEFAULT_LINK_TITLE = "foo!";
 
@@ -43,28 +43,30 @@ public class AbstractLinkableResourceTest {
   }
 
   @Test
-  public void adaptResource_should_get_all_RhymeObjects_injected() {
+  void adaptResource_should_get_all_RhymeObjects_injected() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 
     ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
 
-    assertThat(resource).isNotNull();
-    assertThat(resource).hasNoNullFieldsOrPropertiesExcept("contextLinkTitle", "linkName");
+    assertThat(resource)
+        .isNotNull()
+        .hasNoNullFieldsOrPropertiesExcept("contextLinkTitle", "linkName");
   }
 
   @Test
-  public void createLink_should_use_default_link_title() {
+  void createLink_should_use_default_link_title() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 
     ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
 
-    assertThat(resource.createLink().getTitle()).isEqualTo(DEFAULT_LINK_TITLE);
+    assertThat(resource.createLink().getTitle())
+        .isEqualTo(DEFAULT_LINK_TITLE);
   }
 
   @Test
-  public void createLink_should_use_title_specified_with_setLinkTitle() {
+  void createLink_should_use_title_specified_with_setLinkTitle() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 
@@ -72,21 +74,23 @@ public class AbstractLinkableResourceTest {
 
     resource.getLinkProperties().setTitle("Custom Title");
 
-    assertThat(resource.createLink().getTitle()).isEqualTo("Custom Title");
+    assertThat(resource.createLink().getTitle())
+        .isEqualTo("Custom Title");
   }
 
   @Test
-  public void createLink_should_use_default_link_name_from_resource() {
+  void createLink_should_use_default_link_name_from_resource() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 
     ResourceImpl resource = rhyme.adaptResource(rhyme.getRequestedResource(), ResourceImpl.class);
 
-    assertThat(resource.createLink().getName()).isEqualTo("foo");
+    assertThat(resource.createLink().getName())
+        .isEqualTo("foo");
   }
 
   @Test
-  public void createLink_should_use_link_name_specified_with_setLinkName() {
+  void createLink_should_use_link_name_specified_with_setLinkName() {
 
     SlingRhyme rhyme = createRhymeInstance("/foo");
 
@@ -94,7 +98,8 @@ public class AbstractLinkableResourceTest {
 
     resource.getLinkProperties().setName("bar");
 
-    assertThat(resource.createLink().getName()).isEqualTo("bar");
+    assertThat(resource.createLink().getName())
+        .isEqualTo("bar");
   }
 
   @Model(adaptables = SlingRhyme.class)

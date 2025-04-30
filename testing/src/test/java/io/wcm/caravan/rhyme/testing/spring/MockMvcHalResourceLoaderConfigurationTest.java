@@ -40,13 +40,13 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
-public class MockMvcHalResourceLoaderConfigurationTest {
+class MockMvcHalResourceLoaderConfigurationTest {
 
   @Autowired
   private HalResourceLoader loader;
 
   @Test
-  public void should_retrieve_status_and_body_for_200_response() throws Exception {
+  void should_retrieve_status_and_body_for_200_response() {
 
     HalResponse response = loader.getHalResource("/").blockingGet();
 
@@ -61,7 +61,7 @@ public class MockMvcHalResourceLoaderConfigurationTest {
   }
 
   @Test
-  public void should_retrieve_status_and_body_for_404_response() throws Exception {
+  void should_retrieve_status_and_body_for_404_response() {
 
     Throwable ex = catchThrowable(() -> loader.getHalResource("/404").blockingGet());
 
@@ -78,7 +78,7 @@ public class MockMvcHalResourceLoaderConfigurationTest {
   }
 
   @Test
-  public void should_handle_exception() throws Exception {
+  void should_handle_exception() {
 
     Throwable ex = catchThrowable(() -> loader.getHalResource("/500").blockingGet());
 

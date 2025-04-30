@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.annotations.Related;
-import io.wcm.caravan.rhyme.api.annotations.ResourceState;
+import io.wcm.caravan.rhyme.api.annotations.ResourceProperty;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.AemRelations;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.SlingResource;
@@ -13,8 +13,8 @@ import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.SlingResource;
 @HalApiInterface
 public interface AemPage extends LinkableResource {
 
-  @ResourceState
-  AemPageProperties getProperties();
+  @ResourceProperty
+  String getTitle();
 
   @Related(AemRelations.SLING_RESOURCE)
   SlingResource asSlingResource();

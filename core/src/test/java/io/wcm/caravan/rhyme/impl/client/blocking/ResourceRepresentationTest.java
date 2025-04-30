@@ -40,7 +40,7 @@ import io.wcm.caravan.rhyme.testing.resources.TestResourceTree;
  * for blocking HAL API interfaces (i.e. that are not using reactive return types for their methods)
  */
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class ResourceRepresentationTest {
+class ResourceRepresentationTest {
 
   private HalResourceLoader resourceLoader;
   private TestResource entryPoint;
@@ -73,7 +73,7 @@ public class ResourceRepresentationTest {
   }
 
   @Test
-  public void representation_should_be_available_as_hal_resource() {
+  void representation_should_be_available_as_hal_resource() {
 
     HalResource hal = createClientProxy(ResourceWithRepresentations.class)
         .asHalResource();

@@ -115,7 +115,7 @@ public class CompositeHalApiTypeSupport implements HalApiTypeSupport {
   }
 
   @Override
-  public Function<? super Object, Observable<?>> convertToObservable(Class<?> sourceType) {
+  public Function<Object, Observable<Object>> convertToObservable(Class<?> sourceType) {
 
     return firstNonNull(delegate -> delegate.convertToObservable(sourceType));
   }

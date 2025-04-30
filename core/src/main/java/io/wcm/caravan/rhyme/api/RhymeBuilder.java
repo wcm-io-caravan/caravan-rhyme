@@ -19,12 +19,16 @@
  */
 package io.wcm.caravan.rhyme.api;
 
+import java.util.function.Function;
+
 import org.osgi.annotation.versioning.ProviderType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 import io.wcm.caravan.rhyme.api.common.HalResponse;
+import io.wcm.caravan.rhyme.api.common.RequestMetricsCollector;
 import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 import io.wcm.caravan.rhyme.api.server.RhymeMetadataConfiguration;
 import io.wcm.caravan.rhyme.api.spi.ExceptionStatusAndLoggingStrategy;
@@ -130,6 +134,20 @@ public interface RhymeBuilder {
    * @return this
    */
   RhymeBuilder withObjectMapper(ObjectMapper objectMapper);
+
+  /**
+   * Defines an override that will make {@link Rhyme#getRemoteResource(String, Class)} return a custom
+   * implementation for a specific combination of entry point URI and interface class (rather then the default
+   * dynamic proxy). This can be used to mock/stub remote resources in unit and integration tests, or to delegate
+   * remote resource proxy creation for a specific service to a completely different {@link Rhyme} or
+   * {@link HalApiClient} instance.
+   * @param <T> the {@link HalApiInterface} type
+   * @param entryPointUri the URI for which the override will be used
+   * @param halApiInterface an interface defining the HAL API for that URI
+   * @param factoryFunc a function that will create a proxy, stub or server-side implementation of the given interface
+   * @return this
+   */
+  <T> RhymeBuilder withRemoteResourceOverride(String entryPointUri, Class<T> halApiInterface, Function<RequestMetricsCollector, T> factoryFunc);
 
   /**
    * Create the {@link Rhyme} instance to be used to throughout the lifecycle of an incoming request

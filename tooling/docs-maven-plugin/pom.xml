@@ -25,7 +25,7 @@
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
@@ -35,7 +35,7 @@
   <packaging>maven-plugin</packaging>
 
   <name>Rhyme - Documentation Maven Plugin</name>
-  <description>Generates HTML documentation for HAL+JSON APIs defined using Caravan Ryhme annotations</description>
+  <description>Generates HTML documentation for HAL+JSON APIs defined using Caravan Rhyme annotations</description>
   <url>${site.url}/${site.url.module.prefix}/</url>
 
   <scm>
@@ -49,9 +49,6 @@
     <site.url.module.prefix>rhyme/docs-maven-plugin</site.url.module.prefix>
 
     <maven.version>3.6.3</maven.version>
-
-    <build.compiler.source>1.8</build.compiler.source>
-    <build.compiler.target>1.8</build.compiler.target>
   </properties>
 
   <prerequisites>
@@ -90,7 +87,7 @@
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
-      <version>3.6.2</version>
+      <version>3.7.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -157,7 +154,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.5.2</version>
+        <version>3.7.0</version>
         <configuration>
           <goalPrefix>rhyme-docs</goalPrefix>
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>

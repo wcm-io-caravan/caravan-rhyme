@@ -1,6 +1,6 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> Rhyme Core Framework
 ======
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.core)
+[![Maven Central](https://img.shields.io/maven-central/v/io.wcm.caravan/io.wcm.caravan.rhyme.core)](https://repo1.maven.org/maven2/io/wcm/caravan/io.wcm.caravan.rhyme.core/)
 
 This module contains all the core interfaces and implementation classes for the Rhyme framework.
 

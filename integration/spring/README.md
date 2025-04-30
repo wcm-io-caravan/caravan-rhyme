@@ -1,6 +1,6 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> Rhyme - Spring Boot Integration
 ======
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.spring/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.spring)
+[![Maven Central](https://img.shields.io/maven-central/v/io.wcm.caravan/io.wcm.caravan.rhyme.spring)](https://repo1.maven.org/maven2/io/wcm/caravan/io.wcm.caravan.rhyme.spring/)
 
 This module contains API interfaces and Spring beans to simplify using Rhyme to build a HAL microservice as a Spring Boot application.
 

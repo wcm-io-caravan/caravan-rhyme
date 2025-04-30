@@ -45,7 +45,7 @@ import io.wcm.caravan.rhyme.api.server.AsyncHalResponseRenderer;
 import io.wcm.caravan.rhyme.impl.metadata.FullMetadataGenerator.TimeMeasurement;
 
 @ExtendWith(MockitoExtension.class)
-public class ResponseMetadataGeneratorTest {
+class ResponseMetadataGeneratorTest {
 
   private static final String METHOD2 = "method2()";
   private static final String METHOD1 = "method1()";
@@ -62,13 +62,13 @@ public class ResponseMetadataGeneratorTest {
   private final FullMetadataGenerator metrics = new FullMetadataGenerator();
 
   @Test
-  public void default_output_max_age_should_be_null() throws Exception {
+  void default_output_max_age_should_be_null() {
 
     assertThat(metrics.getResponseMaxAge()).isNull();
   }
 
   @Test
-  public void output_max_age_should_be_null_if_no_max_age_present_in_upstream_response() throws Exception {
+  void output_max_age_should_be_null_if_no_max_age_present_in_upstream_response() {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, null, ANY_RESPONSE_TIME);
 
@@ -76,7 +76,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void max_age_limit_should_handle_durations_longer_than_max_int() throws Exception {
+  void max_age_limit_should_handle_durations_longer_than_max_int() {
 
     metrics.setResponseMaxAge(Duration.ofDays(Integer.MAX_VALUE));
 
@@ -84,7 +84,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void max_age_limit_should_be_used_if_no_resources_are_requested() throws Exception {
+  void max_age_limit_should_be_used_if_no_resources_are_requested() {
 
     int limit = 55;
     metrics.setResponseMaxAge(Duration.ofSeconds(limit));
@@ -93,7 +93,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void max_age_limit_should_use_lowest_value_of_multiple_calls() throws Exception {
+  void max_age_limit_should_use_lowest_value_of_multiple_calls() {
 
     int lowerLimit = 55;
     metrics.setResponseMaxAge(Duration.ofSeconds(lowerLimit));
@@ -104,7 +104,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void max_age_limit_should_use_lowest_value_of_multiple_calls_2() throws Exception {
+  void max_age_limit_should_use_lowest_value_of_multiple_calls_2() {
 
     int lowerLimit = 55;
 
@@ -116,7 +116,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void max_age_limit_should_be_used_if_if_no_max_age_present_in_upstream_response() throws Exception {
+  void max_age_limit_should_be_used_if_if_no_max_age_present_in_upstream_response() {
 
     int limit = 55;
     metrics.setResponseMaxAge(Duration.ofSeconds(limit));
@@ -126,7 +126,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void max_age_limit_should_be_used_if_its_smaller_than_max_age_from_upstream_response() throws Exception {
+  void max_age_limit_should_be_used_if_its_smaller_than_max_age_from_upstream_response() {
 
     int limit = 55;
     metrics.setResponseMaxAge(Duration.ofSeconds(limit));
@@ -137,7 +137,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void max_age_from_upstream_resource_should_be_used_if_no_limit_is_set() throws Exception {
+  void max_age_from_upstream_resource_should_be_used_if_no_limit_is_set() {
 
     int upstreamMaxAge = 40;
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, upstreamMaxAge, ANY_RESPONSE_TIME);
@@ -146,7 +146,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void max_age_from_upstream_resource_should_be_used_if_its_smaller_than_limit() throws Exception {
+  void max_age_from_upstream_resource_should_be_used_if_its_smaller_than_limit() {
 
     int limit = 55;
     metrics.setResponseMaxAge(Duration.ofSeconds(limit));
@@ -157,7 +157,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void smallest_max_age_from_upstream_resources_should_be_used_if_no_limit_is_set() throws Exception {
+  void smallest_max_age_from_upstream_resources_should_be_used_if_no_limit_is_set() {
 
     int upstreamMaxAge1 = 400;
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, upstreamMaxAge1, ANY_RESPONSE_TIME);
@@ -168,7 +168,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void max_age_times_from_responses_should_be_collected_and_ordered() {
+  void max_age_times_from_responses_should_be_collected_and_ordered() {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, 10, ANY_RESPONSE_TIME);
     metrics.onResponseRetrieved(UPSTREAM_URI2, UPSTREAM_TITLE, 200, ANY_RESPONSE_TIME);
@@ -184,7 +184,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void response_times_from_upstream_should_be_collected_and_ordered() {
+  void response_times_from_upstream_should_be_collected_and_ordered() {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, null, 10);
     metrics.onResponseRetrieved(UPSTREAM_URI2, UPSTREAM_TITLE, null, 200);
@@ -200,7 +200,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void upstream_source_links_should_be_collected_in_original_order() {
+  void upstream_source_links_should_be_collected_in_original_order() {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, null, 10);
     metrics.onResponseRetrieved(UPSTREAM_URI2, UPSTREAM_TITLE, null, 200);
@@ -215,7 +215,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void emission_times_should_be_grouped_by_method_and_ordered_by_max() {
+  void emission_times_should_be_grouped_by_method_and_ordered_by_max() {
 
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 1500);
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 500);
@@ -233,7 +233,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void emission_times_should_be_grouped_by_method_and_ordered_by_sum() {
+  void emission_times_should_be_grouped_by_method_and_ordered_by_sum() {
 
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 600);
     metrics.onMethodInvocationFinished(HalApiClient.class, METHOD1, 800);
@@ -251,7 +251,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void metadata_resource_can_be_created_without_interactions() throws Exception {
+  void metadata_resource_can_be_created_without_interactions() {
 
     HalResource metadata = metrics.createMetadataResource(resource);
 
@@ -259,7 +259,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void metadata_resource_can_be_created_with_null_resource_instance() throws Exception {
+  void metadata_resource_can_be_created_with_null_resource_instance() {
 
     HalResource metadata = metrics.createMetadataResource(null);
 
@@ -267,7 +267,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void metadata_resource_contains_source_links() throws Exception {
+  void metadata_resource_contains_source_links() {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, 10, ANY_RESPONSE_TIME);
     metrics.onResponseRetrieved(UPSTREAM_URI2, UPSTREAM_TITLE, 200, ANY_RESPONSE_TIME);
@@ -287,7 +287,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void metadata_resource_contains_embedded_details_metrics_if_timings_were_collected() throws Exception {
+  void metadata_resource_contains_embedded_details_metrics_if_timings_were_collected() {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, 10, ANY_RESPONSE_TIME);
     metrics.onMethodInvocationFinished(EmissionStopwatch.class, METHOD1, ANY_RESPONSE_TIME);
@@ -302,7 +302,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void metadata_resource_contains_no_embedded_details_metrics_if_no_timings_were_collected() throws Exception {
+  void metadata_resource_contains_no_embedded_details_metrics_if_no_timings_were_collected() {
 
     HalResource metadata = metrics.createMetadataResource(resource);
 
@@ -313,7 +313,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void metadata_resource_contains_sum_of_invocation_and_response_times() throws Exception {
+  void metadata_resource_contains_sum_of_invocation_and_response_times() {
 
     metrics.onResponseRetrieved(UPSTREAM_URI1, UPSTREAM_TITLE, null, 2000);
     metrics.onResponseRetrieved(UPSTREAM_URI2, UPSTREAM_TITLE, null, 3000);
@@ -332,7 +332,7 @@ public class ResponseMetadataGeneratorTest {
   }
 
   @Test
-  public void responses_that_were_retrieved_after_metadata_generation_should_be_ignored() throws Exception {
+  void responses_that_were_retrieved_after_metadata_generation_should_be_ignored() {
 
     HalResource metadata = metrics.createMetadataResource(resource);
 

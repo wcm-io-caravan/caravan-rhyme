@@ -1,6 +1,6 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> Rhyme API Interfaces and Annotations
 ======
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.api-interfaces/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.wcm.caravan/io.wcm.caravan.rhyme.api-interfaces)
+[![Maven Central](https://img.shields.io/maven-central/v/io.wcm.caravan/io.wcm.caravan.rhyme.api-interfaces)](https://repo1.maven.org/maven2/io/wcm/caravan/io.wcm.caravan.rhyme.api-interfaces/)
 
 This module contains only the Java annotations, interfaces and some constants required to define your Rhyme HAL API interfaces.
 

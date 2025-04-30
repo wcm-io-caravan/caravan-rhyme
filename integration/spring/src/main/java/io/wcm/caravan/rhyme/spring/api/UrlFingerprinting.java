@@ -45,7 +45,7 @@ import org.springframework.web.context.annotation.RequestScope;
  * query parameter to be used for URL fingerprinting, and the source for a last modification date</li>
  * <li>Call {@link #withConditionalMaxAge(Duration, Duration)} to enable modification
  * of your response's max-age cache-control directive depending on the presence of the URL fingerprint</li>
- * <li>Ensure that all the links between your server-side resoures are then created using
+ * <li>Ensure that all the links between your server-side resources are then created using
  * {@link #createLinkWith(WebMvcLinkBuilder)} of the same configured {@link UrlFingerprinting} instance</li>
  * </ol>
  */

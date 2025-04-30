@@ -114,9 +114,7 @@ public class LinkRewriting {
 
     URI uriWithPlaceholder = contextUri.resolve(PATH_PLACEHOLDER);
 
-    String resolvedTemplate = uriWithPlaceholder.toString()
+    return uriWithPlaceholder.toString()
         .replace(PATH_PLACEHOLDER, pathTemplate);
-
-    return resolvedTemplate;
   }
 }

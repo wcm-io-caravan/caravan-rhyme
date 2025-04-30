@@ -27,10 +27,10 @@ import org.junit.jupiter.api.Test;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.ResourceWithLinksInJavadoc;
 import io.wcm.caravan.maven.plugins.rhymedocs.interfaces.RhymeDocTestEntryPoint;
 
-public class RhymeResourceDocsTest {
+class RhymeResourceDocsTest {
 
   @Test
-  public void getTitle_should_return_short_name() {
+  void getTitle_should_return_short_name() {
 
     RhymeResourceDocs entryPointDocs = getDocsFor(RhymeDocTestEntryPoint.class);
 
@@ -39,7 +39,7 @@ public class RhymeResourceDocsTest {
   }
 
   @Test
-  public void getDescription_should_return_javadoc_comment() {
+  void getDescription_should_return_javadoc_comment() {
 
     RhymeResourceDocs entryPointDocs = getDocsFor(RhymeDocTestEntryPoint.class);
 
@@ -48,7 +48,7 @@ public class RhymeResourceDocsTest {
   }
 
   @Test
-  public void getDescription_should_replace_links_to_classes() {
+  void getDescription_should_replace_links_to_classes() {
 
     RhymeResourceDocs entryPointDocs = getDocsFor(ResourceWithLinksInJavadoc.class);
 
@@ -57,7 +57,7 @@ public class RhymeResourceDocsTest {
   }
 
   @Test
-  public void getFullyQualifiedClassName_should_return_you_guess_what() {
+  void getFullyQualifiedClassName_should_return_you_guess_what() {
 
     RhymeResourceDocs entryPointDocs = getDocsFor(RhymeDocTestEntryPoint.class);
 

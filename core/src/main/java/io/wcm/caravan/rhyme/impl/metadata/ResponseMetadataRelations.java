@@ -25,7 +25,7 @@ package io.wcm.caravan.rhyme.impl.metadata;
  */
 public final class ResponseMetadataRelations {
 
-  /** the relation used to embedd information on upstream resources and performance in every rendered resource */
+  /** the relation used to embed information on upstream resources and performance in every rendered resource */
   public static final String RHYME_METADATA_RELATION = "rhyme:metadata";
 
   static final String MAX_AGE = "metrics:maxAge";

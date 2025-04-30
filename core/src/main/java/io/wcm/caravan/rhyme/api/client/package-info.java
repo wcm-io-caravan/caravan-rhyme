@@ -20,5 +20,5 @@
 /**
  * Interfaces for client-side functionality
  */
-@org.osgi.annotation.versioning.Version("1.1.0")
+@org.osgi.annotation.versioning.Version("1.2.0")
 package io.wcm.caravan.rhyme.api.client;

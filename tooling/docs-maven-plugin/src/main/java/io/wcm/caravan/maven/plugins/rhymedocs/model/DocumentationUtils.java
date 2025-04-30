@@ -43,6 +43,8 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaType;
 
+import io.wcm.caravan.rhyme.api.exceptions.HalApiDeveloperException;
+
 final class DocumentationUtils {
 
   private DocumentationUtils() {
@@ -72,7 +74,7 @@ final class DocumentationUtils {
       return clazz.getMethod(javaMethod.getName(), paramTypes);
     }
     catch (RuntimeException | NoSuchMethodException ex) {
-      throw new RuntimeException("Unable to get method '" + javaClazz.getName() + "#" + javaMethod.getName(), ex);
+      throw new HalApiDeveloperException("Unable to get method '" + javaClazz.getName() + "#" + javaMethod.getName(), ex);
     }
   }
 
@@ -81,7 +83,7 @@ final class DocumentationUtils {
       return classLoader.loadClass(javaType.getBinaryName());
     }
     catch (ClassNotFoundException ex) {
-      throw new RuntimeException("Failed to load class " + javaType.getFullyQualifiedName(), ex);
+      throw new HalApiDeveloperException("Failed to load class " + javaType.getFullyQualifiedName(), ex);
     }
   }
 
@@ -171,7 +173,7 @@ final class DocumentationUtils {
           .filter(property -> !hasJsonIgnoreAnnotation(type, property));
     }
     catch (IntrospectionException | RuntimeException ex) {
-      throw new RuntimeException("Failed to lookup bean properties for " + type, ex);
+      throw new HalApiDeveloperException("Failed to lookup bean properties for " + type, ex);
     }
   }
 
@@ -195,7 +197,7 @@ final class DocumentationUtils {
           .filter(field -> field.getAnnotation(JsonIgnore.class) == null);
     }
     catch (RuntimeException ex) {
-      throw new RuntimeException("Failed to lookup fields for " + type, ex);
+      throw new HalApiDeveloperException("Failed to lookup fields for " + type, ex);
     }
   }
 

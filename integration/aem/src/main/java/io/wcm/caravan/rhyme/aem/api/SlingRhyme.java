@@ -40,8 +40,8 @@ import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 /**
  * An AEM-specific wrapper for the general {@link Rhyme} facade interface.
  * <p>
- * It is implemented as a sling model that is initially adapted from the incoming request to
- * the framework's central {@link HalApiServlet} and will internally create a single {@link Rhyme} instance
+ * It is implemented as a sling model that is initially adapted from the incoming request by
+ * the integration's central {@link HalApiServlet} and will internally create a single {@link Rhyme} instance
  * that will be used for all interaction with the core framework for the duration of the request.
  * </p>
  * <p>

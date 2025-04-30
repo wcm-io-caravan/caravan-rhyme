@@ -38,14 +38,14 @@ import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration
  */
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
-public class InternalConsumerIT extends AbstractCompanyApiIT {
+class InternalConsumerIT extends AbstractCompanyApiIT {
 
   /** This will inject the {@link CompanyApiController} instance as it's implementing that public interface */
   @Autowired
   private CompanyApi api;
 
   @Override
-  protected CompanyApi getApiImplementionOrClientProxy() {
+  protected CompanyApi getApiImplementationOrClientProxy() {
     return api;
   }
 

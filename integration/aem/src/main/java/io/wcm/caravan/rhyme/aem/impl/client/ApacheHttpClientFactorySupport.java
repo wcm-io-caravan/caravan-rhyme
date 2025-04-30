@@ -36,7 +36,7 @@ import io.wcm.caravan.commons.httpclient.HttpClientFactory;
 import io.wcm.caravan.rhyme.api.spi.HttpClientCallback;
 import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
 
-class ApacheHttpClientFactorySupport implements HttpClientSupport {
+public class ApacheHttpClientFactorySupport implements HttpClientSupport {
 
   private final HttpClientFactory clientFactory;
 

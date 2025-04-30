@@ -40,7 +40,7 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 
 
-public class DocumentationUtilsTest {
+class DocumentationUtilsTest {
 
   private JavaClass firstClassWithMethod;
   private JavaMethod javaMethod;
@@ -63,7 +63,7 @@ public class DocumentationUtilsTest {
   }
 
   @Test
-  public void getMethod_should_handle_ClassNotFoundException() throws Exception {
+  void getMethod_should_handle_ClassNotFoundException() throws ClassNotFoundException {
 
     ClassLoader classLoader = Mockito.mock(ClassLoader.class);
     Mockito.when(classLoader.loadClass(ArgumentMatchers.anyString()))
@@ -77,7 +77,7 @@ public class DocumentationUtilsTest {
   }
 
   @Test
-  public void findJavaDocForMethod_should_handle_classes_without_sources() throws Exception {
+  void findJavaDocForMethod_should_handle_classes_without_sources() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
 
     String fooDesc = DtoWithJacksonAnnotations.findMethodJavaDoc("getFoo");
 
@@ -121,7 +121,7 @@ public class DocumentationUtilsTest {
   }
 
   @Test
-  public void getBeanProperties_should_handle_exceptions() {
+  void getBeanProperties_should_handle_exceptions() {
 
     Throwable ex = catchThrowable(() -> DocumentationUtils.getBeanProperties(null));
 
@@ -131,7 +131,7 @@ public class DocumentationUtilsTest {
   }
 
   @Test
-  public void getPublicFields_should_handle_exceptions() {
+  void getPublicFields_should_handle_exceptions() {
 
     Throwable ex = catchThrowable(() -> DocumentationUtils.getPublicFields(null));
 

@@ -14,7 +14,6 @@ import io.wcm.caravan.rhyme.aem.api.resources.AbstractLinkableResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.generic.SlingResource;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.sites.AemLinkedContent;
 import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.sites.AemPage;
-import io.wcm.caravan.rhyme.examples.aemrepobrowser.api.sites.AemPageProperties;
 
 @Model(adaptables = SlingRhyme.class, adapters = AemPage.class)
 public class AemPageImpl extends AbstractLinkableResource implements AemPage {
@@ -23,15 +22,8 @@ public class AemPageImpl extends AbstractLinkableResource implements AemPage {
   private Page resourcePage;
 
   @Override
-  public AemPageProperties getProperties() {
-
-    return new AemPageProperties() {
-
-      @Override
-      public String getTitle() {
-        return resourcePage.getTitle();
-      }
-    };
+  public String getTitle() {
+    return resourcePage.getTitle();
   }
 
   @Override
@@ -78,5 +70,4 @@ public class AemPageImpl extends AbstractLinkableResource implements AemPage {
 
     return resourcePage.getTitle();
   }
-
 }

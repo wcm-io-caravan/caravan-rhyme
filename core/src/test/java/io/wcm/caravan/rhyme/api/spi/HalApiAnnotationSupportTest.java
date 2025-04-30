@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
-public class HalApiAnnotationSupportTest {
+class HalApiAnnotationSupportTest {
 
   private final HalApiAnnotationSupport annotationSupport = new HalApiAnnotationSupport() {
 
@@ -70,11 +70,11 @@ public class HalApiAnnotationSupportTest {
   void should_have_default_implementation_for_isResourcePropertyMethod() {
 
     assertThat(annotationSupport.isResourcePropertyMethod(null))
-        .isEqualTo(false);
+        .isFalse();
   }
 
   @Test
-  void should_have_default_implementation_for_getProeprtyName() {
+  void should_have_default_implementation_for_getPropertyName() {
 
     assertThat(annotationSupport.getPropertyName(null))
         .isNull();

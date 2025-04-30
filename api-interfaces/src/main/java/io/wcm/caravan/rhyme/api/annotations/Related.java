@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.relations.StandardRelations;
+import io.wcm.caravan.rhyme.api.resources.LinkableResource;
 
 /**
  * Used to declare methods which defines a link relation and the expected type for linked or embedded resources.
@@ -47,6 +48,13 @@ import io.wcm.caravan.rhyme.api.relations.StandardRelations;
  * Methods with this annotation can have parameters with {@link TemplateVariable} or
  * {@link TemplateVariables} annotations to define URI templates that clients can expand with the values
  * specified in those parameters.
+ * </p>
+ * <p>
+ * If any of these parameters are invoked with null values, the link template will be only partially expanded
+ * and you can access the partially expanded template by calling {@link LinkableResource#createLink()} on the returned
+ * proxies.
+ * The proxy will still fully resolve the link template (by stripping variables with null values) before
+ * fetching the resource (if you call any other method on the proxy that requires the resource to be loaded)
  * </p>
  * <p>
  * On the server side, these methods will be called by the framework when the resource is rendered. Any parameters for

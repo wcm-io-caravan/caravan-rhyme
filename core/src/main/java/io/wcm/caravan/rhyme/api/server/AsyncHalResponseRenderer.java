@@ -61,7 +61,7 @@ public interface AsyncHalResponseRenderer {
   /**
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance and caching information for
    *          the current incoming request
-   * @param exceptionStrategy allows to control the status code and logging of exceptions being thrown during rendering
+   * @param exceptionStrategy allows controlling the status code and logging of exceptions being thrown during rendering
    * @return a new {@link AsyncHalResponseRenderer} to use for the current incoming request
    * @deprecated Use {@link HalResponseRendererBuilder} instead
    */
@@ -78,7 +78,7 @@ public interface AsyncHalResponseRenderer {
    * Alternative factory method that allows to support different HAL API annotations or method return types
    * @param metrics an instance of {@link RequestMetricsCollector} to collect performance and caching information for
    *          the current incoming request
-   * @param exceptionStrategy allows to control the status code and logging of exceptions being thrown during rendering
+   * @param exceptionStrategy allows controlling the status code and logging of exceptions being thrown during rendering
    * @param annotationSupport an (optional) strategy to identify HAL API interfaces and methods that use different
    *          annotations
    * @param returnTypeSupport an (optional) strategy to support additional return types in your HAL API interface

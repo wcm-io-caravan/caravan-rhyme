@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.HalResource;
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
@@ -38,7 +39,7 @@ import io.wcm.caravan.rhyme.osgi.sampleservice.impl.resource.errors.ErrorParamet
 
 
 @ExtendWith({ WaitForServerStartupExtension.class })
-public class ServerSideErrorResourcesIT {
+class ServerSideErrorResourcesIT {
 
   private final ExamplesEntryPointResource entryPoint = IntegrationTestEnvironment.createEntryPointProxy();
 
@@ -53,16 +54,16 @@ public class ServerSideErrorResourcesIT {
   }
 
   HalApiClientException catchExceptionForRequestWith(ErrorParameters parameters) {
-    return assertThrows(HalApiClientException.class, () -> {
-      entryPoint.getErrorExamples()
-          .flatMap(errors -> errors.simulateErrorOnServer(parameters))
-          .flatMapMaybe(ErrorResource::getTitle)
-          .blockingGet();
-    });
+
+    Maybe<String> propertyThatShouldFailToLoad = entryPoint.getErrorExamples()
+        .flatMap(errors -> errors.simulateErrorOnServer(parameters))
+        .flatMapMaybe(ErrorResource::getTitle);
+
+    return assertThrows(HalApiClientException.class, propertyThatShouldFailToLoad::blockingGet);
   }
 
   @Test
-  public void should_respond_with_specified_status_code() {
+  void should_respond_with_specified_status_code() {
 
     ErrorParameters params = defaultParams.withStatusCode(501);
 
@@ -73,7 +74,7 @@ public class ServerSideErrorResourcesIT {
   }
 
   @Test
-  public void should_respond_with_vnd_error_resource() {
+  void should_respond_with_vnd_error_resource() {
 
     HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
@@ -82,7 +83,7 @@ public class ServerSideErrorResourcesIT {
   }
 
   @Test
-  public void error_response_should_contain_about_link() {
+  void error_response_should_contain_about_link() {
 
     HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
@@ -95,7 +96,7 @@ public class ServerSideErrorResourcesIT {
   }
 
   @Test
-  public void error_response_should_not_contain_embedded_metadata_because_query_param_is_not_present() {
+  void error_response_should_not_contain_embedded_metadata_because_query_param_is_not_present() {
 
     HalApiClientException ex = catchExceptionForRequestWith(defaultParams);
 
@@ -106,7 +107,7 @@ public class ServerSideErrorResourcesIT {
   }
 
   @Test
-  public void error_response_should_contain_embedded_cause() {
+  void error_response_should_contain_embedded_cause() {
 
     ErrorParameters params = defaultParams.withWrapException(true);
 

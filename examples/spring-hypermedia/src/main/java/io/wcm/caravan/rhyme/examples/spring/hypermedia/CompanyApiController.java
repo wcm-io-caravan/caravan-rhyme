@@ -24,6 +24,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +33,7 @@ import io.wcm.caravan.rhyme.api.Rhyme;
 import io.wcm.caravan.rhyme.api.client.HalApiClient;
 
 /**
- * The controller that implements the {@link CompanyApi} interface, which define the entry point of the API.
+ * The controller that implements the {@link CompanyApi} interface, which defines the entry point of the API.
  * <p>
  * If there is a consumer of this API running in the same application, it can simply add an {@link Autowired}
  * field of type {@link CompanyApi} to work directly with the server-side implementations of the API's resources.
@@ -48,10 +49,13 @@ class CompanyApiController implements CompanyApi {
 
   // inject the controllers for all resources that are linked from the entry point
   @Autowired
+  @Lazy
   private EmployeeController employees;
   @Autowired
+  @Lazy
   private ManagerController managers;
   @Autowired
+  @Lazy
   private DetailedEmployeeController detailedEmployees;
 
   @Autowired
@@ -64,9 +68,9 @@ class CompanyApiController implements CompanyApi {
   @GetMapping("/")
   CompanyApi get() {
 
-    // Since the controller class is directly implementing the CompanyApi interface we can simply return this.
+    // Since the controller class is directly implementing the CompanyApi interface, we can simply return this.
 
-    // Because CompanyApi extends LinkableResource, all methods from the interface will be automatically invoked later,
+    // Because CompanyApi extends LinkableResource, all methods from the interface will be automatically invoked later
     // when the response is being rendered by the LinkableResourceMessageConverter.
     return this;
   }
@@ -108,7 +112,6 @@ class CompanyApiController implements CompanyApi {
   }
 
   @Override
-
   public DetailedEmployeeResource getDetailedEmployeeById(Long id) {
     return detailedEmployees.findById(id);
   }
@@ -116,13 +119,13 @@ class CompanyApiController implements CompanyApi {
   @Override
   public CompanyApi withClientPreferences(Boolean useEmbeddedResources, Boolean useFingerprinting, Boolean embedRhymeMetadata) {
 
-    // create a link to this controller, but explicitly add template variables for parameters
-    // that will then be picked up by CompanyApiLinkBuilder when the link is followed
+    // create a link to this controller, but explicitly add template variables for the preference parameters,
+    // which will be read by the CompanyApiLinkBuilder when a request using these parameters is processed
     return linkBuilder.create(linkTo(methodOn(CompanyApiController.class).get()))
         .withTemplateVariables(USE_EMBEDDED_RESOURCES, USE_FINGERPRINTING, EMBED_RHYME_METADATA)
         .withTitle("Reload the entry point with different settings")
         // since this method is never called by internal consumers, we don't have to return a full server-side
-        // CompanyApi implementation. Instead we create and return a minimal proxy that only can render the link.
+        // CompanyApi implementation. Instead, we create and return a minimal proxy that only can render the link.
         .buildLinked(CompanyApi.class);
   }
 

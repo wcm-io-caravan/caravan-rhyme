@@ -45,7 +45,7 @@ public final class RxJavaTransformers {
    * @return an {@link ObservableTransformer} that can be passed to {@link Observable#compose(ObservableTransformer)}
    */
   public static <T> ObservableTransformer<T, T> filterWith(Function<T, Single<Boolean>> asyncFilterFunc) {
-    return new AsyncFilterTransformer<T>(asyncFilterFunc);
+    return new AsyncFilterTransformer<>(asyncFilterFunc);
   }
 
   private static final class AsyncFilterTransformer<T> implements ObservableTransformer<T, T> {

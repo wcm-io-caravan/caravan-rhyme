@@ -28,10 +28,10 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
 
-public class RxJavaTransformersTest {
+class RxJavaTransformersTest {
 
   @Test
-  public void filterWith_should_filter_by_async_expression() throws Exception {
+  void filterWith_should_filter_by_async_expression() {
 
     String filtered = Observable.just("cat", "dog", "monkey", "owl")
         .compose(filterWith(string -> Single.just(string.length() > 3)))

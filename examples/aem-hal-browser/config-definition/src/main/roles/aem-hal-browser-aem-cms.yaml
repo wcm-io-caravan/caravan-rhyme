@@ -12,7 +12,6 @@ templateDir: aem-hal-browser-aem-cms
 
 files:
 
-
 # AEM OSGi System Configuration
 - file: aem-hal-browser-aem-cms-config.provisioning
   dir: packages

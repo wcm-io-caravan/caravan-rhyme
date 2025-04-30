@@ -22,6 +22,7 @@ package io.wcm.caravan.rhyme.impl.client.proxy;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,7 +61,7 @@ class HalApiMethodInvocation {
 
       this.templateVariables = TemplateVariableDetection.getVariablesNameValueMap(method, Optional.ofNullable(args));
 
-      this.calledWithOnlyNullParameters = args != null && Stream.of(args).allMatch(Objects::isNull);
+      this.calledWithOnlyNullParameters = args != null && Arrays.stream(args).allMatch(Objects::isNull);
     }
   }
 
@@ -110,6 +111,7 @@ class HalApiMethodInvocation {
   boolean isCalledWithOnlyNullParameters() {
     return calledWithOnlyNullParameters;
   }
+
 
   Map<String, Object> getTemplateVariables() {
     return templateVariables;

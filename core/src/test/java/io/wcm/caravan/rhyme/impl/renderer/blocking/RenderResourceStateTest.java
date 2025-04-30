@@ -53,7 +53,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void optional_resource_state_should_be_rendered() {
+  void optional_resource_state_should_be_rendered() {
 
     TestState state = createTestState();
 
@@ -81,7 +81,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void required_resource_state_should_be_rendered() {
+  void required_resource_state_should_be_rendered() {
 
     TestState state = createTestState();
 
@@ -102,7 +102,7 @@ public class RenderResourceStateTest {
 
 
   @Test
-  public void should_throw_exception_if_ResourceState_method_returns_null() {
+  void should_throw_exception_if_ResourceState_method_returns_null() {
 
     TestResourceWithOptionalState resourceImpl = new TestResourceWithOptionalState() {
 
@@ -121,7 +121,7 @@ public class RenderResourceStateTest {
   }
 
   @Test
-  public void should_throw_runtime_exception_if_ResourceState_method_throws_exception() {
+  void should_throw_runtime_exception_if_ResourceState_method_throws_exception() {
 
     NotImplementedException cause = new NotImplementedException("not implemented");
 

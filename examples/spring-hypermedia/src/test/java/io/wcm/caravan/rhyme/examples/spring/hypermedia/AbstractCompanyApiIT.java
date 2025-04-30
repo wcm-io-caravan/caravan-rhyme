@@ -30,9 +30,10 @@ import java.util.stream.Stream;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.util.collections.Iterables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+
+import com.google.common.collect.Iterables;
 
 import io.wcm.caravan.hal.resource.Link;
 import io.wcm.caravan.rhyme.api.exceptions.HalApiClientException;
@@ -47,7 +48,7 @@ import io.wcm.caravan.rhyme.api.exceptions.HalApiServerException;
  */
 abstract class AbstractCompanyApiIT {
 
-  private static final long NON_EXISTANT_ID = 999L;
+  private static final long NON_EXISTENT_ID = 999L;
 
   @Autowired
   private EmployeeRepository employeeRepository;
@@ -58,16 +59,16 @@ abstract class AbstractCompanyApiIT {
 
   @BeforeEach
   void setUp() {
-    api = getApiImplementionOrClientProxy();
+    api = getApiImplementationOrClientProxy();
   }
 
   /**
    * This will be overridden in the subclasses to return either the server-side implementation of
    * the {@link CompanyApi} interface, or a dynamic client proxy that fetches the entry point
-   * with a HTTP request.
+   * with an HTTP request.
    * @return the implementation of {@link CompanyApi} used to run the tests
    */
-  protected abstract CompanyApi getApiImplementionOrClientProxy();
+  protected abstract CompanyApi getApiImplementationOrClientProxy();
 
   // The repositories are initialized with the same DatabaseLoader that
   // is used when the application is started. For the tests that need to
@@ -75,16 +76,16 @@ abstract class AbstractCompanyApiIT {
 
   protected Long getIdOfFirstEmployee() {
 
-    return Iterables.firstOf(employeeRepository.findAll()).getId();
+    return Iterables.get(employeeRepository.findAll(), 0).getId();
   }
 
   protected Long getIdOfFirstManager() {
 
-    return Iterables.firstOf(managerRepository.findAll()).getId();
+    return Iterables.get(managerRepository.findAll(), 0).getId();
   }
 
   @Test
-  public void getEmployees_should_list_employees_in_order_of_creation() throws Exception {
+  void getEmployees_should_list_employees_in_order_of_creation() {
 
     List<EmployeeResource> employees = api.getEmployees().getAll();
 
@@ -94,7 +95,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getManagers_should_list_managers_in_order_of_creation() throws Exception {
+  void getManagers_should_list_managers_in_order_of_creation() {
 
     List<ManagerResource> managers = api.getManagers().getAll();
 
@@ -104,7 +105,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getEmployeeById_should_find_existing_employee() throws Exception {
+  void getEmployeeById_should_find_existing_employee() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -116,14 +117,14 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getEmployeeById_should_respond_with_404_for_non_existing_id() throws Exception {
+  void getEmployeeById_should_respond_with_404_for_non_existing_id() {
 
     assertThat404isReturnedFor(
-        () -> api.getEmployeeById(NON_EXISTANT_ID).getState());
+        () -> api.getEmployeeById(NON_EXISTENT_ID).getState());
   }
 
   @Test
-  public void getManager_should_find_manager_for_employee() throws Exception {
+  void getManager_should_find_manager_for_employee() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -134,7 +135,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getCanonical_returns_same_instance_with_different_url() throws Exception {
+  void getCanonical_returns_same_instance_with_different_url() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -151,7 +152,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getManagerById_should_find_existing_manager() throws Exception {
+  void getManagerById_should_find_existing_manager() {
 
     Long firstId = getIdOfFirstManager();
 
@@ -162,14 +163,14 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getManagerById_should_respond_with_404_for_non_existing_id() throws Exception {
+  void getManagerById_should_respond_with_404_for_non_existing_id() {
 
     assertThat404isReturnedFor(
-        () -> api.getManagerById(NON_EXISTANT_ID).getState());
+        () -> api.getManagerById(NON_EXISTENT_ID).getState());
   }
 
   @Test
-  public void getCanonical_is_empty_if_manager_was_loaded_by_id() throws Exception {
+  void getCanonical_is_empty_if_manager_was_loaded_by_id() {
 
     Long firstId = getIdOfFirstManager();
 
@@ -179,7 +180,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getManagedEmployees_should_find_employees_of_manager() throws Exception {
+  void getManagedEmployees_should_find_employees_of_manager() {
 
     Long firstId = getIdOfFirstManager();
 
@@ -192,7 +193,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getDetailedEmployeeById_should_find_existing_employee() throws Exception {
+  void getDetailedEmployeeById_should_find_existing_employee() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -202,14 +203,14 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getDetailedEmployeeById_should_respond_with_404_for_non_existing_id() throws Exception {
+  void getDetailedEmployeeById_should_respond_with_404_for_non_existing_id() {
 
     assertThat404isReturnedFor(
-        () -> api.getDetailedEmployeeById(NON_EXISTANT_ID).getState());
+        () -> api.getDetailedEmployeeById(NON_EXISTENT_ID).getState());
   }
 
   @Test
-  public void getDetailedEmployeeById_should_include_manager_name() throws Exception {
+  void getDetailedEmployeeById_should_include_manager_name() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -219,7 +220,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getDetailedEmployeeById_should_list_colleages() throws Exception {
+  void getDetailedEmployeeById_should_list_colleagues() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -231,7 +232,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getDetailedEmployeeById_should_provide_manager() throws Exception {
+  void getDetailedEmployeeById_should_provide_manager() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -241,7 +242,7 @@ abstract class AbstractCompanyApiIT {
   }
 
   @Test
-  public void getDetailedEmployeeById_should_provide_external_link() throws Exception {
+  void getDetailedEmployeeById_should_provide_external_link() {
 
     Long firstId = getIdOfFirstEmployee();
 
@@ -258,8 +259,9 @@ abstract class AbstractCompanyApiIT {
 
     Throwable ex = catchThrowable(codeThatThrows);
 
-    assertThat(ex).isNotNull()
-        .withFailMessage("No exception was thrown by the given callable");
+    assertThat(ex)
+        .withFailMessage("No exception was thrown by the given callable")
+        .isNotNull();
 
     if (ex instanceof HalApiClientException) {
       assertThat(((HalApiClientException)ex).getStatusCode())

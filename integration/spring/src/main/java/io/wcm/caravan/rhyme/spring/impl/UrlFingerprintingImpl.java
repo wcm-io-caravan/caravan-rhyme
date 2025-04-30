@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -36,7 +36,7 @@ import io.wcm.caravan.rhyme.spring.api.SpringRhyme;
 import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
 
 /**
- * Implemention of {@link UrlFingerprinting} that will be created when {@link SpringRhyme#enableUrlFingerprinting()} is
+ * Implementation of {@link UrlFingerprinting} that will be created when {@link SpringRhyme#enableUrlFingerprinting()} is
  * called.
  */
 class UrlFingerprintingImpl implements UrlFingerprinting {

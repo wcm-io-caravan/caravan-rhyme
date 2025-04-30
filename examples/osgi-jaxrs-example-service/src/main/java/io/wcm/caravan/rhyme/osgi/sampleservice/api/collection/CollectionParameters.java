@@ -31,16 +31,16 @@ public interface CollectionParameters {
   /**
    * @return how many items should be included in the collection
    */
-  Integer getNumItems();
+  int getNumItems();
 
   /**
    * @return determines whether the item resources should also be embedded
    *         in the collection resource (when it is generated)
    */
-  Boolean getEmbedItems();
+  boolean getEmbedItems();
 
   /**
    * @return the minimum response times of the item resources (in milliseconds)
    */
-  Integer getDelayMs();
+  int getDelayMs();
 }

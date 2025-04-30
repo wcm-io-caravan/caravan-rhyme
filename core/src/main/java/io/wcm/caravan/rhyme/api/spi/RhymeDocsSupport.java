@@ -21,11 +21,10 @@ package io.wcm.caravan.rhyme.api.spi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.osgi.annotation.versioning.ConsumerType;
-
-import com.google.common.base.Charsets;
 
 import io.wcm.caravan.rhyme.api.RhymeBuilder;
 import io.wcm.caravan.rhyme.api.annotations.HalApiInterface;
@@ -87,7 +86,7 @@ public interface RhymeDocsSupport {
       if (is == null) {
         throw new HalApiServerException(404, "No HTML documentation was generated for " + fileName);
       }
-      return IOUtils.toString(is, Charsets.UTF_8);
+      return IOUtils.toString(is, StandardCharsets.UTF_8);
     }
     catch (HalApiServerException ex) {
       throw ex;

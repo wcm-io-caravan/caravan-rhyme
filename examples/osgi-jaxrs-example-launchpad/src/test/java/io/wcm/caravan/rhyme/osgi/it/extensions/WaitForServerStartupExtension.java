@@ -40,7 +40,7 @@ public class WaitForServerStartupExtension implements BeforeAllCallback, Invocat
   private static final int MAX_WAIT_SECONDS = 30;
 
   @Override
-  public void beforeAll(ExtensionContext context) throws Exception {
+  public void beforeAll(ExtensionContext context) {
 
     if (errorFromPreviousTest != null) {
       throw new IllegalStateException("Failed to wait for server startup for previous test, and will not try again.", errorFromPreviousTest);

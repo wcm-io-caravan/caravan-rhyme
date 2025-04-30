@@ -31,37 +31,37 @@ import io.wcm.caravan.rhyme.impl.client.ResourceStateTest.ResourceWithSingleStat
 import io.wcm.caravan.rhyme.testing.resources.TestResource;
 
 @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
-public class ToStringTest {
+class ToStringTest {
 
   private final ResourceTreeClientTestSupport client = ClientTestSupport.withResourceTree();
 
   @Test
-  public void toString_can_be_called_on_resource_with_self_link() {
+  void toString_can_be_called_on_resource_with_self_link() {
 
     ResourceWithSingleRelated resource = client.createProxy(ResourceWithSingleRelated.class);
 
-    assertThat(resource.toString()).isEqualTo("dynamic client proxy for ResourceWithSingleRelated at /");
+    assertThat(resource).hasToString("dynamic client proxy for ResourceWithSingleRelated at /");
   }
 
   @Test
-  public void toString_can_be_called_on_linked_resource() {
+  void toString_can_be_called_on_linked_resource() {
 
     TestResource linkedTest = client.getEntryPoint().createLinked(StandardRelations.ITEM);
 
     ResourceWithSingleRelated entryPoint = client.createProxy(ResourceWithSingleRelated.class);
     ResourceWithSingleState linkedResource = entryPoint.getItem().blockingGet();
 
-    assertThat(linkedResource.toString()).isEqualTo("dynamic client proxy for ResourceWithSingleState at " + linkedTest.getUrl());
+    assertThat(linkedResource).hasToString("dynamic client proxy for ResourceWithSingleState at " + linkedTest.getUrl());
   }
 
   @Test
-  public void toString_can_be_called_on_embedded_resource() {
+  void toString_can_be_called_on_embedded_resource() {
 
     client.getEntryPoint().createEmbedded(StandardRelations.ITEM);
 
     ResourceWithSingleRelated entryPoint = client.createProxy(ResourceWithSingleRelated.class);
     ResourceWithSingleState embeddedResource = entryPoint.getItem().blockingGet();
 
-    assertThat(embeddedResource.toString()).isEqualTo("dynamic client proxy for ResourceWithSingleState (embedded without self link)");
+    assertThat(embeddedResource).hasToString("dynamic client proxy for ResourceWithSingleState (embedded without self link)");
   }
 }

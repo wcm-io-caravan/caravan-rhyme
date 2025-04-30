@@ -70,13 +70,13 @@ import io.wcm.caravan.rhyme.testing.spring.MockMvcHalResourceLoaderConfiguration
  */
 @SpringBootTest
 @Import(MockMvcHalResourceLoaderConfiguration.class)
-public class MockMvcClientIT extends AbstractCompanyApiIT {
+class MockMvcClientIT extends AbstractCompanyApiIT {
 
   @Autowired
   protected HalResourceLoader mockMvcResourceLoader;
 
   @Override
-  protected CompanyApi getApiImplementionOrClientProxy() {
+  protected CompanyApi getApiImplementationOrClientProxy() {
 
     // Create a HalApiClient that is using Spring's MockMvc to simulate actual HTTP requests
     // going into the currently running WebApplicationContext.

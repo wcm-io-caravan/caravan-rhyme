@@ -29,26 +29,26 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 
 
-public class DefaultHalApiTypeSupportTest {
+class DefaultHalApiTypeSupportTest {
 
   private DefaultHalApiTypeSupport typeSupport = new DefaultHalApiTypeSupport();
 
   @Test
-  public void isProviderOfOptionalValue_should_return_true_for_Optional() throws Exception {
+  void isProviderOfOptionalValue_should_return_true_for_Optional() {
 
     assertThat(typeSupport.isProviderOfOptionalValue(Optional.class))
         .isTrue();
   }
 
   @Test
-  public void isProviderOfOptionalValue_should_return_true_for_Maybe() throws Exception {
+  void isProviderOfOptionalValue_should_return_true_for_Maybe() {
 
     assertThat(typeSupport.isProviderOfOptionalValue(Maybe.class))
         .isTrue();
   }
 
   @Test
-  public void isProviderOfOptionalValue_should_return_false_for_Single() throws Exception {
+  void isProviderOfOptionalValue_should_return_false_for_Single() {
 
     assertThat(typeSupport.isProviderOfOptionalValue(Single.class))
         .isFalse();

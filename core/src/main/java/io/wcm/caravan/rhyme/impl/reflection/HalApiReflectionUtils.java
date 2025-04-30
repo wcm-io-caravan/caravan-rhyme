@@ -283,10 +283,8 @@ public final class HalApiReflectionUtils {
       catch (IllegalAccessException | InvocationTargetException | RuntimeException ex) {
 
         // if the original implementation method just threw a runtime exception then re-throw that cause
-        if (ex instanceof InvocationTargetException) {
-          if (ex.getCause() instanceof RuntimeException) {
-            throw (RuntimeException)ex.getCause();
-          }
+        if (ex instanceof InvocationTargetException && ex.getCause() instanceof RuntimeException) {
+          throw (RuntimeException)ex.getCause();
         }
 
         throw new HalApiServerException(500,

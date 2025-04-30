@@ -31,7 +31,7 @@ import io.wcm.caravan.pipeline.impl.JsonPipelineFactoryImpl;
 import io.wcm.caravan.rhyme.api.spi.HalResourceLoader;
 
 @ExtendWith(MockitoExtension.class)
-public class CaravanJsonPipelineResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
+class CaravanJsonPipelineResourceLoaderTest extends AbstractCaravanJsonResourceLoaderTest {
 
   private JsonPipelineFactory pipelineFactory;
 

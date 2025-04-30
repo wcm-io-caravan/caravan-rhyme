@@ -43,7 +43,7 @@ import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocs;
 import io.wcm.caravan.maven.plugins.rhymedocs.model.RhymeApiDocsTest;
 
 
-public class RhymeDocsHtmlRendererTest {
+class RhymeDocsHtmlRendererTest {
 
   private static final int NUM_TEST_INTERFACES = RhymeApiDocsTest.TEST_INTERFACES.length;
 
@@ -72,7 +72,7 @@ public class RhymeDocsHtmlRendererTest {
   }
 
   @Test
-  public void writeHtml_should_generate_one_file_for_each_class() throws Exception {
+  void writeHtml_should_generate_one_file_for_each_class() throws IOException {
 
     renderer.writeHtml(apiDocs);
 
@@ -81,7 +81,7 @@ public class RhymeDocsHtmlRendererTest {
   }
 
   @Test
-  public void writeHtml_should_use_fully_qualified_class_name_for_filename() throws Exception {
+  void writeHtml_should_use_fully_qualified_class_name_for_filename() throws IOException {
 
     renderer.writeHtml(apiDocs);
 
@@ -97,7 +97,7 @@ public class RhymeDocsHtmlRendererTest {
   }
 
   @Test
-  public void writeHtml_should_render_non_empty_html_files() throws Exception {
+  void writeHtml_should_render_non_empty_html_files() throws NoSuchElementException, IOException {
 
     renderer.writeHtml(apiDocs);
 
@@ -112,7 +112,7 @@ public class RhymeDocsHtmlRendererTest {
   }
 
   @Test
-  public void writeHtml_fails_if_directory_doesnt_exist() throws Exception {
+  void writeHtml_fails_if_directory_doesnt_exist() throws IOException {
 
     Files.delete(tempDir);
 

@@ -54,7 +54,8 @@ public class RhymeApiDocsTest {
       RhymePropertiesDocsTest.ResourceWithAnnotatedProperties.class,
       RhymePropertiesDocsTest.ResourceWithJsonIgnoreAnnotation.class,
       RhymePropertiesDocsTest.ResourceWithPrivateFieldsAndBeanProperties.class,
-      RhymePropertiesDocsTest.ResourceWithResourceProperty.class
+      RhymePropertiesDocsTest.ResourceWithResourceProperty.class,
+      RhymePropertiesDocsTest.ResourceWithGenericProperties.class
   };
 
   static RhymeApiDocs getApiDocs() {
@@ -72,7 +73,7 @@ public class RhymeApiDocsTest {
   }
 
   @Test
-  public void getResourceDocs_should_return_docs_for_all_HalApiInterfaces() throws Exception {
+  void getResourceDocs_should_return_docs_for_all_HalApiInterfaces() {
 
     List<RhymeResourceDocs> resourceDocs = getApiDocs().getResourceDocs();
 

@@ -25,7 +25,7 @@
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <relativePath>../../tooling/parent/pom.xml</relativePath>
   </parent>
 
@@ -35,7 +35,7 @@
 
   <name>Rhyme - OSGI/JAX-RS Integration Test Launchpad</name>
   <description>
-    Builds a bundle with Sling server-side tests, and executes them via a remote test proxy that runs in the integration-tests phase.
+    A Sling Launchpad instance provisioned with all dependencies required to run the osgi-jaxrs-example-service bundle
   </description>
 
   <properties>
@@ -63,26 +63,31 @@
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.httpclient</artifactId>
       <version>1.2.2</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.httpasyncclient</artifactId>
       <version>1.2.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.jsonpath</artifactId>
       <version>0.5.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.metrics</artifactId>
       <version>0.6.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.performance</artifactId>
       <version>0.5.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
@@ -99,13 +104,13 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.osgi-jaxrs</artifactId>
-      <version>1.1.0</version>
+      <version>1.1.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -118,6 +123,7 @@
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.io.http</artifactId>
       <version>0.10.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
@@ -135,6 +141,7 @@
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.pipeline.cache.guava</artifactId>
       <version>0.7.0</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Apache HTTP Client (version overrides are required by the io.wcm.caravan.io.http bundle) -->
@@ -142,26 +149,31 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.5.10</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
       <version>4.4.12</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
       <version>4.5.10</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore-osgi</artifactId>
       <version>4.4.12</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient-osgi</artifactId>
       <version>4.1.4</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
     </dependency>
     
     <!-- actual dependencies -->
@@ -183,37 +195,26 @@
       <scope>provided</scope>
     </dependency>
 
-   <!-- Additional bundles needed by the Sling instance under test -->
+    <!-- AssertJ for fluent assertions -->
     <dependency>
-      <groupId>org.apache.sling</groupId>
-      <artifactId>org.apache.sling.junit.teleporter</artifactId>
-      <version>1.0.8</version>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.8.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.sling</groupId>
-      <artifactId>org.apache.sling.junit.core</artifactId>
-      <version>1.0.22</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sling</groupId>
-      <artifactId>org.apache.sling.testing.tools</artifactId>
-      <version>1.0.14</version>
-      <scope>provided</scope>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
     </dependency>
 
-    <!-- AssertJ for fluent assertions -->
+    <!-- ensure that the jacoco java agent is available, which is required to instrument the launchpad for code coverage --> 
     <dependency>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-core</artifactId>
-        <version>3.8.0</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <scope>test</scope>
+      <groupId>org.jacoco</groupId>
+      <artifactId>org.jacoco.agent</artifactId>
+      <version>${jacoco-maven-plugin.version}</version>
+      <classifier>runtime</classifier>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   
@@ -259,7 +260,14 @@
               <contextPath>${http.base.path}</contextPath>
               <debug>${launchpad.debug}</debug>
               <!-- override the vmOpts because the defaults contain XX:MaxPermSize which is no longer supported with Java 17 -->
-              <vmOpts>-Xmx1024m -Djava.awt.headless=true</vmOpts>
+              <vmOpts>-Xmx1024m -Djava.awt.headless=true<!--
+              To enable the JaCoCo java-agent, we cannot use its maven plugin, since the launchpad java process is started from within the slingstart-maven-plugin.
+              We have to manually construct the javaagent parameter here, and enable output of coverage data to a separate .exec file -->
+              -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-maven-plugin.version}/org.jacoco.agent-${jacoco-maven-plugin.version}-runtime.jar=destfile=${project.build.directory}/jacoco-launchpad.exec
+              <!-- Workaround for issue with latest JDK:
+                  [ERROR] error reading /home/runner/.m2/repository/org/apache/sling/org.apache.sling.launchpad.base/7.0.3-2.7.6/org.apache.sling.launchpad.base-7.0.3-2.7.6.jar; Invalid CEN header (invalid zip64 extra data field size) -->
+              -Djdk.util.zip.disableZip64ExtraFieldValidation=true
+              </vmOpts>
             </server>
           </servers>
         </configuration>

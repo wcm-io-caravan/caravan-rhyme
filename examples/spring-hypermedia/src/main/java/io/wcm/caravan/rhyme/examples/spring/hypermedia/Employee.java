@@ -15,13 +15,13 @@
  */
 package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 /**
  * @author Greg Turnquist
@@ -43,10 +43,10 @@ public class Employee {
   private String role;
 
   /**
-   * To break the recursive, bi-directional relationship, don't serialize {@literal manager}.
+   * To break the recursive, bidirectional relationship, don't serialize {@literal manager}.
    */
   @JsonIgnore
-  @OneToOne
+  @ManyToOne
   private Manager manager;
 
   Employee(String name, String role, Manager manager) {

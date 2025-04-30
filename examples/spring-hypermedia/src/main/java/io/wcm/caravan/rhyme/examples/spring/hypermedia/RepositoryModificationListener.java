@@ -21,15 +21,14 @@ package io.wcm.caravan.rhyme.examples.spring.hypermedia;
 
 import java.time.Instant;
 
-import javax.persistence.PostPersist;
-import javax.persistence.PostRemove;
-import javax.persistence.PostUpdate;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import io.wcm.caravan.rhyme.spring.api.UrlFingerprinting;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PostUpdate;
 
 /**
  * Keeps track of any modifications to the repositories for {@link Employee} and {@link Manager} entities, so that

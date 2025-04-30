@@ -26,12 +26,12 @@ import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextExtension;
 
 @ExtendWith(AemContextExtension.class)
-public class SlingRhymeImplTest {
+class SlingRhymeImplTest {
 
   private AemContext context = AppAemContext.newAemContext();
 
   @Test
-  public void can_be_adapted_from_SlingHttpServletRequest_to_impl_class() throws Exception {
+  void can_be_adapted_from_SlingHttpServletRequest_to_impl_class() {
 
     SlingRhymeImpl slingRhyme = context.request().adaptTo(SlingRhymeImpl.class);
 
@@ -39,7 +39,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void can_be_adapted_from_SlingHttpServletRequest_to_interface() throws Exception {
+  void can_be_adapted_from_SlingHttpServletRequest_to_interface() {
 
     SlingRhyme slingRhyme = context.request().adaptTo(SlingRhyme.class);
 
@@ -57,7 +57,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void getCurrentResource_should_initially_return_the_requested_resource() throws Exception {
+  void getCurrentResource_should_initially_return_the_requested_resource() {
 
     SlingRhyme slingRhyme = createRhymeInstance();
 
@@ -65,7 +65,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void getRequestedResource_should_return_the_requested_resource() throws Exception {
+  void getRequestedResource_should_return_the_requested_resource() {
 
     SlingRhyme slingRhyme = createRhymeInstance();
 
@@ -73,24 +73,28 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_SlingRhyme_instance() throws Exception {
+  void adaptResource_should_inject_SlingRhyme_instance() {
 
     SlingRhymeImpl slingRhyme = createRhymeInstance();
 
     Resource resourceToAdapt = context.create().resource("/foo/bar");
     ModelWithSlingRhymeField model = slingRhyme.adaptResource(resourceToAdapt, ModelWithSlingRhymeField.class);
 
-    assertThat(model.slingRhyme).isInstanceOf(SlingRhymeImpl.class);
+    assertThat(model.slingRhyme)
+        .isInstanceOf(SlingRhymeImpl.class)
+        // the injected SlingRhyme instance must is a different instance (because the current resource might be different)
+        .isNotSameAs(slingRhyme);
 
-    // the injected SlingRhyme instance is a different instance (because the current resource might be different)
-    assertThat(model.slingRhyme).isNotSameAs(slingRhyme);
     // but they both should share the same caravan Rhyme instance
-    assertThat(model.slingRhyme.getCoreRhyme()).isSameAs(slingRhyme.getCoreRhyme());
+    assertThat(model.slingRhyme.getCoreRhyme())
+        .isSameAs(slingRhyme.getCoreRhyme());
 
     // the current resource is set to the resource from which the new model was adapted
-    assertThat(model.slingRhyme.getCurrentResource()).isSameAs(resourceToAdapt);
+    assertThat(model.slingRhyme.getCurrentResource())
+        .isSameAs(resourceToAdapt);
     // but the requested resource is still set to the original resource from the request
-    assertThat(model.slingRhyme.getRequestedResource()).isSameAs(context.request().getResource());
+    assertThat(model.slingRhyme.getRequestedResource())
+        .isSameAs(context.request().getResource());
   }
 
   @Model(adaptables = SlingRhyme.class)
@@ -101,7 +105,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_SlingLinkBuilder_instance() throws Exception {
+  void adaptResource_should_inject_SlingLinkBuilder_instance() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -118,7 +122,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_SlingHttpServletRequest_instance() throws Exception {
+  void adaptResource_should_inject_SlingHttpServletRequest_instance() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -135,7 +139,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_instance_adaptable_from_SlingHttpServletRequest() throws Exception {
+  void adaptResource_should_inject_instance_adaptable_from_SlingHttpServletRequest() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -160,7 +164,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_Resource_instance() throws Exception {
+  void adaptResource_should_inject_Resource_instance() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -177,7 +181,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_instance_adaptable_from_Resource() throws Exception {
+  void adaptResource_should_inject_instance_adaptable_from_Resource() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -212,7 +216,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_interface_instance_adaptable_from_Resource() throws Exception {
+  void adaptResource_should_inject_interface_instance_adaptable_from_Resource() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -231,7 +235,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_ValueMapValue_instance() throws Exception {
+  void adaptResource_should_inject_ValueMapValue_instance() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -250,7 +254,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_Page_instance_if_page_path_was_requested() throws Exception {
+  void adaptResource_should_inject_Page_instance_if_page_path_was_requested() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -262,7 +266,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_Page_instance_if_content_path_was_requested() throws Exception {
+  void adaptResource_should_inject_Page_instance_if_content_path_was_requested() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -275,7 +279,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_inject_Page_instance_if_resource_below_content_path_was_requested() throws Exception {
+  void adaptResource_should_inject_Page_instance_if_resource_below_content_path_was_requested() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -296,7 +300,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_fail_to_inject_field_that_isnt_adaptable() throws Exception {
+  void adaptResource_should_fail_to_inject_field_that_isnt_adaptable() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -317,7 +321,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_fail_for_null_resource() throws Exception {
+  void adaptResource_should_fail_for_null_resource() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -329,7 +333,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_fail_if_class_is_not_an_adaptable_class() throws Exception {
+  void adaptResource_should_fail_if_class_is_not_an_adaptable_class() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -346,7 +350,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void adaptResource_should_fail_if_model_is_not_adaptable_from_request() throws Exception {
+  void adaptResource_should_fail_if_model_is_not_adaptable_from_request() {
 
     SlingRhyme rhyme = createRhymeInstance();
 
@@ -362,7 +366,7 @@ public class SlingRhymeImplTest {
   }
 
   @Test
-  public void getRemoteResource_should_use_resource_loader_created_with_HttpClientFactory() {
+  void getRemoteResource_should_use_resource_loader_created_with_HttpClientFactory() {
 
     SlingRhyme rhyme = createRhymeInstance();
 

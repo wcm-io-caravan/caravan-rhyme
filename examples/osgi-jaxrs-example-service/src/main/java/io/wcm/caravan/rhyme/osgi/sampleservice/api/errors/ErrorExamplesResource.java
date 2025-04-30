@@ -42,7 +42,7 @@ public interface ErrorExamplesResource {
   Single<ErrorResource> simulateErrorOnServer(@TemplateVariables ErrorParameters parameters);
 
   /**
-   * A link template that will trigger a HTTP request with the given parameters to the resource
+   * A link template that will trigger an HTTP request with the given parameters to the resource
    * linked with "error:server" relation, triggering an exception and a vnd.error response.
    * The request is executed with Rhyme's client proxies that will catch and re-throw the exception
    * as a HalApiClientException. The vnd.error resource for that exception will also include

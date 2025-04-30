@@ -39,16 +39,16 @@ public class RhymeVariableDocs {
   private final String type;
   private final String description;
 
-  public RhymeVariableDocs(JavaProjectBuilder builder, TemplateVariableWithTypeInfo var, JavaMethod javaMethod) {
+  public RhymeVariableDocs(JavaProjectBuilder builder, TemplateVariableWithTypeInfo variable, JavaMethod javaMethod) {
 
-    this.name = var.getName();
-    this.type = var.getType().getSimpleName();
+    this.name = variable.getName();
+    this.type = variable.getType().getSimpleName();
 
-    if (var.getDtoMethod() != null) {
-      this.description = findJavaDocForMethod(builder, var.getDtoClass(), var.getDtoMethod());
+    if (variable.getDtoMethod() != null) {
+      this.description = findJavaDocForMethod(builder, variable.getDtoClass(), variable.getDtoMethod());
     }
-    else if (var.getDtoField() != null) {
-      this.description = findJavaDocForField(builder, var.getDtoClass(), var.getDtoField());
+    else if (variable.getDtoField() != null) {
+      this.description = findJavaDocForField(builder, variable.getDtoClass(), variable.getDtoField());
     }
     else {
       this.description = findJavaDocForNamedParameter(javaMethod, name);

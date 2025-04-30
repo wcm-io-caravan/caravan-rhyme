@@ -47,7 +47,7 @@ import io.wcm.caravan.rhyme.api.spi.RhymeDocsSupport;
 
 
 @ExtendWith(MockitoExtension.class)
-public class RhymeDocsSupportTest {
+class RhymeDocsSupportTest {
 
   @Mock
   private RhymeDocsSupport mock;
@@ -81,7 +81,7 @@ public class RhymeDocsSupportTest {
   }
 
   @Test
-  public void loadGeneratedHtmlFrom_should_prepend_folder_to_resource_path() throws Exception {
+  void loadGeneratedHtmlFrom_should_prepend_folder_to_resource_path() throws IOException {
 
     ArgumentCaptor<String> resourcePath = ArgumentCaptor.forClass(String.class);
 
@@ -95,7 +95,7 @@ public class RhymeDocsSupportTest {
   }
 
   @Test
-  public void loadGeneratedHtmlFrom_should_parse_String_as_utf_8() throws Exception {
+  void loadGeneratedHtmlFrom_should_parse_String_as_utf_8() throws IOException {
 
     String expectedHtml = "<föö />";
 
@@ -109,7 +109,7 @@ public class RhymeDocsSupportTest {
   }
 
   @Test
-  public void loadGeneratedHtmlFrom_should_close_stream() throws Exception {
+  void loadGeneratedHtmlFrom_should_close_stream() throws IOException {
 
     InputStream stream = spy(inputStreamWith("<föö />"));
 
@@ -122,7 +122,7 @@ public class RhymeDocsSupportTest {
   }
 
   @Test
-  public void loadGeneratedHtmlFrom_should_throw_404_exception_if_no_docs_were_found() throws Exception {
+  void loadGeneratedHtmlFrom_should_throw_404_exception_if_no_docs_were_found() throws IOException {
 
     when(mock.openResourceStream(anyString()))
         .thenReturn(null);
@@ -138,7 +138,7 @@ public class RhymeDocsSupportTest {
   }
 
   @Test
-  public void loadGeneratedHtmlFrom_should_throw_500_exception_if_IOException_is_caught() throws Exception {
+  void loadGeneratedHtmlFrom_should_throw_500_exception_if_IOException_is_caught() throws IOException {
 
     InputStream stream = mock(InputStream.class);
 
