@@ -65,10 +65,10 @@ Another example for usage with Spring Boot can be found at https://github.com/fe
 
 If you want to build Rhyme from sources make sure you have configured the `OSS Sonatype Snapshots` repository in your `~/.m2/settings.xml` file. See the CI build's [Maven Settings](.maven-settings.xml) for an example with a full configuration.
 
-Using **JDK 8, 11 or 17** and **Apache Maven 3.6.3** (or higher) you should then be able to build all modules (and run the integration tests) from the root directory:
+Using **JDK 11, 17 or 21** and **Apache Maven 3.6.3** (or higher) you should then be able to build all modules (and run the integration tests) from the root directory:
 
 ```
-mvn clean install
+mvn -s .maven-settings.xml clean install
 ```
 
 If this build fails on your machine, please open an issue on github or [Jira](https://wcm-io.atlassian.net/projects/WCARAV/) and include the full stack trace after running the Maven build again with the `-e` switch.
