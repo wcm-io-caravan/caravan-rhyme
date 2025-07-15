@@ -62,13 +62,13 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.httpclient</artifactId>
-      <version>1.2.2</version>
+      <version>1.4.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.commons.httpasyncclient</artifactId>
-      <version>1.2.0</version>
+      <version>1.4.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -122,7 +122,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.io.http</artifactId>
-      <version>0.10.0</version>
+      <version>0.10.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
