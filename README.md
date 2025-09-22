@@ -1,6 +1,6 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> wcm.io Caravan Rhyme
 ======
-[![Build](https://github.com/wcm-io-caravan/caravan-rhyme/workflows/Build/badge.svg?branch=develop)](https://github.com/wcm-io-caravan/caravan-rhyme/actions?query=workflow%3ABuild+branch%3Adevelop)
+[![Build](https://github.com/wcm-io-caravan/caravan-rhyme/actions/workflows/maven-build.yml/badge.svg?branch=develop)](https://github.com/wcm-io-caravan/caravan-rhyme/actions?query=workflow%3ABuild+branch%3Adevelop)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=wcm-io-caravan_caravan-rhyme&metric=alert_status)](https://sonarcloud.io/summary/overall?id=wcm-io-caravan_caravan-rhyme)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=wcm-io-caravan_caravan-rhyme&metric=coverage)](https://sonarcloud.io/component_measures?id=wcm-io-caravan_caravan-rhyme&metric=coverage)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=wcm-io-caravan_caravan-rhyme&metric=sqale_index)](https://sonarcloud.io/project/issues?id=wcm-io-caravan_caravan-rhyme&resolved=false)
