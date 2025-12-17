@@ -40,7 +40,10 @@
   <properties>
     <java.version>17</java.version>
     <sling.starter.version>14-SNAPSHOT</sling.starter.version>
-    <jaxrs.publisher.version>1.2.3-SNAPSHOT</jaxrs.publisher.version>
+    <rhyme.api-interfaces.version>1.1.0</rhyme.api-interfaces.version>
+    <rhyme.core.version>1.2.0</rhyme.core.version>
+    <rhyme.osgi-jaxrs.version>1.1.1-SNAPSHOT</rhyme.osgi-jaxrs.version>
+    <rhyme.examples.osgi-jaxrs-example-service.version>1.0.0-SNAPSHOT</rhyme.examples.osgi-jaxrs-example-service.version>
 
     <starter.min.bundles.count>200</starter.min.bundles.count>
     <it.startTimeoutSeconds>60</it.startTimeoutSeconds>
@@ -50,25 +53,25 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
-      <version>1.1.0</version>
+      <version>${rhyme.api-interfaces.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.2.0</version>
+      <version>${rhyme.core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.osgi-jaxrs</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
+      <version>${rhyme.osgi-jaxrs.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.examples.osgi-jaxrs-example-service</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>${rhyme.examples.osgi-jaxrs-example-service.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -85,7 +88,7 @@
       <version>4.4.16</version>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -114,7 +117,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
 
@@ -144,6 +147,7 @@
         <extensions>true</extensions>
 
         <configuration>
+          <replacePropertyVariables>rhyme.api-interfaces.version,rhyme.core.version,rhyme.osgi-jaxrs.version,rhyme.examples.osgi-jaxrs-example-service.version</replacePropertyVariables>
           <skipAddFeatureDependencies>true</skipAddFeatureDependencies>
           <aggregates>
             <aggregate>
@@ -277,7 +281,7 @@
           <skipDeploy>true</skipDeploy>
         </configuration>
       </plugin>
-      
+
       <!-- do not generate javadocs -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -286,7 +290,7 @@
           <skip>true</skip>
         </configuration>
       </plugin>
-      
+
     </plugins>
   </build>
   

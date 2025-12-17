@@ -72,19 +72,19 @@
       "start-order": 20
     },
     {
-      "id": "io.wcm.caravan/io.wcm.caravan.rhyme.api-interfaces/1.1.0",
+      "id": "io.wcm.caravan/io.wcm.caravan.rhyme.api-interfaces/${rhyme.api-interfaces.version}",
       "start-order": 20
     },
     {
-      "id": "io.wcm.caravan/io.wcm.caravan.rhyme.core/1.2.0",
+      "id": "io.wcm.caravan/io.wcm.caravan.rhyme.core/${rhyme.core.version}",
       "start-order": 20
     },
     {
-      "id": "io.wcm.caravan/io.wcm.caravan.rhyme.osgi-jaxrs/1.1.1-SNAPSHOT",
+      "id": "io.wcm.caravan/io.wcm.caravan.rhyme.osgi-jaxrs/${rhyme.osgi-jaxrs.version}",
       "start-order": 20
     },
     {
-      "id": "io.wcm.caravan/io.wcm.caravan.rhyme.examples.osgi-jaxrs-example-service/1.0.0-SNAPSHOT",
+      "id": "io.wcm.caravan/io.wcm.caravan.rhyme.examples.osgi-jaxrs-example-service/${rhyme.examples.osgi-jaxrs-example-service.version}",
       "start-order": 20
     },
     {
