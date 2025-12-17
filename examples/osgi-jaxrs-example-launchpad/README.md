@@ -1,7 +1,7 @@
 <img src="https://wcm.io/images/favicon-16@2x.png"/> Rhyme - OSGi JAX-RS Example Launchpad
 ======
 
-This module contains a provisioned [Sling Launchpad](https://sling.apache.org/documentation/the-sling-engine/the-sling-launchpad.html) 
+This module contains a provisioned [Sling Stater](https://github.com/apache/sling-org-apache-sling-starter) 
 which is used to run the [osgi-jaxrs-example-service](../osgi-jaxrs-example-service) in an Apache Felix OSGi container.
 
 ## Build an run integration tests
