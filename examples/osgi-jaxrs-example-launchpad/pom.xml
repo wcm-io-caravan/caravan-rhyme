@@ -144,7 +144,6 @@
         <extensions>true</extensions>
 
         <configuration>
-          <replacePropertyVariables>jaxrs.publisher.version</replacePropertyVariables>
           <skipAddFeatureDependencies>true</skipAddFeatureDependencies>
           <aggregates>
             <aggregate>

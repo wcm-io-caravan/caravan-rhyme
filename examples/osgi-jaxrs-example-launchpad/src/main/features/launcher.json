@@ -169,11 +169,11 @@
     }
   ],
   "configurations": {
-    "io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig-localhost": {
+    "io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig~localhost": {
       "serviceId": "localhost",
       "ribbonHosts": ["http://localhost:${http.port}"]
     },
-    "io.wcm.caravan.commons.httpclient.impl.HttpClientConfigImpl-localhost": {
+    "io.wcm.caravan.commons.httpclient.impl.HttpClientConfigImpl~localhost": {
       "hostPatterns": ["localhost"],
       "maxConnectionsPerHost": 5000,
       "maxTotalConnections": 5000
