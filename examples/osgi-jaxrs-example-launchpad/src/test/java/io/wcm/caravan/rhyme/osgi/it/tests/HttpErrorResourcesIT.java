@@ -25,9 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import com.google.common.collect.Iterables;
 
 import io.reactivex.rxjava3.core.Maybe;
 import io.wcm.caravan.hal.resource.HalResource;
@@ -111,7 +112,6 @@ public class HttpErrorResourcesIT {
   }
 
   @Test
-  @Disabled("FIXME: Fails since update to Sling Starter 14")
   void error_response_should_contain_embedded_cause() {
 
     ErrorParameters params = defaultParams.withWrapException(true);
@@ -120,12 +120,13 @@ public class HttpErrorResourcesIT {
 
     HalResource vndBody = ex.getErrorResponse().getBody();
 
+    // the vnd+error renderer unwraps the chain of exceptions and represents them as embedded resources,
     List<HalResource> errors = vndBody.getEmbedded(VndErrorRelations.ERRORS);
-
+    // the exact number of exceptions can vary depending on the runtime environment
     assertThat(errors)
-        .hasSize(4);
-
-    assertThat(errors.get(3).getModel().path("message").asText())
+        .hasSizeGreaterThanOrEqualTo(4);
+    // the last error should contain the message of the root cause
+    assertThat(Iterables.getLast(errors).getModel().path("message").asText())
         .isEqualTo(params.getMessage());
   }
 
