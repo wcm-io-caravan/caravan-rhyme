@@ -231,15 +231,6 @@
             </launch>
           </launches>
         </configuration>
-        <executions>
-          <execution>
-            <id>launcher-start</id>
-            <goals>
-              <goal>start</goal>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
@@ -297,4 +288,57 @@
     </plugins>
   </build>
   
+  <profiles>
+
+    <!-- Default profile: Stop feature launcher after running ITs -->
+    <profile>
+      <id>start-stop</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>feature-launcher-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>launcher-start</id>
+                <goals>
+                  <goal>start</goal>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Run feature launcher on port 8080 and keep it running after ITs (you have to stop it manually) -->
+    <profile>
+      <id>keep-running</id>
+      <properties>
+        <http.port>8080</http.port>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>feature-launcher-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>launcher-start</id>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
 </project>
