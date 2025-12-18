@@ -121,10 +121,10 @@ public class HttpErrorResourcesIT {
     HalResource vndBody = ex.getErrorResponse().getBody();
 
     // the vnd+error renderer unwraps the chain of exceptions and represents them as embedded resources,
-    // the exact number of exceptions can vary depending on the runtime environment
     List<HalResource> errors = vndBody.getEmbedded(VndErrorRelations.ERRORS);
-    assertThat(errors.size())
-        .isGreaterThanOrEqualTo(4);
+    // the exact number of exceptions can vary depending on the runtime environment
+    assertThat(errors)
+        .hasSizeGreaterThanOrEqualTo(4);
     // the last error should contain the message of the root cause
     assertThat(Iterables.getLast(errors).getModel().path("message").asText())
         .isEqualTo(params.getMessage());
