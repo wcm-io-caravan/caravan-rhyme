@@ -201,7 +201,7 @@
       <plugin>
         <groupId>org.apache.sling</groupId>
         <artifactId>feature-launcher-maven-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <configuration>
           <launches>
             <launch>
@@ -326,6 +326,9 @@
           <plugin>
             <groupId>org.apache.sling</groupId>
             <artifactId>feature-launcher-maven-plugin</artifactId>
+            <configuration>
+              <trackProcess>false</trackProcess>
+            </configuration>
             <executions>
               <execution>
                 <id>launcher-start</id>
