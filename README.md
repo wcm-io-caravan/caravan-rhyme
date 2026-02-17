@@ -199,6 +199,9 @@ But especially as long as your team is the sole consumer of your API anyway, sha
 - your IDE is able to find the server-side implementation(s) of every API method
 - refactoring of your API before it is published (e.g. renaming relations or parameter names) is very easy and reliable
 
+> **Advanced Topics**: For a more detailed guide on how to design your HAL API interfaces, including a full list of **supported annotations and their use cases**, please see the [HAL API Interfaces Guide](docs/hal-api-interfaces.md).
+
+
 ## Consuming HAL resources with Rhyme client proxies
 
 When you have a set of interfaces that represent a HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example methods are mapped to **relations** rather then endpoints, and no URL patterns are being exposed in the interfaces).
@@ -241,6 +244,8 @@ The Rhyme client proxy instances will take care of
 - keeping track of all resources that have been retrieved
  
 A local in-memory caching will ensure that each resource is not fetched more than once, and repeated calls to the same method (with the same parameters) return a cached value immediately (as long as you are using the same `Rhyme` or `HalApiClient` instance).
+
+**Efficiency Note**: Iterating over a collection of resources (e.g., from a `Stream<ItemResource>`) and accessing their links via `createLink()` is extremely efficient. It utilizes the `_links` array of the *parent* resource and **does not** trigger individual network requests for each item. Network requests are only made when you access the *state* of an item or follow its relations further.
 
 Check out the [AWS Lambda Example](examples/aws-movie-search) to see this in action.
 
@@ -444,6 +449,8 @@ You can also create a nested hierarchy of embedded resources. This may for examp
 Since the interfaces annotated with `@HalApiInterface` define the structure and relations of all resources in the API, they can also be used to generate a nice context-dependant documentation for your API. Using `curies` links, this documentation can be automatically integrated in tools such as the [HAL Browser](https://github.com/mikekelly/hal-browser) or [HAL Explorer](https://github.com/toedter/hal-explorer).
 
 All you have to do to is to configure the [Rhyme Maven Documentation Plugin](/tooling/docs-maven-plugin) in your project, and add Javadocs comments to your annotated interfaces and methods. The generated documentation will be deployed (and served) with your application, and is always guaranteed to be up to date with the current implementation on each environment.
+
+This feature is enabled by calling `RhymeBuilder#withRhymeDocsSupport` when creating your `Rhyme` instance. It ensures that the `curies` links for all curie prefixes used in your API are present in the response and point to the HTML documentation that is served by the running instance.
 
 ## Cache-Control Header and URL Fingerprinting
 
