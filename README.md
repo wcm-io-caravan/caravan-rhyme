@@ -10,7 +10,7 @@
 
 # Introduction
 
-**Rhyme** is a Java framework for providing or consuming hypermedia APIs using the [HAL+JSON media format](http://stateless.co/hal_specification.html). It's main use case is when you need to do both, i.e. build a distributed system of web services that are connected through several HAL APIs.
+**Rhyme** is a Java framework for providing or consuming hypermedia APIs using the [HAL+JSON media format](http://stateless.co/hal_specification.html). Its main use case is when you need to do both, i.e. build a distributed system of web services that are connected through several HAL APIs.
 
 **Rhyme** stands for **R**eactive **Hy**per**me**dia, as it fully supports asynchronous generation and retrieval of HAL+JSON resources (using [RxJava 3](https://github.com/ReactiveX/RxJava) internally). Using reactive types however is mostly optional (with very few exceptions). This document mostly sticks to using only simpler blocking code examples, but there is a section that explains how reactive types can be used.
 
@@ -21,7 +21,7 @@ The key concepts and features of **Rhyme** are:
 - Writing extensive **integration tests** is easy without wasting time on constructing and verifying URL details
 - simple and transparent support for **embedded resources**
 - generation and integration of **HTML API documentation** from the annotated interfaces
-- a **simple and effecting caching model** based on URL fingerprinting and the `cache-control: max-age` header
+- a **simple and effective caching model** based on URL fingerprinting and the `cache-control: max-age` header
 - Simplifying **data debugging and performance analysis** (by including embedded metadata in every response)
 - **Forwarding error information over service boundaries** using the [vnd.error](https://github.com/blongden/vnd.error) media type
 - **Supporting asynchronous, reactive programming** on the client and server side
@@ -152,7 +152,7 @@ The return type of these functions are again annotated java interfaces. They des
 
 As return type for the `@ResourceState` method, you could either use a [Jackson](https://github.com/FasterXML/jackson) `ObjectNode` or any other type that can be  parsed from and serialized to JSON using the default jackson `ObjectMapper`. Using generic JSON types in your API is preferred if you are forwarding JSON resources from an external source, and those JSON resources' structure is expected to be extended frequently.
 
-If you want to provide a strongly **typed** API to your consumers, you should define simple classes that match the JSON structure of your resources' state. You shouldn't share any **code** with theses classes, so a simple struct-like class like this works well:
+If you want to provide a strongly **typed** API to your consumers, you should define simple classes that match the JSON structure of your resources' state. You shouldn't share any **code** with these classes, so a simple struct-like class like this works well:
 
 ```java
   public class Item {
@@ -199,12 +199,16 @@ But especially as long as your team is the sole consumer of your API anyway, sha
 - your IDE is able to find the server-side implementation(s) of every API method
 - refactoring of your API before it is published (e.g. renaming relations or parameter names) is very easy and reliable
 
+> **Note**: Refactoring annotations is mostly useful while your API is still in the design and evolution phase. Once your API is matured and published, you should treat it as a public API: any breaking changes to the interface (and therefore the JSON structure) would likely require you to copy the interfaces into a new package, and provide a different entry point URL for the new version.
+
+> **Decoupling**: Sharing these interfaces between client and server or using them in your tests does *not* mean you're tied to using Rhyme on the server forever. In the end it's still just plain HAL+JSON with links over HTTP. You can change the implementation on either side at every point in time.
+
 > **Advanced Topics**: For a more detailed guide on how to design your HAL API interfaces, including a full list of **supported annotations and their use cases**, please see the [HAL API Interfaces Guide](docs/hal-api-interfaces.md).
 
 
 ## Consuming HAL resources with Rhyme client proxies
 
-When you have a set of interfaces that represent a HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example methods are mapped to **relations** rather then endpoints, and no URL patterns are being exposed in the interfaces).
+When you have a set of interfaces that represent a HAL API, you can use the Rhyme framework to automatically create a client implementation of those interfaces. This is similar to the concepts of [Feign](https://github.com/OpenFeign/feign) or [retrofit](https://github.com/square/retrofit), but much better suited to the HAL concepts (as for example methods are mapped to **relations** rather than endpoints, and no URL patterns are being exposed in the interfaces).
 
 It just requires two lines of code to create a client implementation of your HAL API's entry point interface:
 
@@ -259,13 +263,15 @@ The execution of any HTTP requests by the **Rhyme** framework is fully customiza
 The interface just consists of a single method that will load a HAL resource from a given URL, and return an RxJava Single which emits a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when the response has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
 
 ```java
+The interface just consists of a single method that will load a HAL resource from a given URL, and return an RxJava Single which emits a [HalResponse](core/src/main/java/io/wcm/caravan/rhyme/api/common/HalResponse.java) object when the response has been retrieved (or fail with a [HalApiClientException](core/src/main/java/io/wcm/caravan/rhyme/api/exceptions/HalApiClientException.java) if this wasn't possible)
+
+```java
 Single<HalResponse> getHalResource(String uri);
 ```
 
-You can implement this interface completely by yourself, but this will require you to also implement the JSON parsing and exception handling according to the expectations of the framework. 
+You can implement this interface completely by yourself, but this is usually **not recommended**. The `HalResourceLoader` interface is designed to be as flexible as possible, easy to mock, and not coupled to any specific HTTP client library.
 
-A simpler way is to implement the callback-style [HttpClientSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HttpClientSupport.java)
-interface, and then use the [HalResourceLoaderBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/client/HalResourceLoaderBuilder.java).
+A much simpler way to provide a custom HTTP client implementation is to implement the callback-style [HttpClientSupport](core/src/main/java/io/wcm/caravan/rhyme/api/spi/HttpClientSupport.java) interface. It is trivial to implement using any framework's HTTP client (e.g. Spring WebClient, Apache HttpClient, OkHttp) and then use the [HalResourceLoaderBuilder](core/src/main/java/io/wcm/caravan/rhyme/api/client/HalResourceLoaderBuilder.java) to create the `HalResourceLoader` instance.
 
 In both cases, you should extend the [AbstractHalResourceLoaderTest](testing/src/main/java/io/wcm/caravan/rhyme/testing/client/AbstractHalResourceLoaderTest.java) 
 (from the testing module module) to test your implementation against a Wiremock server. These unit tests ensure that all expectations regarding response and error handling are met.
@@ -281,7 +287,9 @@ What's important to note is that **you should create a single `Rhyme` instance**
 
 ```java
     // create a single Rhyme instance as early as possible in the request cycle 
-    Rhyme rhyme = RhymeBuilder.create().buildForRequestTo(incomingRequest.getUrl());
+    Rhyme rhyme = RhymeBuilder.create()
+        .withResourceLoader(resourceLoaderForThisRequest)
+        .buildForRequestTo(incomingRequest.getUrl());
     
     // instantiate your server-side implementation of the requested @HalApiInterface resource
     ApiEntryPoint entryPoint = new ApiEntryPointImpl(database);
@@ -515,7 +523,7 @@ This resource will contain the following information:
 
 While the overhead of using the **Rhyme** framework is usually negligible (especially compared to the latency introduced by external services), this information can be useful to identify hotspots that can be optimized (without firing up a profiler).
 
-If you do have a section of yor own code that you suspect to be a hotspot for performance optimization, you can easily add your own metrics to the response metadata:
+If you do have a section of your own code that you suspect to be a hotspot for performance optimization, you can easily add your own metrics to the response metadata:
 
 ```
   class YourClass {
@@ -603,6 +611,14 @@ On the server-side, just use the `renderResponse` function from the `Rhyme` inte
 ```java
 Single<HalResponse> response = rhyme.renderResponse(resource);
 ```
+
+### Benefits of using Reactive Types
+
+Even if you don't need fully non-blocking code, using reactive types (like `Single`, `Maybe`, `Observable`) in your API interfaces has significant benefits regarding error handling and partial failures:
+
+- **Parallel Execution**: Independent upstream requests will be executed in parallel automatically.
+- **Resilience**: You can straightforwardly use RxJava operators (like `retry`, `timeout`, `onErrorReturn`) to handle failures of upstream services.
+- **Partial Responses**: If an upstream service fails, you can easily handle the error and return a partial result (e.g. by emitting `Observable.empty()` or a fallback value) instead of failing the whole request.
 
 All implementation methods of your resource will be called and should return a Maybe, Single or Observable immediately.
 This is the "assembly" phase of the rendering where the main thread is being blocked.

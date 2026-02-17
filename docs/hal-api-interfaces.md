@@ -369,6 +369,31 @@ ManagerResource getManagerById(@TemplateVariable(ID) Long id);
 
 The prefix (e.g. `company:`) corresponds to a `curies` link in the HAL response that maps the prefix to a documentation URL. Using CURIs is recommended for all custom relations as it enables integration with HAL browsers and documentation tooling.
 
+### Reactive Return Types (RxJava 3)
+
+For more advanced scenarios, specificially when you need to handle partial failures or execute requests in parallel, you can use **RxJava 3** types:
+
+*   `Single<T>`: When a single resource or value is expected.
+*   `Maybe<T>`: When a resource might not exist (similar to `Optional`).
+*   `Observable<T>`: For streams of resources (similar to `Stream`).
+
+```java
+@HalApiInterface
+public interface AsyncResource {
+
+  @Related("item")
+  Observable<ItemResource> getItems();
+
+  @ResourceState
+  Single<ItemState> getState();
+}
+```
+
+**Benefits of Reactive Types:**
+*   **Resilience**: You can use operators like `retry()`, `timeout()`, or `onErrorReturn()` to gracefully handle upstream failures.
+*   **Partial Results**: If fetching a related resource fails, you can return an empty `Observable` or a fallback value instead of failing the entire request.
+*   **Parallelism**: Rhyme will automatically execute independent upstream requests in parallel.
+
 ### Links to Non-HAL Resources
 
 Methods annotated with `@Related` can return a `Link` directly (instead of another `@HalApiInterface` type) to represent links to non-HAL resources like HTML pages, images, or binary files:
