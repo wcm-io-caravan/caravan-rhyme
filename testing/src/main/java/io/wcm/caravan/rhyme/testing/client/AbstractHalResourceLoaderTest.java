@@ -43,7 +43,7 @@ import io.wcm.caravan.rhyme.api.spi.HttpClientSupport;
  */
 public abstract class AbstractHalResourceLoaderTest {
 
-  protected static final String UNKNOWN_HOST_URL = "http://foo.bar";
+  protected static final String UNKNOWN_HOST_URL = "http://foo.bar.";
 
   protected static final String TEST_PATH = "/test";
 
