@@ -530,7 +530,7 @@ class TemplateVariableTest {
 
     ByteBuddy bb = new ByteBuddy();
 
-    Class<? extends ResourceWithMissingAnnotations> resourceClass = bb
+    return bb
         .makeInterface(ResourceWithMissingAnnotations.class)
         .annotateType(halApiAnnotation)
         // override the ResourceWithMissingAnnotations#getItem but this dynamic version
@@ -542,7 +542,5 @@ class TemplateVariableTest {
         .make()
         .load(getClass().getClassLoader())
         .getLoaded();
-
-    return resourceClass;
   }
 }

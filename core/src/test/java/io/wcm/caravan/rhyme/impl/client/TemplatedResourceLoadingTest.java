@@ -19,7 +19,6 @@
  */
 package io.wcm.caravan.rhyme.impl.client;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
