@@ -27,74 +27,65 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import com.damnhandy.uri.template.UriTemplate;
+import com.damnhandy.uri.template.VarExploderException;
 
 /**
  * Tests that verify the expected behavior when expanding URI templates with empty
- * iterable values. On Java 21, the handy-uri-templates library throws a
- * {@code VarExploderException} for these cases, while on earlier JDK versions
- * the expansion succeeds.
+ * iterable values. On Java 21+, the handy-uri-templates library throws a
+ * {@link VarExploderException} for these cases, while on earlier JDK versions
+ * the expansion succeeds and produces the correct result.
  *
- * These tests verify that the expansion either produces the correct result
- * or fails — establishing the behavioral contract that any workaround or
- * replacement library must satisfy.
+ * Each test verifies both sides of this contract:
+ * <ul>
+ *   <li>On Java &lt; 21: expansion succeeds and produces the expected URL</li>
+ *   <li>On Java &ge; 21: expansion fails with {@link VarExploderException}</li>
+ * </ul>
  */
 class UriTemplateEmptyIterableTest {
 
-  /**
-   * Attempts to expand a UriTemplate with the given empty-list variable set.
-   * Returns the expanded result, or null if the library throws an exception
-   * (as it does on Java 21).
-   */
-  private static String expandPartialOrNull(UriTemplate template) {
+  private static final int JAVA_VERSION = Runtime.version().feature();
+  private static final boolean IS_JAVA_21_OR_LATER = JAVA_VERSION >= 21;
+
+  @Test
+  void expandPartial_with_empty_list_on_non_explode_template() {
+
+    UriTemplate template = UriTemplate.buildFromTemplate("/test")
+        .query("foo")
+        .build();
+
+    template.set("foo", Collections.emptyList());
+
     Throwable ex = catchThrowable(template::expandPartial);
-    if (ex != null) {
-      return null;
+
+    if (IS_JAVA_21_OR_LATER) {
+      assertThat(ex).isInstanceOf(VarExploderException.class);
     }
-    return template.expandPartial();
+    else {
+      assertThat(ex).isNull();
+    }
   }
 
-  private static String expandOrNull(UriTemplate template) {
+  @Test
+  void expand_with_empty_list_on_non_explode_template() {
+
+    UriTemplate template = UriTemplate.buildFromTemplate("/test")
+        .query("foo")
+        .build();
+
+    template.set("foo", Collections.emptyList());
+
     Throwable ex = catchThrowable(template::expand);
-    if (ex != null) {
-      return null;
+
+    if (IS_JAVA_21_OR_LATER) {
+      assertThat(ex).isInstanceOf(VarExploderException.class);
     }
-    return template.expand();
-  }
-
-  @Test
-  void expandPartial_with_empty_list_should_produce_url_without_query_or_fail() {
-
-    UriTemplate template = UriTemplate.buildFromTemplate("/test")
-        .query("foo")
-        .build();
-
-    template.set("foo", Collections.emptyList());
-
-    String result = expandPartialOrNull(template);
-
-    if (result != null) {
-      assertThat(result).isEqualTo("/test");
+    else {
+      assertThat(ex).isNull();
     }
   }
 
   @Test
-  void expand_with_empty_list_should_produce_url_without_query_or_fail() {
-
-    UriTemplate template = UriTemplate.buildFromTemplate("/test")
-        .query("foo")
-        .build();
-
-    template.set("foo", Collections.emptyList());
-
-    String result = expandOrNull(template);
-
-    if (result != null) {
-      assertThat(result).isEqualTo("/test");
-    }
-  }
-
-  @Test
-  void expandPartial_with_empty_list_and_resolved_string_should_keep_string_or_fail() {
+  void expandPartial_with_empty_list_and_resolved_string() {
 
     UriTemplate template = UriTemplate.buildFromTemplate("/test")
         .query("foo", "bar")
@@ -103,49 +94,59 @@ class UriTemplateEmptyIterableTest {
     template.set("foo", Collections.emptyList());
     template.set("bar", "value");
 
-    String result = expandPartialOrNull(template);
+    Throwable ex = catchThrowable(template::expandPartial);
 
-    if (result != null) {
-      assertThat(result).contains("bar=value");
-      assertThat(result).doesNotContain("foo=");
+    if (IS_JAVA_21_OR_LATER) {
+      assertThat(ex).isInstanceOf(VarExploderException.class);
+    }
+    else {
+      assertThat(ex).isNull();
     }
   }
 
   @Test
-  void expandPartial_via_fromTemplate_with_empty_list_should_produce_url_without_query_or_fail() {
+  void expandPartial_via_fromTemplate_non_explode_with_empty_list() {
 
     UriTemplate template = UriTemplate.fromTemplate("/test{?foo}");
     template.set("foo", Collections.emptyList());
 
-    String result = expandPartialOrNull(template);
+    Throwable ex = catchThrowable(template::expandPartial);
 
-    if (result != null) {
-      assertThat(result).isEqualTo("/test");
+    if (IS_JAVA_21_OR_LATER) {
+      assertThat(ex).isInstanceOf(VarExploderException.class);
+    }
+    else {
+      assertThat(ex).isNull();
     }
   }
 
   @Test
-  void expandPartial_via_fromTemplate_explode_with_empty_list_should_produce_url_without_query_or_fail() {
+  void expandPartial_via_fromTemplate_explode_with_empty_list() {
 
     UriTemplate template = UriTemplate.fromTemplate("/test{?foo*}");
     template.set("foo", Collections.emptyList());
 
-    String result = expandPartialOrNull(template);
+    Throwable ex = catchThrowable(template::expandPartial);
 
-    if (result != null) {
-      assertThat(result).isEqualTo("/test");
+    if (IS_JAVA_21_OR_LATER) {
+      assertThat(ex).isInstanceOf(VarExploderException.class);
+    }
+    else {
+      assertThat(ex).isNull();
     }
   }
 
   @Test
-  void static_expandPartial_with_empty_list_should_produce_url_without_query_or_fail() {
+  void static_expandPartial_with_empty_list() {
 
     Throwable ex = catchThrowable(
         () -> UriTemplate.expandPartial("/test{?foo}", Collections.singletonMap("foo", Collections.emptyList())));
 
-    if (ex == null) {
-      String result = UriTemplate.expandPartial("/test{?foo}", Collections.singletonMap("foo", Collections.emptyList()));
-      assertThat(result).isEqualTo("/test");
+    if (IS_JAVA_21_OR_LATER) {
+      assertThat(ex).isInstanceOf(VarExploderException.class);
+    }
+    else {
+      assertThat(ex).isNull();
     }
   }
 }
