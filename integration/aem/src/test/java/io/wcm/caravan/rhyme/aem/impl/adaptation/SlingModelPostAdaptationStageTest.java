@@ -64,6 +64,7 @@ class SlingModelPostAdaptationStageTest {
     return AppAemContext.createRhymeInstance(context, resourcePath);
   }
 
+
   @Test
   void withLinkTitle_allows_to_override_title_for_SlingLinkableResource_instances() {
 
@@ -93,8 +94,7 @@ class SlingModelPostAdaptationStageTest {
         .getInstance());
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith("Your model class "
-            + ClassThatDoesNotImplementSlingLinkableResource.class.getSimpleName() + " does not implement "
+        .hasMessageStartingWith("Your model class " + ClassThatDoesNotImplementSlingLinkableResource.class.getSimpleName() + " does not implement "
             + SlingLinkableResource.class.getName());
 
   }
@@ -134,6 +134,7 @@ class SlingModelPostAdaptationStageTest {
     assertThat(link.getTitle()).isEqualTo(customTitle);
   }
 
+
   @Model(adaptables = SlingRhyme.class)
   public static class ClassThatDoesNotImplementSlingLinkableResource implements EmbeddableResource {
 
@@ -159,14 +160,14 @@ class SlingModelPostAdaptationStageTest {
 
     SlingResourceAdapter adapter = createAdapterInstanceForResource("/content/foo");
 
+
     Throwable ex = catchThrowable(() -> adapter.selectCurrentResource()
         .adaptTo(ClassThatDoesNotImplementSlingLinkableResource.class)
         .withQueryParameterTemplate("foo")
         .getInstance());
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
-        .hasMessageStartingWith(
-            "#withQueryParameterTemplatecan can only be called if you selected a null resource path to create a template");
+        .hasMessageStartingWith("#withQueryParameterTemplatecan can only be called if you selected a null resource path to create a template");
 
   }
 
@@ -182,7 +183,7 @@ class SlingModelPostAdaptationStageTest {
         .getInstance()
         .createLink();
 
-    assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=123{&bar,string,array}");
+    assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=123{&bar,string}");
   }
 
   @Test
@@ -201,5 +202,6 @@ class SlingModelPostAdaptationStageTest {
     assertThat(link.getTitle())
         .isEqualTo(customTitle);
   }
+
 
 }

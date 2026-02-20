@@ -39,57 +39,57 @@ import io.wcm.caravan.rhyme.testing.resources.TestResourceState;
  */
 class TemplatedResourceLoadingTest {
 
-    @HalApiInterface
-    interface SimpleResource {
+  @HalApiInterface
+  interface SimpleResource {
 
-        @ResourceState
-        Single<TestResourceState> getProperties();
-    }
+    @ResourceState
+    Single<TestResourceState> getProperties();
+  }
 
-    private final MockClientTestSupport client = ClientTestSupport.withMocking();
+  private final MockClientTestSupport client = ClientTestSupport.withMocking();
 
-    private void loadResourceAndVerifyRequestedUrl(String entryPointUri, String expectedLoadedUrl) {
+  private void loadResourceAndVerifyRequestedUrl(String entryPointUri, String expectedLoadedUrl) {
 
-        client.mockHalResponseWithState(expectedLoadedUrl, new TestResourceState());
+    client.mockHalResponseWithState(expectedLoadedUrl, new TestResourceState());
 
-        HalApiClient halApiClient = HalApiClientBuilder.create()
-                .withResourceLoader(client.getMockJsonLoader())
-                .build();
+    HalApiClient halApiClient = HalApiClientBuilder.create()
+        .withResourceLoader(client.getMockJsonLoader())
+        .build();
 
-        halApiClient.getRemoteResource(entryPointUri, SimpleResource.class)
-                .getProperties()
-                .blockingGet();
+    halApiClient.getRemoteResource(entryPointUri, SimpleResource.class)
+        .getProperties()
+        .blockingGet();
 
-        verify(client.getMockJsonLoader()).getHalResource(expectedLoadedUrl);
-    }
+    verify(client.getMockJsonLoader()).getHalResource(expectedLoadedUrl);
+  }
 
-    @Test
-    void should_load_non_templated_url_without_modification() {
+  @Test
+  void should_load_non_templated_url_without_modification() {
 
-        loadResourceAndVerifyRequestedUrl("/items", "/items");
-    }
+    loadResourceAndVerifyRequestedUrl("/items", "/items");
+  }
 
-    @Test
-    void should_strip_query_template_when_loading_resource() {
+  @Test
+  void should_strip_query_template_when_loading_resource() {
 
-        loadResourceAndVerifyRequestedUrl("/items{?page}", "/items");
-    }
+    loadResourceAndVerifyRequestedUrl("/items{?page}", "/items");
+  }
 
-    @Test
-    void should_strip_path_template_when_loading_resource() {
+  @Test
+  void should_strip_path_template_when_loading_resource() {
 
-        loadResourceAndVerifyRequestedUrl("/items/{id}", "/items/");
-    }
+    loadResourceAndVerifyRequestedUrl("/items/{id}", "/items/");
+  }
 
-    @Test
-    void should_strip_mixed_template_expressions() {
+  @Test
+  void should_strip_mixed_template_expressions() {
 
-        loadResourceAndVerifyRequestedUrl("/items/{id}{?query}", "/items/");
-    }
+    loadResourceAndVerifyRequestedUrl("/items/{id}{?query}", "/items/");
+  }
 
-    @Test
-    void should_strip_plus_template_when_loading_resource() {
+  @Test
+  void should_strip_plus_template_when_loading_resource() {
 
-        loadResourceAndVerifyRequestedUrl("/{+path}.rhyme", "/.rhyme");
-    }
+    loadResourceAndVerifyRequestedUrl("/{+path}.rhyme", "/.rhyme");
+  }
 }
