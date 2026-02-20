@@ -187,4 +187,5 @@ class UriTemplateEmptyIterableTest {
       assertThat(ex).isNull();
     }
   }
+
 }

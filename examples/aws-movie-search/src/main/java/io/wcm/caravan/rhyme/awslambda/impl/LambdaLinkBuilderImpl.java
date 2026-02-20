@@ -75,12 +75,12 @@ class LambdaLinkBuilderImpl implements LambdaLinkBuilder {
   }
 
   private static boolean isEmptyCollection(Object value) {
+    if (value == null) {
+      return false;
+    }
     if (value instanceof Iterable) {
       return !((Iterable<?>)value).iterator().hasNext();
     }
-    if (value != null && value.getClass().isArray()) {
-      return java.lang.reflect.Array.getLength(value) == 0;
-    }
-    return false;
+    return value.getClass().isArray() && java.lang.reflect.Array.getLength(value) == 0;
   }
 }

@@ -411,14 +411,31 @@ public class SlingLinkBuilderImplTest {
     assertThat(link.getHref()).isEqualTo("/content.rhyme");
   }
 
+  @Model(adaptables = SlingRhyme.class)
+  public static class ResourceWithOnlyCollectionParams extends AbstractLinkableResource {
+
+    @QueryParam
+    private List<Integer> ids;
+
+    @QueryParam
+    private String[] tags;
+
+    @Override
+    protected String getDefaultLinkTitle() {
+      return "resource with collections only";
+    }
+  }
+
   @Test
   void createLinkToCurrentResource_with_all_empty_collection_params_should_not_fail() {
 
-    Link link = createLinkWithListParams(resource -> {
-      resource.ids = Collections.emptyList();
-      resource.tags = new String[0];
-      resource.filter = null;
-    });
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    ResourceWithOnlyCollectionParams resource = new ResourceWithOnlyCollectionParams();
+    resource.ids = Collections.emptyList();
+    resource.tags = new String[0];
+
+    Link link = linkBuilder.createLinkToCurrentResource(resource);
 
     assertThat(link.getHref()).isEqualTo("/content.rhyme");
   }
@@ -433,6 +450,16 @@ public class SlingLinkBuilderImplTest {
 
     assertThat(link.getHref()).contains("filter=active");
     assertThat(link.getHref()).doesNotContain("tags=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_populated_array_param() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.tags = new String[]{ "java", "maven" };
+    });
+
+    assertThat(link.getHref()).contains("tags=java,maven");
   }
 
 }

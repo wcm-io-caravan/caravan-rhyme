@@ -456,6 +456,32 @@ class TemplateVariableTest {
     assertThat(link.getHref()).doesNotContain("ids=");
   }
 
+  @Test
+  void array_template_variable_with_populated_array_should_expand() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids}"));
+
+    Link link = client.createProxy(ResourceWithArrayTemplateVariable.class)
+        .getLinked(new String[]{ "a", "b" })
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref()).contains("ids=a,b");
+  }
+
+  @Test
+  void array_template_variable_with_explode_modifier_repeats_parameter_name() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids*}"));
+
+    Link link = client.createProxy(ResourceWithArrayTemplateVariable.class)
+        .getLinked(new String[]{ "a", "b", "c" })
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref()).isEqualTo("/items?ids=a&ids=b&ids=c");
+  }
+
   @HalApiInterface
   interface ResourceWithListAndScalarTemplateVariables {
 

@@ -145,4 +145,14 @@ class LambdaLinkBuilderImplTest {
     assertThat(link.getHref()).contains("filter=active");
     assertThat(link.getHref()).doesNotContain("ids=");
   }
+
+  @Test
+  void should_expand_populated_array_variable() {
+
+    Link link = new LambdaLinkBuilderImpl("/items")
+        .addQueryVariable("ids", new String[]{ "a", "b" })
+        .build();
+
+    assertThat(link.getHref()).contains("ids=a,b");
+  }
 }

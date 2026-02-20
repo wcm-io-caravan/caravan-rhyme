@@ -208,10 +208,7 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
     if (value instanceof Iterable) {
       return !((Iterable<?>)value).iterator().hasNext();
     }
-    if (value.getClass().isArray()) {
-      return java.lang.reflect.Array.getLength(value) == 0;
-    }
-    return false;
+    return value.getClass().isArray() && java.lang.reflect.Array.getLength(value) == 0;
   }
 
   private Observable<Object> createProxiesFromLinkTemplates(Class<?> relatedResourceType, List<Link> links) {

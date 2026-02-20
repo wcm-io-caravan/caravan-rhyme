@@ -427,6 +427,21 @@ class JaxRsControllerProxyLinkBuilderTest {
         .isEqualTo("/test?bar=val");
   }
 
+  @Test
+  void populated_array_query_param() {
+
+    assertLinkUrlFor(r -> r.withArrayQueryParam(new String[]{ "a", "b" }))
+        .contains("foo=a,b");
+  }
+
+  @Test
+  void populated_array_query_param_with_resolved_string_param() {
+
+    assertLinkUrlFor(r -> r.withArrayAndStringQueryParam(new String[]{ "a", "b" }, "val"))
+        .contains("foo=a,b")
+        .contains("bar=val");
+  }
+
   // --- base URL prefix ---
 
   @Test
