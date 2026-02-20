@@ -59,7 +59,8 @@ public class SlingLinkBuilderImplTest {
 
     SlingLinkBuilder linkBuilder = slingRhyme.adaptTo(SlingLinkBuilder.class);
 
-    SelectorSlingTestResource resource = slingRhyme.adaptResource(context.currentResource(), SelectorSlingTestResource.class);
+    SelectorSlingTestResource resource = slingRhyme.adaptResource(context.currentResource(),
+        SelectorSlingTestResource.class);
 
     Link link = linkBuilder.createLinkToCurrentResource(resource);
 
@@ -73,7 +74,8 @@ public class SlingLinkBuilderImplTest {
 
     SlingLinkBuilder linkBuilder = slingRhyme.adaptTo(SlingLinkBuilder.class);
 
-    UnregisteredSlingTestResource resource = slingRhyme.adaptResource(context.currentResource(), UnregisteredSlingTestResource.class);
+    UnregisteredSlingTestResource resource = slingRhyme.adaptResource(context.currentResource(),
+        UnregisteredSlingTestResource.class);
 
     Link link = linkBuilder.createLinkToCurrentResource(resource);
 
@@ -103,7 +105,6 @@ public class SlingLinkBuilderImplTest {
 
   @Test
   void createLinkToCurrentResource_strips_parameters_with_null_value() {
-
 
     Link link = createLinkWithQueryParams(resource -> {
       resource.bar = 1;
@@ -152,8 +153,7 @@ public class SlingLinkBuilderImplTest {
       resource.string = "test";
     });
 
-
-    assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=1&bar=2&string=test");
+    assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=1&bar=2&string=test{&list,array}");
   }
 
   @Test
@@ -163,7 +163,7 @@ public class SlingLinkBuilderImplTest {
       resource.bar = 1;
     });
 
-    assertThat(link.getHref()).isEqualTo("/content.rhyme{?foo}&bar=1{&string}");
+    assertThat(link.getHref()).isEqualTo("/content.rhyme{?foo}&bar=1{&string,list,array}");
   }
 
   @Test
@@ -173,7 +173,7 @@ public class SlingLinkBuilderImplTest {
 
     });
 
-    assertThat(link.getHref()).isEqualTo("/content.rhyme{?foo,bar,string}");
+    assertThat(link.getHref()).isEqualTo("/content.rhyme{?foo,bar,string,list,array}");
   }
 
   @Test
@@ -206,6 +206,26 @@ public class SlingLinkBuilderImplTest {
     assertThat(link.getName()).isEqualTo(linkName);
   }
 
+  @Test
+  void createLinkToCurrentResource_strips_parameters_with_empty_list_values_java21_workaround() {
+
+    Link link = createLinkWithQueryParams(resource -> {
+      resource.list = java.util.Collections.emptyList();
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme");
+  }
+
+  @Test
+  void createLinkToCurrentResource_strips_parameters_with_empty_array_values_java21_workaround() {
+
+    Link link = createLinkWithQueryParams(resource -> {
+      resource.array = new String[0];
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme");
+  }
+
   @Model(adaptables = SlingRhyme.class)
   public static class ResourceWithParameters extends AbstractLinkableResource {
 
@@ -217,6 +237,12 @@ public class SlingLinkBuilderImplTest {
 
     @QueryParam
     private String string;
+
+    @QueryParam
+    private java.util.List<String> list;
+
+    @QueryParam
+    private String[] array;
 
     @Override
     protected String getDefaultLinkTitle() {
@@ -233,6 +259,14 @@ public class SlingLinkBuilderImplTest {
 
     public void setString(String string) {
       this.string = string;
+    }
+
+    public void setList(java.util.List<String> list) {
+      this.list = list;
+    }
+
+    public void setArray(String[] array) {
+      this.array = array;
     }
   }
 

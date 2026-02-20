@@ -9,39 +9,81 @@ import io.wcm.caravan.hal.resource.Link;
 class LambdaLinkBuilderImplTest {
 
     @Test
-    void build_should_return_absolute_path_when_no_variables_added() {
-        LambdaLinkBuilderImpl builder = new LambdaLinkBuilderImpl("/movies");
-        Link link = builder.build();
-        assertThat(link.getHref()).isEqualTo("/movies");
+    void should_return_plain_link_when_no_variables_are_added() {
+
+        Link link = new LambdaLinkBuilderImpl("/items")
+                .build();
+
+        assertThat(link.getHref())
+                .isEqualTo("/items");
     }
 
     @Test
-    void build_should_append_query_template_and_expand_partially() {
-        LambdaLinkBuilderImpl builder = new LambdaLinkBuilderImpl("/movies");
-        builder.addQueryVariable("searchTerm", "the");
-        builder.addQueryVariable("page", null);
+    void should_return_fully_expanded_link_when_variable_is_non_null() {
 
-        Link link = builder.build();
-        assertThat(link.getHref()).isEqualTo("/movies?searchTerm=the{&page}");
+        Link link = new LambdaLinkBuilderImpl("/items")
+                .addQueryVariable("page", 1)
+                .build();
+
+        assertThat(link.getHref())
+                .isEqualTo("/items?page=1");
     }
 
     @Test
-    void build_should_expand_fully_if_all_variables_are_not_null() {
-        LambdaLinkBuilderImpl builder = new LambdaLinkBuilderImpl("/movies");
-        builder.addQueryVariable("searchTerm", "the");
-        builder.addQueryVariable("page", 1);
+    void should_return_template_link_when_variable_is_null() {
 
-        Link link = builder.build();
-        assertThat(link.getHref()).isEqualTo("/movies?searchTerm=the&page=1");
+        Link link = new LambdaLinkBuilderImpl("/items")
+                .addQueryVariable("page", null)
+                .build();
+
+        assertThat(link.getHref())
+                .isEqualTo("/items{?page}");
     }
 
     @Test
-    void build_should_not_expand_if_all_variables_are_null() {
-        LambdaLinkBuilderImpl builder = new LambdaLinkBuilderImpl("/movies");
-        builder.addQueryVariable("searchTerm", null);
-        builder.addQueryVariable("page", null);
+    void should_partially_expand_when_some_variables_are_null() {
 
-        Link link = builder.build();
-        assertThat(link.getHref()).isEqualTo("/movies{?searchTerm,page}");
+        Link link = new LambdaLinkBuilderImpl("/items")
+                .addQueryVariable("page", 1)
+                .addQueryVariable("size", null)
+                .build();
+
+        assertThat(link.getHref())
+                .isEqualTo("/items?page=1{&size}");
+    }
+
+    @Test
+    void should_handle_multiple_non_null_variables() {
+
+        Link link = new LambdaLinkBuilderImpl("/items")
+                .addQueryVariable("page", 1)
+                .addQueryVariable("size", 10)
+                .build();
+
+        assertThat(link.getHref())
+                .isEqualTo("/items?page=1&size=10");
+    }
+
+    @Test
+    void should_handle_multiple_null_variables() {
+
+        Link link = new LambdaLinkBuilderImpl("/items")
+                .addQueryVariable("page", null)
+                .addQueryVariable("size", null)
+                .build();
+
+        assertThat(link.getHref())
+                .isEqualTo("/items{?page,size}");
+    }
+
+    @Test
+    void should_handle_integer_variable_values() {
+
+        Link link = new LambdaLinkBuilderImpl("/items")
+                .addQueryVariable("offset", 42)
+                .build();
+
+        assertThat(link.getHref())
+                .isEqualTo("/items?offset=42");
     }
 }
