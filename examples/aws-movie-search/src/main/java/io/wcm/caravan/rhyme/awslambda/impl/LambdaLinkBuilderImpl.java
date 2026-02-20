@@ -52,7 +52,7 @@ class LambdaLinkBuilderImpl implements LambdaLinkBuilder {
 
     for (String name : variableNames) {
       Object value = nonNullVariableValues.get(name);
-      if (value instanceof Iterable && !((Iterable<?>)value).iterator().hasNext()) {
+      if (isEmptyCollection(value)) {
         effectiveValues.remove(name);
         continue;
       }
@@ -72,5 +72,15 @@ class LambdaLinkBuilderImpl implements LambdaLinkBuilder {
         .expandPartial();
 
     return new Link(expandedTemplate);
+  }
+
+  private static boolean isEmptyCollection(Object value) {
+    if (value instanceof Iterable) {
+      return !((Iterable<?>)value).iterator().hasNext();
+    }
+    if (value != null && value.getClass().isArray()) {
+      return java.lang.reflect.Array.getLength(value) == 0;
+    }
+    return false;
   }
 }

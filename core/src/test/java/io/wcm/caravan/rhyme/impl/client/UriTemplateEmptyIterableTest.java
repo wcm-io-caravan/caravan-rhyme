@@ -149,4 +149,42 @@ class UriTemplateEmptyIterableTest {
       assertThat(ex).isNull();
     }
   }
+
+  @Test
+  void expandPartial_with_empty_array() {
+
+    UriTemplate template = UriTemplate.buildFromTemplate("/test")
+        .query("foo")
+        .build();
+
+    template.set("foo", new String[0]);
+
+    Throwable ex = catchThrowable(template::expandPartial);
+
+    if (IS_JAVA_21_OR_LATER) {
+      assertThat(ex).isInstanceOf(VarExploderException.class);
+    }
+    else {
+      assertThat(ex).isNull();
+    }
+  }
+
+  @Test
+  void expand_with_empty_array() {
+
+    UriTemplate template = UriTemplate.buildFromTemplate("/test")
+        .query("foo")
+        .build();
+
+    template.set("foo", new String[0]);
+
+    Throwable ex = catchThrowable(template::expand);
+
+    if (IS_JAVA_21_OR_LATER) {
+      assertThat(ex).isInstanceOf(VarExploderException.class);
+    }
+    else {
+      assertThat(ex).isNull();
+    }
+  }
 }

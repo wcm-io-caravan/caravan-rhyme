@@ -278,7 +278,10 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
         // This can be avoided by simply not adding this parameter to the template in the first place
         String key = StringUtils.substringBefore(varName, "*");
         Object value = parameterMap.get(key);
-        if (value instanceof Iterable && Iterables.isEmpty((Iterable)value)) {
+        if (value instanceof Iterable && Iterables.isEmpty((Iterable<?>)value)) {
+            continue;
+        }
+        if (value != null && value.getClass().isArray() && java.lang.reflect.Array.getLength(value) == 0) {
             continue;
         }
 

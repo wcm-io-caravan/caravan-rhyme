@@ -317,6 +317,9 @@ public class SlingLinkBuilderImplTest {
     @QueryParam
     private String filter;
 
+    @QueryParam
+    private String[] tags;
+
     @Override
     protected String getDefaultLinkTitle() {
       return "resource with list";
@@ -396,6 +399,16 @@ public class SlingLinkBuilderImplTest {
 
     assertThat(link.getHref()).contains("filter=active");
     assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_empty_array_param_should_not_fail() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.tags = new String[0];
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme");
   }
 
 }

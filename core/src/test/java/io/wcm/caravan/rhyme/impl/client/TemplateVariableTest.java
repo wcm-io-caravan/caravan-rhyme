@@ -436,6 +436,27 @@ class TemplateVariableTest {
   }
 
   @HalApiInterface
+  interface ResourceWithArrayTemplateVariable {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("ids") String[] ids);
+  }
+
+  @Test
+  void array_template_variable_with_empty_array_should_not_fail() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids}"));
+
+    Link link = client.createProxy(ResourceWithArrayTemplateVariable.class)
+        .getLinked(new String[0])
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @HalApiInterface
   interface ResourceWithListAndScalarTemplateVariables {
 
     @Related(ITEM)

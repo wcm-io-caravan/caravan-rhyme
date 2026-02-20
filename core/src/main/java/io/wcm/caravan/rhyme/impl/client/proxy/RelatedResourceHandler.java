@@ -194,7 +194,7 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
     // Skip empty iterables in addition to null values.
     Map<String, Object> parametersWithNonNullValues = parameters.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
-        .filter(entry -> !isEmptyIterable(entry.getValue()))
+        .filter(entry -> !isEmptyCollection(entry.getValue()))
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
     String uri = UriTemplate.expandPartial(link.getHref(), parametersWithNonNullValues);
@@ -204,8 +204,14 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
     return clonedLink;
   }
 
-  private static boolean isEmptyIterable(Object value) {
-    return value instanceof Iterable && !((Iterable<?>)value).iterator().hasNext();
+  private static boolean isEmptyCollection(Object value) {
+    if (value instanceof Iterable) {
+      return !((Iterable<?>)value).iterator().hasNext();
+    }
+    if (value.getClass().isArray()) {
+      return java.lang.reflect.Array.getLength(value) == 0;
+    }
+    return false;
   }
 
   private Observable<Object> createProxiesFromLinkTemplates(Class<?> relatedResourceType, List<Link> links) {
