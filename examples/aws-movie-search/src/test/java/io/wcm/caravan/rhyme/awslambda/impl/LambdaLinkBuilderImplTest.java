@@ -133,4 +133,14 @@ class LambdaLinkBuilderImplTest {
 
     assertThat(link.getHref()).isEqualTo("/items");
   }
+
+  @Test
+  void should_handle_populated_array_variables_java21_workaround() {
+
+    Link link = new LambdaLinkBuilderImpl("/items")
+        .addQueryVariable("ids", new String[] { "1", "2" })
+        .build();
+
+    assertThat(link.getHref()).isEqualTo("/items?ids=1,2");
+  }
 }

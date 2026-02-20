@@ -411,4 +411,14 @@ public class SlingLinkBuilderImplTest {
     assertThat(link.getHref()).isEqualTo("/content.rhyme");
   }
 
+  @Test
+  void createLinkToCurrentResource_with_populated_array_param_should_expand() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.array = new String[] { "1", "2" };
+    });
+
+    assertThat(link.getHref()).contains("array=1,2");
+  }
+
 }

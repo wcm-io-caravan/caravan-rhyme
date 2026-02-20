@@ -482,6 +482,21 @@ class TemplateVariableTest {
     assertThat(link.getHref()).doesNotContain("ids=");
   }
 
+  @Test
+  void array_template_variable_with_populated_array_should_expand() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids}"));
+
+    mockHalResponseWithNumber("/items?ids=1,2,3", 42);
+
+    TestResourceState state = client.createProxy(ResourceWithArrayTemplateVariable.class)
+        .getLinked(new String[] { "1", "2", "3" })
+        .flatMap(ResourceWithSingleState::getProperties)
+        .blockingGet();
+
+    assertThat(state.number).isEqualTo(42);
+  }
+
   @HalApiInterface
   public interface ResourceWithMissingAnnotations {
 

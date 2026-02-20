@@ -224,7 +224,7 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
     if (value instanceof Iterable) {
       return !((Iterable<?>) value).iterator().hasNext();
     }
-    if (value != null && value.getClass().isArray()) {
+    if (value.getClass().isArray()) {
       return java.lang.reflect.Array.getLength(value) == 0;
     }
     return false;
