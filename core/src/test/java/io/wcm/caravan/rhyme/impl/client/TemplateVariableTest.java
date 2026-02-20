@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -392,6 +393,71 @@ class TemplateVariableTest {
 
     assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
         .hasMessageStartingWith("No matching link template found with relation item");
+  }
+
+  // --- List-typed template variables (Java 21 empty iterable issue) ---
+
+  @HalApiInterface
+  interface ResourceWithListTemplateVariable {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("ids") List<String> ids);
+  }
+
+  @Test
+  void list_template_variable_with_populated_list_should_expand() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids}"));
+
+    mockHalResponseWithNumber("/items?ids=1,2,3", 42);
+
+    TestResourceState state = client.createProxy(ResourceWithListTemplateVariable.class)
+        .getLinked(List.of("1", "2", "3"))
+        .flatMap(ResourceWithSingleState::getProperties)
+        .blockingGet();
+
+    assertThat(state.number).isEqualTo(42);
+  }
+
+  @Test
+  void list_template_variable_with_empty_list_should_not_fail() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids}"));
+
+    mockHalResponseWithNumber("/items", 0);
+
+    Link link = client.createProxy(ResourceWithListTemplateVariable.class)
+        .getLinked(Collections.emptyList())
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @HalApiInterface
+  interface ResourceWithListAndScalarTemplateVariables {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("ids") List<String> ids,
+        @TemplateVariable("filter") String filter);
+  }
+
+  @Test
+  void empty_list_template_variable_with_scalar_should_not_fail() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids,filter}"));
+
+    mockHalResponseWithNumber("/items?filter=active", 7);
+
+    Link link = client.createProxy(ResourceWithListAndScalarTemplateVariables.class)
+        .getLinked(Collections.emptyList(), "active")
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("ids=");
   }
 
   @HalApiInterface
