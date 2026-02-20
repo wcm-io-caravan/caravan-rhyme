@@ -32,7 +32,14 @@ class LambdaLinkBuilderImpl implements LambdaLinkBuilder {
     variableNames.add(name);
 
     if (value != null) {
-      nonNullVariableValues.put(name, value);
+      // workaround for Java 21 issue where UriTemplate fails to expand empty
+      // lists/arrays
+      boolean isEmptyIterable = value instanceof Iterable && !((Iterable) value).iterator().hasNext();
+      boolean isEmptyArray = value.getClass().isArray() && java.lang.reflect.Array.getLength(value) == 0;
+
+      if (!isEmptyIterable && !isEmptyArray) {
+        nonNullVariableValues.put(name, value);
+      }
     }
     return this;
   }

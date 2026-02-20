@@ -379,6 +379,50 @@ class TemplateVariableTest {
         .contains("{&b}");
   }
 
+  @HalApiInterface
+  interface ResourceWithListQueryTemplateVariable {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("a") java.util.List<String> a);
+  }
+
+  @Test
+  void template_with_empty_list_query_variable_java21_workaround() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?a}"));
+
+    Link link = client.createProxy(ResourceWithListQueryTemplateVariable.class)
+        .getLinked(java.util.Collections.emptyList())
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/items{?a}");
+  }
+
+  @HalApiInterface
+  interface ResourceWithArrayQueryTemplateVariable {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("a") String[] a);
+  }
+
+  @Test
+  void template_with_empty_array_query_variable_java21_workaround() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?a}"));
+
+    Link link = client.createProxy(ResourceWithArrayQueryTemplateVariable.class)
+        .getLinked(new String[0])
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/items{?a}");
+  }
+
   @Test
   void link_template_should_not_match_when_extra_non_null_variable_provided() {
 
