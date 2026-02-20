@@ -56,7 +56,6 @@ import com.damnhandy.uri.template.UriTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -278,10 +277,7 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
         // This can be avoided by simply not adding this parameter to the template in the first place
         String key = StringUtils.substringBefore(varName, "*");
         Object value = parameterMap.get(key);
-        if (value instanceof Iterable && Iterables.isEmpty((Iterable<?>)value)) {
-            continue;
-        }
-        if (value != null && value.getClass().isArray() && java.lang.reflect.Array.getLength(value) == 0) {
+        if (isEmptyCollection(value)) {
             continue;
         }
 
@@ -299,6 +295,16 @@ public class JaxRsControllerProxyLinkBuilder<T> implements InvocationHandler, Ja
       }
 
       return queries.toString();
+    }
+
+    private boolean isEmptyCollection(Object value) {
+      if (value instanceof Iterable) {
+        return !((Iterable<?>)value).iterator().hasNext();
+      }
+      if (value != null && value.getClass().isArray()) {
+        return java.lang.reflect.Array.getLength(value) == 0;
+      }
+      return false;
     }
 
     private String[] getQueryParameterVarNames(Predicate<TemplateParameter> valueAvailableCheck) {

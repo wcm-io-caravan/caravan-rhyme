@@ -37,7 +37,6 @@ import javax.ws.rs.core.Response;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -294,7 +293,7 @@ class JaxRsControllerProxyLinkBuilderTest {
   @Test
   void one_populated_list_query_param() {
 
-    assertLinkUrlFor(r -> r.withListQueryParam(ImmutableList.of("123", "456")))
+    assertLinkUrlFor(r -> r.withListQueryParam(List.of("123", "456")))
         .isEqualTo("/test?foo=123&foo=456");
   }
 
@@ -315,7 +314,7 @@ class JaxRsControllerProxyLinkBuilderTest {
   @Test
   void one_populated_list_query_param_before_string_param() {
 
-    assertLinkUrlFor(r -> r.withListAndStringQueryParam(ImmutableList.of("123", "456"), "789"))
+    assertLinkUrlFor(r -> r.withListAndStringQueryParam(List.of("123", "456"), "789"))
         .isEqualTo("/test?foo=123&foo=456&bar=789");
   }
 
@@ -384,14 +383,14 @@ class JaxRsControllerProxyLinkBuilderTest {
   @Test
   void one_populated_and_one_empty_list_query_param() {
 
-    assertLinkUrlFor(r -> r.withTwoListQueryParams(ImmutableList.of("a", "b"), Collections.emptyList()))
+    assertLinkUrlFor(r -> r.withTwoListQueryParams(List.of("a", "b"), Collections.emptyList()))
         .isEqualTo("/test?foo=a&foo=b");
   }
 
   @Test
   void one_empty_and_one_populated_list_query_param() {
 
-    assertLinkUrlFor(r -> r.withTwoListQueryParams(Collections.emptyList(), ImmutableList.of("x")))
+    assertLinkUrlFor(r -> r.withTwoListQueryParams(Collections.emptyList(), List.of("x")))
         .isEqualTo("/test?bar=x");
   }
 
