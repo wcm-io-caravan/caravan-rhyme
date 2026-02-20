@@ -206,6 +206,74 @@ public class SlingLinkBuilderImplTest {
     assertThat(link.getName()).isEqualTo(linkName);
   }
 
+  // --- template mode: partial expansion edge cases ---
+
+  @Test
+  void createLinkToCurrentResource_template_with_first_param_resolved() {
+
+    Link link = createLinkTemplateWithQueryParams(resource -> {
+      resource.foo = 1;
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=1{&bar,string}");
+  }
+
+  @Test
+  void createLinkToCurrentResource_template_with_last_param_resolved() {
+
+    Link link = createLinkTemplateWithQueryParams(resource -> {
+      resource.string = "test";
+    });
+
+    assertThat(link.getHref())
+        .contains("string=test")
+        .contains("{");
+  }
+
+  @Test
+  void createLinkToCurrentResource_template_with_all_params_resolved_matches_non_template() {
+
+    Link linkTemplate = createLinkTemplateWithQueryParams(resource -> {
+      resource.foo = 1;
+      resource.bar = 2;
+      resource.string = "test";
+    });
+
+    Link linkDirect = createLinkWithQueryParams(resource -> {
+      resource.foo = 1;
+      resource.bar = 2;
+      resource.string = "test";
+    });
+
+    assertThat(linkTemplate.getHref()).isEqualTo(linkDirect.getHref());
+  }
+
+  // --- template mode: special characters ---
+
+  @Test
+  void createLinkToCurrentResource_template_encodes_characters_during_partial_expansion() {
+
+    Link link = createLinkTemplateWithQueryParams(resource -> {
+      resource.string = "?/";
+    });
+
+    assertThat(link.getHref())
+        .contains("string=%3F%2F")
+        .contains("{");
+  }
+
+  // --- non-template mode: edge cases ---
+
+  @Test
+  void createLinkToCurrentResource_non_template_with_only_string_param() {
+
+    Link link = createLinkWithQueryParams(resource -> {
+      resource.string = "hello world";
+    });
+
+    assertThat(link.getHref()).contains("string=hello%20world");
+  }
+
   @Model(adaptables = SlingRhyme.class)
   public static class ResourceWithParameters extends AbstractLinkableResource {
 
