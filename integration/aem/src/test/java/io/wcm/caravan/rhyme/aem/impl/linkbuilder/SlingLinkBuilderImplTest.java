@@ -2,6 +2,8 @@ package io.wcm.caravan.rhyme.aem.impl.linkbuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.sling.models.annotations.Model;
@@ -302,6 +304,98 @@ public class SlingLinkBuilderImplTest {
     public void setString(String string) {
       this.string = string;
     }
+  }
+
+  // --- List-typed query parameters (Java 21 empty iterable issue) ---
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ResourceWithListParam extends AbstractLinkableResource {
+
+    @QueryParam
+    private List<Integer> ids;
+
+    @QueryParam
+    private String filter;
+
+    @Override
+    protected String getDefaultLinkTitle() {
+      return "resource with list";
+    }
+  }
+
+  private Link createLinkWithListParams(Consumer<ResourceWithListParam> paramProvider) {
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    ResourceWithListParam resource = new ResourceWithListParam();
+    paramProvider.accept(resource);
+
+    return linkBuilder.createLinkToCurrentResource(resource);
+  }
+
+  private Link createLinkTemplateWithListParams(Consumer<ResourceWithListParam> paramProvider) {
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    ResourceWithListParam resource = new ResourceWithListParam();
+    paramProvider.accept(resource);
+    resource.getLinkProperties().setTemplated(true);
+
+    return linkBuilder.createLinkToCurrentResource(resource);
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_populated_list_param() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.ids = List.of(1, 2, 3);
+    });
+
+    assertThat(link.getHref()).contains("ids=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_empty_list_param_should_not_fail() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.ids = Collections.emptyList();
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_empty_list_and_resolved_string_should_not_fail() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.ids = Collections.emptyList();
+      resource.filter = "active";
+    });
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_template_with_empty_list_should_not_fail() {
+
+    Link link = createLinkTemplateWithListParams(resource -> {
+      resource.ids = Collections.emptyList();
+    });
+
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_template_with_empty_list_and_resolved_string_should_not_fail() {
+
+    Link link = createLinkTemplateWithListParams(resource -> {
+      resource.ids = Collections.emptyList();
+      resource.filter = "active";
+    });
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("ids=");
   }
 
 }

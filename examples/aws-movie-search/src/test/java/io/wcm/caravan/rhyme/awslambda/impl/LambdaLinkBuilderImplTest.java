@@ -2,6 +2,8 @@ package io.wcm.caravan.rhyme.awslambda.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 
 import io.wcm.caravan.hal.resource.Link;
@@ -85,5 +87,40 @@ class LambdaLinkBuilderImplTest {
 
     assertThat(link.getHref())
         .isEqualTo("/items?offset=42");
+  }
+
+  // --- Java 21 empty iterable issue ---
+
+  @Test
+  void should_not_fail_with_empty_list_as_only_variable() {
+
+    Link link = new LambdaLinkBuilderImpl("/items")
+        .addQueryVariable("ids", Collections.emptyList())
+        .build();
+
+    assertThat(link.getHref()).isEqualTo("/items");
+  }
+
+  @Test
+  void should_not_fail_with_empty_list_and_resolved_string_variable() {
+
+    Link link = new LambdaLinkBuilderImpl("/items")
+        .addQueryVariable("ids", Collections.emptyList())
+        .addQueryVariable("filter", "active")
+        .build();
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @Test
+  void should_not_fail_with_empty_list_and_null_variable() {
+
+    Link link = new LambdaLinkBuilderImpl("/items")
+        .addQueryVariable("ids", Collections.emptyList())
+        .addQueryVariable("page", null)
+        .build();
+
+    assertThat(link.getHref()).doesNotContain("ids=");
   }
 }

@@ -44,12 +44,31 @@ class LambdaLinkBuilderImpl implements LambdaLinkBuilder {
       return new Link(absolutePath);
     }
 
+    // Workaround for a Java 21 issue: the UriTemplate class can no longer expand
+    // a query parameter template with an empty list/array value.
+    // Skip empty iterables from both the template variables and the value map.
+    List<String> effectiveNames = new ArrayList<>();
+    Map<String, Object> effectiveValues = new LinkedHashMap<>(nonNullVariableValues);
+
+    for (String name : variableNames) {
+      Object value = nonNullVariableValues.get(name);
+      if (value instanceof Iterable && !((Iterable<?>)value).iterator().hasNext()) {
+        effectiveValues.remove(name);
+        continue;
+      }
+      effectiveNames.add(name);
+    }
+
+    if (effectiveNames.isEmpty()) {
+      return new Link(absolutePath);
+    }
+
     UriTemplate template = UriTemplate.buildFromTemplate(absolutePath)
-        .query(variableNames.toArray(new String[0]))
+        .query(effectiveNames.toArray(new String[0]))
         .build();
 
     String expandedTemplate = template
-        .set(nonNullVariableValues)
+        .set(effectiveValues)
         .expandPartial();
 
     return new Link(expandedTemplate);
