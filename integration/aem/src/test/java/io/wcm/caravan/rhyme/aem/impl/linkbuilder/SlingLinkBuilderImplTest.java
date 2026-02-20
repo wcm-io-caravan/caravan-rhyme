@@ -411,4 +411,28 @@ public class SlingLinkBuilderImplTest {
     assertThat(link.getHref()).isEqualTo("/content.rhyme");
   }
 
+  @Test
+  void createLinkToCurrentResource_with_all_empty_collection_params_should_not_fail() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.ids = Collections.emptyList();
+      resource.tags = new String[0];
+      resource.filter = null;
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_empty_array_and_resolved_string_should_not_fail() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.tags = new String[0];
+      resource.filter = "active";
+    });
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("tags=");
+  }
+
 }

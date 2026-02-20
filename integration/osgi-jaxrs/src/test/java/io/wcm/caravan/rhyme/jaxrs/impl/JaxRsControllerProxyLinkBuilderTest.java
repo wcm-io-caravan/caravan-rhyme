@@ -106,6 +106,18 @@ class JaxRsControllerProxyLinkBuilderTest {
     }
 
     @GET
+    @Path("/test")
+    public Response withArrayQueryParam(@QueryParam("foo") String[] foo) {
+      return Response.ok(foo).build();
+    }
+
+    @GET
+    @Path("/test")
+    public Response withArrayAndStringQueryParam(@QueryParam("foo") String[] foo, @QueryParam("bar") String bar) {
+      return Response.ok(foo + bar).build();
+    }
+
+    @GET
     @Path("/test/{foo}")
     public Response withStringPathParam(@PathParam("foo") String foo) {
       return Response.ok(foo).build();
@@ -392,6 +404,27 @@ class JaxRsControllerProxyLinkBuilderTest {
 
     assertLinkUrlFor(r -> r.withTwoListQueryParams(Collections.emptyList(), List.of("x")))
         .isEqualTo("/test?bar=x");
+  }
+
+  @Test
+  void empty_array_query_param_only() {
+
+    assertLinkUrlFor(r -> r.withArrayQueryParam(new String[0]))
+        .isEqualTo("/test");
+  }
+
+  @Test
+  void empty_array_query_param_with_unresolved_string_param() {
+
+    assertLinkUrlFor(r -> r.withArrayAndStringQueryParam(new String[0], null))
+        .isEqualTo("/test{?bar}");
+  }
+
+  @Test
+  void empty_array_query_param_with_resolved_string_param() {
+
+    assertLinkUrlFor(r -> r.withArrayAndStringQueryParam(new String[0], "val"))
+        .isEqualTo("/test?bar=val");
   }
 
   // --- base URL prefix ---

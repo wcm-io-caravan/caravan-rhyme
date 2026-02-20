@@ -133,4 +133,16 @@ class LambdaLinkBuilderImplTest {
 
     assertThat(link.getHref()).isEqualTo("/items");
   }
+
+  @Test
+  void should_not_fail_with_empty_array_and_resolved_string_variable() {
+
+    Link link = new LambdaLinkBuilderImpl("/items")
+        .addQueryVariable("ids", new String[0])
+        .addQueryVariable("filter", "active")
+        .build();
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
 }
