@@ -1,20 +1,20 @@
 # Codebase Review Report — Rhyme Framework
 
 **Date:** 2026-03-04 (verified 2026-03-05)
-**Reviewer:** Claude Opus 4.6 (automated, with three verification passes)
+**Reviewer:** Claude Opus 4.6 (automated, with four verification passes)
 **Scope:** All 11 submodules with Java source code (241 files in `src/main/`)
 
 ---
 
 ## Executive Summary
 
-Reviewed **11 submodules** (241 Java source files). Initial automated review flagged ~85 issues. Three verification passes critically re-examined all CRITICAL, HIGH, and MODERATE findings, **rejecting 3 of 6 CRITICAL, 5 of 7 HIGH, and 4 of 10 MODERATE findings as false positives**. An additional 3 MODERATE findings were downgraded as overstated. The codebase is architecturally sound with good API design, correct concurrency patterns, and proper framework-level lifecycle management. The only verified actionable issue is **missing WireMock cleanup in test utilities**. A handful of moderate improvements around Spring auto-configuration conventions, WebClient defaults, and docs endpoint validation are worth considering.
+Reviewed **11 submodules** (241 Java source files). Initial automated review flagged ~85 issues. Four verification passes critically re-examined all CRITICAL, HIGH, MODERATE, and LOW findings, **rejecting 3 of 6 CRITICAL, 5 of 7 HIGH, 4 of 10 MODERATE, and 4 of 8 LOW findings as false positives**. Additional findings were downgraded as overstated (3 MODERATE, 3 LOW). The codebase is architecturally sound with good API design, correct concurrency patterns, and proper framework-level lifecycle management. The only verified actionable issue is **missing WireMock cleanup in test utilities**. A handful of moderate improvements around Spring auto-configuration conventions, WebClient defaults, and docs endpoint validation are worth considering. The only confirmed LOW finding is **3 Javadoc typos** in api-interfaces.
 
 ---
 
 ## Verification Methodology
 
-Each finding rated CRITICAL, HIGH, or MODERATE was independently re-examined by a dedicated verification agent that read the actual source code and evaluated:
+Each finding at every severity level was independently re-examined by a dedicated verification agent that read the actual source code and evaluated:
 - Whether the claimed pattern actually exists
 - The lifecycle and scope of the affected objects
 - Framework-level guarantees (OSGi spec, Java Memory Model, Spring MVC lifecycle) the initial review missed
@@ -137,16 +137,28 @@ The following findings were originally rated MODERATE but were **downgraded afte
 
 ## LOW Issues (Nice to Have)
 
-| # | Issue | Module |
-|---|-------|--------|
-| 10 | Apache HTTP test clients (`ApacheAsyncHttpSupport`, `ApacheBlockingHttpSupport`) don't implement `AutoCloseable` — best practice violation, but low risk as they are short-lived test objects | testing |
-| 11 | `URLClassLoader` in `GenerateRhymeDocsMojo` not explicitly closed — best practice violation, but classloader is short-lived and GC'd after `execute()` returns | docs-plugin |
-| 12 | Inconsistent OSGi package versions (1.0.0 vs 1.1.0) in `package-info.java` | api-interfaces |
-| 13 | Javadoc typos: "simply" should be "simplify", "overriden" should be "overridden", PREV references "next" doc link | api-interfaces |
-| 14 | `HalCrawler.blockingGet()` stops entire crawl on first HTTP error — no partial results | testing |
-| 15 | `MockMvcHalResourceLoaderConfiguration` does not validate URI is path-only | testing |
-| 16 | Hardcoded Heroku upstream URL in AWS Lambda example | examples |
-| 17 | Missing timeout/retry/circuit-breaker examples across all example modules | examples |
+### 10. Javadoc Typos
+
+**Verified: VALID**
+
+**Module:** api-interfaces
+
+Three confirmed typos:
+- `TemplateVariables.java:31` — "simply" should be "**simplify**" (grammatically requires a verb)
+- `ResourceProperty.java:50` — "overriden" should be "**overridden**" (misspelling)
+- `StandardRelations.java:113` — PREV's `@see` link points to `#link-type-next` instead of `#link-type-prev`
+
+---
+
+## Overstated LOW Findings (Informational Only)
+
+The following findings were originally rated LOW but were **downgraded after verification** as overstated:
+
+| # | Issue | Module | Why Overstated |
+|---|-------|--------|----------------|
+| 11 | Apache HTTP test clients missing `AutoCloseable` | testing | Per-test, single-use objects immediately GC'd. No resource accumulation or exhaustion risk. Adding `AutoCloseable` wouldn't change test code patterns. |
+| 12 | `URLClassLoader` not closed in Maven plugin | docs-plugin | Short-lived local variable in single-execution Mojo. Never escapes `execute()` scope. GC handles cleanup; no file locking or descriptor exhaustion in practice. |
+| 13 | Missing timeout/retry/circuit-breaker examples | examples | Rhyme deliberately delegates resilience to the transport layer. Spring integration provides `HttpClientCustomizer` SPI; OSGi integration uses wcm.io Resilient HTTP. Examples correctly focus on HAL patterns, not HTTP client configuration. |
 
 ---
 
@@ -315,12 +327,63 @@ The initial review flagged `javax.ws.rs` as deprecated. Verification found:
 
 ---
 
+### From LOW verification pass
+
+### ~~Inconsistent OSGi Package Versions~~
+
+**Verdict: FALSE POSITIVE**
+
+The initial review flagged different `@Version` annotations (1.0.0 vs 1.1.0) in `package-info.java` as inconsistent. Verification found:
+
+- The version differences are **correct OSGi semantic versioning**. Packages at 1.1.0 (`api.annotations`, `api.relations`) actually received API additions (new annotation `@ExcludeFromJacocoGeneratedReport`, new constant `StandardRelations.CURIES`).
+- Packages at 1.0.0 (`api.resources`, `tooling.annotations`) had no API additions — only Javadoc changes.
+- Different packages *should* have different versions when they evolve at different rates. This is the entire point of package-level versioning in OSGi.
+
+---
+
+### ~~`HalCrawler` Stops on First HTTP Error~~
+
+**Verdict: FALSE POSITIVE**
+
+The initial review flagged fail-fast behavior as a deficiency. Verification found:
+
+- `HalCrawler` is a **test utility** where fail-fast is the correct behavior. In tests, you want to know immediately when something is broken.
+- Partial results would mask failures and make test assertions ambiguous (was the resource missing, or did the crawler silently fail?).
+- All 6 usages in the codebase are single-threaded test methods expecting complete crawl results.
+
+---
+
+### ~~`MockMvcHalResourceLoaderConfiguration` URI Validation~~
+
+**Verdict: FALSE POSITIVE**
+
+The initial review flagged missing path-only validation. Verification found:
+
+- The framework's link builders generate **path-only URIs** in MockMvc test contexts. Full URIs never reach this class in practice.
+- If a full URI were somehow passed, MockMvc would return a 404 (treating the entire URI as a path), resulting in a clear test failure — not silent misbehavior.
+- This is a test utility with a well-defined usage contract, not a general-purpose HTTP client.
+
+---
+
+### ~~Hardcoded Heroku URL in AWS Lambda Example~~
+
+**Verdict: FALSE POSITIVE**
+
+The initial review flagged a hardcoded upstream URL. Verification found:
+
+- The URL is **already configurable** via AWS staging variables (`moviesDemoEntryPointUrl`). The Heroku URL is just the default for demonstration purposes.
+- The README documents this upstream dependency. Tests use stub implementations.
+- This is standard practice for example applications: provide a working default that can be overridden.
+
+---
+
 ## Recurring Patterns to Address
 
-1. **Resource lifecycle in test utilities** — WireMock servers need `@AfterAll` cleanup. HTTP client wrappers should implement `AutoCloseable`.
-2. **Spring WebClient defaults** — Add configurable timeout properties and document `HttpClientCustomizer` usage.
-3. **Docs endpoint validation** — Add filename whitelist validation for defense-in-depth (low urgency since classpath loading prevents filesystem access).
-4. **`RhymeDocsOsgiBundleSupport`** — Duplicated in aem and osgi-jaxrs. Consider extracting to a shared module.
+1. **Resource lifecycle in test utilities** — WireMock servers need `@AfterAll` cleanup.
+2. **Spring auto-configuration conventions** — Replace `@ComponentScan` with explicit `@Bean` definitions; add `@ConditionalOnWebApplication`.
+3. **Spring WebClient defaults** — Add configurable timeout properties and document `HttpClientCustomizer` usage.
+4. **Docs endpoint validation** — Add filename whitelist validation for defense-in-depth (low urgency since classpath loading prevents filesystem access).
+5. **`RhymeDocsOsgiBundleSupport`** — Duplicated in aem and osgi-jaxrs. Consider extracting to a shared module.
 
 ---
 
@@ -335,7 +398,7 @@ The initial review flagged `javax.ws.rs` as deprecated. Verification found:
 | **integration/aem** | Good | Proper Sling Model usage, correct OSGi lifecycle | STATIC reference policy may need review for dynamic deployment |
 | **testing** | Fair | Good test coverage intent | WireMock lifecycle gap |
 | **tooling/docs-maven-plugin** | Good | Intentional JavaDoc HTML preservation | Could add filename validation |
-| **examples** | Good | Good variety of patterns, correct runtime-specific choices | Missing best-practice examples (timeouts, circuit breakers) |
+| **examples** | Good | Good variety of patterns, correct runtime-specific choices, configurable defaults | Resilience patterns delegated to transport layer (by design) |
 
 ---
 
@@ -351,4 +414,7 @@ The initial automated review exhibited several systematic biases:
 6. **Ignoring runtime environment constraints** — Flagging `javax.ws.rs` as deprecated without checking that the target runtime (Sling 14) requires it; switching to Jakarta would break the code.
 7. **Applying "god class" labels superficially** — Counting lines without evaluating cohesion, inner class decomposition, or whether the complexity is inherent to the problem domain.
 
-Across all three verification passes, **12 of 23 CRITICAL/HIGH/MODERATE findings (52%) were rejected as false positives**, and 3 more were downgraded as overstated. This reinforces that automated code reviews must always be verified against the actual architecture and framework contracts before acting on findings.
+8. **Mischaracterizing correct semantic versioning** — Flagging different OSGi package versions as "inconsistent" without checking whether the version differences reflect actual API additions.
+9. **Expecting defensive coding in test utilities** — Flagging test-only classes for missing `AutoCloseable`, fail-fast error handling, or URI validation that the framework guarantees.
+
+Across all four verification passes, **16 of 31 findings (52%) were rejected as false positives**, and 6 more were downgraded as overstated. Only **9 findings survived verification** (1 CRITICAL, 5 MODERATE, 3 overstated MODERATE→LOW, 1 LOW). This reinforces that automated code reviews must always be verified against the actual architecture and framework contracts before acting on findings.
