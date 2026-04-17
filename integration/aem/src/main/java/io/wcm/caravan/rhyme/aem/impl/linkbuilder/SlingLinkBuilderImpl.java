@@ -68,15 +68,37 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     if (queryParams.isEmpty()) {
       return baseUrl;
     }
-    String[] names = queryParams.keySet().toArray(new String[queryParams.size()]);
+
+    // Workaround for a Java 21 issue: the UriTemplate class can no longer expand
+    // a query parameter template with an empty list/array value.
+    // Skip empty collections from both the template variable names and the value map.
+    String[] names = queryParams.entrySet().stream()
+        .filter(entry -> !isEmptyCollection(entry.getValue()))
+        .map(Map.Entry::getKey)
+        .toArray(String[]::new);
+
+    if (names.length == 0) {
+      return baseUrl;
+    }
 
     UriTemplate template = UriTemplate.buildFromTemplate(baseUrl).query(names).build();
 
     queryParams.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
+        .filter(entry -> !isEmptyCollection(entry.getValue()))
         .forEach(entry -> template.set(entry.getKey(), entry.getValue()));
 
     return slingModel.getLinkProperties().isTemplated() ? template.expandPartial() : template.expand();
+  }
+
+  private static boolean isEmptyCollection(Object value) {
+    if (value == null) {
+      return false;
+    }
+    if (value instanceof Iterable) {
+      return !((Iterable<?>)value).iterator().hasNext();
+    }
+    return value.getClass().isArray() && java.lang.reflect.Array.getLength(value) == 0;
   }
 
   private String getClassSpecificSelector(SlingLinkableResource slingModel) {

@@ -2,6 +2,8 @@ package io.wcm.caravan.rhyme.aem.impl.linkbuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.sling.models.annotations.Model;
@@ -206,6 +208,74 @@ public class SlingLinkBuilderImplTest {
     assertThat(link.getName()).isEqualTo(linkName);
   }
 
+  // --- template mode: partial expansion edge cases ---
+
+  @Test
+  void createLinkToCurrentResource_template_with_first_param_resolved() {
+
+    Link link = createLinkTemplateWithQueryParams(resource -> {
+      resource.foo = 1;
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme?foo=1{&bar,string}");
+  }
+
+  @Test
+  void createLinkToCurrentResource_template_with_last_param_resolved() {
+
+    Link link = createLinkTemplateWithQueryParams(resource -> {
+      resource.string = "test";
+    });
+
+    assertThat(link.getHref())
+        .contains("string=test")
+        .contains("{");
+  }
+
+  @Test
+  void createLinkToCurrentResource_template_with_all_params_resolved_matches_non_template() {
+
+    Link linkTemplate = createLinkTemplateWithQueryParams(resource -> {
+      resource.foo = 1;
+      resource.bar = 2;
+      resource.string = "test";
+    });
+
+    Link linkDirect = createLinkWithQueryParams(resource -> {
+      resource.foo = 1;
+      resource.bar = 2;
+      resource.string = "test";
+    });
+
+    assertThat(linkTemplate.getHref()).isEqualTo(linkDirect.getHref());
+  }
+
+  // --- template mode: special characters ---
+
+  @Test
+  void createLinkToCurrentResource_template_encodes_characters_during_partial_expansion() {
+
+    Link link = createLinkTemplateWithQueryParams(resource -> {
+      resource.string = "?/";
+    });
+
+    assertThat(link.getHref())
+        .contains("string=%3F%2F")
+        .contains("{");
+  }
+
+  // --- non-template mode: edge cases ---
+
+  @Test
+  void createLinkToCurrentResource_non_template_with_only_string_param() {
+
+    Link link = createLinkWithQueryParams(resource -> {
+      resource.string = "hello world";
+    });
+
+    assertThat(link.getHref()).contains("string=hello%20world");
+  }
+
   @Model(adaptables = SlingRhyme.class)
   public static class ResourceWithParameters extends AbstractLinkableResource {
 
@@ -234,6 +304,162 @@ public class SlingLinkBuilderImplTest {
     public void setString(String string) {
       this.string = string;
     }
+  }
+
+  // --- List-typed query parameters (Java 21 empty iterable issue) ---
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ResourceWithListParam extends AbstractLinkableResource {
+
+    @QueryParam
+    private List<Integer> ids;
+
+    @QueryParam
+    private String filter;
+
+    @QueryParam
+    private String[] tags;
+
+    @Override
+    protected String getDefaultLinkTitle() {
+      return "resource with list";
+    }
+  }
+
+  private Link createLinkWithListParams(Consumer<ResourceWithListParam> paramProvider) {
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    ResourceWithListParam resource = new ResourceWithListParam();
+    paramProvider.accept(resource);
+
+    return linkBuilder.createLinkToCurrentResource(resource);
+  }
+
+  private Link createLinkTemplateWithListParams(Consumer<ResourceWithListParam> paramProvider) {
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    ResourceWithListParam resource = new ResourceWithListParam();
+    paramProvider.accept(resource);
+    resource.getLinkProperties().setTemplated(true);
+
+    return linkBuilder.createLinkToCurrentResource(resource);
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_populated_list_param() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.ids = List.of(1, 2, 3);
+    });
+
+    assertThat(link.getHref()).contains("ids=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_empty_list_param_should_not_fail() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.ids = Collections.emptyList();
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_empty_list_and_resolved_string_should_not_fail() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.ids = Collections.emptyList();
+      resource.filter = "active";
+    });
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_template_with_empty_list_should_not_fail() {
+
+    Link link = createLinkTemplateWithListParams(resource -> {
+      resource.ids = Collections.emptyList();
+    });
+
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_template_with_empty_list_and_resolved_string_should_not_fail() {
+
+    Link link = createLinkTemplateWithListParams(resource -> {
+      resource.ids = Collections.emptyList();
+      resource.filter = "active";
+    });
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_empty_array_param_should_not_fail() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.tags = new String[0];
+    });
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme");
+  }
+
+  @Model(adaptables = SlingRhyme.class)
+  public static class ResourceWithOnlyCollectionParams extends AbstractLinkableResource {
+
+    @QueryParam
+    private List<Integer> ids;
+
+    @QueryParam
+    private String[] tags;
+
+    @Override
+    protected String getDefaultLinkTitle() {
+      return "resource with collections only";
+    }
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_all_empty_collection_params_should_not_fail() {
+
+    SlingLinkBuilder linkBuilder = createLinkBuilder("/content");
+
+    ResourceWithOnlyCollectionParams resource = new ResourceWithOnlyCollectionParams();
+    resource.ids = Collections.emptyList();
+    resource.tags = new String[0];
+
+    Link link = linkBuilder.createLinkToCurrentResource(resource);
+
+    assertThat(link.getHref()).isEqualTo("/content.rhyme");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_empty_array_and_resolved_string_should_not_fail() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.tags = new String[0];
+      resource.filter = "active";
+    });
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("tags=");
+  }
+
+  @Test
+  void createLinkToCurrentResource_with_populated_array_param() {
+
+    Link link = createLinkWithListParams(resource -> {
+      resource.tags = new String[]{ "java", "maven" };
+    });
+
+    assertThat(link.getHref()).contains("tags=java,maven");
   }
 
 }

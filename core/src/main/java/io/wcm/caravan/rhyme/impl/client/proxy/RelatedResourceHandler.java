@@ -189,8 +189,12 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
 
   private static Link expandLinkTemplates(Link link, Map<String, Object> parameters) {
 
+    // Workaround for a Java 21 issue: the UriTemplate class can no longer expand
+    // a query parameter template with an empty list/array value.
+    // Skip empty iterables in addition to null values.
     Map<String, Object> parametersWithNonNullValues = parameters.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
+        .filter(entry -> !isEmptyCollection(entry.getValue()))
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
     String uri = UriTemplate.expandPartial(link.getHref(), parametersWithNonNullValues);
@@ -198,6 +202,13 @@ class RelatedResourceHandler implements Function<HalResource, Observable<Object>
     Link clonedLink = new Link(link.getModel().deepCopy());
     clonedLink.setHref(uri);
     return clonedLink;
+  }
+
+  private static boolean isEmptyCollection(Object value) {
+    if (value instanceof Iterable) {
+      return !((Iterable<?>)value).iterator().hasNext();
+    }
+    return value.getClass().isArray() && java.lang.reflect.Array.getLength(value) == 0;
   }
 
   private Observable<Object> createProxiesFromLinkTemplates(Class<?> relatedResourceType, List<Link> links) {
