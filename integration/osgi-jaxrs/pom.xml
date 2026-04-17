@@ -129,8 +129,8 @@
     
     <!-- URI Templates -->
     <dependency>
-      <groupId>com.damnhandy</groupId>
-      <artifactId>handy-uri-templates</artifactId>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>wcm-io-handy-uri-templates</artifactId>
       <scope>compile</scope>
     </dependency>
 
