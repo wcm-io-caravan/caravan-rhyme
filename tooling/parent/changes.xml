@@ -24,6 +24,15 @@
     xsi:schemaLocation="http://maven.apache.org/changes/2.0.0 https://maven.apache.org/xsd/changes-2.0.0.xsd">
   <body>
 
+    <release version="1.2.2" date="2026-04-20">
+      <action type="update" dev="sseifert">
+        Switch from io.wcm.caravan:wcm-io-handy-uri-templates to com.damnhandy:andy-uri-templates for compatibility with Java 21+.
+      </action>
+      <action type="update" dev="sseifert">
+        Update dependencies.
+      </action>
+    </release>
+
     <release version="1.2.0" date="2025-04-30">
       <action type="update" dev="sseifert">
         Switch to Java 11 as minimum version.
