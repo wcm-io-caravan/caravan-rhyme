@@ -30,7 +30,7 @@
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-  <version>1.2.2</version>
+  <version>1.2.3-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Rhyme - Core Framework</name>
