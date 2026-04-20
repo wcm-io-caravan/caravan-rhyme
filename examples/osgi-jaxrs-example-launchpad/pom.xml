@@ -25,181 +25,81 @@
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
     <relativePath>../../tooling/parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>io.wcm.caravan.rhyme.examples.osgi-jaxrs-example-launchpad</artifactId>
   <version>1-SNAPSHOT</version>
-  <packaging>slingstart</packaging>
 
   <name>Rhyme - OSGI/JAX-RS Integration Test Launchpad</name>
   <description>
-    A Sling Launchpad instance provisioned with all dependencies required to run the osgi-jaxrs-example-service bundle
+    A Sling Starter instance provisioned with all dependencies required to run the osgi-jaxrs-example-service bundle
   </description>
 
   <properties>
-    <!-- hostname and port for integration tests -->
-    <test.host>localhost</test.host>
-    <http.port>8080</http.port>
+    <java.version>17</java.version>
+    <sling.starter.version>14</sling.starter.version>
+    <rhyme.api-interfaces.version>1.1.0</rhyme.api-interfaces.version>
+    <rhyme.core.version>1.2.0</rhyme.core.version>
+    <rhyme.osgi-jaxrs.version>1.1.1-SNAPSHOT</rhyme.osgi-jaxrs.version>
+    <rhyme.examples.osgi-jaxrs-example-service.version>1.0.0-SNAPSHOT</rhyme.examples.osgi-jaxrs-example-service.version>
 
-    <launchpad.http.server.url>http://${test.host}:${http.port}</launchpad.http.server.url>
-
-    <!--
-        Set this to true to stop mvn once the integration test Jetty instance is
-        started. Useful to manually test the integration testing webapp.
-    -->
-    <launchpad.keep.running>false</launchpad.keep.running>
-
-    <!--
-      If set to "true" this will start the launchpad with standard debug options,
-      or set to a string to provide custom debug settings
-    -->
-    <launchpad.debug>true</launchpad.debug>
+    <starter.min.bundles.count>200</starter.min.bundles.count>
+    <it.startTimeoutSeconds>60</it.startTimeoutSeconds>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.commons.httpclient</artifactId>
-      <version>1.2.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.commons.httpasyncclient</artifactId>
-      <version>1.2.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.commons.jsonpath</artifactId>
-      <version>0.5.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.commons.metrics</artifactId>
-      <version>0.6.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.commons.performance</artifactId>
-      <version>0.5.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.hal.resource</artifactId>
-      <version>1.1.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.api-interfaces</artifactId>
-      <version>1.1.0</version>
-      <scope>provided</scope>
+      <version>${rhyme.api-interfaces.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.core</artifactId>
-      <version>1.2.0</version>
-      <scope>provided</scope>
+      <version>${rhyme.core.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.osgi-jaxrs</artifactId>
-      <version>1.1.1-SNAPSHOT</version>
-      <scope>provided</scope>
+      <version>${rhyme.osgi-jaxrs.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.rhyme.examples.osgi-jaxrs-example-service</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.io.http</artifactId>
-      <version>0.10.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.pipeline.api</artifactId>
-      <version>0.7.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.pipeline.impl</artifactId>
-      <version>0.6.4</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.pipeline.cache.guava</artifactId>
-      <version>0.7.0</version>
-      <scope>provided</scope>
+      <version>${rhyme.examples.osgi-jaxrs-example-service.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- Apache HTTP Client (version overrides are required by the io.wcm.caravan.io.http bundle) -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.5.10</version><!--$NO-MVN-MAN-VER$-->
-      <scope>provided</scope>
+      <version>4.5.14</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.4.12</version><!--$NO-MVN-MAN-VER$-->
-      <scope>provided</scope>
+      <version>4.4.16</version>
+      <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient-osgi</artifactId>
-      <version>4.5.10</version><!--$NO-MVN-MAN-VER$-->
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore-osgi</artifactId>
-      <version>4.4.12</version><!--$NO-MVN-MAN-VER$-->
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpasyncclient-osgi</artifactId>
-      <version>4.1.4</version><!--$NO-MVN-MAN-VER$-->
-      <scope>provided</scope>
-    </dependency>
-    
-    <!-- actual dependencies -->
-    <dependency>
-      <groupId>io.wcm.caravan</groupId>
-      <artifactId>io.wcm.caravan.integration-test.minimal-launchpad</artifactId>
-      <version>1.3.0-SNAPSHOT</version>
-      <type>slingfeature</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.wcm.osgi.wrapper</groupId>
-      <artifactId>io.wcm.osgi.wrapper.hibernate-validator</artifactId>
-      <scope>provided</scope>
-    </dependency>
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
 
     <!-- AssertJ for fluent assertions -->
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.8.0</version>
+      <version>3.27.6</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -208,79 +108,142 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- ensure that the jacoco java agent is available, which is required to instrument the launchpad for code coverage --> 
-    <dependency>
-      <groupId>org.jacoco</groupId>
-      <artifactId>org.jacoco.agent</artifactId>
-      <version>${jacoco-maven-plugin.version}</version>
-      <classifier>runtime</classifier>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
 
       <plugin>
-        <groupId>org.apache.sling</groupId>
-        <artifactId>slingstart-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <extensions>true</extensions>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>start-container</id>
+            <id>reserve-network-port</id>
             <goals>
-              <goal>start</goal>
-              <goal>stop</goal>
+              <goal>reserve-network-port</goal>
+            </goals>
+            <phase>initialize</phase>
+            <configuration>
+              <portNames>
+                <portName>http.port</portName>
+              </portNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.sling</groupId>
+        <artifactId>slingfeature-maven-plugin</artifactId>
+        <version>1.9.2</version>
+        <extensions>true</extensions>
+
+        <configuration>
+          <replacePropertyVariables>rhyme.api-interfaces.version,rhyme.core.version,rhyme.osgi-jaxrs.version,rhyme.examples.osgi-jaxrs-example-service.version</replacePropertyVariables>
+          <skipAddFeatureDependencies>true</skipAddFeatureDependencies>
+          <aggregates>
+            <aggregate>
+              <classifier>app</classifier>
+              <filesInclude>*.json</filesInclude>
+              <variablesOverrides>
+                <http.port>${http.port}</http.port>
+              </variablesOverrides>
+              <includeArtifact>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.starter</artifactId>
+                <classifier>nosample_base</classifier>
+                <version>${sling.starter.version}</version>
+                <type>slingosgifeature</type>
+              </includeArtifact>
+              <includeArtifact>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.starter</artifactId>
+                <classifier>oak_persistence_sns</classifier>
+                <version>${sling.starter.version}</version>
+                <type>slingosgifeature</type>
+              </includeArtifact>
+              <includeArtifact>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.starter</artifactId>
+                <classifier>junit</classifier>
+                <version>${sling.starter.version}</version>
+                <type>slingosgifeature</type>
+              </includeArtifact>
+            </aggregate>
+          </aggregates>
+          <scans>
+            <scan>
+              <includeClassifier>app</includeClassifier>
+            </scan>
+          </scans>
+        </configuration>
+        <executions>
+          <execution>
+            <id>prepare-features</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>aggregate-features</goal>
+              <goal>analyse-features</goal>
+              <goal>attach-features</goal>
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.sling</groupId>
+        <artifactId>feature-launcher-maven-plugin</artifactId>
+        <version>1.0.2</version>
         <configuration>
-          <!-- configurations for the provisioning model are inlined here, because we want to use the maven properties for the server url -->
-          <model>
-[feature name=caravan-configuration]
-
-[configurations]
-  io.wcm.caravan.io.http.impl.CaravanHttpServiceConfig-localhost
-    serviceId="localhost"
-    ribbonHosts=["${launchpad.http.server.url}"]
-
-[configurations]
-  io.wcm.caravan.commons.httpclient.impl.HttpClientConfigImpl-localhost
-    hostPatterns=["localhost"]
-    maxConnectionsPerHost="5000"
-    maxTotalConnections="5000"
-          </model>
-          <usePomDependencies>true</usePomDependencies>
-          <usePomVariables>true</usePomVariables>
-          <servers>
-            <server>
-              <port>${http.port}</port>
-              <controlPort>${sling.control.port}</controlPort>
-              <contextPath>${http.base.path}</contextPath>
-              <debug>${launchpad.debug}</debug>
-              <!-- override the vmOpts because the defaults contain XX:MaxPermSize which is no longer supported with Java 17 -->
-              <vmOpts>-Xmx1024m -Djava.awt.headless=true<!--
-              To enable the JaCoCo java-agent, we cannot use its maven plugin, since the launchpad java process is started from within the slingstart-maven-plugin.
-              We have to manually construct the javaagent parameter here, and enable output of coverage data to a separate .exec file -->
-              -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-maven-plugin.version}/org.jacoco.agent-${jacoco-maven-plugin.version}-runtime.jar=destfile=${project.build.directory}/jacoco-launchpad.exec
-              <!-- Workaround for issue with latest JDK:
-                  [ERROR] error reading /home/runner/.m2/repository/org/apache/sling/org.apache.sling.launchpad.base/7.0.3-2.7.6/org.apache.sling.launchpad.base-7.0.3-2.7.6.jar; Invalid CEN header (invalid zip64 extra data field size) -->
-              -Djdk.util.zip.disableZip64ExtraFieldValidation=true
-              </vmOpts>
-            </server>
-          </servers>
+          <launches>
+            <launch>
+              <id>sling-starter-oak-tar</id>
+              <feature>
+                <groupId>io.wcm.caravan</groupId>
+                <artifactId>io.wcm.caravan.rhyme.examples.osgi-jaxrs-example-launchpad</artifactId>
+                <version>1-SNAPSHOT</version>
+                <classifier>app</classifier>
+                <type>slingosgifeature</type>
+              </feature>
+              <launcherArguments>
+                <vmOptions>
+                  <value>--add-opens java.base/java.lang=ALL-UNNAMED</value>
+                  <!-- Workaround for issue with latest JDK: Invalid CEN header (invalid zip64 extra data field size) -->
+                  <value>-Djdk.util.zip.disableZip64ExtraFieldValidation=true</value>
+                </vmOptions>
+                <frameworkProperties>
+                  <org.osgi.service.http.port>${http.port}</org.osgi.service.http.port>
+                  <org.apache.felix.http.jetty.responseBufferSize>5000000</org.apache.felix.http.jetty.responseBufferSize>
+                </frameworkProperties>
+              </launcherArguments>
+              <startTimeoutSeconds>${it.startTimeoutSeconds}</startTimeoutSeconds>
+            </launch>
+          </launches>
         </configuration>
       </plugin>
 
-      <!-- expose the server base url as a single system property  -->
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
-            <launchpad.http.server.url>${launchpad.http.server.url}</launchpad.http.server.url>
+            <launchpad.http.server.url>http://localhost:${http.port}</launchpad.http.server.url>
+            <starter.http.test.ports>false:${http.port}</starter.http.test.ports>
+            <starter.min.bundles.count>${starter.min.bundles.count}</starter.min.bundles.count>
+            <!-- Comma-separated list of paths to check for 200 status -->
+            <starter.check.paths>
+              /system/console/bundles,
+            </starter.check.paths>
           </systemPropertyVariables>
         </configuration>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- do not deploy into maven repository -->
@@ -301,7 +264,7 @@
           <skipDeploy>true</skipDeploy>
         </configuration>
       </plugin>
-      
+
       <!-- do not generate javadocs -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -310,33 +273,64 @@
           <skip>true</skip>
         </configuration>
       </plugin>
-      
+
     </plugins>
   </build>
   
   <profiles>
 
-    <!-- "Fast" profile for quick compile of the project without any unit tests etc. -->
+    <!-- Default profile: Stop feature launcher after running ITs -->
     <profile>
-      <id>fast</id>
+      <id>start-stop</id>
       <activation>
-        <activeByDefault>false</activeByDefault>
+        <activeByDefault>true</activeByDefault>
       </activation>
-      <properties>
-        <unittests.skip>true</unittests.skip>
-        <integrationtests.skip>true</integrationtests.skip>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
-      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>feature-launcher-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>launcher-start</id>
+                <goals>
+                  <goal>start</goal>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
 
-    <!-- Start on port 8080 and keep running -->
+    <!-- Run feature launcher on port 8080 and keep it running after ITs (you have to stop it manually) -->
     <profile>
       <id>keep-running</id>
       <properties>
-        <launchpad.keep.running>true</launchpad.keep.running>
-        <launchpad.debug>true</launchpad.debug>
+        <http.port>8080</http.port>
       </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>feature-launcher-maven-plugin</artifactId>
+            <configuration>
+              <trackProcess>false</trackProcess>
+            </configuration>
+            <executions>
+              <execution>
+                <id>launcher-start</id>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
+
   </profiles>
 
 </project>

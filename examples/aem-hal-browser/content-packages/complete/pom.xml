@@ -144,8 +144,7 @@
                 io.reactivex.rxjava3,
                 com.damnhandy,
                 com.fasterxml.jackson.core,
-                com.fasterxml.jackson.datatype,
-                commons-beanutils
+                com.fasterxml.jackson.datatype
               </groupId>
               <type>jar</type>
             </embedded>

@@ -25,7 +25,7 @@
   <parent>
     <groupId>io.wcm.caravan</groupId>
     <artifactId>io.wcm.caravan.rhyme.parent</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
     <relativePath>../../tooling/parent/pom.xml</relativePath>
   </parent>
 
@@ -58,7 +58,7 @@
     <dependency>
       <groupId>io.wcm.caravan</groupId>
       <artifactId>io.wcm.caravan.io.http</artifactId>
-      <version>0.10.0</version>
+      <version>0.10.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -129,8 +129,8 @@
     
     <!-- URI Templates -->
     <dependency>
-      <groupId>com.damnhandy</groupId>
-      <artifactId>handy-uri-templates</artifactId>
+      <groupId>io.wcm.caravan</groupId>
+      <artifactId>wcm-io-handy-uri-templates</artifactId>
       <scope>compile</scope>
     </dependency>
 
@@ -163,17 +163,12 @@
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
+      <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
