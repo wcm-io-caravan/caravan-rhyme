@@ -41,7 +41,7 @@
     <java.version>17</java.version>
     <sling.starter.version>14</sling.starter.version>
     <rhyme.api-interfaces.version>1.1.0</rhyme.api-interfaces.version>
-    <rhyme.core.version>1.2.0</rhyme.core.version>
+    <rhyme.core.version>1.2.2</rhyme.core.version>
     <rhyme.osgi-jaxrs.version>1.1.1-SNAPSHOT</rhyme.osgi-jaxrs.version>
     <rhyme.examples.osgi-jaxrs-example-service.version>1.0.0-SNAPSHOT</rhyme.examples.osgi-jaxrs-example-service.version>
 
