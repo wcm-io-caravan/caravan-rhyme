@@ -24,6 +24,12 @@
     xsi:schemaLocation="http://maven.apache.org/changes/2.0.0 https://maven.apache.org/xsd/changes-2.0.0.xsd">
   <body>
 
+    <release version="1.2.2" date="2026-04-20">
+      <action type="update" dev="sseifert">
+        Switch from io.wcm.caravan:wcm-io-handy-uri-templates to com.damnhandy:andy-uri-templates for compatibility with Java 21+.
+      </action>
+    </release>
+
     <release version="1.2.0" date="2025-04-30">
       <action type="add" dev="ssauder">
         Allow to provide custom mock/stub implementations for remote HAL API interfaces (via #withRemoteResourceOverride in RhymeBuilder and HalApiClientBuilder)
