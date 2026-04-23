@@ -170,6 +170,46 @@ class TemplateProxyPostAdaptationStageTest {
   }
 
   @Test
+  void withQueryParameterTemplate_appends_single_query_parameter_template() {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    SlingTestResource resource = adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .withQueryParameterTemplate("id")
+        .getInstance();
+
+    assertThat(resource.createLink().getHref()).isEqualTo("{+path}.selectortest.rhyme{?id}");
+  }
+
+  @Test
+  void withQueryParameterTemplate_appends_three_query_parameter_templates() {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    SlingTestResource resource = adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .withQueryParameterTemplate("a", "b", "c")
+        .getInstance();
+
+    assertThat(resource.createLink().getHref()).isEqualTo("{+path}.selectortest.rhyme{?a,b,c}");
+  }
+
+  @Test
+  void selectResourceAt_generates_template_without_query_params_by_default() {
+
+    SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");
+
+    SlingTestResource resource = adapter.selectResourceAt(null)
+        .adaptTo(SlingTestResource.class)
+        .getInstance();
+
+    assertThat(resource.createLink().getHref())
+        .doesNotContain("?")
+        .doesNotContain("&");
+  }
+
+  @Test
   void withPartialLinkTemplate_fails_if_null_path_is_given() {
 
     SlingResourceAdapterImpl adapter = createAdapterInstanceForResource("/");

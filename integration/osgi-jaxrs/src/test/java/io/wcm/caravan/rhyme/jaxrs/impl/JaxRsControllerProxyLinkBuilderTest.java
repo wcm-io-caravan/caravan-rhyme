@@ -37,7 +37,6 @@ import javax.ws.rs.core.Response;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -84,7 +83,8 @@ class JaxRsControllerProxyLinkBuilderTest {
 
     @GET
     @Path("/test")
-    public Response withRequiredFooAndOptionalBarStringQueryParams(@QueryParam("foo") String foo, @QueryParam("bar") @DefaultValue("defaultBar") String bar) {
+    public Response withRequiredFooAndOptionalBarStringQueryParams(@QueryParam("foo") String foo,
+        @QueryParam("bar") @DefaultValue("defaultBar") String bar) {
       return Response.ok(foo + bar).build();
     }
 
@@ -98,6 +98,12 @@ class JaxRsControllerProxyLinkBuilderTest {
     @Path("/test")
     public Response withListAndStringQueryParam(@QueryParam("foo") List<String> foo, @QueryParam("bar") String bar) {
       return Response.ok(foo + bar).build();
+    }
+
+    @GET
+    @Path("/test")
+    public Response withTwoListQueryParams(@QueryParam("foo") List<String> foo, @QueryParam("bar") List<String> bar) {
+      return Response.ok(foo + "" + bar).build();
     }
 
     @GET
@@ -213,7 +219,8 @@ class JaxRsControllerProxyLinkBuilderTest {
   @Test
   void template_does_not_expand_if_only_additional_param_is_resolved() {
 
-    JaxRsLinkBuilder<JaxRsComponent> linkBuilder = new JaxRsControllerProxyLinkBuilder<JaxRsComponent>("", JaxRsComponent.class)
+    JaxRsLinkBuilder<JaxRsComponent> linkBuilder = new JaxRsControllerProxyLinkBuilder<JaxRsComponent>("",
+        JaxRsComponent.class)
         .withAdditionalQueryParameters(ImmutableMap.of("finger", "print"));
 
     Link link = linkBuilder.buildLinkTo(r -> r.withRequiredFooAndOptionalBarStringQueryParams(null, null));
@@ -288,7 +295,7 @@ class JaxRsControllerProxyLinkBuilderTest {
   @Test
   void one_populated_list_query_param() {
 
-    assertLinkUrlFor(r -> r.withListQueryParam(ImmutableList.of("123", "456")))
+    assertLinkUrlFor(r -> r.withListQueryParam(List.of("123", "456")))
         .isEqualTo("/test?foo=123&foo=456");
   }
 
@@ -309,7 +316,7 @@ class JaxRsControllerProxyLinkBuilderTest {
   @Test
   void one_populated_list_query_param_before_string_param() {
 
-    assertLinkUrlFor(r -> r.withListAndStringQueryParam(ImmutableList.of("123", "456"), "789"))
+    assertLinkUrlFor(r -> r.withListAndStringQueryParam(List.of("123", "456"), "789"))
         .isEqualTo("/test?foo=123&foo=456&bar=789");
   }
 
@@ -350,6 +357,114 @@ class JaxRsControllerProxyLinkBuilderTest {
 
     assertLinkUrlFor(r -> r.withBeanParam(params))
         .isEqualTo("/test/123?bar=456&withDefault=replacement");
+  }
+
+  // --- Java 21 workaround: empty iterable query params are skipped from the
+  // template ---
+
+  @Test
+  void empty_list_query_param_with_unresolved_string_param() {
+
+    assertLinkUrlFor(r -> r.withListAndStringQueryParam(Collections.emptyList(), null))
+        .isEqualTo("/test{?bar}");
+  }
+
+  @Test
+  void empty_list_query_param_with_unresolved_string_param_and_null_list() {
+
+    assertLinkUrlFor(r -> r.withTwoListQueryParams(Collections.emptyList(), null))
+        .isEqualTo("/test{?bar*}");
+  }
+
+  @Test
+  void two_empty_list_query_params() {
+
+    assertLinkUrlFor(r -> r.withTwoListQueryParams(Collections.emptyList(), Collections.emptyList()))
+        .isEqualTo("/test");
+  }
+
+  @Test
+  void one_populated_and_one_empty_list_query_param() {
+
+    assertLinkUrlFor(r -> r.withTwoListQueryParams(List.of("a", "b"), Collections.emptyList()))
+        .isEqualTo("/test?foo=a&foo=b");
+  }
+
+  @Test
+  void one_empty_and_one_populated_list_query_param() {
+
+    assertLinkUrlFor(r -> r.withTwoListQueryParams(Collections.emptyList(), List.of("x")))
+        .isEqualTo("/test?bar=x");
+  }
+
+  // --- base URL prefix ---
+
+  @Test
+  void base_url_is_prepended_to_path() {
+
+    JaxRsLinkBuilder<JaxRsComponent> linkBuilder = JaxRsLinkBuilder.create("/api", JaxRsComponent.class);
+
+    Link link = linkBuilder.buildLinkTo(r -> r.foo());
+
+    assertThat(link.getHref()).isEqualTo("/api/foo");
+  }
+
+  @Test
+  void base_url_is_prepended_with_query_params() {
+
+    JaxRsLinkBuilder<JaxRsComponent> linkBuilder = JaxRsLinkBuilder.create("/api", JaxRsComponent.class);
+
+    Link link = linkBuilder.buildLinkTo(r -> r.withStringQueryParam("val"));
+
+    assertThat(link.getHref()).isEqualTo("/api/test?foo=val");
+  }
+
+  @Test
+  void base_url_is_prepended_with_path_and_query_template() {
+
+    JaxRsLinkBuilder<JaxRsComponent> linkBuilder = JaxRsLinkBuilder.create("/api", JaxRsComponent.class);
+
+    Link link = linkBuilder.buildLinkTo(r -> r.withTwoStringQueryParams(null, null));
+
+    assertThat(link.getHref()).isEqualTo("/api/test{?foo,bar}");
+  }
+
+  // --- special characters in query param values ---
+
+  @Test
+  void special_characters_in_query_param_are_encoded() {
+
+    assertLinkUrlFor(r -> r.withStringQueryParam("hello world"))
+        .contains("foo=hello%20world");
+  }
+
+  @Test
+  void special_characters_in_path_param_are_encoded() {
+
+    assertLinkUrlFor(r -> r.withStringPathParam("a/b"))
+        .isEqualTo("/test/a%2Fb");
+  }
+
+  // --- mixed path and query with partial expansion ---
+
+  @Test
+  void path_param_resolved_with_unresolved_query_param() {
+
+    ParamBean params = new ParamBean();
+    params.foo = "123";
+
+    assertLinkUrlFor(r -> r.withBeanParam(params))
+        .isEqualTo("/test/123{?bar,withDefault}");
+  }
+
+  @Test
+  void path_param_unresolved_with_resolved_query_param() {
+
+    ParamBean params = new ParamBean();
+    params.bar = "456";
+
+    assertLinkUrlFor(r -> r.withBeanParam(params))
+        .isEqualTo("/test/{foo}?bar=456{&withDefault}");
   }
 
   public static final class FinalJaxRsComponent {

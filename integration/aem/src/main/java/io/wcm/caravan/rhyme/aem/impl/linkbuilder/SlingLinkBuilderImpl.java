@@ -30,8 +30,9 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
 
   /**
    * Default constructor used when this sling model is instantiated
+   * 
    * @param slingRhyme the model from which this link builder is adapted
-   * @param registry to lookup the selectors to be used for URL generation
+   * @param registry   to lookup the selectors to be used for URL generation
    */
   @Inject
   public SlingLinkBuilderImpl(@Self SlingRhymeImpl slingRhyme, RhymeResourceRegistry registry) {
@@ -68,15 +69,37 @@ public class SlingLinkBuilderImpl implements SlingLinkBuilder {
     if (queryParams.isEmpty()) {
       return baseUrl;
     }
-    String[] names = queryParams.keySet().toArray(new String[queryParams.size()]);
+
+    // Workaround for a Java 21 issue: the UriTemplate class can no longer expand
+    // a query parameter template with an empty iterable value.
+    // Skip empty iterables from both the template variable names and the value map.
+    String[] names = queryParams.entrySet().stream()
+        .filter(entry -> !isEmptyIterableOrArray(entry.getValue()))
+        .map(Map.Entry::getKey)
+        .toArray(String[]::new);
+
+    if (names.length == 0) {
+      return baseUrl;
+    }
 
     UriTemplate template = UriTemplate.buildFromTemplate(baseUrl).query(names).build();
 
     queryParams.entrySet().stream()
         .filter(entry -> entry.getValue() != null)
+        .filter(entry -> !isEmptyIterableOrArray(entry.getValue()))
         .forEach(entry -> template.set(entry.getKey(), entry.getValue()));
 
     return slingModel.getLinkProperties().isTemplated() ? template.expandPartial() : template.expand();
+  }
+
+  private static boolean isEmptyIterableOrArray(Object value) {
+    if (value instanceof Iterable) {
+      return !((Iterable<?>) value).iterator().hasNext();
+    }
+    if (value != null && value.getClass().isArray()) {
+      return java.lang.reflect.Array.getLength(value) == 0;
+    }
+    return false;
   }
 
   private String getClassSpecificSelector(SlingLinkableResource slingModel) {
