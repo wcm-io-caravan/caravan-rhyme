@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -311,6 +312,190 @@ class TemplateVariableTest {
         .hasMessageStartingWith("No matching link template found with relation item");
   }
 
+  @HalApiInterface
+  interface ResourceWithTwoQueryTemplateVariables {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("a") String a,
+        @TemplateVariable("b") String b);
+  }
+
+  @Test
+  void template_with_query_expansion_should_match_variables() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?a,b}"));
+
+    mockHalResponseWithNumber("/items?a=1&b=2", 12);
+
+    TestResourceState state = client.createProxy(ResourceWithTwoQueryTemplateVariables.class)
+        .getLinked("1", "2")
+        .flatMap(ResourceWithSingleState::getProperties)
+        .blockingGet();
+
+    assertThat(state.number).isEqualTo(12);
+  }
+
+  @HalApiInterface
+  interface ResourceWithThreeQueryTemplateVariables {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("a") String a,
+        @TemplateVariable("b") String b,
+        @TemplateVariable("c") String c);
+  }
+
+  @Test
+  void template_with_multiple_query_variables_should_expand_first_and_preserve_rest() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?a,b,c}"));
+
+    Link link = client.createProxy(ResourceWithThreeQueryTemplateVariables.class)
+        .getLinked("1", null, null)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .isEqualTo("/items?a=1{&b,c}");
+  }
+
+  @Test
+  void link_template_with_special_characters_should_be_url_encoded() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?a,b}"));
+
+    // the partial expansion will encode the space character and the resource loader
+    // will be called with the encoded URL
+    mockHalResponseWithNumber("/items?a=hello%20world", 99);
+
+    Link link = client.createProxy(ResourceWithTwoQueryTemplateVariables.class)
+        .getLinked("hello world", null)
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref())
+        .startsWith("/items?a=hello")
+        .doesNotContain("{?")
+        .contains("{&b}");
+  }
+
+  @Test
+  void link_template_should_not_match_when_extra_non_null_variable_provided() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?a}"));
+
+    Throwable ex = catchThrowable(() -> client.createProxy(ResourceWithTwoQueryTemplateVariables.class)
+        .getLinked("1", "2")
+        .flatMap(ResourceWithSingleState::getProperties)
+        .blockingGet());
+
+    assertThat(ex).isInstanceOf(HalApiDeveloperException.class)
+        .hasMessageStartingWith("No matching link template found with relation item");
+  }
+
+  // --- List-typed template variables (Java 21 empty iterable issue) ---
+
+  @HalApiInterface
+  interface ResourceWithListTemplateVariable {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("ids") List<String> ids);
+  }
+
+  @Test
+  void list_template_variable_with_populated_list_should_expand() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids}"));
+
+    mockHalResponseWithNumber("/items?ids=1,2,3", 42);
+
+    TestResourceState state = client.createProxy(ResourceWithListTemplateVariable.class)
+        .getLinked(List.of("1", "2", "3"))
+        .flatMap(ResourceWithSingleState::getProperties)
+        .blockingGet();
+
+    assertThat(state.number).isEqualTo(42);
+  }
+
+  @Test
+  void list_template_variable_with_empty_list_should_not_fail() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids}"));
+
+    mockHalResponseWithNumber("/items", 0);
+
+    Link link = client.createProxy(ResourceWithListTemplateVariable.class)
+        .getLinked(Collections.emptyList())
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @HalApiInterface
+  interface ResourceWithListAndScalarTemplateVariables {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("ids") List<String> ids,
+        @TemplateVariable("filter") String filter);
+  }
+
+  @Test
+  void empty_list_template_variable_with_scalar_should_not_fail() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids,filter}"));
+
+    mockHalResponseWithNumber("/items?filter=active", 7);
+
+    Link link = client.createProxy(ResourceWithListAndScalarTemplateVariables.class)
+        .getLinked(Collections.emptyList(), "active")
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref()).contains("filter=active");
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @HalApiInterface
+  interface ResourceWithArrayTemplateVariable {
+
+    @Related(ITEM)
+    Single<ResourceWithSingleState> getLinked(
+        @TemplateVariable("ids") String[] ids);
+  }
+
+  @Test
+  void array_template_variable_with_empty_array_should_not_fail() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids}"));
+
+    mockHalResponseWithNumber("/items", 0);
+
+    Link link = client.createProxy(ResourceWithArrayTemplateVariable.class)
+        .getLinked(new String[0])
+        .map(ResourceWithSingleState::createLink)
+        .blockingGet();
+
+    assertThat(link.getHref()).doesNotContain("ids=");
+  }
+
+  @Test
+  void array_template_variable_with_populated_array_should_expand() {
+
+    entryPoint.addLinks(ITEM, new Link("/items{?ids}"));
+
+    mockHalResponseWithNumber("/items?ids=1,2,3", 42);
+
+    TestResourceState state = client.createProxy(ResourceWithArrayTemplateVariable.class)
+        .getLinked(new String[] { "1", "2", "3" })
+        .flatMap(ResourceWithSingleState::getProperties)
+        .blockingGet();
+
+    assertThat(state.number).isEqualTo(42);
+  }
 
   @HalApiInterface
   public interface ResourceWithMissingAnnotations {
@@ -335,10 +520,13 @@ class TemplateVariableTest {
 
     entryPoint.addLinks(ITEM, new Link("/items/{id}"));
 
-    // by default parameter names are stripped from class files. This can be avoided with compiler settings, and
-    // this would be required if you want to use template methods without using annotations.
+    // by default parameter names are stripped from class files. This can be avoided
+    // with compiler settings, and
+    // this would be required if you want to use template methods without using
+    // annotations.
 
-    // to unit-test the support for this, we'll need to create a dynamic class that extends ResourceWithMissingAnnotations.
+    // to unit-test the support for this, we'll need to create a dynamic class that
+    // extends ResourceWithMissingAnnotations.
     // but ensures the name of the parameters are available
     Class<? extends ResourceWithMissingAnnotations> resourceClass = createHalApiInterfaceWithPreservedParameterNames();
 
@@ -352,13 +540,16 @@ class TemplateVariableTest {
   private Class<? extends ResourceWithMissingAnnotations> createHalApiInterfaceWithPreservedParameterNames() {
 
     AnnotationDescription halApiAnnotation = AnnotationDescription.Builder.ofType(HalApiInterface.class).build();
-    AnnotationDescription relatedAnnotation = AnnotationDescription.Builder.ofType(Related.class).define("value", StandardRelations.ITEM).build();
+    AnnotationDescription relatedAnnotation = AnnotationDescription.Builder.ofType(Related.class)
+        .define("value", StandardRelations.ITEM).build();
 
     ByteBuddy bb = new ByteBuddy();
 
-    Class<? extends ResourceWithMissingAnnotations> resourceClass = bb.makeInterface(ResourceWithMissingAnnotations.class)
+    return bb
+        .makeInterface(ResourceWithMissingAnnotations.class)
         .annotateType(halApiAnnotation)
-        // override the ResourceWithMissingAnnotations#getItem but this dynamic version will have parameter names present
+        // override the ResourceWithMissingAnnotations#getItem but this dynamic version
+        // will have parameter names present
         .defineMethod("getItem", LinkableTestResource.class, Modifier.PUBLIC)
         .withParameter(String.class, "id")
         .withoutCode()
@@ -366,7 +557,5 @@ class TemplateVariableTest {
         .make()
         .load(getClass().getClassLoader())
         .getLoaded();
-
-    return resourceClass;
   }
 }
